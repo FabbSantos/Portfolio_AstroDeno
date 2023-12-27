@@ -1,0 +1,28 @@
+---
+import { Image } from "astro:assets";
+import Github  from "./Github.jsx";
+import LinkCard from "./LinkCard.astro";
+
+import Logo from '../assets/Logo.svg'
+---
+
+<ul class="flex flex-col md:flex-row relative w-full items-center justify-center gap-8  py-5 border-b-2 border-white max-w-screen-xl mx-auto">
+    <li class="!text-xs absolute top-1/2 left-2"> <a href="#"> fabriciobs2000@gmail.com</a> </li>
+    <li><Image src={Logo} alt={'Portfolio Fabrício Bahiense'} loading='eager' width={50}/></li>
+    
+    <div class="md:absolute top-1/2 -translate-y-1/2 right-2 flex flex-col md:flex-row gap-2">
+        <li> 
+           <LinkCard href="#">
+              <Github/>
+            </LinkCard>
+        </li>
+        <li> <a href="#"> Menu 2</a> </li>
+        <li> <a href="#"> Menu 3</a> </li>
+    </div>
+</ul>
+
+<style>
+    ul li {
+        @apply text-base text-white md:mx-10 uppercase;
+    }
+</style>
