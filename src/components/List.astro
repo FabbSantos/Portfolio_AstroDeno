@@ -6,15 +6,25 @@ import Card from '../components/Card.astro';
 const repos = await apiGit();
 ---
 
-<ul role="list" class="link-card-grid">
+<ul role="list" class="flex justify-center items-center gap-6 flex-wrap">
     {
-        repos.map((resource: any) => {
+        // repos.map((repo: any) => {
+        //     return (
+        //         <Card
+        //             href={repo.html_url}
+        //             title={repo.name}
+        //             body={repo.description}
+        //             src={repo.owner.avatar_url}
+        //         />
+        //     )
+        // })
+        repos.filter((repo: any) => repo.stargazers_count > 0).map((repo: any) => {
             return (
                 <Card
-                    href={resource.html_url}
-                    title={resource.name}
-                    body={resource.description}
-                    src={resource.owner.avatar_url}
+                    href={repo.html_url}
+                    title={repo.name}
+                    body={repo.description}
+                    src={repo.owner.avatar_url}
                 />
             )
         })
