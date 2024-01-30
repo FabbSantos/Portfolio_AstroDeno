@@ -39,7 +39,8 @@ import Header from "./Header.astro";
             </defs>
             
         </svg>
-        <h1>Welcome to <span class='text-gradient'>Astro</span></h1>
+        <h1>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Assumenda illum sed nemo unde repudiandae tenetur, placeat quas, <span class='text-gradient'> pariatur in distinctio ratione earum veniam esse quidem aliquam delectus optio est odio?</span></h1>
+
     </main>
 </>
 
@@ -51,13 +52,13 @@ import Header from "./Header.astro";
 <style>
     main {
         display: flex;
+        flex-direction: column;
         justify-content: center;
-        align-items: center;
+        align-items: start;
         min-height: 80svh;
         margin: auto;
         padding: 1rem;
-        /* width: 80%; */
-        max-width: calc(100% - 5%);
+        max-width: calc(100% - 20%);
         color: white;
         font-size: 20px;
         line-height: 1.6;
@@ -72,10 +73,11 @@ import Header from "./Header.astro";
         z-index: -1;
     }
     h1 {
-        font-size: 4rem;
-        font-weight: 700;
-        line-height: 1;
-        text-align: center;
+        font-size: 2.4rem;
+        font-weight: 200;
+        line-height: 48px;
+        text-align: left;
+        max-width: 70%;
         margin-bottom: 1em;
     }
     .text-gradient {
