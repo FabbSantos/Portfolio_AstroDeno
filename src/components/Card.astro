@@ -1,15 +1,18 @@
 ---
 interface Props {
-	title: string;
-	body: string;
-	href: string;
-	src: string;
+	title?: string;
+	body?: string;
+	href?: string;
+	src?: string;
+	bg?: string;
 }
 
-const { href, title, body , src} = Astro.props;
+const { href, title, body , src, bg} = Astro.props;
 ---
 
-<div class="link-card" id="tilt">
+<li class="link-card" id="tilt">
+	<div class="cardBG" data-bg={bg}/>
+	<div class="glassy"/>
 	<a href={href}>
 		<div class="flex flex-row items-center justify-between gap-12 pr-4">
 			<h2 class="flex gap-6">
@@ -22,23 +25,32 @@ const { href, title, body , src} = Astro.props;
 			{body}
 		</p>
 	</a>
-</div>
+</li>
 <style>
-	.link-card {
+	.link-card{
+		position: relative;
 		list-style: none;
 		display: flex;
+		z-index: 0;
 		transition: transform .3s ease-in-out;
 		perspective: 500px;
 		justify-content: flex-start;
-		background-color: #23262d;
+		/* background-color: #23262d; */
 		border-radius: 7px;
 		transition: background-position 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-		@apply aspect-square max-w-md basis-1/5;
+		overflow: clip;
+		@apply aspect-[16/9] max-w-md basis-1/4;
+		box-shadow: rgba(0, 0, 0, 0.66) 0 30px 60px 0, inset #333 0 0 0 5px, inset rgba(255, 255, 255, 0.5) 0 0 0 
+		6px;
+		
 	}
 	.link-card {
 		transition: transform  0.3s ease-out;
 		perspective:  500px;
+	}
+	.link-card:not(:first-child) {
+		display: none;
 	}
 
 	.link-card:hover {
@@ -51,12 +63,13 @@ const { href, title, body , src} = Astro.props;
 
 	.link-card > a {
 		width: 100%;
+		border-radius: 7px;
 		text-decoration: none;
 		line-height: 1.4;
 		padding: calc(1.5rem - 1px);
 		border-radius: 8px;
 		color: white;
-		background-color: #23262d;
+  		text-shadow:  3px  3px  5px rgba(0,  0,  0,  1);
 		opacity: 0.8;
 	}
 	h2 {
@@ -70,17 +83,51 @@ const { href, title, body , src} = Astro.props;
 	}
 	.link-card:is(:hover, :focus-within) {
 		background-position: 0;
-		background-image: var(--accent-gradient);
+		/* background-image: var(--accent-gradient); */
 	}
 	.link-card:is(:hover, :focus-within) h2 {
 		color: rgb(var(--accent-light));
 	}
+	img {
+		max-width: 100%;
+		margin: 0;
+	}
+	.cardBG {
+		z-index: -1;
+		/* background-image: url('https://images.unsplash.com/photo-1479660656269-197ebb83b540?dpr=2&auto=compress,format&fit=crop&w=1199&h=798&q=80&cs=tinysrgb&crop='); */
+		opacity: 0.5;
+		position: absolute;
+		top: -20%; left: -20%;
+		width: 200%;
+		height: 200%;
+		padding: 20px;
+		background-repeat: no-repeat;
+		background-position: center center;
+		background-size: cover;
+		background-blend-mode: normal;
+		transition: all .1s ease-in-out;
+		
+	}
+	.glassy {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(255,  255,  255,  0.15);
+		backdrop-filter: blur(5px);
+	}
+
 </style>
 
 
 <script>
 // Get all elements with the 'tilt' class
 let els = document.getElementsByClassName('link-card');
+let elBG = document.querySelector('.cardBG') as HTMLElement;
+const bg = elBG.dataset.bg;
+elBG.style.backgroundImage = `url('${bg}')`;
+
 
 // Loop over all elements
 Array.from(els).forEach((el) => {
@@ -101,27 +148,31 @@ Array.from(els).forEach((el) => {
     const yRotation =  20 * ((xVal - width /  2) / width);
     const xRotation = -20 * ((yVal - height /  2) / height);
 
-    // Generate string for CSS transform property
-    const string = 'perspective(500px) scale(1.1) rotateX(' + xRotation + 'deg) rotateY(' + yRotation + 'deg)';
+    const yBG =  -40 * ((xVal - width /  2) / width);
+    const xBG = 40 * ((yVal - height /  2) / height);
 
+    // Generate string for CSS transform property
+    const string = 'perspective(800px) scale(1.05) rotateX(' + xRotation + 'deg) rotateY(' + yRotation + 'deg)';
+	
     // Apply the calculated transformation
     (el as HTMLElement).style.transform = string;
+    elBG.style.transform = `translate(${yBG}px, ${-xBG}px)`;
   }
 
-  // Add listener for mouseout event, remove the rotation
+//   // Add listener for mouseout event, remove the rotation
   el.addEventListener('mouseout', function() {
     (el as HTMLElement).style.transform = 'perspective(500px) scale(1) rotateX(0) rotateY(0)';
   });
 
-  // Add listener for mousedown event, to simulate click
-  el.addEventListener('mousedown', function() {
-    (el as HTMLElement).style.transform = 'perspective(500px) scale(0.9) rotateX(0) rotateY(0)';
-  });
+//   // Add listener for mousedown event, to simulate click
+//   el.addEventListener('mousedown', function() {
+//     (el as HTMLElement).style.transform = 'perspective(500px) scale(0.9) rotateX(0) rotateY(0)';
+//   });
 
-  // Add listener for mouseup, simulate release of mouse click
-  el.addEventListener('mouseup', function() {
-    (el as HTMLElement).style.transform = 'perspective(500px) scale(1.1) rotateX(0) rotateY(0)';
-  });
+//   // Add listener for mouseup, simulate release of mouse click
+//   el.addEventListener('mouseup', function() {
+//     (el as HTMLElement).style.transform = 'perspective(500px) scale(1.1) rotateX(0) rotateY(0)';
+//   });
 });
 
 </script>

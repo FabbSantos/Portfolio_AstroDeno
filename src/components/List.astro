@@ -1,32 +1,24 @@
 ---
 import { apiGit } from '../api/resources'
-import Card from '../components/Card.astro';
+import Card from './Card.astro';
+import leadster from '../assets/leadster.webp';
 
+let repos = await apiGit();
 
-const repos = await apiGit();
 ---
 
-<ul role="list" class="flex justify-center items-center gap-6 flex-wrap">
+<ul role="list" class="flex justify-center items-center gap-6 flex-wrap py-10">
     {
-        // repos.map((repo: any) => {
-        //     return (
-        //         <Card
-        //             href={repo.html_url}
-        //             title={repo.name}
-        //             body={repo.description}
-        //             src={repo.owner.avatar_url}
-        //         />
-        //     )
-        // })
-        repos.filter((repo: any) => repo.stargazers_count > 0).map((repo: any) => {
-            return (
-                <Card
-                    href={repo.html_url}
-                    title={repo.name}
-                    body={repo.description}
-                    src={repo.owner.avatar_url}
-                />
-            )
-        })
+        // Array.isArray(repos) && repos.filter((repo: any) => repo.stargazers_count >  0).map((repo: any) => (
+        Array.isArray(repos) && repos.filter((repo: any) => repo.name ===  'leadster_lp').map((repo: any) => (
+            <Card
+                href={repo.html_url}
+                title={repo.name}
+                title={repo.name}
+                body={repo.description}
+                src={repo.owner.avatar_url}
+                bg={leadster.src}
+            />
+        ))
     }
 </ul>
