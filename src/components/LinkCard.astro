@@ -6,7 +6,7 @@ interface Props {
 const { href} = Astro.props;
 ---
 
-<a href={href} target="_blank" class="box">
+<a href={href} target="_blank" class="box menu-item">
     <slot/>
 </a>
 
@@ -17,7 +17,6 @@ const { href} = Astro.props;
   position: relative;
   overflow: hidden;
 }
-
 
 
 .box::before { 

@@ -13,24 +13,9 @@ import Instagram from "./Instagram.astro";
     <!-- <li class="!text-xs absolute top-1/2 left-2"> <a href="#"> fabriciobs2000@gmail.com</a> </li> -->
     
     <div class="md:absolute top-1/2 -translate-y-1/2 right-2 flex flex-col md:flex-row gap-2">
-        <li class="!normal-case text-base"> 
-           <a href="">Work</a>
+        <li class="!normal-case text-base menu-item"> 
+           <a href="#">Work</a>
         </li>
-        <li> 
-           <LinkCard href="https://github.com/FabbSantos">
-              <Github/>
-            </LinkCard>
-        </li>
-        <li>            
-            <LinkCard href="https://github.com/FabbSantos">
-              <Linkedin/>
-            </LinkCard>
-        </li>
-        <li>
-            <LinkCard href="https://github.com/FabbSantos">
-              <Instagram/>
-            </LinkCard> 
-         </li>
     </div>
 </ul>
 
@@ -38,4 +23,27 @@ import Instagram from "./Instagram.astro";
     ul li {
         @apply text-base text-white md:mx-3 uppercase;
     }
+
+    .menu-item {
+        position: relative;
+        text-align: center; /* Center the text horizontally */
+    }
+
+        .menu-item::after {
+            content: '';
+            position: absolute;
+            border-radius: 2px;
+            left:  50%; /* Start from the middle */
+            transform: translateX(-50%) scaleX(0); /* Center the underline */
+            width:  30%;
+            height:  3px;
+            bottom:  0;
+            background-color: #fff; /* Change to your preferred color */
+            transition: transform  0.3s ease-in-out;
+        }
+
+        .menu-item:hover::after,
+        .menu-item:visited::after {
+            transform: translateX(-50%) scaleX(1);
+        }
 </style>
