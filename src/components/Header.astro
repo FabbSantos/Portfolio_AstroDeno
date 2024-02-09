@@ -1,31 +1,46 @@
 ---
-import { Image } from "astro:assets";
-import Github  from "./Github.astro";
-import LinkCard from "./LinkCard.astro";
-
-import Logo from '../assets/Logo.svg'
-import Linkedin from "./Linkedin.astro";
-import Instagram from "./Instagram.astro";
 ---
 
-<ul class="flex flex-col md:flex-row relative w-full items-center justify-center gap-8  py-10 border-b-0 border-white max-w-[95%] mx-auto">
+<ul class="flex flex-col md:flex-row fixed  w-full md:items-center justify-center gap-8  py-10 head">
     <!-- <li><Image src={Logo} alt={'Portfolio Fabrício Bahiense'} loading='eager' width={30}/></li> -->
     <!-- <li class="!text-xs absolute top-1/2 left-2"> <a href="#"> fabriciobs2000@gmail.com</a> </li> -->
+
     
-    <div class=" flex flex-col md:flex-row gap-2">
+    <div class=" flex flex-col md:flex-row gap-4 max-w-[95%] mx-auto acthead">
         <li class="uppercase menu-item clickable"> 
-           <a href="#">Home</a>
+            <a href="#">Home</a>
         </li>
         <li class="uppercase menu-item clickable"> 
-           <a href="#">Work</a>
+            <a href="#">Work</a>
         </li>
         <li class="uppercase menu-item clickable"> 
-           <a href="#">About</a>
+            <a href="#">About</a>
         </li>
     </div>
+    <svg xmlns="http://www.w3.org/2000/svg" class="mr-5 md:hidden fixed -left-[12%] top-5 hamb" width="2em" height="2em" viewBox="0 0 24 24">
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M4 7h3m13 0h-9m9 10h-3M4 17h9m-9-5h16" />
+    </svg>
 </ul>
 
 <style>
+    ul {
+        transform: translateX(100%);
+        height: 100%;
+        background: black;
+        z-index:10;
+    }
+    ul.active {
+        transform: translateX(0%);
+    }
+
+    @media (min-width: 768px) {
+        ul {
+            display: flex;
+            transform: translateX(0%);
+            height: auto;
+            background: linear-gradient(to bottom, rgba(0,   0,   0,   1)   0%, rgba(0,   0,   0,   0)   80%);
+        }
+    }
     ul li {
         @apply text-sm text-white md:mx-3 uppercase;
     }
@@ -76,4 +91,35 @@ import Instagram from "./Instagram.astro";
             });
         });
     });
+
+    window.addEventListener('scroll', function() {
+        const scrollPosition = window.scrollY;
+        const body = document.querySelector('.head')! as HTMLElement;
+        const acthead = document.querySelector('.acthead')! as HTMLElement;
+
+        if (window.outerWidth > 768){
+
+            if (scrollPosition >   0) {
+                body.style.background = 'black'; // Define o background para preto quando o usuário rola
+                acthead.style.transform='translateX(300%)';
+            } else {
+                body.style.background = 'linear-gradient(to bottom, rgba(0,   0,   0,   1)   0%, rgba(0,   0,   0,   0)   80%)'; // Retorna ao background original quando o usuário está no topo
+                acthead.style.transform='translateX(0%)';
+            }
+        }
+    });
+
+    document.querySelector('.hamb')?.addEventListener('click', function() {
+        const ul =document.querySelector('.head')! as HTMLElement
+        const hamb =document.querySelector('.hamb')! as HTMLElement
+        
+        if (ul.classList.contains('active')) {
+            hamb.style.left='-12%'
+            ul.classList.toggle('active')
+        } else {
+            hamb.style.left='88%'
+            ul.classList.add('active')
+        }
+    })
+
 </script>
