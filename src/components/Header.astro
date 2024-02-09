@@ -8,20 +8,26 @@ import Linkedin from "./Linkedin.astro";
 import Instagram from "./Instagram.astro";
 ---
 
-<ul class="flex flex-col md:flex-row relative w-full items-center justify-start gap-8  py-5 border-b-0 border-white max-w-[95%] mx-auto">
-    <li><Image src={Logo} alt={'Portfolio Fabrício Bahiense'} loading='eager' width={30}/></li>
+<ul class="flex flex-col md:flex-row relative w-full items-center justify-center gap-8  py-10 border-b-0 border-white max-w-[95%] mx-auto">
+    <!-- <li><Image src={Logo} alt={'Portfolio Fabrício Bahiense'} loading='eager' width={30}/></li> -->
     <!-- <li class="!text-xs absolute top-1/2 left-2"> <a href="#"> fabriciobs2000@gmail.com</a> </li> -->
     
-    <div class="md:absolute top-1/2 -translate-y-1/2 right-2 flex flex-col md:flex-row gap-2">
-        <li class="!normal-case text-base menu-item"> 
+    <div class=" flex flex-col md:flex-row gap-2">
+        <li class="uppercase menu-item clickable"> 
+           <a href="#">Home</a>
+        </li>
+        <li class="uppercase menu-item clickable"> 
            <a href="#">Work</a>
+        </li>
+        <li class="uppercase menu-item clickable"> 
+           <a href="#">About</a>
         </li>
     </div>
 </ul>
 
 <style>
     ul li {
-        @apply text-base text-white md:mx-3 uppercase;
+        @apply text-sm text-white md:mx-3 uppercase;
     }
 
     .menu-item {
@@ -29,21 +35,45 @@ import Instagram from "./Instagram.astro";
         text-align: center; /* Center the text horizontally */
     }
 
-        .menu-item::after {
-            content: '';
-            position: absolute;
-            border-radius: 2px;
-            left:  50%; /* Start from the middle */
-            transform: translateX(-50%) scaleX(0); /* Center the underline */
-            width:  30%;
-            height:  3px;
-            bottom:  0;
-            background-color: #fff; /* Change to your preferred color */
-            transition: transform  0.3s ease-in-out;
-        }
+    .menu-item::after {
+        content: '';
+        position: absolute;
+        border-radius: 2px;
+        left:  50%; /* Start from the middle */
+        transform: translateX(-50%) scaleX(0); /* Center the underline */
+        width:  30%;
+        height:  3px;
+        bottom:  -30%;
+        background-color: #fff; /* Change to your preferred color */
+        transition: transform  0.3s ease-in-out;
+    }
 
-        .menu-item:hover::after,
-        .menu-item:visited::after {
-            transform: translateX(-50%) scaleX(1);
-        }
+    .menu-item:hover::after,
+    .menu-item:visited::after {
+        transform: translateX(-50%) scaleX(1);
+    }
+
+    .clickable.active {
+        color: var(--bright-pink);
+    }
+    .clickable.active::after {
+        transform: translateX(-50%) scaleX(1);
+    }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const menuItems = document.querySelectorAll('.clickable a');
+        menuItems.forEach(item => {
+            item.addEventListener('click', (event) => {
+                event.preventDefault(); // Prevent the default action if needed
+                // Remove 'active' class from all menu items
+                document.querySelectorAll('.clickable').forEach(menuItem => {
+                    menuItem.classList.remove('active');
+                });
+                // Add 'active' class to the clicked item
+                item.parentElement!.classList.add('active');
+            });
+        });
+    });
+</script>

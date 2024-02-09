@@ -227,8 +227,8 @@ import Linkedin from "./Linkedin.astro";
                 </li>
             </ul>
 
-            <a href="#work">
-                <svg class="chevron mt-10" xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 32 32">
+            <a href="#work" class="chevronA  mt-10">
+                <svg class="chevron" xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 32 32">
                     <path fill="currentColor" d="M5.366 11.116a1.25 1.25 0 0 1 1.768 0L16 19.982l8.866-8.866a1.25 1.25 0 0 1 1.768 1.768l-9.75 9.75a1.25 1.25 0 0 1-1.768 0l-9.75-9.75a1.25 1.25 0 0 1 0-1.768" />
                 </svg>
             </a>
@@ -256,6 +256,9 @@ import Linkedin from "./Linkedin.astro";
         color: white;
         font-size: 20px;
         line-height: 1.6;
+    }
+    .chevronA {
+        animation: upAndDown 2s ease-in-out infinite;
     }
     .chevron:hover path {
         fill: var(--bright-pink);
@@ -293,7 +296,6 @@ import Linkedin from "./Linkedin.astro";
     p.fade-text span:hover, h1:hover {
         color: var(--bright-pink)!important;
     }
-  
     
     .astro-a {
         position: absolute;
@@ -307,15 +309,26 @@ import Linkedin from "./Linkedin.astro";
     }
 
  @keyframes rocketFlight {
-    0% {
-        bottom: 0%
+        0% {
+            bottom: 0%
+        }
+        50% {
+            bottom: 10%;
+        }
+        100% {
+            bottom: 0%;
+        }
     }
-    50% {
-        bottom: 10%;
-    }
-    100% {
-        bottom: 0%;
-    }
-}
     
+    @keyframes upAndDown {
+        0% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10%);
+        }
+        100% {
+            transform: translateY(0%);
+        }
+    }
 </style>
