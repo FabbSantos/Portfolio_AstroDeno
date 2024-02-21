@@ -1,0 +1,17 @@
+---
+import Card from "./Card.astro";
+import fab from '../assets/fab.webp'
+import beer from '../assets/beer.jpg'
+import gamer from '../assets/gamer.jpg'
+
+---
+
+<section>
+    <Card
+        title ={ 'a bit about me' }
+        fadeText={`I'm a Front-End Developer and a Mobile Developer, who is passionate about details. `}
+        body={`Besides, I'm a calm person, that loves football, music, games and beer.`}
+        flexType="flex-row-reverse"
+        imageToDisplayAbout={ [fab.src, beer.src, gamer.src] }
+    >
+</section>
