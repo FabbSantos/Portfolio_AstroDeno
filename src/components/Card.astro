@@ -2,84 +2,64 @@
 interface Props {
 	title?: string;
 	body?: string;
+	fadeText?: string;
+	category?: string;
 	href?: string;
-	src?: string;
-	bg?: string;
+	avatar?: string;
+	imageToDisplay?: string;
+	flexType?: string;
+	cardColor?: string;
 }
 
-const { href, title, body , src, bg} = Astro.props;
+const { href, title, body, fadeText , avatar, imageToDisplay, flexType, category, cardColor} = Astro.props;
+
 ---
 
-<li class="link-card" id="tilt">
-	<div class="cardBG" data-bg={bg}/>
-	<div class="glassy"/>
-	<a href={href}>
-		<div class="flex flex-row items-center justify-between gap-12 pr-4">
-			<h2 class="flex gap-6">
-				{title}
-				<span>&rarr;</span>
-			</h2>
-			<img src={src} alt="Repo Owner" height="50" width="50" class="rounded-full">
-		</div>
-		<p>
-			{body}
-		</p>
-	</a>
-</li>
-<style>
-	.link-card{
-		position: relative;
-		list-style: none;
-		display: flex;
-		z-index: 0;
-		transition: transform .3s ease-in-out;
-		perspective: 500px;
-		justify-content: flex-start;
-		/* background-color: #23262d; */
-		border-radius: 7px;
-		transition: background-position 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-		overflow: clip;
-		@apply aspect-[16/9] max-w-md basis-1/3;
-		box-shadow: rgba(0, 0, 0, 0.66) 0 30px 60px 0, inset #333 0 0 0 5px, inset rgba(255, 255, 255, 0.5) 0 0 0 
-		6px;
+	<div class= { `flex ${flexType || '  '} justify-center items-center gap-12 flex-wrap py-10 border-x-[0px] border-[rgba(255,_255,_255,_0.15)] px-5 md:max-w-[80%] mx-auto rounded-lg mb-10 md:mb-12 border-b-[1px] md:border-b-0`}>
 		
-	}
-	.link-card {
-		transition: transform  0.3s ease-out;
-		perspective:  500px;
-	}
-	.link-card:not(:first-child) {
-		display: none;
-	}
+		<div class="md:p-10 rounded-xl relative md:basis-1/2 flex justify-center items-center">
+			<div class= {` glassy`}/>
+			<img src={imageToDisplay} alt="leadster">
+		</div>
+		
+		<div class="md:max-w-[45%] flex flex-col gap-12 items-center md:items-start">
+			<div class="flex flex-col-reverse md:flex-row items-center justify-between gap-6 text-center md:text-left md:pr-4 max-w-[90%]">
+				<h5 class="uppercase tracking-[.2em] text-base font-semibold">
+					{title}
+				</h5>
+				<img src={avatar} alt="Repo Owner" height="60" width="60" class="rounded-full">
+			</div>
+			<p class="tracking-wider pbody font-semibold text-center md:text-left">
+				<span class="fade-text !font-extralight">
+					{fadeText}
+				</span>
+				{body}
+			</p>
 
-	.link-card:hover {
-		transform: scale(1.1) rotateX(0deg) rotateY(0deg);
-	}
+			<div class="flex flex-col md:flex-row justify-start items-center gap-12  md:mt-10">
+				<p class="uppercase tracking-[.2em] text-xs font-light fade-text">{category}</p>
 
-	.link-card:active {
-		transform: scale(0.9) rotateX(0deg) rotateY(0deg);
-	}
+				<a href={href}
+					class=`transition-all flex flex-row items-center justify-center gap-4 border border-[1px] max-w-max py-3 px-4 text-sm uppercase rounded-2xl  hover:border-black hover:bg-white hover:text-black`
+				>
+					View work
+					<svg class="chev" height="15px" width="15px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 185.343 185.343" xml:space="preserve" fill="#fff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> <path style="fill:#fff;" d="M51.707,185.343c-2.741,0-5.493-1.044-7.593-3.149c-4.194-4.194-4.194-10.981,0-15.175 l74.352-74.347L44.114,18.32c-4.194-4.194-4.194-10.987,0-15.175c4.194-4.194,10.987-4.194,15.18,0l81.934,81.934 c4.194,4.194,4.194,10.987,0,15.175l-81.934,81.939C57.201,184.293,54.454,185.343,51.707,185.343z"></path> </g> </g> </g></svg>
+				</a>
 
-	.link-card > a {
-		width: 100%;
-		border-radius: 7px;
-		text-decoration: none;
-		line-height: 1.4;
-		padding: calc(1.5rem - 1px);
-		border-radius: 8px;
-		color: white;
-  		text-shadow:  3px  3px  5px rgba(0,  0,  0,  1);
-		opacity: 0.8;
-	}
+			</div>
+		</div>
+	</div>
+<style>
+	
 	h2 {
 		margin: 0;
 		font-size: 1.25rem;
 		transition: color 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 	}
-	p {
+	p.pbody {
 		margin-top: 0.5rem;
 		margin-bottom: 0;
+		font-size: clamp(1rem, 2vw, 1.4rem);
 	}
 	.link-card:is(:hover, :focus-within) {
 		background-position: 0;
@@ -88,91 +68,24 @@ const { href, title, body , src, bg} = Astro.props;
 	.link-card:is(:hover, :focus-within) h2 {
 		color: rgb(var(--accent-light));
 	}
+	a:hover svg.chev path {
+		fill:black !important;
+	}
 	img {
 		max-width: 100%;
 		margin: 0;
 	}
-	.cardBG {
-		z-index: -1;
-		/* background-image: url('https://images.unsplash.com/photo-1479660656269-197ebb83b540?dpr=2&auto=compress,format&fit=crop&w=1199&h=798&q=80&cs=tinysrgb&crop='); */
-		opacity: 0.5;
-		position: absolute;
-		top: -20%; left: -20%;
-		width: 200%;
-		height: 200%;
-		padding: 20px;
-		background-repeat: no-repeat;
-		background-position: center center;
-		background-size: cover;
-		background-blend-mode: normal;
-		transition: all .1s ease-in-out;
-		
-	}
 	.glassy {
 		position: absolute;
+		z-index: -1;
 		top: 0;
 		left: 0;
+		border-radius: 16px;
 		width: 100%;
 		height: 100%;
-		background-color: rgba(255,  255,  255,  0.15);
+		background-color: white;
 		backdrop-filter: blur(5px);
+		opacity: .30;
 	}
 
 </style>
-
-
-<script>
-// Get all elements with the 'tilt' class
-let els = document.getElementsByClassName('link-card');
-let elBG = document.querySelector('.cardBG') as HTMLElement;
-const bg = elBG.dataset.bg;
-elBG.style.backgroundImage = `url('${bg}')`;
-
-
-// Loop over all elements
-Array.from(els).forEach((el) => {
-  // Get the height and width of the element
-  const height = el.clientHeight;
-  const width = el.clientWidth;
-
-  // Add a listener for mousemove event
-  el.addEventListener('mousemove', handleMove);
-
-  // Define function a
-  function handleMove(e:any) {
-    // Get position of mouse cursor with respect to the element
-    const xVal = e.layerX;
-    const yVal = e.layerY;
-
-    // Calculate rotation values along the Y-axis and X-axis
-    const yRotation =  20 * ((xVal - width /  2) / width);
-    const xRotation = -20 * ((yVal - height /  2) / height);
-
-    const yBG =  -40 * ((xVal - width /  2) / width);
-    const xBG = 40 * ((yVal - height /  2) / height);
-
-    // Generate string for CSS transform property
-    const string = 'perspective(800px) scale(1.05) rotateX(' + xRotation + 'deg) rotateY(' + yRotation + 'deg)';
-	
-    // Apply the calculated transformation
-    (el as HTMLElement).style.transform = string;
-    elBG.style.transform = `translate(${yBG}px, ${-xBG}px)`;
-  }
-
-//   // Add listener for mouseout event, remove the rotation
-  el.addEventListener('mouseout', function() {
-    (el as HTMLElement).style.transform = 'perspective(500px) scale(1) rotateX(0) rotateY(0)';
-  });
-
-//   // Add listener for mousedown event, to simulate click
-//   el.addEventListener('mousedown', function() {
-//     (el as HTMLElement).style.transform = 'perspective(500px) scale(0.9) rotateX(0) rotateY(0)';
-//   });
-
-//   // Add listener for mouseup, simulate release of mouse click
-//   el.addEventListener('mouseup', function() {
-//     (el as HTMLElement).style.transform = 'perspective(500px) scale(1.1) rotateX(0) rotateY(0)';
-//   });
-});
-
-</script>

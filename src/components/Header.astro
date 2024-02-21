@@ -12,7 +12,7 @@
         </li>
         <li class="uppercase menu-item clickable"> 
             <a href="#">Work</a>
-        </li>
+        </li>  
         <li class="uppercase menu-item clickable"> 
             <a href="#">About</a>
         </li>
@@ -62,6 +62,9 @@
         background-color: #fff; /* Change to your preferred color */
         transition: transform  0.3s ease-in-out;
     }
+    /* .acthead {
+        transition: all 0.5s ease-in-out;
+    } */
 
     .menu-item:hover::after,
     .menu-item:visited::after {
@@ -97,14 +100,17 @@
         const body = document.querySelector('.head')! as HTMLElement;
         const acthead = document.querySelector('.acthead')! as HTMLElement;
 
-        if (window.outerWidth > 768){
-
+        if (window.outerWidth >  768){
             if (scrollPosition >   0) {
-                body.style.background = 'black'; // Define o background para preto quando o usuário rola
-                acthead.style.transform='translateX(300%)';
+                body.style.transition = 'background  0.3s ease-in-out';
+                acthead.style.transition = 'all 0.3s ease';
+                body.style.background = 'black';
+                acthead.style.marginInline = 'auto 4%';  
             } else {
-                body.style.background = 'linear-gradient(to bottom, rgba(0,   0,   0,   1)   0%, rgba(0,   0,   0,   0)   80%)'; // Retorna ao background original quando o usuário está no topo
-                acthead.style.transform='translateX(0%)';
+                body.style.transition = 'background  0.3s ease';
+                body.style.background = 'linear-gradient(to bottom, rgba(0,   0,   0,   1)   0%, rgba(0,   0,   0,   0)   80%)';
+                acthead.style.transition = 'all .3s ease';
+                acthead.style.marginInline = '50% 50%';   
             }
         }
     });

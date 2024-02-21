@@ -1,24 +1,38 @@
 ---
 import { apiGit } from '../api/resources'
 import Card from './Card.astro';
-import leadster from '../assets/leadster.webp';
+import leadster from '../assets/leadster.png';
+import balanceDesign from '../assets/isometricas.png';
 
 let repos = await apiGit();
 
 ---
 
-<ul role="list" class="flex justify-center items-center gap-6 flex-wrap py-10">
     {
         // Array.isArray(repos) && repos.filter((repo: any) => repo.stargazers_count >  0).map((repo: any) => (
         Array.isArray(repos) && repos.filter((repo: any) => repo.name ===  'leadster_lp').map((repo: any) => (
             <Card
                 href={repo.html_url}
-                title={repo.name}
-                title={repo.name}
-                body={repo.description}
-                src={repo.owner.avatar_url}
-                bg={leadster.src}
+                title={'Leadster - Menos conversinha, mais conversão'}
+                fadeText={"A landing page that "}
+                body={" I developed for Leadster, using React as framework."}
+                avatar={repo.owner.avatar_url}
+                imageToDisplay={leadster.src}
+                flexType={'flex-row'}
+                category={'landing page'}
+                cardColor={'#1D70AB'}
+            />
+
+            <Card
+                href={repo.html_url}
+                title={'Balance Design - Oficina de Isométricas.'}
+                fadeText={"A landing page about design"}
+                body={" that I developed using Astro as framework."}
+                avatar={repo.owner.avatar_url}
+                imageToDisplay={balanceDesign.src}
+                flexType={'flex-row-reverse'}
+                category={'landing page'}
+                cardColor={'#83977A'}
             />
         ))
     }
-</ul>
