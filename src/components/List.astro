@@ -12,7 +12,7 @@ let repos = await apiGit();
         // Array.isArray(repos) && repos.filter((repo: any) => repo.stargazers_count >  0).map((repo: any) => (
         Array.isArray(repos) && repos.filter((repo: any) => repo.name ===  'leadster_lp').map((repo: any) => (
             <Card
-                href={repo.html_url}
+                href={'https://github.com/FabbSantos/leadster_lp'}
                 title={'Leadster - Menos conversinha, mais conversão'}
                 fadeText={"A landing page that "}
                 body={" I developed for Leadster, using React as framework."}
@@ -25,7 +25,7 @@ let repos = await apiGit();
             />
 
             <Card
-                href={repo.html_url}
+                href={'https://github.com/bjconsulting/Isometricas'}
                 title={'Balance Design - Oficina de Isométricas.'}
                 fadeText={"A landing page about design"}
                 body={" that I developed using Astro as framework."}
