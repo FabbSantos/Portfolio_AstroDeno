@@ -1,40 +1,40 @@
 ---
 ---
 
-<ul class="flex flex-col md:flex-row fixed  w-full md:items-center justify-center gap-8  py-10 head">
+<div class="ul flex flex-col md:flex-row fixed  w-full md:items-center justify-center gap-8  py-10 head">
     <!-- <li><Image src={Logo} alt={'Portfolio Fabrício Bahiense'} loading='eager' width={30}/></li> -->
     <!-- <li class="!text-xs absolute top-1/2 left-2"> <a href="#"> fabriciobs2000@gmail.com</a> </li> -->
 
     
-    <div class=" flex flex-col md:flex-row gap-4 max-w-[95%] mx-auto acthead">
+    <ul class=" flex flex-col md:flex-row gap-4 max-w-[95%] mx-auto acthead">
         <li class="uppercase menu-item clickable"> 
-            <a href="#">Home</a>
+            <a href="#hero">Home</a>
         </li>
         <li class="uppercase menu-item clickable"> 
-            <a href="#">Work</a>
+            <a href="#work">Work</a>
         </li>  
         <li class="uppercase menu-item clickable"> 
-            <a href="#">About</a>
+            <a href="#about">About</a>
         </li>
-    </div>
+    </ul>
     <svg xmlns="http://www.w3.org/2000/svg" class="mr-5 md:hidden fixed -left-[12%] top-5 hamb" width="2em" height="2em" viewBox="0 0 24 24">
         <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M4 7h3m13 0h-9m9 10h-3M4 17h9m-9-5h16" />
     </svg>
-</ul>
+</div>
 
 <style>
-    ul {
+    .ul {
         transform: translateX(100%);
         height: 100%;
         background: black;
         z-index:10;
     }
-    ul.active {
+    .ul.active {
         transform: translateX(0%);
     }
 
     @media (min-width: 768px) {
-        ul {
+        .ul {
             display: flex;
             transform: translateX(0%);
             height: auto;
@@ -84,7 +84,6 @@
         const menuItems = document.querySelectorAll('.clickable a');
         menuItems.forEach(item => {
             item.addEventListener('click', (event) => {
-                event.preventDefault(); // Prevent the default action if needed
                 // Remove 'active' class from all menu items
                 document.querySelectorAll('.clickable').forEach(menuItem => {
                     menuItem.classList.remove('active');
@@ -127,5 +126,43 @@
             ul.classList.add('active')
         }
     })
+
+    // Função para adicionar a classe 'active' ao item do menu correspondente à seção visível
+    function updateActiveMenuItem() {
+        const sections = document.querySelectorAll('section');
+        const menuItems = document.querySelectorAll('.menu-item');
+    
+        // Remover a classe 'active' de todos os itens do menu
+        menuItems.forEach(item => item.classList.remove('active'));
+    
+        // Obter a posição de rolagem atual
+        const scrollPosition = window.scrollY || document.documentElement.scrollTop;
+    
+        // Encontrar a seção que está mais próxima da posição de rolagem
+        let closestSection = null;
+        let closestSectionTop = Infinity; // Initialize closestSectionTop here
+        sections.forEach(section => {
+            const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+            const sectionBottom = sectionTop + section.offsetHeight;
+            if (sectionTop <= scrollPosition && sectionBottom > scrollPosition) {
+                closestSection = section;
+                closestSectionTop = sectionTop;
+            }
+        });
+        // Adicionar a classe 'active' ao item do menu correspondente à seção mais próxima
+        if (closestSection) {
+            const closestMenuItem = document.querySelector(`.menu-item a[href="#${(closestSection as HTMLElement).id}"]`);
+            if (closestMenuItem) {
+                closestMenuItem.parentElement!.classList.add('active');
+            }
+        }
+    }
+
+    // Adicionar um event listener para o evento 'scroll'
+    window.addEventListener('scroll', updateActiveMenuItem);
+
+    // Chamar a função inicialmente para definir o item do menu 'active' corretamente
+    updateActiveMenuItem();
+
 
 </script>
