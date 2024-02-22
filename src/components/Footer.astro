@@ -1,4 +1,9 @@
 ---
+import Github from "./Github.astro";
+import Instagram from "./Instagram.astro";
+import LinkCard from "./LinkCard.astro";
+import Linkedin from "./Linkedin.astro";
+
 
 ---
 
@@ -7,9 +12,26 @@
         <span class="fade-text">Get</span>
          in touch
     </h3>
-    <p class="text-gray-400 mb-10">
+    <p class="text-gray-400 mb-5">
         so we can exchange some ideas!
     </p>
+    <ul class="flex flex-row gap-4 mb-20">
+    <li> 
+        <LinkCard href="https://github.com/FabbSantos">
+            <Github/>
+        </LinkCard>
+    </li>
+    <li>            
+        <LinkCard href="https://github.com/FabbSantos">
+            <Linkedin/>
+        </LinkCard>
+    </li>
+    <li>
+        <LinkCard href="https://github.com/FabbSantos">
+            <Instagram/>
+        </LinkCard> 
+    </li>
+</ul>
     <p class="tracking-wider text-sm">
         <span class="fade-text">made with ❤️ by</span> Fabrício Bahiense
     </p>
