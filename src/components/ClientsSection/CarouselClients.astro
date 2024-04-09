@@ -1,100 +1,166 @@
 ---
-import google from './assets/GoogleLogo.svg'
+import { Image } from 'astro:assets';
+import ancora from './assets/ancora.png';
+import conx from './assets/conx.png';
+import toledoFerrari from './assets/toledo-ferrari.png';
+import mkt from './assets/mkt.png';
+import afya from './assets/afya.png';
+import desco from './assets/desco.png';
+import bjConsulting from './assets/bj-consulting.png';
 ---
 
-<div class="slider">
-	<div class="slide-track">
-		<div class="slide">
-			<img src={google.src} height="100" width="250" alt="" />
-		</div>
-		<div class="slide">
-			<img src={google.src} height="100" width="250" alt="" />
-		</div>
-		<div class="slide">
-			<img src={google.src} height="100" width="250" alt="" />
-		</div>
-		<div class="slide">
-			<img src={google.src} height="100" width="250" alt="" />
-		</div>
-		<div class="slide">
-			<img src={google.src} height="100" width="250" alt="" />
-		</div>
-		<div class="slide">
-			<img src={google.src} height="100" width="250" alt="" />
-		</div>
-		<div class="slide">
-			<img src={google.src} height="100" width="250" alt="" />
-		</div>
-		<div class="slide">
-			<img src={google.src} height="100" width="250" alt="" />
-		</div>
-	</div>
+<div class='stock-ticker'>
+	<ul>
+		<li class='invert'>
+			<Image
+				src={bjConsulting}
+				alt='BJ Consulting'
+			/>
+		</li>
+
+		<li>
+			<Image
+				src={ancora}
+				alt='Âncora'
+			/>
+		</li>
+
+		<li>
+			<Image
+				src={conx}
+				alt='Conx'
+			/>
+		</li>
+
+		<li>
+			<Image
+				src={toledoFerrari}
+				alt='Toledo Ferrari'
+			/>
+		</li>
+
+		<li class='invert'>
+			<Image
+				src={afya}
+				alt='Afya'
+			/>
+		</li>
+
+		<li class='invert'>
+			<Image
+				src={desco}
+				alt='Descomplica'
+			/>
+		</li>
+
+		<li>
+			<Image
+				src={mkt}
+				alt='Mkt4Edu | 4revops'
+			/>
+		</li>
+	</ul>
+
+	<ul aria-hidden='true'>
+		<li class='invert'>
+			<Image
+				src={bjConsulting}
+				alt='BJ Consulting'
+			/>
+		</li>
+
+		<li>
+			<Image
+				src={ancora}
+				alt='Âncora'
+			/>
+		</li>
+
+		<li>
+			<Image
+				src={conx}
+				alt='Conx'
+			/>
+		</li>
+
+		<li>
+			<Image
+				src={toledoFerrari}
+				alt='Toledo Ferrari'
+			/>
+		</li>
+
+		<li class='invert'>
+			<Image
+				src={afya}
+				alt='Afya'
+			/>
+		</li>
+
+		<li class='invert'>
+			<Image
+				src={desco}
+				alt='Descomplica'
+			/>
+		</li>
+
+		<li>
+			<Image
+				src={mkt}
+				alt='Mkt4Edu | 4revops'
+			/>
+		</li>
+	</ul>
 </div>
 
 <style>
+	.stock-ticker {
+		font-size: 15px;
+		padding-block: 8px;
+		/* border-block: 1px solid; */
+		overflow: hidden;
+		user-select: none;
+		--gap: 4rem;
+		display: flex;
+		gap: var(--gap);
+	}
+	.invert {
+		filter: invert(100%);
+	}
+	img {
+		filter: grayscale(100%) opacity(50%);
+		width: auto;
+		max-width: 200px;
+		object-fit: cover;
+	}
 
-.white-gradient {
-  background: linear-gradient(to right, rgba(255,  255,  255,  1)  0%, rgba(255,  255,  255,  0)  100%);
-}
+	.stock-ticker ul li {
+		padding-block: 1rem;
+	}
+	.stock-ticker ul {
+		list-style: none;
+		flex-shrink: 0;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: var(--gap);
 
+		animation: scroll 20s linear infinite;
+	}
 
+	.stock-ticker:hover ul {
+		animation-play-state: paused;
+	}
 
-/* Styling */
-.slider {
-  box-shadow:  0  10px  20px -5px rgba(0,  0,  0, .125);
-  height:  100px;
-  margin-inline: auto;
-  overflow: hidden;
-  position: relative;
-  max-width:  1300px;
-}
+	@keyframes scroll {
+		to {
+			transform: translateX(calc(-100% - var(--gap)));
+		}
+	}
 
-.slider::before,
-.slider::after {
-  content: "";
-  height:  100px;
-  position: absolute;
-  width:  200px;
-  z-index:  2;
-  background: linear-gradient(to right, rgba(0,  0,  0,  1)  0%, rgba(0,  0,  0,  0)  100%);
-}
-
-.slider::after {
-  right:  0;
-  top:  0;
-  transform: rotateZ(180deg);
-}
-
-.slider::before {
-  left:  0;
-  top:  0;
-}
-
-.slider .slide-track {
---numberOfSlides: 14; 
-  animation: scroll  40s linear infinite;
-  display: flex;
-  gap: 1%;
-  width: calc(450px *  var(--numberOfSlides));
-}
-@media  (max-width:768px) {
-    .slider .slide-track {
-        --numberOfSlides: 5; 
-    }
-}
-
-.slider .slide {
-  height:  100px;
-    @apply max-w-[130px] md:max-w-[80%] lg:max-w-[100%];
-}
-
-
-@keyframes scroll {
-   0% {
-    transform: translateX(0);
-  }
-   100% {
-    transform: translateX(calc(-250px *  7));
-  }
-}
+	@media (max-width: 768px) {
+		.stock-ticker {
+			--gap: 2rem;
+		}
+	}
 </style>

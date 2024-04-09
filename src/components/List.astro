@@ -1,40 +1,77 @@
 ---
-import { apiGit } from '../api/resources'
+import { apiGit } from '../api/resources';
 import Card from './Card.astro';
 import leadster from '../assets/leadster.png';
 import balanceDesign from '../assets/Isometricas.png';
+import Mirage from '../assets/mirage.png';
+import VilaOlimpia from '../assets/vilaOlimpia.png';
 
 let repos = await apiGit();
-
 ---
 
-    {
-        // Array.isArray(repos) && repos.filter((repo: any) => repo.stargazers_count >  0).map((repo: any) => (
-        Array.isArray(repos) && repos.filter((repo: any) => repo.name ===  'leadster_lp').map((repo: any) => (
-            <Card
-                href={'https://github.com/FabbSantos/leadster_lp'}
-                title={'Leadster - Menos conversinha, mais conversão'}
-                fadeText={"A landing page that "}
-                body={" I developed for Leadster, using React as framework."}
-                avatar={repo.owner.avatar_url}
-                imageToDisplay={leadster.src}
-                flexType={'flex-row'}
-                category={'landing page'}
-                cardColor={'#1D70AB'}
-                alt='Leadster - Menos conversinha, mais conversão'
-            />
-
-            <Card
-                href={'https://github.com/bjconsulting/Isometricas'}
-                title={'Balance Design - Oficina de Isométricas.'}
-                fadeText={"A landing page about design"}
-                body={" that I developed using Astro as framework."}
-                avatar={repo.owner.avatar_url}
-                imageToDisplay={balanceDesign.src}
-                flexType={'flex-row-reverse'}
-                category={'landing page'}
-                cardColor={'#83977A'}
-                alt='Balance Design - Oficina de Isométricas.'
-            />
-        ))
-    }
+{
+	// Array.isArray(repos) && repos.filter((repo: any) => repo.stargazers_count >  0).map((repo: any) => (
+	Array.isArray(repos) &&
+		repos
+			.filter((repo: any) => repo.name === 'leadster_lp')
+			.map((repo: any) => (
+				<>
+					<Card
+						href={'https://mirageibirapuera-moema.com.br/'}
+						title={'Mirage Ibirapuera'}
+						fadeText={
+							'Mirage Ibirapuera is a building built in the Moema neighborhood, in São Paulo. '
+						}
+						body={
+							' The site was developed in Laravel, SASS and Bootstrap. '
+						}
+						avatar={repo.owner.avatar_url}
+						imageToDisplay={Mirage.src}
+						flexType={'flex-row-reverse'}
+						category={'landing page'}
+						alt='Mirage Ibirapuera'
+						live={true}
+					/>
+					<Card
+						href={'https://vilaolimpiabypassarelli.com.br/'}
+						title={'Vila Olimpia'}
+						fadeText={
+							'Vila Olimpia is a comercial/residential building built in the Vila Olimpia neighborhood, in São Paulo. '
+						}
+						body={
+							' The website was developed in Astro, React, Typescript and Tailwind. '
+						}
+						avatar={repo.owner.avatar_url}
+						imageToDisplay={VilaOlimpia.src}
+						flexType={'flex-row'}
+						category={'landing page'}
+						alt='Vila Olimpia'
+						live={true}
+					/>
+					<Card
+						href={'https://github.com/FabbSantos/leadster_lp'}
+						title={'Leadster - Menos conversinha, mais conversão'}
+						fadeText={'A landing page that shows their youtube videos, and tells a little about the company.'}
+						body={
+							' This page was developed for Leadster, using React and Tailwind.'
+						}
+						avatar={repo.owner.avatar_url}
+						imageToDisplay={leadster.src}
+						flexType={'flex-row-reverse'}
+						category={'landing page'}
+						alt='Leadster - Menos conversinha, mais conversão'
+					/>
+					<Card
+						href={'https://github.com/bjconsulting/Isometricas'}
+						title={'Balance Design - Oficina de Isométricas.'}
+						fadeText={'A landing page about design and isometrics drawings.'}
+						body={' Was developed using Astro and Tailwind.'}
+						avatar={repo.owner.avatar_url}
+						imageToDisplay={balanceDesign.src}
+						flexType={'flex-row'}
+						category={'landing page'}
+						alt='Balance Design - Oficina de Isométricas.'
+					/>
+				</>
+			))
+}
