@@ -8,7 +8,7 @@ interface Props {
 	alt?: string;
 	avatar?: string;
 	imageToDisplay?: string;
-	imageToDisplayAbout?: string[];
+		imageToDisplayAbout?: string[];
 	flexType?: string;
 	cardColor?: string;
 	live?: boolean;
@@ -34,11 +34,11 @@ const { href, alt, title, body, fadeText , avatar, imageToDisplay, imageToDispla
 					<div class="md:p-10 relative w-full md:basis-1/2 flex flex-row justify-center items-center imagedisplay md:gap-12 -mt-20">
 						<div class= {` glassy`}/>
 
-						<img src={imageToDisplayAbout[0]} alt={alt} class="md:max-w-[230px] max-h-[407px] object-cover rounded-md"> 
+						<img src={imageToDisplayAbout[0]} alt={'The developer himself, taking a picture at the mirror'} class="md:max-w-[230px] max-h-[407px] object-cover rounded-md"> 
 						
 						<div class="flex-col gap-4 hidden md:flex">
-							<img src={imageToDisplayAbout[1]} alt={alt} class=" rounded-md "> 
-							<img src={imageToDisplayAbout[2]} alt={alt} class=" rounded-md "> 
+							<img src={imageToDisplayAbout[1]} alt={'beer on the top of a table, in a  beach'} class=" rounded-md "> 
+							<img src={imageToDisplayAbout[2]} alt={'headphones'} class=" rounded-md "> 
 						</div>
 						
 					</div>
@@ -47,9 +47,9 @@ const { href, alt, title, body, fadeText , avatar, imageToDisplay, imageToDispla
 		
 		<div class="md:max-w-[45%] flex flex-col gap-12 items-center md:items-start">
 			<div class="flex flex-col-reverse md:flex-row items-center justify-between gap-6 text-center md:text-left md:pr-4 max-w-[90%]">
-				<h5 class="uppercase tracking-[.2em] text-base font-semibold">
+				<h3 class="uppercase tracking-[.2em] text-base font-semibold">
 					{title}
-				</h5>
+				</h3>
 				{
 					avatar ?  <img src={avatar} alt="Repo Owner" height="60" width="60" class="rounded-full">
 					: null
