@@ -1,4 +1,6 @@
 ---
+import Image from 'astro/components/Image.astro';
+
 interface Props {
 	title?: string;
 	body?: string;
@@ -34,11 +36,11 @@ const { href, alt, title, body, fadeText , avatar, imageToDisplay, imageToDispla
 					<div class="md:p-10 relative w-full md:basis-1/2 flex flex-row justify-center items-center imagedisplay md:gap-12 -mt-20">
 						<div class= {` glassy`}/>
 
-						<img src={imageToDisplayAbout[0]} alt={'The developer himself, taking a picture at the mirror'} height="407" width="229" class="md:max-w-[230px] max-h-[407px] object-cover rounded-md"> 
+						<Image src={imageToDisplayAbout[0]} alt={'The developer himself, taking a picture at the mirror'} height="407" width="229" class="md:max-w-[230px] max-h-[407px] object-cover rounded-md"> 
 						
 						<div class="flex-col gap-4 hidden md:flex">
-							<img src={imageToDisplayAbout[1]} alt={'beer on the top of a table, in a  beach'} height="400" width="270" class=" rounded-md "> 
-							<img src={imageToDisplayAbout[2]} alt={'headphones'} height="400" width="270" class=" rounded-md "> 
+							<Image src={imageToDisplayAbout[1]} alt={'beer on the top of a table, in a  beach'} height="400" width="270" class=" rounded-md "> 
+							<Image src={imageToDisplayAbout[2]} alt={'headphones'} height="400" width="270" class=" rounded-md "> 
 						</div>
 						
 					</div>
