@@ -7,22 +7,57 @@ const { title } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="pt-br">
+<html lang='pt-br'>
 	<head>
-		<meta charset="UTF-8" />
-		<meta name="description" content="Portfolio Page of Fabrício Bahiense, a  Front-End / Mobile developer." />
-		<meta name="viewport" content="width=device-width" />
+		<meta charset='UTF-8' />
+		<meta
+			name='description'
+			content='Portfolio Page of Fabrício Bahiense, a  Front-End / Mobile developer.'
+		/>
+		<meta
+			name='viewport'
+			content='width=device-width'
+		/>
 
+		<link
+			rel='apple-touch-icon'
+			sizes='180x180'
+			href='/apple-touch-icon.png'
+		/>
+		<link
+			rel='icon'
+			type='image/png'
+			sizes='32x32'
+			href='/favicon-32x32.png'
+		/>
+		<link
+			rel='icon'
+			type='image/png'
+			sizes='16x16'
+			href='/favicon-16x16.png'
+		/>
+		<link
+			rel='manifest'
+			href='/site.webmanifest'
+		/>
+		<link
+			rel='mask-icon'
+			href='/safari-pinned-tab.svg'
+			color='#5bbad5'
+		/>
+		<meta
+			name='msapplication-TileColor'
+			content='#da532c'
+		/>
+		<meta
+			name='theme-color'
+			content='#ffffff'
+		/>
 
-		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-		<link rel="manifest" href="/site.webmanifest">
-		<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-		<meta name="msapplication-TileColor" content="#da532c">
-		<meta name="theme-color" content="#ffffff">
-
-		<meta name="generator" content={Astro.generator} />
+		<meta
+			name='generator'
+			content={Astro.generator}
+		/>
 		<title>{title}</title>
 	</head>
 	<body>
@@ -34,8 +69,8 @@ const { title } = Astro.props;
 		--accent: 136, 58, 234;
 		--accent-light: 224, 204, 250;
 		--accent-dark: 49, 10, 101;
-		
-		--bright-pink: #FF5964;
+
+		--bright-pink: #ff5964;
 		--accent-gradient: linear-gradient(
 			45deg,
 			rgb(var(--accent)),
@@ -44,10 +79,18 @@ const { title } = Astro.props;
 		);
 	}
 	* {
-		transition: all .2s ease-in-out;
+		transition: all 0.2s ease-in-out;
 	}
 	html {
-		font-family: "Work Sans", Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ubuntu, sans-serif;
+		font-family:
+			'Work Sans',
+			Inter,
+			system-ui,
+			-apple-system,
+			BlinkMacSystemFont,
+			'Segoe UI',
+			Ubuntu,
+			sans-serif;
 		letter-spacing: -1px;
 		line-height: 48px;
 		font-weight: normal;
@@ -56,20 +99,26 @@ const { title } = Astro.props;
 		background-size: 224px;
 		scroll-behavior: smooth;
 	}
+	section, .snap {
+		min-height: 100vh;
+	}
 
-	a:hover, a:focus-within, a:focus {
+	a:hover,
+	a:focus-within,
+	a:focus {
 		color: var(--bright-pink);
 	}
 	a > svg:hover path {
 		fill: var(--bright-pink);
 	}
 	a > svg:hover {
-  		transform: scale(1.07);
+		transform: scale(1.07);
 	}
-	 .fade-text {
-        color: rgba(227, 228, 230, .55);
-    }
-	h1, h2{
+	.fade-text {
+		color: rgba(227, 228, 230, 0.55);
+	}
+	h1,
+	h2 {
 		font-size: clamp(1.5rem, 8vw, 3rem);
 	}
 	code {
@@ -89,9 +138,30 @@ const { title } = Astro.props;
 		--dot-size: 1px;
 		--dot-space: 22px;
 		background:
-			linear-gradient(90deg, var(--dot-bg) calc(var(--dot-space) - var(--dot-size)), transparent 1%) center / var(--dot-space) var(--dot-space),
-			linear-gradient(var(--dot-bg) calc(var(--dot-space) - var(--dot-size)), transparent 1%) center / var(--dot-space) var(--dot-space),
+			linear-gradient(
+					90deg,
+					var(--dot-bg) calc(var(--dot-space) - var(--dot-size)),
+					transparent 1%
+				)
+				center / var(--dot-space) var(--dot-space),
+			linear-gradient(
+					var(--dot-bg) calc(var(--dot-space) - var(--dot-size)),
+					transparent 1%
+				)
+				center / var(--dot-space) var(--dot-space),
 			var(--dot-color);
 	}
-
+	.snap-mandatory::-webkit-scrollbar {
+		display: none;
+	}
+	.snap-mandatory {
+		scroll-snap-type: y mandatory;
+		scroll-snap-align: start;
+		overflow-y: scroll;
+		height: 100vh;
+	}
+	.snap {
+		scroll-snap-stop: always;
+		scroll-snap-align: start;
+	}
 </style>

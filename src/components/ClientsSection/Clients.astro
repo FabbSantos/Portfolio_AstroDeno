@@ -1,23 +1,27 @@
 ---
-import CarouselClients from './CarouselClients.astro'
+import CarouselClients from './CarouselClients.astro';
 ---
-<section class="py-10">
-    <div class="flex flex-col gap-8 justify-center items-start max-w-[70%] mx-auto overflow-hidden">
 
-        <h2 class="text-center md:text-left leading-relaxed tracking-wide py-10">
-            <span class="fade-text font-extralight">Some of</span> the clients I <span class="break">have</span> developed for
-        </h2>
+<section class="py-10 snap">
+	<div
+		class='flex flex-col gap-8 justify-center items-start max-w-[70%] mx-auto overflow-hidden'
+	>
+		<h2
+			class='text-center md:text-left leading-relaxed tracking-wide py-10'
+		>
+			<span class='fade-text font-extralight'>Some of</span> the clients I
+			<span class='break'>have</span> developed for
+		</h2>
 
-        <div class="mx-auto overflow-hidden mt-5">
-           <CarouselClients/>
-        </div>
-
-    </div>
+		<div class='mx-auto overflow-hidden mt-5'>
+			<CarouselClients />
+		</div>
+	</div>
 </section>
 
 <style>
-    .break::after {
-        content: '\A';
-        white-space: pre;
-    }
+	.break::after {
+		content: '\A';
+		white-space: pre;
+	}
 </style>

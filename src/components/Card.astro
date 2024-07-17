@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import SelectedWorkText from './SelectedWorkText.astro';
 
 interface Props {
 	title?: string;
@@ -9,7 +10,7 @@ interface Props {
 	href?: string;
 	alt?: string;
 	avatar?: string;
-	imageToDisplay?: string;
+	imageToDisplay?: ImageMetadata;
 	imageToDisplayAbout?: ImageMetadata[];
 	flexType?: string;
 	cardColor?: string;
@@ -20,8 +21,7 @@ const { href, alt, title, body, fadeText , avatar, imageToDisplay, imageToDispla
 
 ---
 
-	<div class= { `flex ${flexType || '  '} justify-center items-center gap-12 flex-wrap py-10 border-x-[0px] border-[rgba(255,_255,_255,_0.15)] px-5 md:max-w-[80%] mx-auto rounded-lg mb-10 md:mb-12 border-b-[1px] md:border-b-0`}>
-		
+	<div class= { `flex ${flexType || '  '} snap justify-center items-center gap-12 flex-wrap py-10 border-x-[0px] border-[rgba(255,_255,_255,_0.15)] px-5 md:max-w-[80%] mx-auto rounded-lg mb-10 md:mb-12 border-b-[1px] md:border-b-0`}>
 		<div class="md:p-10 rounded-xl relative md:basis-1/2 flex justify-center items-center">
 			{
 				imageToDisplay ? 

@@ -6,7 +6,10 @@ import LinkCard from './LinkCard.astro';
 import Linkedin from './Linkedin.astro';
 ---
 
-<section id='hero'>
+<section
+	id='hero'
+	class='snap'
+>
 	<svg
 		width='1920'
 		height='1080'
@@ -675,16 +678,16 @@ import Linkedin from './Linkedin.astro';
 				<li>
 					<LinkCard
 						href='https://www.linkedin.com/in/fabricio-b-santos/'
-                        aria='linkedin'
+						aria='linkedin'
 					>
 						<Linkedin />
 					</LinkCard>
 				</li>
 				<li>
-					<LinkCard 
-                        href='https://www.instagram.com/fabbahiense_'
-                        aria='instagram'
-                    >
+					<LinkCard
+						href='https://www.instagram.com/fabbahiense_'
+						aria='instagram'
+					>
 						<Instagram />
 					</LinkCard>
 				</li>
@@ -693,7 +696,7 @@ import Linkedin from './Linkedin.astro';
 			<a
 				href='#work'
 				class='chevronA mt-10'
-                aria-label="scroll to work section"
+				aria-label='scroll to work section'
 			>
 				<svg
 					class='chevron'
