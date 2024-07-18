@@ -1,0 +1,35 @@
+{
+        "avatar": "https://avatars.githubusercontent.com/u/1000000?v=4",
+        "works":
+        [
+                {
+                        "id": 1,
+                        "title": "Vila Olimpia",
+                        "fadeText": "Vila Olimpia is a building built in the Vila Olimpia neighborhood, in São Paulo.",
+                        "body": "The site was developed in Laravel, SASS and Bootstrap",
+                        "image": "https://drive.google.com/file/d/1Ua2LPbL8UU32JRIag6lTQ-96RXDtHU3F/view?usp=sharing",
+                        "category": "landing page",
+                        "live": true,
+                        "href": "https://mirageibirapuera-moema.com.br/",
+                        "alt": "Vila Olimpia",
+                        "flexType": "flex-row-reverse",
+                        "tags": ["Laravel", "SASS", "Bootstrap", "PHP"],
+                        "type": "professional"
+
+                },
+                {
+                        "id": 2,
+                        "title": "Rock, Paper, Scissors, Lizard, Spock",
+                        "fadeText": "This is a game based on the famous rock, paper, scissors game, but with two more options.",
+                        "body": "This is a challenge from FrontEnd Mentor: Rock, Paper, Scissors, Lizard, Spock game, developed in HTML, CSS and Vue!",
+                        "image": "",
+                        "category": "Game",
+                        "live": true,
+                        "href": "https://rpsls-nu.vercel.app/",
+                        "alt": "Rock, Paper, Scissors, Lizard, Spock",
+                        "flexType": "flex-row",
+                        "tags": ["Vue 3", "HTML", "CSS", "Vite"],
+                        "type": ["Personal", "Challenge"]
+                }    
+       ]
+}
