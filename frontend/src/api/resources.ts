@@ -9,3 +9,15 @@ export const apiGit = async () => {
         return null;
     }
 }
+
+export const apiWorks = async () => {
+    try {
+        const response = await fetch("http://localhost:5000/works")
+        const works = await response.json()
+        return works;
+
+    } catch (error) {
+        console.error(`We couldn't retrieve the data...`, error);
+        return null;
+    }
+}
