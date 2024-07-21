@@ -1,0 +1,7 @@
+{
+  "tasks": {
+    "start:front": "cd frontend && deno run -A npm:astro dev",
+    "start:back": "deno run --allow-net --watch ./backend/main.ts",
+    "start": "deno task start:front & deno task start:back"
+  }
+}
