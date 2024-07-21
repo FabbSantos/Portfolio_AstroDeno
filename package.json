@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "npm --prefix frontend run dev",
-    "start:front": "npm --prefix frontend run start",
+    "start:front": "cd frontend && deno run -A npm:astro dev",
     "build": "npm --prefix frontend run build",
     "preview": "npm --prefix frontend run preview",
     "astro": "npm --prefix frontend run astro",
