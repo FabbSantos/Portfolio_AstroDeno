@@ -1,84 +1,120 @@
 ---
-import { apiGit } from '../api/resources';
+import { apiWorks } from '../api/resources';
 import Card from './Card.astro';
 import leadster from '../assets/leadster.png';
 import balanceDesign from '../assets/Isometricas.png';
 import Mirage from '../assets/mirage.png';
 import VilaOlimpia from '../assets/vilaOlimpia.png';
+import SelectedWorkText from './SelectedWorkText.astro';
 
-let repos = await apiGit();
+let repos = await apiWorks();
+let works = repos.works;
 ---
 
-{
-	// Array.isArray(repos) && repos.filter((repo: any) => repo.stargazers_count >  0).map((repo: any) => (
-	Array.isArray(repos) &&
-		repos
-			.filter((repo: any) => repo.name === 'leadster_lp')
-			.map((repo: any) => (
-				<>
-						<Card
-							href={'https://mirageibirapuera-moema.com.br/'}
-							title={'Mirage Ibirapuera'}
-							fadeText={
-								'Mirage Ibirapuera is a building built in the Moema neighborhood, in São Paulo. '
-							}
-							body={
-								' The site was developed in Laravel, SASS and Bootstrap. '
-							}
-							avatar={repo.owner.avatar_url}
-							imageToDisplay={Mirage}
-							flexType={'flex-row-reverse'}
-							category={'landing page'}
-							alt='Mirage Ibirapuera'
-							live={true}
-						/>
-						<Card
-							href={'https://vilaolimpiabypassarelli.com.br/'}
-							title={'Vila Olimpia'}
-							fadeText={
-								'Vila Olimpia is a comercial/residential building built in the Vila Olimpia neighborhood, in São Paulo. '
-							}
-							body={
-								' The website was developed in Astro, React, Typescript and Tailwind. '
-							}
-							avatar={repo.owner.avatar_url}
-							imageToDisplay={VilaOlimpia}
-							flexType={'flex-row'}
-							category={'landing page'}
-							alt='Vila Olimpia'
-							live={true}
-						/>
-						<Card
-							href={'https://github.com/FabbSantos/leadster_lp'}
-							title={
-								'Leadster - Menos conversinha, mais conversão'
-							}
-							fadeText={
-								'A landing page that shows their youtube videos, and tells a little about the company.'
-							}
-							body={
-								' This page was developed for Leadster, using React and Tailwind.'
-							}
-							avatar={repo.owner.avatar_url}
-							imageToDisplay={leadster}
-							flexType={'flex-row-reverse'}
-							category={'landing page'}
-							alt='Leadster - Menos conversinha, mais conversão'
-						/>
-						<Card
-							href={'https://github.com/bjconsulting/Isometricas'}
-							title={'Balance Design - Oficina de Isométricas.'}
-							fadeText={
-								'A landing page about design and isometrics drawings.'
-							}
-							body={' Was developed using Astro and Tailwind.'}
-							avatar={repo.owner.avatar_url}
-							imageToDisplay={balanceDesign}
-							flexType={'flex-row'}
-							category={'landing page'}
-							alt='Balance Design - Oficina de Isométricas.'
-						/>
-					</SelectedWorkText>
-				</>
+<div class="buttons">
+	<button id="all">show all</button>
+	<button id="professional">show professional</button>
+	<button id="personal">show personal</button>
+</div>
+
+<div class="allWorks">
+	{
+		works.map((work: any) => (
+			<Card
+				title={work.title}
+				imageToDisplay={work.image}
+				body={work.body}
+				href={work.href.toString()}
+				alt = true
+				flexType={work.flexType}
+				category={work.category}
+				fadeText={work.fadeText}
+			/>
+		))
+	}
+</div>
+
+<div class='personalWorks'>
+	{
+		works
+			.map((work: any) => ({
+				...work,
+				isPersonal: Array.isArray(work.type)
+					? work.type
+							.map((type: string) => type.toLowerCase())
+							.includes('personal')
+					: work.type.toLowerCase().includes('personal'),
+			}))
+			.filter((work: any) => work.isPersonal)
+			.map((work: any) => (
+				<Card
+					title={work.title}
+					imageToDisplay={work.image}
+					body={work.body}
+					href={work.href.toString()}
+					alt=true
+					flexType={work.flexType}
+					category={work.category}
+					fadeText={work.fadeText}
+				/>
 			))
-}
+	}
+</div>
+
+<div class='professionalWorks'>
+	{
+		works
+			.map((work: any) => ({
+				...work,
+				isProfessional: Array.isArray(work.type)
+					? work.type
+							.map((type: string) => type.toLowerCase())
+							.includes('professional')
+					: work.type.toLowerCase().includes('professional'),
+			}))
+			.filter((work: any) => work.isProfessional)
+			.map((work: any) => (
+				<Card
+					title={work.title}
+					imageToDisplay={work.image}
+					body={work.body}
+					href={work.href.toString()}
+					alt=true
+					flexType={work.flexType}
+					category={work.category}
+					fadeText={work.fadeText}
+				/>
+			))
+	}
+</div>
+
+<script>
+	const allWorks = document.querySelector('.allWorks') as HTMLElement;
+	const personalWorks = document.querySelector('.personalWorks') as HTMLElement;
+	const professionalWorks = document.querySelector('.professionalWorks') as HTMLElement;
+
+	const buttonAll = document.getElementById('all')?.addEventListener('click', () => {
+		allWorks.style.display = 'block';
+		personalWorks.style.display = 'none';
+		professionalWorks.style.display = 'none';
+	})
+	const buttonPro = document.getElementById('professional')?.addEventListener('click', () => {
+		allWorks.style.display = 'none';
+		personalWorks.style.display = 'none';
+		professionalWorks.style.display = 'block';
+	})
+	const buttonPer = document.getElementById('personal')?.addEventListener('click', () => {
+		allWorks.style.display = 'none';
+		personalWorks.style.display = 'block';
+		professionalWorks.style.display = 'none';
+	})
+	
+</script>
+
+<style>
+	.buttons {
+		display: flex;
+		justify-content: center;
+		gap: 2rem;
+	}
+</style>

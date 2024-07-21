@@ -14,8 +14,7 @@
                         "alt": "Vila Olimpia",
                         "flexType": "flex-row-reverse",
                         "tags": ["Laravel", "SASS", "Bootstrap", "PHP"],
-                        "type": "professional"
-
+                        "type": ["Professional"]
                 },
                 {
                         "id": 2,
