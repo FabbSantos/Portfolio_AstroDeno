@@ -1,27 +1,17 @@
 {
-  "name": "",
+  "name": "portfolio_astro_deno_monorepo",
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro check && astro build",
-    "preview": "astro preview",
-    "astro": "astro"
+    "dev": "npm --prefix frontend run dev",
+    "start:front": "npm --prefix frontend run start",
+    "build": "npm --prefix frontend run build",
+    "preview": "npm --prefix frontend run preview",
+    "astro": "npm --prefix frontend run astro",
+    "start:back": "deno run --allow-net --watch ./backend/main.ts",
+    "start": "npm-run-all --parallel start:back start:front"
   },
-  "dependencies": {
-    "@astrojs/check": "^0.3.0",
-    "@astrojs/react": "^3.0.9",
-    "@astrojs/tailwind": "^5.0.2",
-    "@astrojs/vercel": "^7.6.0",
-    "@types/react": "^18.2.45",
-    "@types/react-dom": "^18.2.18",
-    "@vercel/analytics": "^1.2.2",
-    "astro": "^4.8.2",
-    "astro-icon": "^1.1.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "tailwindcss": "^3.3.5",
-    "typescript": "^5.2.2"
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
   }
 }
