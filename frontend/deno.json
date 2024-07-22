@@ -1,4 +1,6 @@
 {
+  "name": "@fabb/front",
+  "version": "0.0.1",
   "tasks": {
     "dev": "deno run -A npm:astro dev",
     "start": "deno run -A --allow-env npm:astro dev"
