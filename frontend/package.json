@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "deno run -A npm:astro dev",
     "start": "deno run -A --allow-env npm:astro dev",
-    "build": "deno run -A npm:astro check && deno run -A npm:astro build",
+    "build": "astro check && astro build",
+    "build:deno": "deno run -A npm:astro check && deno run -A npm:astro build",
     "preview": "astro preview",
     "astro": "astro"
   },
