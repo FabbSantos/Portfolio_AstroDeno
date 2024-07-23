@@ -21,6 +21,6 @@ const app = new Application();
 app.use(router.routes());
 app.use(router.allowedMethods());
 
-const opt = { hostname: "localhost", port: 5000 };
+const opt = { hostname: "0.0.0.0", port: 5000 };
 await app.listen(opt);
 console.log(`Starting ${opt}`);

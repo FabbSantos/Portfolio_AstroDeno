@@ -22,12 +22,14 @@
 			"extensions": [
 				"denoland.vscode-deno",
 				"Vue.volar",
-				"astro-build.astro-vscode"
+				"astro-build.astro-vscode",
+				"ms-azuretools.vscode-docker"
 			]
 		}
 	},
 
 	"onCreateCommand": "deno upgrade",
+	"postAttachCommand": "echo 'source /nvm/nvm.sh' >> /home/vscode/.bashrc",
 
 	"remoteUser": "vscode"
 }
