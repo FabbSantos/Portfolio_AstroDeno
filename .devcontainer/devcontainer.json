@@ -20,7 +20,9 @@
 			
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
-				"denoland.vscode-deno"
+				"denoland.vscode-deno",
+				"Vue.volar",
+				"astro-build.astro-vscode"
 			]
 		}
 	},
