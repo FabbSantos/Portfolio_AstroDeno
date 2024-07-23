@@ -10,6 +10,12 @@ RUN mkdir -p /deno \
 ENV PATH=${DENO_INSTALL}/bin:${PATH} \
     DENO_DIR=${DENO_INSTALL}/.cache/deno
 
+# layouts.download.codeBox.installsNvm
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+
+# layouts.download.codeBox.downloadAndInstallNodejsRestartTerminal
+RUN nvm install 20
+
 # [Optional] Uncomment this section to install additional OS packages.
 # RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 #    && apt-get -y install --no-install-recommends <your-package-list-here>
