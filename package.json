@@ -4,12 +4,13 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "npm --prefix frontend run dev",
-    "start:front": "cd frontend && deno run -A npm:astro dev",
+    "start:front": "npm --prefix frontend run dev",
     "build": "npm --prefix frontend run build",
     "preview": "npm --prefix frontend run preview",
     "astro": "npm --prefix frontend run astro",
     "start:back": "deno run --allow-net --watch ./backend/main.ts",
-    "start": "npm-run-all --parallel start:back start:front"
+    "start": "npm-run-all --parallel start:back start:front",
+    "inst": "npm install && npm --prefix frontend install"
   },
   "devDependencies": {
     "npm-run-all": "^4.1.5"

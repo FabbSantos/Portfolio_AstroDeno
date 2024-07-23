@@ -7,6 +7,7 @@ import vue from "@astrojs/vue";
 
 // https://astro.build/config
 export default defineConfig({
+  server: { port: 4321, host: "0.0.0.0" },
   integrations: [tailwind(), vue()],
   output: "server",
   adapter: vercel({
