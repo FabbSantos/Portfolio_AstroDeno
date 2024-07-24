@@ -1,13 +1,14 @@
 <template>
-	<div
-		:class="`flex ${flexType || '  '} snap justify-center items-center gap-12 flex-wrap py-10 border-x-[0px] border-[rgba(255,_255,_255,_0.15)] px-5 md:max-w-[80%] mx-auto rounded-lg mb-10 md:mb-12 border-b-[1px] md:border-b-0`">
-		<div class='md:p-10 rounded-xl relative md:basis-1/2 flex justify-center items-center'>
-			<div v-if='imageToDisplay' class='glassy'>
-				<img :src='imageToDisplay' :alt="alt ?? ''" height='670' width='570' />
-			</div>
+	<div :class="`flex ${flexType || '  '} snap justify-between items-center gap-12 flex-wrap py-10 border-x-[0px] border-[rgba(255,_255,_255,_0.15)] px-5 md:max-w-[80%] mx-auto rounded-lg mb-10 md:mb-12 border-b-[1px] md:border-b-0`">
+
+		<!-- images from work cards -->
+		<div class='glassyContainer md:p-10 rounded-xl relative md:max-w-[40%] flex justify-center items-center'>
+			<div v-if='imageToDisplay' class='glassy'/>
+			<img :src='imageToDisplay' :alt="alt"/>
 		</div>
-		<div v-if='imageToDisplayAbout'
-			class='md:p-10 relative w-full md:basis-1/2 flex flex-row justify-center items-center imagedisplay md:gap-12 -mt-20'>
+
+		<!-- images from about me section -->
+		<div v-if='imageToDisplayAbout' class='md:p-10 relative w-full md:max-w-[40%] flex flex-row justify-center items-center imagedisplay md:gap-12 -mt-20'>
 			<div class='glassy'></div>
 			<img :src='imageToDisplayAbout[0]' alt='The developer himself, taking a picture at the mirror'
 				class='md:!max-w-[230px] max-h-[407px] object-cover rounded-md' />
@@ -17,25 +18,33 @@
 				<img :src='imageToDisplayAbout[2]' alt='headphones' class='rounded-md' />
 			</div>
 		</div>
-		<div class='md:max-w-[45%] flex flex-col gap-12 items-center md:items-start'>
-			<div
-				class='flex flex-col-reverse md:flex-row items-center justify-between gap-6 text-center md:text-left md:pr-4 max-w-[90%]'>
-				<h3 class='uppercase tracking-[.3em] font-semibold'>
+
+		<!-- text -->
+		<div class='md:max-w-[45%] flex flex-col gap-8 items-center md:items-start'>
+			<div class='flex flex-col-reverse md:flex-row items-center justify-between gap-6 text-center md:text-left md:pr-4 max-w-[90%]'>
+				<!-- title -->
+				<h2 class='uppercase tracking-[.3em] font-semibold'>
 					{{ title }}
-				</h3>
+				</h2>
 				<img v-if='avatar' :src='avatar' alt='Repo Owner' height='60' width='60'
 					class='rounded-full' />
 			</div>
+
+			<!-- body -->
 			<p class='tracking-wider pbody font-semibold text-center md:text-left'>
 				<span class='fade-text !font-extralight'>
 					{{ fadeText }}
 				</span>
 				{{ body }}
 			</p>
+
+			<!-- category, live, href-->
 			<div class='flex flex-col md:flex-row justify-start items-center gap-12 md:mt-10'>
 				<p class='uppercase tracking-[.2em] text-xs font-light fade-text'>
 					{{ category }}
 				</p>
+
+				<!-- href -->
 				<div v-if='href' class='relative'>
 					<a :href='href'
 						class='transition-all flex flex-row items-center justify-center gap-4 border-[1px] max-w-max py-3 px-4 text-sm uppercase rounded-2xl hover:border-black hover:bg-white hover:text-black'
@@ -59,6 +68,7 @@
 							</g>
 						</svg>
 					</a>
+					<!-- live span -->
 					<span v-if='live'
 						class='text-[var(--bright-pink)] absolute -bottom-[80%] right-[0%] pointer-events-none font-medium z-10 tracking-wide -rotate-6 decoration-wavy underline decoration-[var(--bright-pink)] decoration-3'>
 						live!
@@ -89,16 +99,16 @@
 </script>
 
 <style scoped>
-	h3 {
+	h2 {
 		margin: 0;
-		font-size: clamp(1rem, 3vw, 2rem);
+		font-size: clamp(1rem, 3vw, 1.6rem);
 		transition: color 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 	}
+
 	p.pbody {
-		margin-top: 0.5rem;
 		margin-bottom: 0;
 		font-size: clamp(1rem, 2vw, 1.3rem);
-		line-height: 190%;
+		line-height: 170%;
 	}
 	.link-card:is(:hover, :focus-within) {
 		background-position: 0;
@@ -116,20 +126,19 @@
 		object-fit: cover;
 	}
 	img {
-		max-width: 100%;
-		max-width: 100%;
+		max-width: 570px;
 		margin: 0;
 	}
 	.glassy {
 		position: absolute;
-		z-index: -1;
+		z-index: -2;
 		top: 0;
 		left: 0;
 		border-radius: 16px;
 		width: 100%;
 		height: 100%;
 		background-color: white;
+		opacity: .7;
 		backdrop-filter: blur(5px);
-		opacity: 0.3;
 	}
 </style>
