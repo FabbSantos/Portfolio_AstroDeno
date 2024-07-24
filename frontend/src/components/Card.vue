@@ -1,14 +1,17 @@
 <template>
-	<div :class="`flex ${flexType || '  '} snap justify-between items-center gap-12 flex-wrap py-10 border-x-[0px] border-[rgba(255,_255,_255,_0.15)] px-5 md:max-w-[80%] mx-auto rounded-lg mb-10 md:mb-12 border-b-[1px] md:border-b-0`">
+	<div
+		:class="`flex ${flexType || '  '} snap justify-between items-center gap-12 flex-wrap py-10 border-x-[0px] border-[rgba(255,_255,_255,_0.15)] px-5 md:max-w-[80%] mx-auto rounded-lg mb-10 md:mb-12 border-b-[1px] md:border-b-0`">
 
 		<!-- images from work cards -->
-		<div class='glassyContainer md:p-10 rounded-xl relative md:max-w-[40%] flex justify-center items-center'>
-			<div v-if='imageToDisplay' class='glassy'/>
-			<img :src='imageToDisplay' :alt="alt"/>
+		<div
+			class='glassyContainer md:p-10 rounded-xl relative md:max-w-[40%] flex justify-center items-center'>
+			<div v-if='imageToDisplay' class='glassy' />
+			<img :src='imageToDisplay' :alt="alt" />
 		</div>
 
 		<!-- images from about me section -->
-		<div v-if='imageToDisplayAbout' class='md:p-10 relative w-full md:max-w-[40%] flex flex-row justify-center items-center imagedisplay md:gap-12 -mt-20'>
+		<div v-if='imageToDisplayAbout'
+			class='md:p-10 relative w-full md:max-w-[40%] flex flex-row justify-center items-center imagedisplay md:gap-12 -mt-20'>
 			<div class='glassy'></div>
 			<img :src='imageToDisplayAbout[0]' alt='The developer himself, taking a picture at the mirror'
 				class='md:!max-w-[230px] max-h-[407px] object-cover rounded-md' />
@@ -21,7 +24,8 @@
 
 		<!-- text -->
 		<div class='md:max-w-[45%] flex flex-col gap-8 items-center md:items-start'>
-			<div class='flex flex-col-reverse md:flex-row items-center justify-between gap-6 text-center md:text-left md:pr-4 max-w-[90%]'>
+			<div
+				class='flex flex-col-reverse md:flex-row items-center justify-between gap-6 text-center md:text-left md:pr-4 max-w-[90%]'>
 				<!-- title -->
 				<h2 class='uppercase tracking-[.3em] font-semibold'>
 					{{ title }}
@@ -43,6 +47,12 @@
 				<p class='uppercase tracking-[.2em] text-xs font-light fade-text'>
 					{{ category }}
 				</p>
+
+				<div>
+					<p class="tags fade-text" v-for="tag in tags">
+						{{ tag }}
+					</p>
+				</div>
 
 				<!-- href -->
 				<div v-if='href' class='relative'>
@@ -95,6 +105,7 @@
 		flexType: String,
 		cardColor: String,
 		live: Boolean,
+		tags: Array
 	});
 </script>
 
@@ -110,6 +121,16 @@
 		font-size: clamp(1rem, 2vw, 1.3rem);
 		line-height: 170%;
 	}
+	div:has(>.tags) {
+		display: flex;
+		flex-wrap: wrap;
+		gap: .6rem;
+	}
+	p.tags {
+		font-size: clamp(.7rem, .5vw, .6rem);
+		text-transform: uppercase;
+	}
+
 	.link-card:is(:hover, :focus-within) {
 		background-position: 0;
 		/* background-image: var(--accent-gradient); */
