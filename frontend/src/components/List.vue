@@ -35,6 +35,7 @@ let filteredRepos = repos.works;
 		:flexType="work.flexType"
 		:category="work.category"
 		:fadeText="work.fadeText"
+		live=work.live
 	/>
 
 
