@@ -1,3 +1,4 @@
+
 import { defineConfig } from 'astro/config';
 import tailwind from "@astrojs/tailwind";
 import vercel from "@astrojs/vercel/serverless";
@@ -9,7 +10,7 @@ import vue from "@astrojs/vue";
 export default defineConfig({
   server: { port: 4321, host: "0.0.0.0" },
   integrations: [tailwind(), vue()],
-  output: "server",
+  output: "hybrid",
   adapter: vercel({
   //adapter: deno({
     webAnalytics: {
