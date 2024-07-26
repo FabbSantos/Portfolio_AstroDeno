@@ -52,9 +52,9 @@
 				</div>
 
 
-				<div class="flex flex-row gap-2">
+				<div class="flex flex-row gap-2 justify-end flex-wrap">
 					<p v-for="type in type"
-						class='uppercase tracking-[.2em] font-light fade-text border-[1px] border-fade max-w-full  px-4 rounded-2xl'>
+						class='uppercase tracking-[.2em] font-light fade-text border-[1px] border-fade max-w-full  px-4 rounded-2xl min-w-min'>
 						{{ type }}
 					</p>
 				</div>

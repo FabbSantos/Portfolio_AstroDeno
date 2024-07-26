@@ -82,10 +82,11 @@ function filterWorks(type) {
 		@apply bg-transparent text-fade border-fade sticky top-[20%] flex;
 	}
 	div.buttonContainer button{ 
-		@apply flex flex-row items-center justify-center gap-2 transition-all ease-in-out whitespace-nowrap min-w-[51px] max-w-[200px] w-14 hover:w-52 hover:justify-around;
+		@apply flex flex-row items-center justify-center gap-2 transition-all ease-in-out whitespace-nowrap min-w-[51px] max-w-[180px] w-14 hover:w-52 hover:justify-around;
 	}
 	div.buttonContainer button > p{ 
 		@apply opacity-0 hidden absolute transition-all delay-0 ease-in-out;
+		font-size: clamp(0.3rem, .3vw, 1rem);
 	}
 	div.buttonContainer button > svg {
 		@apply w-[24px] h-[24px] fill-fade min-w-[24px] max-w-[24px];
