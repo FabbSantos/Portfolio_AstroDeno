@@ -4,7 +4,7 @@
 
 		<!-- images from work cards -->
 		<div
-			class='glassyContainer md:p-10 rounded-xl relative md:max-w-[40%] flex justify-center items-center'>
+			class='glassyContainer md:p-10 rounded-xl relative lg:max-w-[40%] flex justify-center items-center'>
 			<div v-if='imageToDisplay' class='glassy' />
 			<img :src='imageToDisplay' :alt="alt" />
 		</div>
@@ -23,7 +23,7 @@
 		</div> -->
 
 		<!-- text -->
-		<div class='md:max-w-[45%] flex flex-col gap-12 items-center md:items-start'>
+		<div class='lg:max-w-[45%] flex flex-col gap-12 items-center md:items-start'>
 			<div
 				class='flex flex-col-reverse md:flex-row items-center justify-between gap-6 text-center md:text-left md:pr-4 max-w-[90%]'>
 				<!-- title -->
@@ -180,6 +180,18 @@
 			100% {
 				opacity: 1;
 			}
+		}
+	}
+	
+	@media (max-width: 768px) {
+		img {
+			max-width: 80%;
+		}
+		div:has(>.tags) {
+			justify-content: center;
+		}
+		.categoryTags div:last-of-type {
+			justify-content: center;
 		}
 	}
 </style>

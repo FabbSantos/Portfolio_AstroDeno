@@ -130,4 +130,13 @@ function filterWorks(type) {
 	.list-leave-active {
 		position: absolute;
 	}
+
+	@media (max-width: 768px) {
+		div.buttonContainer {
+			@apply !left-2;
+		}
+		div.buttonContainer button {
+			@apply !w-auto;
+		}
+	}
 </style>
