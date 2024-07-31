@@ -27,5 +27,5 @@ jobs:
         uses: denoland/deployctl@v1
         with:
           project: "clear-badger-20"
-          entrypoint: "backend/main.ts"
+          entrypoint: "main.ts"
           root: "backend"
