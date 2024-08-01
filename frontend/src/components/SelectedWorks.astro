@@ -1,14 +1,16 @@
 ---
 import List from './List.vue';
 import SelectedWorkText from './SelectedWorkText.astro';
-
 ---
 
 <section
-	class=' mt-20 pt-16 snap'
 	id='work'
+	class='snap relative'
 >
-	<SelectedWorkText/>
+	<SelectedWorkText />
 
-	<List class:list="snap" client:load/>
+	<List
+		class:list={['snap', 'work']}
+		client:visible
+	/>
 </section>

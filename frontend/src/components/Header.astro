@@ -1,168 +1,254 @@
 ---
+
 ---
 
-<div class="ul flex flex-col md:flex-row fixed  w-full md:items-center justify-center gap-8  py-10 head">
-    <!-- <li><Image src={Logo} alt={'Portfolio Fabrício Bahiense'} loading='eager' width={30}/></li> -->
-    <!-- <li class="!text-xs absolute top-1/2 left-2"> <a href="#"> fabriciobs2000@gmail.com</a> </li> -->
+<div
+	class='ul flex flex-col md:flex-row fixed w-full md:items-center justify-center gap-8 py-10 head'
+>
+	<!-- <li><Image src={Logo} alt={'Portfolio Fabrício Bahiense'} loading='eager' width={30}/></li> -->
+	<!-- <li class="!text-xs absolute top-1/2 left-2"> <a href="#"> fabriciobs2000@gmail.com</a> </li> -->
 
-    
-    <ul class=" flex flex-col md:flex-row gap-4 max-w-[95%] mx-auto acthead">
-        <li class="uppercase menu-item clickable"> 
-            <a href="#hero">Home</a>
-        </li>
-        <li class="uppercase menu-item clickable"> 
-            <a href="#work">Work</a>
-        </li>  
-        <li class="uppercase menu-item clickable"> 
-            <a href="#about">About</a>
-        </li>
-    </ul>
-    <svg xmlns="http://www.w3.org/2000/svg" class="mr-5 md:hidden fixed -left-[12%] top-5 hamb" width="2em" height="2em" viewBox="0 0 24 24">
-        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M4 7h3m13 0h-9m9 10h-3M4 17h9m-9-5h16" />
-    </svg>
+	<ul class='flex flex-col md:flex-row gap-4 max-w-[95%] mx-auto acthead'>
+		<li class='uppercase menu-item clickable'>
+			<a href='#hero'>Home</a>
+		</li>
+		<li class='uppercase menu-item clickable'>
+			<a href='#work'>Work</a>
+		</li>
+		<li class='uppercase menu-item clickable'>
+			<a href='#about'>About</a>
+		</li>
+	</ul>
+	<svg
+		xmlns='http://www.w3.org/2000/svg'
+		class='mr-5 md:hidden fixed -left-[12%] top-5 hamb'
+		width='2em'
+		height='2em'
+		viewBox='0 0 24 24'
+	>
+		<path
+			fill='none'
+			stroke='currentColor'
+			stroke-linecap='round'
+			stroke-width='1.5'
+			d='M4 7h3m13 0h-9m9 10h-3M4 17h9m-9-5h16'
+		></path>
+	</svg>
 </div>
 
-<style>
-    .ul {
-        transform: translateX(100%);
-        height: 100%;
-        background: black;
-        z-index:20;
-    }
-    .ul.active {
-        transform: translateX(0%);
-    }
+<style is:global>
+	.ul {
+		transform: translateX(100%);
+		height: 100%;
+		background: black;
+		z-index: 20;
+	}
+	.ul.active {
+		transform: translateX(0%);
+	}
 
-    @media (min-width: 768px) {
-        .ul {
-            display: flex;
-            transform: translateX(0%);
-            height: auto;
-            background: linear-gradient(to bottom, rgba(0,   0,   0,   1)   0%, rgba(0,   0,   0,   0)   80%);
-        }
-    }
-    ul li {
-        @apply text-sm text-white md:mx-3 uppercase;
-    }
+	@media (min-width: 768px) {
+		.ul {
+			display: flex;
+			transform: translateX(0%);
+			height: auto;
+			background: linear-gradient(
+				to bottom,
+				rgba(0, 0, 0, 1) 0%,
+				rgba(0, 0, 0, 0) 80%
+			);
+		}
+	}
+	ul li {
+		@apply text-sm text-white md:mx-3 uppercase;
+	}
 
-    .menu-item {
-        position: relative;
-        text-align: center; /* Center the text horizontally */
-    }
+	.menu-item {
+		position: relative;
+		text-align: center; /* Center the text horizontally */
+	}
 
-    .menu-item::after {
-        content: '';
-        position: absolute;
-        border-radius: 2px;
-        left:  50%; /* Start from the middle */
-        transform: translateX(-50%) scaleX(0); /* Center the underline */
-        width:  30%;
-        height:  3px;
-        bottom:  -30%;
-        background-color: #fff; /* Change to your preferred color */
-        transition: transform  0.3s ease-in-out;
-    }
-    /* .acthead {
+	.menu-item::after {
+		content: '';
+		position: absolute;
+		border-radius: 2px;
+		left: 50%; /* Start from the middle */
+		transform: translateX(-50%) scaleX(0); /* Center the underline */
+		width: 30%;
+		height: 3px;
+		bottom: -30%;
+		background-color: #fff; /* Change to your preferred color */
+		transition: transform 0.3s ease-in-out;
+	}
+	/* .acthead {
         transition: all 0.5s ease-in-out;
     } */
 
-    .menu-item:hover::after,
-    .menu-item:visited::after {
-        transform: translateX(-50%) scaleX(1);
-    }
+	.menu-item:hover::after,
+	.menu-item:visited::after {
+		transform: translateX(-50%) scaleX(1);
+	}
 
-    .clickable.active {
-        color: var(--bright-pink);
-    }
-    .clickable.active::after {
-        transform: translateX(-50%) scaleX(1);
-    }
+	.clickable.active {
+		color: var(--bright-pink);
+	}
+	.clickable.active::after {
+		transform: translateX(-50%) scaleX(1);
+	}
 </style>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const menuItems = document.querySelectorAll('.clickable a');
-        menuItems.forEach(item => {
-            item.addEventListener('click', (event) => {
-                // Remove 'active' class from all menu items
-                document.querySelectorAll('.clickable').forEach(menuItem => {
-                    menuItem.classList.remove('active');
-                });
-                // Add 'active' class to the clicked item
-                item.parentElement!.classList.add('active');
-            });
-        });
-    });
+	document.addEventListener('DOMContentLoaded', () => {
+		const menuItems = document.querySelectorAll('.clickable a');
+		menuItems.forEach((item) => {
+			item.addEventListener('click', (event) => {
+				// Remove 'active' class from all menu items
+				document.querySelectorAll('.clickable').forEach((menuItem) => {
+					menuItem.classList.remove('active');
+				});
+				// Add 'active' class to the clicked item
+				item.parentElement!.classList.add('active');
+			});
+		});
+	});
 
-    window.addEventListener('scroll', function() {
-        const scrollPosition = window.scrollY;
-        const body = document.querySelector('.head')! as HTMLElement;
-        const acthead = document.querySelector('.acthead')! as HTMLElement;
+	window.addEventListener('scroll', function () {
+		const scrollPosition = window.scrollY;
+		const body = document.querySelector('.head')! as HTMLElement;
+		const acthead = document.querySelector('.acthead')! as HTMLElement;
 
-        if (window.outerWidth > 900){
-            if (scrollPosition >   0) {
-                body.style.transition = 'background  0.3s ease-in-out';
-                acthead.style.transition = 'all 0.3s ease';
-                body.style.background = 'black';
-                acthead.style.marginInline = 'auto 4%';  
-            } else {
-                body.style.transition = 'background  0.3s ease';
-                body.style.background = 'linear-gradient(to bottom, rgba(0,   0,   0,   1)   0%, rgba(0,   0,   0,   0)   80%)';
-                acthead.style.transition = 'all .3s ease';
-                acthead.style.marginInline = '50% 50%';   
-            }
-        }
-    });
+		if (window.outerWidth > 900) {
+			if (scrollPosition > 0) {
+				body.style.transition = 'background  0.3s ease-in-out';
+				acthead.style.transition = 'all 0.3s ease';
+				body.style.background = 'black';
+				acthead.style.marginInline = 'auto 4%';
+			} else {
+				body.style.transition = 'background  0.3s ease';
+				body.style.background =
+					'linear-gradient(to bottom, rgba(0,   0,   0,   1)   0%, rgba(0,   0,   0,   0)   80%)';
+				acthead.style.transition = 'all .3s ease';
+				acthead.style.marginInline = '50% 50%';
+			}
+		}
+	});
 
-    document.querySelector('.hamb')?.addEventListener('click', function() {
-        const ul =document.querySelector('.head')! as HTMLElement
-        const hamb =document.querySelector('.hamb')! as HTMLElement
-        
-        if (ul.classList.contains('active')) {
-            hamb.style.left='-12%'
-            ul.classList.toggle('active')
-        } else {
-            hamb.style.left='88%'
-            ul.classList.add('active')
-        }
-    })
+	document.querySelector('.hamb')?.addEventListener('click', function () {
+		const ul = document.querySelector('.head')! as HTMLElement;
+		const hamb = document.querySelector('.hamb')! as HTMLElement;
 
-    // Função para adicionar a classe 'active' ao item do menu correspondente à seção visível
-    function updateActiveMenuItem() {
-        const sections = document.querySelectorAll('section');
-        const menuItems = document.querySelectorAll('.menu-item');
-    
-        // Remover a classe 'active' de todos os itens do menu
-        menuItems.forEach(item => item.classList.remove('active'));
-    
-        // Obter a posição de rolagem atual
-        const scrollPosition = window.scrollY || document.documentElement.scrollTop;
-    
-        // Encontrar a seção que está mais próxima da posição de rolagem
-        let closestSection = null;
-        let closestSectionTop = Infinity; // Initialize closestSectionTop here
-        sections.forEach(section => {
-            const sectionTop = section.getBoundingClientRect().top + window.scrollY;
-            const sectionBottom = sectionTop + section.offsetHeight;
-            if (sectionTop <= scrollPosition && sectionBottom > scrollPosition) {
-                closestSection = section;
-                closestSectionTop = sectionTop;
-            }
-        });
-        // Adicionar a classe 'active' ao item do menu correspondente à seção mais próxima
-        if (closestSection) {
-            const closestMenuItem = document.querySelector(`.menu-item a[href="#${(closestSection as HTMLElement).id}"]`);
-            if (closestMenuItem) {
-                closestMenuItem.parentElement!.classList.add('active');
-            }
-        }
-    }
+		if (ul.classList.contains('active')) {
+			hamb.style.left = '-12%';
+			ul.classList.toggle('active');
+		} else {
+			hamb.style.left = '88%';
+			ul.classList.add('active');
+		}
+	});
 
-    // Adicionar um event listener para o evento 'scroll'
-    window.addEventListener('scroll', updateActiveMenuItem);
+	// Função para adicionar a classe 'active' ao item do menu correspondente à seção visível
+	// function updateActiveMenuItem() {
+	//     const sections = document.querySelectorAll('section');
+	//     const menuItems = document.querySelectorAll('.menu-item');
 
-    // Chamar a função inicialmente para definir o item do menu 'active' corretamente
-    updateActiveMenuItem();
+	//     // Remover a classe 'active' de todos os itens do menu
+	//     menuItems.forEach(item => item.classList.remove('active'));
 
+	//     // Obter a posição de rolagem atual
+	//     const scrollPosition = window.scrollY || document.documentElement.scrollTop;
 
+	//     // Encontrar a seção que está mais próxima da posição de rolagem
+	//     let closestSection = null;
+	//     let closestSectionTop = Infinity; // Initialize closestSectionTop here
+	//     sections.forEach(section => {
+	//         const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+	//         const sectionBottom = sectionTop + section.offsetHeight;
+	//         if (sectionTop <= scrollPosition && sectionBottom > scrollPosition) {
+	//             closestSection = section;
+	//             closestSectionTop = sectionTop;
+	//         }
+	//     });
+	//     // Adicionar a classe 'active' ao item do menu correspondente à seção mais próxima
+	//     if (closestSection) {
+	//         const closestMenuItem = document.querySelector(`.menu-item a[href="#${(closestSection as HTMLElement).id}"]`);
+	//         if (closestMenuItem) {
+	//             closestMenuItem.parentElement!.classList.add('active');
+	//         }
+	//     }
+	// }
+
+	// // Adicionar um event listener para o evento 'scroll'
+	// window.addEventListener('scroll', updateActiveMenuItem);
+
+	// // Chamar a função inicialmente para definir o item do menu 'active' corretamente
+	// updateActiveMenuItem();
+	interface SectionElement extends HTMLElement {
+		id: string;
+		class?: string;
+	}
+
+	interface MenuItemElement extends HTMLLinkElement {}
+
+	const options: IntersectionObserverInit = {
+		root: null,
+		rootMargin: '0px',
+		threshold: 0.5,
+	};
+
+	const observer = new IntersectionObserver((entries) => {
+		const screenWidth = window.innerWidth;
+		const body = document.querySelector('.head')! as HTMLElement;
+		const acthead = document.querySelector('.acthead')! as HTMLElement;
+
+		const menuHero = document.querySelector(
+			'.menu-item a[href="#hero"]'
+		) as MenuItemElement;
+		const menuAbout = document.querySelector(
+			'.menu-item a[href="#about"]'
+		) as MenuItemElement;
+
+		entries.forEach((entry) => {
+			const section = entry.target as SectionElement;
+			const sectionId = section.id;
+			if (sectionId === 'hero') {
+				menuHero.parentElement!.classList.add('active');
+				if (entry.isIntersecting) {
+					menuHero.parentElement!.classList.add('active');
+					if (screenWidth > 800) {                        
+                        body.style.transition = 'background  0.3s ease';
+                        body.style.background =
+						'linear-gradient(to bottom, rgba(0,   0,   0,   1)   0%, rgba(0,   0,   0,   0)   80%)';
+                        acthead.style.transition = 'all .3s ease';
+                        acthead.style.marginInline = '50% 50%';
+                    }
+				} else {
+					menuHero.parentElement!.classList.remove('active');
+
+					if (screenWidth > 800) {                        
+                        body.style.transition = 'background  0.3s ease-in-out';
+                        acthead.style.transition = 'all 0.3s ease';
+                        body.style.background = 'black';
+                        acthead.style.marginInline = 'auto 4%';
+					}
+				}
+			}
+			if (sectionId === 'about') {
+				if (entry.isIntersecting) {
+					console.log('about');
+					menuAbout.parentElement!.classList.add('active');
+				} else {
+					menuAbout.parentElement!.classList.remove('active');
+				}
+			}
+		});
+	}, options);
+
+	const sections = document.querySelectorAll<SectionElement>('section');
+	const sectionWork = document.querySelector<SectionElement>('.work');
+	sections.forEach((section) => {
+		observer.observe(section);
+	});
+	if (sectionWork) {
+		observer.observe(sectionWork);
+	}
 </script>

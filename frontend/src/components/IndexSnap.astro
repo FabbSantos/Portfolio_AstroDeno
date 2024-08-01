@@ -1,15 +1,17 @@
 ---
 import AboutSection from './AboutSection.astro';
+import Header from './Header.astro';
 import Clients from './ClientsSection/Clients.astro';
 import Hero from './Hero.astro';
 import SelectedWorks from './SelectedWorks.astro';
 import Footer from './Footer.astro';
 ---
 
-<section class='snap-mandatory'>
+<section class='snap-mandatory scroll-smooth'>
+	<Header />
 	<Hero />
 	<Clients />
-	<SelectedWorks  />
+	<SelectedWorks />
 	<AboutSection />
 	<Footer />
 </section>

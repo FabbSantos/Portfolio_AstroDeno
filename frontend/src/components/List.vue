@@ -5,11 +5,24 @@ import Card from './Card.vue';
 
 let repos = ref(null);
 let filteredRepos = ref([]);
+const cardContainer = ref(null);
 
 onMounted(async () => {
 	const data = await apiWorks();
 	repos.value = data.works;
-	filteredRepos.value = data.works;
+	filteredRepos.value = data.works;;
+	console.log(cardContainer.value);
+
+	const observer = new IntersectionObserver((entries) => {
+		entries.forEach((entry) => {
+			if (entry.target === cardContainer.value) {
+				const menuLink = document.querySelector('.menu-item a[href="#work"]').parentElement; // Adapte o seletor conforme necessário
+				menuLink.classList.toggle('active', entry.isIntersecting);
+			}
+		});
+	});
+
+	observer.observe(cardContainer.value);
 });
 
 function filterWorks(type) {
@@ -24,12 +37,13 @@ function filterWorks(type) {
 	}
 	filteredRepos.value = type === 'all' ? repos.value : filteredRepos.value;
 }
+
 </script>
 
 
 
 <template>
-	<div class="cardContainer">
+	<div class="cardContainer" ref="cardContainer">
 
 		<div class="buttonContainer">
 
