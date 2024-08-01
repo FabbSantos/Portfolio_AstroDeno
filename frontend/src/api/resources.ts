@@ -12,7 +12,7 @@ export const apiGit = async () => {
 
 export const apiWorks = async () => {
     try {
-        const response = await fetch("http://localhost:5000/works")
+        const response = await fetch("https://fabb-portfolio.deno.dev/works")
         const works = await response.json()
         return works;
 

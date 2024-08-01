@@ -1,6 +1,5 @@
 ---
 import Github from './Github.astro';
-import Header from './Header.astro';
 import Instagram from './Instagram.astro';
 import LinkCard from './LinkCard.astro';
 import Linkedin from './Linkedin.astro';
@@ -610,9 +609,7 @@ import Linkedin from './Linkedin.astro';
 			</clipPath>
 		</defs>
 	</svg>
-
-	<Header />
-	<main class='!mt-14'>
+	<main>
 		<svg
 			class='astro-a'
 			width='495'
@@ -653,17 +650,20 @@ import Linkedin from './Linkedin.astro';
 				>Fabrício Bahiense</span
 			>
 			<h1>
-				<span class='fade-text'> I'm a</span> creative web developer
+				<span class='fade-text'> Are you ready to</span> see your dream project
+				come to life?
 			</h1>
 
 			<p
 				class='fade-text text-xl text-center tracking-widest max-w-[95%] md:max-w-[80%]'
 			>
-				as a <span class='text-white'>creative developer</span>, I can
-				bring <span class='text-white underline'>your vision</span> to life,
-				creating <span class='text-white'>beautiful</span>, <span
-					class='text-white'>interactive</span
-				>, and <span class='text-white'>responsive</span> experiences.
+				<span class='text-white underline'
+					>Your vision, our expertise.</span
+				> My specialty is to deliver <span class='text-white'
+					>high-impact</span
+				>, <span class='text-white'>captivating</span>, and <span
+					class='text-white'>responsive</span
+				> landing pages, sites, or apps.
 			</p>
 
 			<ul class='flex flex-row gap-4 mt-20'>
@@ -694,11 +694,11 @@ import Linkedin from './Linkedin.astro';
 			</ul>
 
 			<a
+				aria-label='scroll to the work section'
 				href='#work'
-				class='chevronA mt-10'
-				aria-label='scroll to work section'
+				class='transition-all flex flex-row items-center justify-center gap-4 border-[1px] mt-10 max-w-full py-3 px-4 text-sm uppercase rounded-2xl hover:border-black hover:bg-white hover:text-black tracking-wider'
 			>
-				<svg
+				<!-- <svg
 					class='chevron'
 					xmlns='http://www.w3.org/2000/svg'
 					width='2em'
@@ -709,7 +709,8 @@ import Linkedin from './Linkedin.astro';
 						fill='currentColor'
 						d='M5.366 11.116a1.25 1.25 0 0 1 1.768 0L16 19.982l8.866-8.866a1.25 1.25 0 0 1 1.768 1.768l-9.75 9.75a1.25 1.25 0 0 1-1.768 0l-9.75-9.75a1.25 1.25 0 0 1 0-1.768'
 					></path>
-				</svg>
+				</svg> -->
+				Let's create something amazing together.
 			</a>
 		</div>
 	</main>
@@ -721,13 +722,15 @@ import Linkedin from './Linkedin.astro';
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		min-height: 80svh;
+		min-height: 100svh;
 		margin: auto;
 		padding: 1rem;
 		max-width: calc(100% - 20%);
 		color: white;
 		font-size: 20px;
 		line-height: 1.6;
+		scroll-behavior: smooth;
+		transition: scroll-behavior 0.3s ease;
 	}
 	@media (max-width: 768px) {
 		main {
@@ -759,9 +762,10 @@ import Linkedin from './Linkedin.astro';
 		/* backgr */
 	}
 	h1 {
+		font-size: clamp(1.5rem, 8vw, 3rem);
 		letter-spacing: 1px;
 		font-weight: 700;
-		line-height: 48px;
+		line-height: 160%;
 		text-align: center;
 		max-width: 70%;
 		margin-bottom: 1em;

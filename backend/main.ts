@@ -2,6 +2,7 @@
 import { Application } from "jsr:@oak/oak/application";
 import { Router } from "jsr:@oak/oak/router";
 import works from "./models/work.json" with { type: "json" };
+import { oakCors } from "https://deno.land/x/cors/mod.ts";
 
 const router = new Router();
 
@@ -17,6 +18,12 @@ router
 
 // Create Application Like Express
 const app = new Application();
+
+// Apply CORS middleware
+app.use(oakCors({
+  origin: ["http://localhost:4321", "https://fabs-work.vercel.app/"], // Replace with your frontend origin
+  credentials: false, // Set to true if your frontend sends cookies
+})); // Enable CORS for All Routes
 
 app.use(router.routes());
 app.use(router.allowedMethods());
