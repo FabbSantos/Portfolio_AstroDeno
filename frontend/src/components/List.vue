@@ -11,7 +11,6 @@ onMounted(async () => {
 	const data = await apiWorks();
 	repos.value = data.works;
 	filteredRepos.value = data.works;;
-	console.log(cardContainer.value);
 
 	const observer = new IntersectionObserver((entries) => {
 		entries.forEach((entry) => {
