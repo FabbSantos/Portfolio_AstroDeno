@@ -21,7 +21,7 @@ const app = new Application();
 
 // Apply CORS middleware
 app.use(oakCors({
-  origin: ["http://localhost:4321", "https://fabs-work.vercel.app/"], // Replace with your frontend origin
+  origin: "*", // Replace with your frontend origin
   credentials: false, // Set to true if your frontend sends cookies
 })); // Enable CORS for All Routes
 
