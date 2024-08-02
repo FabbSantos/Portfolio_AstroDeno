@@ -10,8 +10,7 @@ const cardContainer = ref(null);
 onMounted(async () => {
 	const data = await apiWorks();
 	repos.value = data.works;
-	filteredRepos.value = data.works;;
-
+	filteredRepos.value = data.works;
 	const observer = new IntersectionObserver((entries) => {
 		entries.forEach((entry) => {
 			if (entry.target === cardContainer.value) {
