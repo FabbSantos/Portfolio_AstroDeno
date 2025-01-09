@@ -25,7 +25,7 @@
 </template>
 
 <script setup>
-import Button from './Button.vue';
+import Button from './ButtonDefault.vue';
 import PersonalIcon from './icons/PersonalIcon.vue';
 import ProfessionalIcon from './icons/ProfessionalIcon.vue';
 import AllWorksIcon from './icons/AllWorksIcon.vue';
@@ -40,7 +40,7 @@ function handleClick(type) {
 
 <style scoped>
 .buttonContainer {
-	@apply flex flex-col gap-8 absolute top-0 left-5 z-10 h-full;
+	@apply flex flex-row gap-8 absolute top-0 left-1/2 -translate-x-1/2 z-10 h-full;
 }
 .buttonContainer button:first-of-type {
 	@apply top-[20%];

@@ -6,7 +6,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue';
+import { defineEmits } from 'vue';
 
 const props = defineProps({
 	label: String,
@@ -22,7 +22,7 @@ function handleClick() {
 
 <style scoped>
 .button {
-	@apply bg-transparent border-fade sticky top-[20%] px-4 flex;
+	@apply bg-transparent border-fade sticky top-[20%] px-4 py-4 flex;
 	@apply flex flex-row items-center justify-center gap-2 transition-all !ease-in-out whitespace-nowrap min-w-[51px] max-w-[150px] w-14 hover:w-52 hover:justify-around hover:border-2 rounded-3xl;
 }
 .button > p {
