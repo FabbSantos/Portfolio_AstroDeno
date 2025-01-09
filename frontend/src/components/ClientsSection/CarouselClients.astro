@@ -7,109 +7,28 @@ import mkt from './assets/mkt.png';
 import afya from './assets/afya.png';
 import desco from './assets/desco.png';
 import bjConsulting from './assets/bj-consulting.png';
+import ClientItem from './ClientItem.astro';
 ---
 
 <div class='stock-ticker'>
 	<ul>
-		<li class='invert'>
-			<Image
-				src={bjConsulting}
-				alt='BJ Consulting'
-			/>
-		</li>
-
-		<li>
-			<Image
-				src={ancora}
-				alt='Âncora'
-			/>
-		</li>
-
-		<li>
-			<Image
-				src={conx}
-				alt='Conx'
-			/>
-		</li>
-
-		<li>
-			<Image
-				src={toledoFerrari}
-				alt='Toledo Ferrari'
-			/>
-		</li>
-
-		<li class='invert'>
-			<Image
-				src={afya}
-				alt='Afya'
-			/>
-		</li>
-
-		<li class='invert'>
-			<Image
-				src={desco}
-				alt='Descomplica'
-			/>
-		</li>
-
-		<li>
-			<Image
-				src={mkt}
-				alt='Mkt4Edu | 4revops'
-			/>
-		</li>
+		<ClientItem src={bjConsulting} alt='BJ Consulting' invert={true} />
+		<ClientItem src={ancora} alt='Âncora' />
+		<ClientItem src={conx} alt='Conx' />
+		<ClientItem src={toledoFerrari} alt='Toledo Ferrari' />
+		<ClientItem src={afya} alt='Afya' invert={true} />
+		<ClientItem src={desco} alt='Descomplica' invert={true} />
+		<ClientItem src={mkt} alt='Mkt4Edu | 4revops' />
 	</ul>
 
 	<ul aria-hidden='true'>
-		<li class='invert'>
-			<Image
-				src={bjConsulting}
-				alt='BJ Consulting'
-			/>
-		</li>
-
-		<li>
-			<Image
-				src={ancora}
-				alt='Âncora'
-			/>
-		</li>
-
-		<li>
-			<Image
-				src={conx}
-				alt='Conx'
-			/>
-		</li>
-
-		<li>
-			<Image
-				src={toledoFerrari}
-				alt='Toledo Ferrari'
-			/>
-		</li>
-
-		<li class='invert'>
-			<Image
-				src={afya}
-				alt='Afya'
-			/>
-		</li>
-
-		<li class='invert'>
-			<Image
-				src={desco}
-				alt='Descomplica'
-			/>
-		</li>
-
-		<li>
-			<Image
-				src={mkt}
-				alt='Mkt4Edu | 4revops'
-			/>
-		</li>
+		<ClientItem src={bjConsulting} alt='BJ Consulting' invert={true} />
+		<ClientItem src={ancora} alt='Âncora' />
+		<ClientItem src={conx} alt='Conx' />
+		<ClientItem src={toledoFerrari} alt='Toledo Ferrari' />
+		<ClientItem src={afya} alt='Afya' invert={true} />
+		<ClientItem src={desco} alt='Descomplica' invert={true} />
+		<ClientItem src={mkt} alt='Mkt4Edu | 4revops' />
 	</ul>
 </div>
 

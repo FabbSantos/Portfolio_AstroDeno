@@ -3,9 +3,10 @@ import { ref, onMounted } from 'vue';
 import { apiWorks } from '../api/resources';
 import Card from './Card.vue';
 import ButtonContainer from './ButtonContainer.vue';
+import type { Work } from '../../types/types';
 
-const repos = ref(null);
-const filteredRepos = ref([]);
+const repos = ref<Work[] | null>(null);
+const filteredRepos = ref<Work[]>([]);
 const cardContainer = ref(null);
 
 onMounted(async () => {
