@@ -21,9 +21,9 @@ const app = new Application();
 
 // Apply CORS middleware
 app.use(oakCors({
-  origin: "*", // Replace with your frontend origin
-  credentials: false, // Set to true if your frontend sends cookies
-})); // Enable CORS for All Routes
+  origin: "*", 
+  credentials: false,
+})); 
 
 app.use(router.routes());
 app.use(router.allowedMethods());
