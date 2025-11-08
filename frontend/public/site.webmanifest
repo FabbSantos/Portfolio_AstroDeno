@@ -1,19 +1,26 @@
 {
-    "name": "",
-    "short_name": "",
+    "name": "Fabrício Bahiense - Front-End Developer Portfolio",
+    "short_name": "FB Portfolio",
+    "description": "Portfolio showcasing Front-End and Mobile development projects by Fabrício Bahiense",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",
             "sizes": "192x192",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any maskable"
         },
         {
             "src": "/android-chrome-512x512.png",
             "sizes": "512x512",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any maskable"
         }
     ],
-    "theme_color": "#ffffff",
-    "background_color": "#ffffff",
-    "display": "standalone"
+    "theme_color": "#8710DB",
+    "background_color": "#000000",
+    "display": "standalone",
+    "start_url": "/",
+    "scope": "/",
+    "orientation": "portrait-primary",
+    "categories": ["portfolio", "business"]
 }

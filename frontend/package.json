@@ -1,18 +1,21 @@
 {
-	"name": "",
+	"name": "portfolio-fabricio-bahiense",
 	"type": "module",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"scripts": {
 		"dev": "astro dev",
 		"start": "astro dev",
 		"build": "astro check && astro build",
 		"build:deno": "deno run -A npm:astro check && deno run -A npm:astro build",
 		"preview": "astro preview",
-		"astro": "astro"
+		"astro": "astro",
+		"analyze:images": "node scripts/optimize-images.js",
+		"check:seo": "echo 'Verificar meta tags em: http://localhost:4321' && npm run dev"
 	},
 	"dependencies": {
 		"@astrojs/check": "^0.3.0",
 		"@astrojs/react": "^3.0.9",
+		"@astrojs/sitemap": "^3.6.0",
 		"@astrojs/tailwind": "^5.0.2",
 		"@astrojs/vercel": "^7.6.0",
 		"@astrojs/vue": "^4.5.0",

@@ -1,3 +1,9 @@
 User-Agent: *
 Allow: /
 
+# Block API and private areas
+Disallow: /api/
+Disallow: /_*
+
+# Sitemap
+Sitemap: https://fabsantos.dev/sitemap-index.xml

@@ -8,64 +8,79 @@ const { title } = Astro.props;
 
 <!doctype html>
 <html lang='pt-br'>
-	<script
-		is:inline
-		src='https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js'
-	></script>
+	<head>
+		<meta charset='UTF-8' />
+		<meta name='viewport' content='width=device-width' />
 
-	<meta charset='UTF-8' />
-	<meta
-		name='description'
-		content='Portfolio Page of Fabrício Bahiense, a  Front-End / Mobile developer.'
-	/>
-	<meta
-		name='viewport'
-		content='width=device-width'
-	/>
+		<!-- SEO Meta Tags -->
+		<title>{title}</title>
+		<meta
+			name='description'
+			content='Portfolio Page of Fabrício Bahiense, a Front-End / Mobile developer specializing in high-impact, captivating, and responsive web applications.'
+		/>
+		<meta name='author' content='Fabrício Bahiense' />
+		<meta name='keywords' content='front-end developer, mobile developer, web development, portfolio, react, vue, astro' />
 
-	<link
-		rel='apple-touch-icon'
-		sizes='180x180'
-		href='/apple-touch-icon.png'
-	/>
-	<link
-		rel='icon'
-		type='image/png'
-		sizes='32x32'
-		href='/favicon-32x32.png'
-	/>
-	<link
-		rel='icon'
-		type='image/png'
-		sizes='16x16'
-		href='/favicon-16x16.png'
-	/>
-	<link
-		rel='manifest'
-		href='/site.webmanifest'
-	/>
-	<link
-		rel='mask-icon'
-		href='/safari-pinned-tab.svg'
-		color='#5bbad5'
-	/>
-	<meta
-		name='msapplication-TileColor'
-		content='#da532c'
-	/>
-	<meta
-		name='theme-color'
-		content='#ffffff'
-	/>
+		<!-- Open Graph / Facebook / LinkedIn / WhatsApp -->
+		<meta property='og:type' content='website' />
+		<meta property='og:url' content={Astro.url.href} />
+		<meta property='og:title' content={title} />
+		<meta property='og:description' content='Portfolio Page of Fabrício Bahiense, a Front-End / Mobile developer specializing in high-impact, captivating, and responsive web applications.' />
+		<meta property='og:image' content={new URL('/android-chrome-512x512.png', Astro.url).href} />
+		<meta property='og:image:width' content='512' />
+		<meta property='og:image:height' content='512' />
+		<meta property='og:locale' content='pt_BR' />
+		<meta property='og:site_name' content='Fabrício Bahiense Portfolio' />
 
-	<meta
-		name='generator'
-		content={Astro.generator}
-	/>
+		<!-- Twitter Card -->
+		<meta name='twitter:card' content='summary_large_image' />
+		<meta name='twitter:url' content={Astro.url.href} />
+		<meta name='twitter:title' content={title} />
+		<meta name='twitter:description' content='Portfolio Page of Fabrício Bahiense, a Front-End / Mobile developer specializing in high-impact, captivating, and responsive web applications.' />
+		<meta name='twitter:image' content={new URL('/android-chrome-512x512.png', Astro.url).href} />
 
-	<title>{title}</title>
+		<!-- Canonical URL -->
+		<link rel='canonical' href={Astro.url.href} />
+
+		<!-- Favicons -->
+		<link rel='apple-touch-icon' sizes='180x180' href='/apple-touch-icon.png' />
+		<link rel='icon' type='image/png' sizes='32x32' href='/favicon-32x32.png' />
+		<link rel='icon' type='image/png' sizes='16x16' href='/favicon-16x16.png' />
+		<link rel='manifest' href='/site.webmanifest' />
+		<link rel='mask-icon' href='/safari-pinned-tab.svg' color='#8710DB' />
+
+		<!-- Theme Colors -->
+		<meta name='msapplication-TileColor' content='#8710DB' />
+		<meta name='theme-color' content='#000000' />
+
+		<!-- Generator -->
+		<meta name='generator' content={Astro.generator} />
+
+		<!-- Schema.org JSON-LD Structured Data -->
+		<script type='application/ld+json' is:inline set:html={JSON.stringify({
+			"@context": "https://schema.org",
+			"@type": "Person",
+			"name": "Fabrício Bahiense",
+			"url": Astro.site || "https://fabsantos.dev",
+			"jobTitle": "Front-End Developer",
+			"description": "Front-End and Mobile Developer specializing in high-impact web applications",
+			"sameAs": [
+				"https://github.com/FabbSantos",
+				"https://www.linkedin.com/in/fabricio-b-santos/",
+				"https://www.instagram.com/fabbahiense_"
+			],
+			"knowsAbout": ["JavaScript", "TypeScript", "React", "Vue", "Astro", "Web Development", "Mobile Development"]
+		})} />
+
+		<!-- GSAP Library -->
+		<script
+			is:inline
+			src='https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js'
+		></script>
+	</head>
 
 	<body>
+		<a href='#main-content' class='skip-link'>Pular para o conteúdo principal</a>
 		<slot />
 	</body>
 </html>
@@ -84,8 +99,12 @@ const { title } = Astro.props;
 			white 60%
 		);
 	}
-	* {
-		transition: all 0.2s ease-in-out;
+	/* Aplicar transições apenas em elementos interativos */
+	a,
+	button,
+	.interactive-element,
+	svg path {
+		transition: color 0.2s ease-in-out, transform 0.2s ease-in-out, fill 0.2s ease-in-out;
 	}
 	html {
 		font-family:
@@ -109,6 +128,23 @@ const { title } = Astro.props;
 	section,
 	.snap {
 		min-height: 100vh;
+	}
+
+	/* Skip link para acessibilidade */
+	.skip-link {
+		position: absolute;
+		top: -100px;
+		left: 0;
+		background: var(--bright-pink);
+		color: white;
+		padding: 0.75rem 1.5rem;
+		text-decoration: none;
+		z-index: 9999;
+		font-weight: bold;
+		border-radius: 0 0 0.5rem 0;
+	}
+	.skip-link:focus {
+		top: 0;
 	}
 
 	a:hover,

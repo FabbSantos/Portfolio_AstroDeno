@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(node scripts/optimize-images.js:*)",
+      "Bash(npm run analyze:images:*)",
+      "Bash(npm run build:*)",
+      "Bash(cd:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

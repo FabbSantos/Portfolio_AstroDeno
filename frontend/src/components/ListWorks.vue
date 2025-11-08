@@ -20,7 +20,10 @@ onMounted(async () => {
 		const data = await apiWorks();
 		repos.value = data.works;
 		filteredRepos.value = data.works;
-		console.log('Image data check:', data.works[0].image); // Check first work's image
+		// Development only: Image data check
+		if (import.meta.env.DEV) {
+			console.log('Image data check:', data.works[0].image);
+		}
 
 		const observer = new IntersectionObserver((entries) => {
 			entries.forEach((entry) => {
@@ -167,11 +170,11 @@ function filterWorks(type) {
 	}
 
 	.row-1 {
-	animation: slideLeft 80s linear infinite;
+	animation: slideLeft 10s linear infinite;
 	}
 
 	.row-2 {
-	animation: slideRight 80s linear infinite;
+	animation: slideRight 10s linear infinite;
 	margin-top: 2rem;
 	}
 
@@ -202,5 +205,18 @@ function filterWorks(type) {
 
 	.works-mosaic:hover {
 	animation-play-state: paused;
+	}
+
+	/* Respeitar preferências de movimento reduzido */
+	@media (prefers-reduced-motion: reduce) {
+		.row-1,
+		.row-2 {
+			animation: none;
+		}
+
+		.works-transition-enter-active,
+		.works-transition-leave-active {
+			transition: none;
+		}
 	}
     </style>
