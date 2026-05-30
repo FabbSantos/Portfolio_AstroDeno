@@ -1,0 +1,63 @@
+---
+/**
+ * Soft protection for template demo pages.
+ *
+ * IMPORTANT: this is a casual-copy deterrent, not real source protection.
+ * Anything that runs in the browser is technically inspectable — a determined
+ * user can open DevTools before navigating, use `view-source:` in the URL or
+ * `curl` the page. What we do here:
+ *   - block the right-click context menu
+ *   - swallow F12, Ctrl+U, Ctrl+S, Ctrl+Shift+I/J/C, Cmd+Opt+I
+ *   - signal intent visually via the ribbon already at the top of each template
+ *
+ * Don't add user-select:none — templates should still be readable.
+ */
+---
+
+<script>
+	(function () {
+		const swallow = (e: Event) => e.preventDefault();
+
+		document.addEventListener('contextmenu', swallow);
+
+		document.addEventListener('keydown', (e) => {
+			const k = e.key;
+			const mod = e.ctrlKey || e.metaKey;
+
+			// F12 (DevTools)
+			if (k === 'F12') {
+				e.preventDefault();
+				return;
+			}
+			// Ctrl/Cmd + U (View source)  ·  Ctrl/Cmd + S (Save page)
+			if (mod && !e.shiftKey && (k === 'u' || k === 'U' || k === 's' || k === 'S')) {
+				e.preventDefault();
+				return;
+			}
+			// Ctrl/Cmd + Shift + I/J/C (Inspect, Console, Inspector)
+			if (mod && e.shiftKey && ['i', 'I', 'j', 'J', 'c', 'C'].includes(k)) {
+				e.preventDefault();
+				return;
+			}
+			// Cmd + Option + I (Mac DevTools)
+			if (e.metaKey && e.altKey && (k === 'i' || k === 'I')) {
+				e.preventDefault();
+				return;
+			}
+		});
+	})();
+</script>
+
+<noscript>
+	<style>
+		body::before {
+			content: 'This is a preview of a template by Fab Bahiense. Enable JavaScript to view it properly.';
+			display: block;
+			padding: 40px 32px;
+			background: #1a1a1c;
+			color: #fff;
+			font-family: -apple-system, system-ui, sans-serif;
+			text-align: center;
+		}
+	</style>
+</noscript>

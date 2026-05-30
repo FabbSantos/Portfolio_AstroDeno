@@ -1,0 +1,357 @@
+---
+import { featured } from '../../data/featured';
+
+// Scenes are an editorial pick — see src/data/featured.ts to add/remove projects.
+const scenes = featured.slice(0, 6);
+const cycleTints = ['t0', 't1', 't2'] as const;
+---
+
+<div class='stage'>
+	<div class='device' id='device'>
+		<div class='bar'>
+			<i></i><i></i><i></i>
+			<div class='url' id='device-url'>{scenes[0]?.url ?? ''}</div>
+		</div>
+		<div class='screen'>
+			{
+				scenes.map((s, i) => {
+					const external = s.href?.startsWith('http');
+					return (
+						<div
+							class:list={[
+								'scene',
+								s.tint ?? cycleTints[i % cycleTints.length],
+								{ 'has-image': !!s.image, dim: !!s.dim, 'is-active': i === 0 },
+							]}
+							data-url={s.url}
+						>
+							{s.image && <img class='scene-img' src={s.image} alt={s.title} loading='lazy' />}
+							<div class='scene-content'>
+								<span class='badge' data-i18n={`featured.${s.id}.badge`}>{s.badge}</span>
+								<h2>{s.title}</h2>
+								<p class='ds' data-i18n={`featured.${s.id}.desc`}>{s.desc}</p>
+								{s.href && (
+									<div class='pills'>
+										<a
+											class='p'
+											href={s.href}
+											target={external ? '_blank' : undefined}
+											rel={external ? 'noopener' : undefined}
+											data-i18n='works.viewProject'
+										>
+											View project
+										</a>
+									</div>
+								)}
+							</div>
+						</div>
+					);
+				})
+			}
+		</div>
+	</div>
+	{
+		scenes.length > 1 && (
+			<div class='stage-dots' id='device-dots'>
+				{scenes.map((_, i) => (
+					<button class:list={[{ 'is-active': i === 0 }]} data-i={i} aria-label={`Show project ${i + 1}`} />
+				))}
+			</div>
+		)
+	}
+</div>
+
+<style>
+	.stage {
+		margin: 60px auto 0;
+		max-width: 1100px;
+		padding: 0 32px;
+	}
+	.device {
+		position: relative;
+		background: #fff;
+		border-radius: 18px;
+		overflow: hidden;
+		box-shadow:
+			0 50px 120px -30px rgba(0, 0, 0, 0.22),
+			0 0 0 1px rgba(0, 0, 0, 0.06);
+		opacity: 0;
+		transform: translateY(40px) scale(0.96);
+		animation: devIn 1.2s var(--ease-out-expo) 0.5s both;
+	}
+	@keyframes devIn {
+		to {
+			opacity: 1;
+			transform: translateY(0) scale(1);
+		}
+	}
+	.bar {
+		height: 36px;
+		background: var(--bg-2);
+		border-bottom: 1px solid var(--rule);
+		display: flex;
+		align-items: center;
+		padding: 0 14px;
+		gap: 6px;
+	}
+	.bar i {
+		width: 11px;
+		height: 11px;
+		border-radius: 50%;
+		background: var(--ink-4);
+	}
+	.bar .url {
+		margin-left: 14px;
+		flex: 1;
+		padding: 5px 14px;
+		background: #fff;
+		border-radius: 6px;
+		color: var(--ink-3);
+		font-family: var(--mono);
+		font-size: 12px;
+		text-align: center;
+	}
+	.screen {
+		position: relative;
+		height: 560px;
+	}
+	.scene {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		text-align: center;
+		padding: 60px 8%;
+		opacity: 0;
+		transition: opacity 0.6s ease;
+		overflow: hidden;
+	}
+	.scene.is-active {
+		opacity: 1;
+		z-index: 1;
+	}
+	.scene-content {
+		position: relative;
+		z-index: 2;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	/* ====== Image scenes ====== */
+	.scene.has-image {
+		justify-content: flex-end;
+		align-items: stretch;
+		text-align: left;
+		padding: 0;
+	}
+	.scene-img {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		z-index: 0;
+	}
+	.scene.has-image::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(180deg, rgba(0, 0, 0, 0) 35%, rgba(0, 0, 0, 0.75) 100%);
+		z-index: 1;
+	}
+	/* Stronger full-image overlay for sources that already carry headline text. */
+	.scene.has-image.dim::after {
+		background: linear-gradient(
+			180deg,
+			rgba(0, 0, 0, 0.45) 0%,
+			rgba(0, 0, 0, 0.6) 50%,
+			rgba(0, 0, 0, 0.88) 100%
+		);
+	}
+	.scene.has-image .scene-content {
+		align-items: flex-start;
+		padding: 32px 40px 36px;
+		gap: 8px;
+	}
+	.scene.has-image .badge {
+		color: #fff;
+		background: rgba(255, 255, 255, 0.14);
+		border: 1px solid rgba(255, 255, 255, 0.25);
+		backdrop-filter: blur(8px);
+		padding: 5px 12px 5px 8px;
+		border-radius: 999px;
+		margin-bottom: 14px;
+	}
+	.scene.has-image .badge::before {
+		background: var(--accent);
+	}
+	.scene.has-image h2 {
+		color: #fff;
+		font-size: clamp(28px, 3.6vw, 48px);
+		max-width: 18ch;
+	}
+	.scene.has-image .ds {
+		color: rgba(255, 255, 255, 0.85);
+		max-width: 50ch;
+		margin-top: 10px;
+	}
+	.scene.has-image .pills {
+		margin-top: 20px;
+	}
+	.scene.has-image .p {
+		background: rgba(255, 255, 255, 0.16);
+		backdrop-filter: blur(8px);
+		color: #fff;
+		border: 1px solid rgba(255, 255, 255, 0.25);
+	}
+	.scene.has-image .p:hover {
+		background: var(--accent);
+		border-color: var(--accent);
+	}
+	.badge {
+		font-family: var(--mono);
+		font-size: 12px;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		margin-bottom: 18px;
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+	}
+	.badge::before {
+		content: '';
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: currentColor;
+	}
+	.scene h2 {
+		font-size: clamp(36px, 5vw, 64px);
+		font-weight: 800;
+		letter-spacing: -0.03em;
+		line-height: 0.98;
+		color: var(--ink);
+		max-width: 16ch;
+	}
+	.scene .ds {
+		margin-top: 18px;
+		color: var(--ink-2);
+		font-size: 16px;
+		max-width: 46ch;
+		line-height: 1.5;
+	}
+	.scene .pills {
+		display: flex;
+		gap: 10px;
+		margin-top: 28px;
+	}
+	.scene .p {
+		padding: 10px 22px;
+		background: var(--ink);
+		color: #fff;
+		border-radius: 999px;
+		font-size: 13px;
+		font-weight: 500;
+		transition: background 0.2s;
+	}
+	.scene .p:hover {
+		background: var(--accent);
+	}
+
+	/* scene tints */
+	.t0 {
+		background: linear-gradient(160deg, #fff6f7 0%, #ffedee 100%);
+	}
+	.t0 .badge {
+		color: var(--accent);
+	}
+	.t1 {
+		background: linear-gradient(160deg, #f3f0ff 0%, #e6ddfe 100%);
+	}
+	.t1 .badge {
+		color: var(--accent-2);
+	}
+	.t2 {
+		background: linear-gradient(160deg, #fff8eb 0%, #ffe9c2 100%);
+	}
+	.t2 .badge {
+		color: #e07a1f;
+	}
+
+	.stage-dots {
+		display: flex;
+		justify-content: center;
+		gap: 10px;
+		margin-top: 24px;
+	}
+	.stage-dots button {
+		width: 28px;
+		height: 3px;
+		border-radius: 2px;
+		background: var(--ink-4);
+		transition:
+			background 0.25s,
+			width 0.25s;
+	}
+	.stage-dots button.is-active {
+		background: var(--ink);
+		width: 40px;
+	}
+	.stage-dots button:hover {
+		background: var(--ink-2);
+	}
+
+	@media (max-width: 600px) {
+		.screen {
+			height: 460px;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.device {
+			opacity: 1;
+			transform: none;
+			animation: none;
+		}
+	}
+</style>
+
+<script>
+	const device = document.getElementById('device');
+	if (device) {
+		const scenes = Array.from(device.querySelectorAll<HTMLElement>('.scene'));
+		const dots = Array.from(
+			document.querySelectorAll<HTMLButtonElement>('#device-dots button')
+		);
+		const url = document.getElementById('device-url');
+		let idx = 0;
+
+		const go = (i: number) => {
+			scenes[idx]?.classList.remove('is-active');
+			dots[idx]?.classList.remove('is-active');
+			idx = i;
+			scenes[idx]?.classList.add('is-active');
+			dots[idx]?.classList.add('is-active');
+			if (url) url.textContent = scenes[idx]?.dataset.url || '';
+		};
+
+		const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		let timer: ReturnType<typeof setInterval> | undefined;
+		const start = () => {
+			if (reduced || scenes.length < 2) return;
+			timer = setInterval(() => go((idx + 1) % scenes.length), 5000);
+		};
+		start();
+
+		dots.forEach((d, i) =>
+			d.addEventListener('click', () => {
+				if (timer) clearInterval(timer);
+				go(i);
+				start();
+			})
+		);
+	}
+</script>

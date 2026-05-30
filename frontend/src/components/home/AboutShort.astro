@@ -1,0 +1,73 @@
+---
+// Short about band — real copy, no serif-italic. Emphasis via weight/colour.
+---
+
+<section class='about-band' id='sobre'>
+	<div class='about-inner'>
+		<blockquote class='about-quote reveal' data-i18n='aboutShort.quote'>
+			Code is half the job. The other half is understanding the problem before writing the first line.
+		</blockquote>
+		<div class='about-text reveal d2'>
+			<p data-i18n='aboutShort.p1'>
+				I'm Fabrício Bahiense, a Senior Software Engineer based in Rio de Janeiro, Brazil.
+			</p>
+			<p data-i18n='aboutShort.p2'>
+				Father, husband, problem-solver — multiple layers, like an onion. I love football, music,
+				games, beer, science, astronomy (I love watching the sky) and, of course, technology.
+			</p>
+			<p data-i18n='aboutShort.p3'>
+				I care about digital experiences that actually make a difference: a fast web app, a
+				scalable cloud architecture, a mobile flow that feels right, your landing page that
+				converts.
+			</p>
+			<a href='/about' class='btn-link' data-i18n='aboutShort.more'>Get to know me</a>
+		</div>
+	</div>
+</section>
+
+<style>
+	.about-band {
+		background: var(--bg-2);
+		padding: 120px 32px;
+	}
+	.about-inner {
+		max-width: var(--maxw);
+		margin: 0 auto;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 80px;
+		align-items: center;
+	}
+	.about-quote {
+		font-size: clamp(28px, 3.5vw, 42px);
+		font-weight: 500;
+		line-height: 1.25;
+		letter-spacing: -0.015em;
+		color: var(--ink);
+	}
+	.about-quote::before {
+		content: '\201C';
+		color: var(--accent);
+		font-size: 1.6em;
+		display: block;
+		line-height: 0.6;
+		margin-bottom: 8px;
+	}
+	.about-text p {
+		font-size: 17px;
+		line-height: 1.65;
+		color: var(--ink-2);
+		margin-bottom: 18px;
+	}
+	.about-text .btn-link {
+		margin-top: 8px;
+		font-size: 14px;
+	}
+
+	@media (max-width: 900px) {
+		.about-inner {
+			grid-template-columns: 1fr;
+			gap: 40px;
+		}
+	}
+</style>

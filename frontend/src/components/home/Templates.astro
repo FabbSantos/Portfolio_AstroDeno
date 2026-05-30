@@ -1,0 +1,67 @@
+---
+import { templates } from '../../data/templates';
+import TemplateCard from '../templates/TemplateCard.astro';
+---
+
+<section class='tpl-band' id='templates'>
+	<div class='sec-head reveal'>
+		<span class='eyebrow accent' data-i18n='templates.eyebrow'>Extras · ready-made templates</span>
+		<h2>
+			<span data-i18n='templates.head1'>Need something</span>
+			<span class='hl' data-i18n='templates.head2'>yesterday?</span>
+		</h2>
+		<p data-i18n='templates.lead'>
+			Seven templates I wrote myself. You pick one, I customize and ship it in 5–10 business days
+			— with your domain and brand.
+		</p>
+	</div>
+
+	<div class='scroller'>
+		<div class='tpl-track'>
+			{templates.map((t) => <TemplateCard tpl={t} class='snap-card' />)}
+		</div>
+	</div>
+</section>
+
+<style>
+	.tpl-band {
+		padding: 120px 0;
+	}
+	.tpl-band .sec-head {
+		padding: 0 32px;
+		max-width: var(--maxw);
+		margin: 0 auto 60px;
+	}
+	.scroller {
+		overflow-x: auto;
+		overflow-y: hidden;
+		scroll-snap-type: x mandatory;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: none;
+		cursor: grab;
+		user-select: none;
+	}
+	.scroller.is-dragging {
+		cursor: grabbing;
+		scroll-snap-type: none;
+	}
+	.scroller::-webkit-scrollbar {
+		display: none;
+	}
+	.tpl-track {
+		display: flex;
+		gap: 20px;
+		width: max-content;
+		padding: 8px 32px 32px;
+	}
+	.tpl-track :global(.snap-card) {
+		flex-shrink: 0;
+		width: 420px;
+		scroll-snap-align: center;
+	}
+	@media (max-width: 780px) {
+		.tpl-track :global(.snap-card) {
+			width: 84vw;
+		}
+	}
+</style>

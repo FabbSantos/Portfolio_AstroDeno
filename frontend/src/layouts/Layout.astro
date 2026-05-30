@@ -1,34 +1,38 @@
 ---
 interface Props {
 	title: string;
+	description?: string;
 }
 
-const { title } = Astro.props;
+const {
+	title,
+	description = 'Portfolio of Fabrício Bahiense, a Senior Software Engineer specializing in high-impact, scalable web applications and digital experiences.',
+} = Astro.props;
 ---
 
 <!doctype html>
-<html lang='pt-br'>
+<html lang='en'>
 	<head>
 		<meta charset='UTF-8' />
-		<meta name='viewport' content='width=device-width' />
+		<meta name='viewport' content='width=device-width,initial-scale=1' />
 
 		<!-- SEO Meta Tags -->
 		<title>{title}</title>
-		<meta
-			name='description'
-			content='Portfolio Page of Fabrício Bahiense, a Front-End / Mobile developer specializing in high-impact, captivating, and responsive web applications.'
-		/>
+		<meta name='description' content={description} />
 		<meta name='author' content='Fabrício Bahiense' />
-		<meta name='keywords' content='front-end developer, mobile developer, web development, portfolio, react, vue, astro' />
+		<meta
+			name='keywords'
+			content='senior software engineer, full stack developer, web development, portfolio, react, vue, .net, node.js, aws'
+		/>
 
 		<!-- Open Graph / Facebook / LinkedIn / WhatsApp -->
 		<meta property='og:type' content='website' />
 		<meta property='og:url' content={Astro.url.href} />
 		<meta property='og:title' content={title} />
-		<meta property='og:description' content='Portfolio Page of Fabrício Bahiense, a Front-End / Mobile developer specializing in high-impact, captivating, and responsive web applications.' />
-		<meta property='og:image' content={new URL('/android-chrome-512x512.png', Astro.url).href} />
-		<meta property='og:image:width' content='512' />
-		<meta property='og:image:height' content='512' />
+		<meta property='og:description' content={description} />
+		<meta property='og:image' content={new URL('/og.png', Astro.url).href} />
+		<meta property='og:image:width' content='1200' />
+		<meta property='og:image:height' content='630' />
 		<meta property='og:locale' content='pt_BR' />
 		<meta property='og:site_name' content='Fabrício Bahiense Portfolio' />
 
@@ -36,181 +40,308 @@ const { title } = Astro.props;
 		<meta name='twitter:card' content='summary_large_image' />
 		<meta name='twitter:url' content={Astro.url.href} />
 		<meta name='twitter:title' content={title} />
-		<meta name='twitter:description' content='Portfolio Page of Fabrício Bahiense, a Front-End / Mobile developer specializing in high-impact, captivating, and responsive web applications.' />
-		<meta name='twitter:image' content={new URL('/android-chrome-512x512.png', Astro.url).href} />
+		<meta name='twitter:description' content={description} />
+		<meta name='twitter:image' content={new URL('/og.png', Astro.url).href} />
 
 		<!-- Canonical URL -->
 		<link rel='canonical' href={Astro.url.href} />
+
+		<!-- Fonts: Inter (sans) + JetBrains Mono (technical labels) -->
+		<link rel='preconnect' href='https://fonts.googleapis.com' />
+		<link rel='preconnect' href='https://fonts.gstatic.com' crossorigin />
+		<link
+			href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap'
+			rel='stylesheet'
+		/>
 
 		<!-- Favicons -->
 		<link rel='apple-touch-icon' sizes='180x180' href='/apple-touch-icon.png' />
 		<link rel='icon' type='image/png' sizes='32x32' href='/favicon-32x32.png' />
 		<link rel='icon' type='image/png' sizes='16x16' href='/favicon-16x16.png' />
 		<link rel='manifest' href='/site.webmanifest' />
-		<link rel='mask-icon' href='/safari-pinned-tab.svg' color='#8710DB' />
+		<link rel='mask-icon' href='/safari-pinned-tab.svg' color='#FF5964' />
 
 		<!-- Theme Colors -->
-		<meta name='msapplication-TileColor' content='#8710DB' />
-		<meta name='theme-color' content='#000000' />
+		<meta name='msapplication-TileColor' content='#FF5964' />
+		<meta name='theme-color' content='#FBFBFD' />
 
 		<!-- Generator -->
 		<meta name='generator' content={Astro.generator} />
 
 		<!-- Schema.org JSON-LD Structured Data -->
-		<script type='application/ld+json' is:inline set:html={JSON.stringify({
-			"@context": "https://schema.org",
-			"@type": "Person",
-			"name": "Fabrício Bahiense",
-			"url": Astro.site || "https://fabsantos.dev",
-			"jobTitle": "Front-End Developer",
-			"description": "Front-End and Mobile Developer specializing in high-impact web applications",
-			"sameAs": [
-				"https://github.com/FabbSantos",
-				"https://www.linkedin.com/in/fabricio-b-santos/",
-				"https://www.instagram.com/fabbahiense_"
-			],
-			"knowsAbout": ["JavaScript", "TypeScript", "React", "Vue", "Astro", "Web Development", "Mobile Development"]
-		})} />
-
-		<!-- GSAP Library -->
 		<script
+			type='application/ld+json'
 			is:inline
-			src='https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js'
-		></script>
+			set:html={JSON.stringify({
+				'@context': 'https://schema.org',
+				'@type': 'Person',
+				name: 'Fabrício Bahiense',
+				url: Astro.site || 'https://fabsantos.dev',
+				jobTitle: 'Senior Software Engineer',
+				description:
+					'Senior Software Engineer specializing in high-impact, scalable web applications',
+				sameAs: [
+					'https://github.com/FabbSantos',
+					'https://www.linkedin.com/in/fabricio-b-santos/',
+					'https://www.instagram.com/fabbahiense_',
+				],
+				knowsAbout: [
+					'JavaScript',
+					'TypeScript',
+					'React',
+					'Vue',
+					'Astro',
+					'Web Development',
+					'Mobile Development',
+				],
+			})}
+		/>
 	</head>
 
 	<body>
-		<a href='#main-content' class='skip-link'>Pular para o conteúdo principal</a>
+		<a href='#main-content' class='skip-link' data-i18n='a11y.skip'>Skip to main content</a>
 		<slot />
+
+		<script>
+			import { initI18n } from '../i18n/i18n';
+			import { initSite } from '../scripts/site';
+
+			initI18n();
+			initSite();
+		</script>
 	</body>
 </html>
 
 <style is:global>
 	:root {
-		--accent: 136, 58, 234;
-		--accent-light: 224, 204, 250;
-		--accent-dark: 49, 10, 101;
+		--bg: #fbfbfd;
+		--bg-2: #f2f2f4;
+		--bg-3: #ffffff;
+		--ink: #1a1a1c;
+		--ink-2: #5c5c61;
+		--ink-3: #8e8e93;
+		--ink-4: #c7c7cc;
+		--accent: #ff5964; /* same bright-pink as the old theme */
+		--accent-2: #7c3aed;
+		--accent-soft: rgba(255, 89, 100, 0.1);
+		--rule: rgba(26, 26, 28, 0.07);
+		--rule-2: rgba(26, 26, 28, 0.14);
+		--sans: 'Inter', -apple-system, system-ui, sans-serif;
+		--mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
 
-		--bright-pink: #ff5964;
-		--accent-gradient: linear-gradient(
-			45deg,
-			rgb(var(--accent)),
-			rgb(var(--accent-light)) 30%,
-			white 60%
-		);
+		/* easings reused across components */
+		--ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+		--maxw: 1300px;
 	}
-	/* Aplicar transições apenas em elementos interativos */
-	a,
-	button,
-	.interactive-element,
-	svg path {
-		transition: color 0.2s ease-in-out, transform 0.2s ease-in-out, fill 0.2s ease-in-out;
+
+	* {
+		box-sizing: border-box;
+		margin: 0;
+		padding: 0;
 	}
+
 	html {
-		font-family:
-			'Work Sans',
-			Inter,
-			system-ui,
-			-apple-system,
-			BlinkMacSystemFont,
-			'Segoe UI',
-			Ubuntu,
-			sans-serif;
-		letter-spacing: -1px;
-		line-height: 48px;
-		font-weight: normal;
-		background: #000;
-		color: white;
-		background-size: 224px;
 		scroll-behavior: smooth;
-		transition: scroll-behavior 0.3s ease;
-	}
-	section,
-	.snap {
-		min-height: 100vh;
 	}
 
-	/* Skip link para acessibilidade */
+	html,
+	body {
+		background: var(--bg);
+		color: var(--ink);
+		font-family: var(--sans);
+		font-size: 17px;
+		line-height: 1.47;
+		-webkit-font-smoothing: antialiased;
+		/* `clip` (not `hidden`) prevents horizontal scrollbars without breaking
+		   position:sticky on the topbar. */
+		overflow-x: clip;
+	}
+
+	::selection {
+		background: var(--accent);
+		color: #fff;
+	}
+
+	a {
+		color: inherit;
+		text-decoration: none;
+	}
+
+	button {
+		font: inherit;
+		cursor: pointer;
+		border: none;
+		background: none;
+		color: inherit;
+	}
+
+	img {
+		max-width: 100%;
+		display: block;
+	}
+
+	code {
+		font-family: var(--mono);
+		font-size: 0.88em;
+		background: var(--accent-soft);
+		color: var(--accent);
+		padding: 1px 6px;
+		border-radius: 4px;
+	}
+
+	/* ===== Lenis smooth scroll ===== */
+	html.lenis,
+	html.lenis body {
+		height: auto;
+	}
+	.lenis.lenis-smooth {
+		scroll-behavior: auto !important;
+	}
+	.lenis.lenis-stopped {
+		overflow: hidden;
+	}
+
+	/* ===== Skip link (a11y) ===== */
 	.skip-link {
 		position: absolute;
 		top: -100px;
 		left: 0;
-		background: var(--bright-pink);
-		color: white;
+		background: var(--accent);
+		color: #fff;
 		padding: 0.75rem 1.5rem;
-		text-decoration: none;
 		z-index: 9999;
-		font-weight: bold;
+		font-weight: 600;
 		border-radius: 0 0 0.5rem 0;
 	}
 	.skip-link:focus {
 		top: 0;
 	}
 
-	a:hover,
-	a:focus-within,
-	a:focus {
-		color: var(--bright-pink);
+	/* ===== Shared design-system primitives ===== */
+
+	/* Mono eyebrow / section label */
+	.eyebrow {
+		font-family: var(--mono);
+		font-size: 12px;
+		font-weight: 600;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--ink-3);
 	}
-	a > svg:hover path {
-		fill: var(--bright-pink);
+	.eyebrow.accent {
+		color: var(--accent);
 	}
-	a > svg:hover {
-		transform: scale(1.07);
+
+	/* Emphasis word: weight + accent colour (replaces the serif-italic) */
+	.hl {
+		color: var(--accent);
+		font-weight: 800;
 	}
-	.fade-text {
-		color: rgba(227, 228, 230, 0.55);
+
+	/* Buttons */
+	.btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 13px 24px;
+		border-radius: 999px;
+		font-size: 15px;
+		font-weight: 500;
+		transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+		border: 1px solid transparent;
 	}
-	h2 {
-		font-size: clamp(1rem, 7vw, 3rem);
+	.btn-primary {
+		background: var(--ink);
+		color: #fff;
 	}
-	code {
-		font-family:
-			Menlo,
-			Monaco,
-			Lucida Console,
-			Liberation Mono,
-			DejaVu Sans Mono,
-			Bitstream Vera Sans Mono,
-			Courier New,
-			monospace;
+	.btn-primary:hover {
+		background: var(--accent);
+		transform: translateY(-1px);
 	}
-	.glassy {
-		--dot-bg: black;
-		--dot-color: rgba(255, 255, 255, 0.9);
-		--dot-size: 1px;
-		--dot-space: 22px;
-		background:
-			linear-gradient(
-					90deg,
-					var(--dot-bg) calc(var(--dot-space) - var(--dot-size)),
-					transparent 1%
-				)
-				center / var(--dot-space) var(--dot-space),
-			linear-gradient(
-					var(--dot-bg) calc(var(--dot-space) - var(--dot-size)),
-					transparent 1%
-				)
-				center / var(--dot-space) var(--dot-space),
-			var(--dot-color);
+	.btn-ghost {
+		border-color: var(--rule-2);
+		color: var(--ink);
 	}
-	.snap-mandatory::-webkit-scrollbar {
-		display: none;
+	.btn-ghost:hover {
+		background: var(--bg-2);
 	}
-	/* .snap-mandatory {
-		scroll-snap-type: y mandatory;
-		max-height: 100svh;
-		overflow-y: scroll;
+	.btn-link {
+		color: var(--accent);
+		font-weight: 500;
 	}
-	.snap {
-		min-height: 100svh;
-		scroll-snap-stop: always;
-		scroll-snap-align: start;
-	} */
-	@media (max-width: 768px) {
-		h2 {
-			text-align: center;
-			margin: 0 auto;
+	.btn-link::after {
+		content: ' →';
+		display: inline-block;
+		transition: transform 0.2s;
+	}
+	.btn-link:hover::after {
+		transform: translateX(4px);
+	}
+
+	/* Section wrapper + heading */
+	.section {
+		padding: 120px 32px;
+		max-width: var(--maxw);
+		margin: 0 auto;
+	}
+	.sec-head {
+		margin-bottom: 60px;
+		max-width: 780px;
+	}
+	.sec-head h2,
+	.sec-head h3 {
+		font-size: clamp(40px, 5.5vw, 72px);
+		font-weight: 800;
+		letter-spacing: -0.035em;
+		line-height: 1.02;
+	}
+	.sec-head .eyebrow {
+		display: block;
+		margin-bottom: 14px;
+	}
+	.sec-head p {
+		margin-top: 18px;
+		font-size: 18px;
+		color: var(--ink-2);
+		line-height: 1.55;
+		max-width: 60ch;
+	}
+
+	/* Scroll reveal */
+	.reveal {
+		opacity: 0;
+		transform: translateY(28px);
+		transition:
+			opacity 0.9s var(--ease-out-expo),
+			transform 0.9s var(--ease-out-expo);
+	}
+	.reveal.in {
+		opacity: 1;
+		transform: none;
+	}
+	.reveal.d1 { transition-delay: 0.05s; }
+	.reveal.d2 { transition-delay: 0.1s; }
+	.reveal.d3 { transition-delay: 0.15s; }
+	.reveal.d4 { transition-delay: 0.2s; }
+	.reveal.d5 { transition-delay: 0.25s; }
+	.reveal.d6 { transition-delay: 0.3s; }
+	.reveal.d7 { transition-delay: 0.35s; }
+	.reveal.d8 { transition-delay: 0.4s; }
+
+	@media (prefers-reduced-motion: reduce) {
+		html {
+			scroll-behavior: auto;
+		}
+		*,
+		*::before,
+		*::after {
+			animation-duration: 0.01ms !important;
+			animation-iteration-count: 1 !important;
+			transition-duration: 0.01ms !important;
+		}
+		.reveal {
+			opacity: 1;
+			transform: none;
 		}
 	}
 </style>

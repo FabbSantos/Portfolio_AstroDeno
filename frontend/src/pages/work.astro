@@ -1,0 +1,463 @@
+---
+import Layout from '../layouts/Layout.astro';
+import TopBar from '../components/site/TopBar.astro';
+import SiteFooter from '../components/site/SiteFooter.astro';
+import { getWorks } from '../api/works';
+
+const works = await getWorks();
+
+const statusLabel: Record<string, string> = {
+	live: 'Live',
+	archived: 'Archived',
+	nda: 'NDA',
+	beta: 'Beta',
+};
+const statusI18n: Record<string, string | undefined> = {
+	live: 'works.status.live',
+	archived: 'works.status.archived',
+};
+---
+
+<Layout title='Work — Fabrício Bahiense'>
+	<TopBar active='work' />
+	<main id='main-content'>
+		<section class='hero'>
+			<p class='eyebrow accent'>
+				<span class='dot'></span>
+				<span data-i18n='work.eyebrow'>2018 → 2026 · years in production</span>
+			</p>
+			<h1>
+				<span data-i18n='work.head1'>Real</span> <span class='hl' data-i18n='work.head2'>work.</span>
+			</h1>
+			<p class='lead' data-i18n='work.lead'>
+				These are the projects I can show openly. There is more — some under NDA, some I chose not
+				to publish. Want to hear about them? Write me.
+			</p>
+		</section>
+
+		<div class='filters' role='group' aria-label='Filter projects'>
+			<button class='filter is-active' data-f='all' data-i18n='works.filter.all'>all</button>
+			<button class='filter' data-f='professional' data-i18n='works.filter.professional'>
+				professional
+			</button>
+			<button class='filter' data-f='personal' data-i18n='works.filter.personal'>personal</button>
+		</div>
+
+		<section class='works'>
+			<div class='works-list' id='work-list'>
+				{
+					works.map((w, i) => (
+						<button
+							class:list={['work-row', 'reveal', `d${Math.min(i + 1, 8)}`]}
+							data-cat={w.type.join(' ')}
+							data-title={w.title}
+							data-desc={w.desc}
+							data-href={w.href ?? ''}
+							data-status={w.status}
+						>
+							<span class='work-num'>{String(i + 1).padStart(2, '0')}</span>
+							<span class='work-title'>{w.title}</span>
+							<span class='work-desc' data-i18n={w.descKey}>{w.desc}</span>
+							<span class='work-meta'>
+								{w.year && <span class='yr'>{w.year}</span>}
+								<span class:list={['work-status', w.status]} data-i18n={statusI18n[w.status]}>
+									{statusLabel[w.status]}
+								</span>
+							</span>
+							<span class='arr'>↗</span>
+						</button>
+					))
+				}
+			</div>
+		</section>
+
+		<section class='cta'>
+			<h2 class='reveal'>
+				<span data-i18n='work.cta.head1'>Something like</span>
+				<span class='hl' data-i18n='work.cta.head2'>yours?</span>
+			</h2>
+			<p class='sub reveal d1' data-i18n='work.cta.sub'>
+				If so, let's talk. I reply within 24 business hours.
+			</p>
+			<a href='/#contato' class='btn btn-primary reveal d2' data-i18n='hero.cta.hire'>Get in touch</a>
+		</section>
+	</main>
+	<SiteFooter />
+
+	<!-- Project detail modal -->
+	<div class='modal' id='work-modal' hidden>
+		<div class='modal-backdrop' data-close></div>
+		<div class='modal-card' role='dialog' aria-modal='true' aria-labelledby='modal-title'>
+			<button class='modal-close' data-close aria-label='Close'>✕</button>
+			<span class='modal-status' id='modal-status'></span>
+			<h2 class='modal-title' id='modal-title'></h2>
+			<p class='modal-desc' id='modal-desc'></p>
+			<a class='btn btn-primary' id='modal-link' href='#' target='_blank' rel='noopener'
+				data-i18n='works.viewProject'>View project</a
+			>
+		</div>
+	</div>
+</Layout>
+
+<style>
+	.hero {
+		text-align: center;
+		padding: 80px 32px 40px;
+		max-width: 1100px;
+		margin: 0 auto;
+	}
+	.hero .eyebrow {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		margin-bottom: 28px;
+	}
+	.hero .eyebrow .dot {
+		width: 7px;
+		height: 7px;
+		border-radius: 50%;
+		background: var(--accent);
+		animation: pulse 2s infinite;
+	}
+	.hero h1 {
+		font-size: clamp(64px, 11vw, 156px);
+		font-weight: 800;
+		letter-spacing: -0.045em;
+		line-height: 0.92;
+		max-width: 14ch;
+		margin: 0 auto;
+	}
+	.hero .lead {
+		margin: 32px auto 0;
+		max-width: 54ch;
+		font-size: clamp(16px, 1.5vw, 19px);
+		line-height: 1.5;
+		color: var(--ink-2);
+	}
+
+	/* Filters */
+	.filters {
+		display: flex;
+		gap: 8px;
+		flex-wrap: wrap;
+		justify-content: center;
+		margin: 48px auto 0;
+		max-width: 1100px;
+		padding: 0 32px;
+	}
+	.filter {
+		padding: 9px 16px;
+		border-radius: 999px;
+		border: 1px solid var(--rule-2);
+		background: transparent;
+		color: var(--ink-2);
+		font-family: var(--mono);
+		font-size: 12px;
+		font-weight: 500;
+		letter-spacing: 0.02em;
+		transition: all 0.2s;
+	}
+	.filter:hover {
+		color: var(--ink);
+		border-color: var(--ink-2);
+	}
+	.filter.is-active {
+		background: var(--ink);
+		color: #fff;
+		border-color: var(--ink);
+	}
+
+	/* Works list */
+	.works {
+		max-width: var(--maxw);
+		margin: 60px auto 0;
+		padding: 0 32px 80px;
+	}
+	.works-list {
+		border-top: 1px solid var(--rule);
+	}
+	.work-row {
+		width: 100%;
+		text-align: left;
+		display: grid;
+		grid-template-columns: 60px 1fr 1.2fr 140px 40px;
+		gap: 32px;
+		padding: 32px 0;
+		border-bottom: 1px solid var(--rule);
+		align-items: center;
+		transition:
+			padding-left 0.4s cubic-bezier(0.7, 0, 0.3, 1),
+			background 0.25s;
+	}
+	.work-row:hover {
+		padding-left: 16px;
+		background: var(--bg-2);
+	}
+	.work-row:hover .arr {
+		color: var(--accent);
+		transform: translate(4px, -4px);
+	}
+	.work-num {
+		font-family: var(--mono);
+		font-size: 13px;
+		color: var(--ink-3);
+	}
+	.work-title {
+		font-size: clamp(28px, 3.5vw, 42px);
+		font-weight: 700;
+		letter-spacing: -0.02em;
+		line-height: 1;
+	}
+	.work-desc {
+		font-size: 14px;
+		color: var(--ink-2);
+		line-height: 1.55;
+	}
+	.work-meta {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		align-items: flex-start;
+		font-size: 13px;
+	}
+	.work-meta .yr {
+		font-family: var(--mono);
+		color: var(--ink-2);
+	}
+	.work-status {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		padding: 3px 10px;
+		border: 1px solid var(--rule-2);
+		border-radius: 999px;
+		font-size: 11px;
+		font-weight: 500;
+		color: var(--ink-3);
+	}
+	.work-status.live {
+		color: #16a34a;
+		border-color: rgba(22, 163, 74, 0.3);
+		background: rgba(22, 163, 74, 0.06);
+	}
+	.work-status.live::before {
+		content: '';
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: #16a34a;
+		animation: pulse 2s infinite;
+	}
+	.work-status.nda,
+	.work-status.beta {
+		color: var(--accent);
+		background: var(--accent-soft);
+		border-color: rgba(255, 89, 100, 0.3);
+	}
+	.arr {
+		font-size: 22px;
+		color: var(--ink-4);
+		transition:
+			color 0.25s,
+			transform 0.4s cubic-bezier(0.7, 0, 0.3, 1);
+		text-align: right;
+	}
+
+	/* CTA */
+	.cta {
+		padding: 120px 32px;
+		text-align: center;
+	}
+	.cta h2 {
+		font-size: clamp(48px, 7vw, 80px);
+		font-weight: 800;
+		letter-spacing: -0.035em;
+		line-height: 1.02;
+		max-width: 18ch;
+		margin: 0 auto;
+	}
+	.cta .sub {
+		margin: 20px auto 36px;
+		font-size: 18px;
+		color: var(--ink-2);
+		max-width: 50ch;
+		line-height: 1.5;
+	}
+	.cta .email {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		font-family: var(--mono);
+		font-weight: 600;
+		font-size: clamp(20px, 3vw, 32px);
+		color: var(--accent);
+		transition: gap 0.25s;
+	}
+	.cta .email::after {
+		content: '→';
+	}
+	.cta .email:hover {
+		gap: 18px;
+	}
+
+	@keyframes pulse {
+		50% {
+			opacity: 0.4;
+		}
+	}
+
+	@media (max-width: 900px) {
+		.work-row {
+			grid-template-columns: 40px 1fr;
+			gap: 14px;
+			padding: 24px 0;
+		}
+		.work-desc,
+		.work-meta,
+		.arr {
+			display: none;
+		}
+	}
+
+	/* Modal */
+	.modal[hidden] {
+		display: none;
+	}
+	.modal {
+		position: fixed;
+		inset: 0;
+		z-index: 100;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 24px;
+	}
+	.modal-backdrop {
+		position: absolute;
+		inset: 0;
+		background: rgba(26, 26, 28, 0.4);
+		backdrop-filter: blur(6px);
+		animation: fade 0.25s ease;
+	}
+	.modal-card {
+		position: relative;
+		background: var(--bg-3);
+		border: 1px solid var(--rule);
+		border-radius: 20px;
+		padding: 40px;
+		max-width: 560px;
+		width: 100%;
+		box-shadow: 0 40px 100px -30px rgba(0, 0, 0, 0.4);
+		animation: pop 0.3s var(--ease-out-expo);
+	}
+	.modal-close {
+		position: absolute;
+		top: 16px;
+		right: 16px;
+		width: 36px;
+		height: 36px;
+		border-radius: 50%;
+		background: var(--bg-2);
+		color: var(--ink-2);
+		font-size: 14px;
+		transition: all 0.2s;
+	}
+	.modal-close:hover {
+		background: var(--accent);
+		color: #fff;
+	}
+	.modal-status {
+		font-family: var(--mono);
+		font-size: 12px;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: var(--ink-3);
+	}
+	.modal-title {
+		font-size: clamp(28px, 4vw, 40px);
+		font-weight: 800;
+		letter-spacing: -0.02em;
+		line-height: 1.05;
+		margin: 10px 0 16px;
+	}
+	.modal-desc {
+		font-size: 16px;
+		line-height: 1.6;
+		color: var(--ink-2);
+		margin-bottom: 28px;
+	}
+	#modal-link[hidden] {
+		display: none;
+	}
+
+	@keyframes fade {
+		from {
+			opacity: 0;
+		}
+	}
+	@keyframes pop {
+		from {
+			opacity: 0;
+			transform: translateY(20px) scale(0.97);
+		}
+	}
+</style>
+
+<script>
+	import { t, getLocale } from '../i18n/i18n';
+
+	// --- Filters ---
+	const filters = document.querySelectorAll<HTMLButtonElement>('.filter');
+	const rows = Array.from(document.querySelectorAll<HTMLElement>('.work-row'));
+	filters.forEach((btn) => {
+		btn.addEventListener('click', () => {
+			filters.forEach((b) => b.classList.remove('is-active'));
+			btn.classList.add('is-active');
+			const f = (btn.dataset.f || '').toLowerCase();
+			rows.forEach((row) => {
+				// case-insensitive, whitespace-tolerant match against the row's tag list
+				const cats = (row.dataset.cat || '').toLowerCase().split(/\s+/);
+				row.style.display = f === 'all' || cats.includes(f) ? '' : 'none';
+			});
+		});
+	});
+
+	// --- Modal ---
+	const modal = document.getElementById('work-modal') as HTMLElement;
+	const mStatus = document.getElementById('modal-status')!;
+	const mTitle = document.getElementById('modal-title')!;
+	const mDesc = document.getElementById('modal-desc')!;
+	const mLink = document.getElementById('modal-link') as HTMLAnchorElement;
+
+	const statusText = (s: string) => {
+		const loc = getLocale();
+		if (s === 'live') return t('works.status.live', loc);
+		if (s === 'archived') return t('works.status.archived', loc);
+		return s.toUpperCase();
+	};
+
+	const openModal = (row: HTMLElement) => {
+		mTitle.textContent = row.dataset.title || '';
+		mDesc.textContent = row.dataset.desc || '';
+		mStatus.textContent = statusText(row.dataset.status || '');
+		const href = row.dataset.href;
+		if (href) {
+			mLink.href = href;
+			mLink.hidden = false;
+		} else {
+			mLink.hidden = true;
+		}
+		modal.hidden = false;
+		document.body.style.overflow = 'hidden';
+	};
+	const closeModal = () => {
+		modal.hidden = true;
+		document.body.style.overflow = '';
+	};
+
+	rows.forEach((row) => row.addEventListener('click', () => openModal(row)));
+	modal.querySelectorAll('[data-close]').forEach((el) => el.addEventListener('click', closeModal));
+	window.addEventListener('keydown', (e) => {
+		if (e.key === 'Escape' && !modal.hidden) closeModal();
+	});
+</script>

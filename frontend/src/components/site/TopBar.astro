@@ -1,0 +1,185 @@
+---
+interface Props {
+	active?: 'work' | 'about' | 'templates' | 'contact';
+}
+const { active } = Astro.props;
+---
+
+<header class='topbar' id='topbar'>
+	<div class='inner'>
+		<a href='/' class='brand'>Fab<span class='dot'>.</span> Bahiense</a>
+
+		<button class='nav-toggle' id='nav-toggle' aria-label='Menu' aria-expanded='false'>
+			<span></span><span></span>
+		</button>
+
+		<nav class='nav-mini' id='nav-mini'>
+			<a href='/work' data-i18n='nav.work' class:list={[{ 'is-active': active === 'work' }]}>Work</a>
+			<a href='/about' data-i18n='nav.about' class:list={[{ 'is-active': active === 'about' }]}>About</a>
+			<a
+				href='/templates'
+				data-i18n='nav.templates'
+				class:list={[{ 'is-active': active === 'templates' }]}>Templates</a
+			>
+			<a href='/#contato' data-i18n='nav.contact' class:list={[{ 'is-active': active === 'contact' }]}
+				>Contact</a
+			>
+
+			<div class='lang-switch' id='lang-switch' role='group' aria-label='Language'>
+				<button class='lang-option active' data-lang='en'>EN</button>
+				<button class='lang-option' data-lang='pt'>PT</button>
+				<span class='lang-slider'></span>
+			</div>
+		</nav>
+	</div>
+</header>
+
+<style>
+	.topbar {
+		position: sticky;
+		top: 0;
+		z-index: 50;
+		padding: 20px 32px;
+		background: rgba(251, 251, 253, 0);
+		backdrop-filter: saturate(180%) blur(0);
+		transition:
+			background 0.3s,
+			backdrop-filter 0.3s,
+			border-color 0.3s,
+			padding 0.3s;
+		border-bottom: 1px solid transparent;
+	}
+	.topbar.is-scrolled {
+		background: rgba(251, 251, 253, 0.85);
+		backdrop-filter: saturate(180%) blur(14px);
+		border-bottom-color: var(--rule);
+		padding: 14px 32px;
+	}
+	.inner {
+		max-width: var(--maxw);
+		margin: 0 auto;
+		width: 100%;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+	.brand {
+		font-weight: 700;
+		font-size: 17px;
+		letter-spacing: -0.02em;
+		display: inline-flex;
+		align-items: center;
+	}
+	.brand .dot {
+		color: var(--accent);
+	}
+	.nav-mini {
+		display: flex;
+		align-items: center;
+		gap: 24px;
+		font-size: 14px;
+		color: var(--ink-2);
+	}
+	.nav-mini a {
+		transition: color 0.2s;
+	}
+	.nav-mini a:hover {
+		color: var(--ink);
+	}
+	.nav-mini a.is-active {
+		color: var(--ink);
+		font-weight: 600;
+	}
+
+	/* Language switch */
+	.lang-switch {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		border: 1px solid var(--rule-2);
+		border-radius: 999px;
+		padding: 2px;
+	}
+	.lang-option {
+		position: relative;
+		z-index: 1;
+		font-family: var(--mono);
+		font-size: 11px;
+		font-weight: 600;
+		letter-spacing: 0.5px;
+		padding: 0.25rem 0.6rem;
+		color: var(--ink-3);
+		transition: color 0.3s ease;
+		border-radius: 999px;
+	}
+	.lang-option.active {
+		color: #fff;
+	}
+	.lang-slider {
+		position: absolute;
+		top: 2px;
+		left: 2px;
+		width: calc(50% - 2px);
+		height: calc(100% - 4px);
+		background: var(--ink);
+		border-radius: 999px;
+		transition: transform 0.3s var(--ease-out-expo);
+		pointer-events: none;
+	}
+	.lang-switch.pt .lang-slider {
+		transform: translateX(100%);
+	}
+
+	/* Mobile menu toggle */
+	.nav-toggle {
+		display: none;
+		flex-direction: column;
+		gap: 5px;
+		padding: 6px;
+	}
+	.nav-toggle span {
+		width: 22px;
+		height: 2px;
+		background: var(--ink);
+		border-radius: 2px;
+		transition: transform 0.3s var(--ease-out-expo), opacity 0.3s;
+	}
+	.topbar.nav-open .nav-toggle span:first-child {
+		transform: translateY(7px) rotate(45deg);
+	}
+	.topbar.nav-open .nav-toggle span:last-child {
+		transform: translateY(-7px) rotate(-45deg);
+	}
+
+	@media (max-width: 780px) {
+		.topbar {
+			padding: 18px 20px;
+		}
+		.nav-toggle {
+			display: flex;
+		}
+		.nav-mini {
+			position: absolute;
+			top: 100%;
+			left: 0;
+			right: 0;
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 18px;
+			padding: 24px 20px 28px;
+			background: rgba(251, 251, 253, 0.96);
+			backdrop-filter: saturate(180%) blur(14px);
+			border-bottom: 1px solid var(--rule);
+			font-size: 16px;
+			transform: translateY(-8px);
+			opacity: 0;
+			pointer-events: none;
+			transition: opacity 0.25s, transform 0.25s var(--ease-out-expo);
+		}
+		.topbar.nav-open .nav-mini {
+			transform: translateY(0);
+			opacity: 1;
+			pointer-events: auto;
+		}
+	}
+</style>

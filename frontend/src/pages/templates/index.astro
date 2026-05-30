@@ -1,0 +1,265 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import TopBar from '../../components/site/TopBar.astro';
+import SiteFooter from '../../components/site/SiteFooter.astro';
+import { templates } from '../../data/templates';
+import { translations } from '../../i18n/translations';
+
+const en = translations.en;
+---
+
+<Layout title='Templates — Fabrício Bahiense'>
+	<TopBar active='templates' />
+	<main id='main-content'>
+		<section class='hero'>
+			<span class='eyebrow accent' data-i18n='templates.gallery.eyebrow'>Templates</span>
+			<h1>
+				<span data-i18n='templates.gallery.head1'>Pick a</span>
+				<span class='hl' data-i18n='templates.gallery.head2'>starting point.</span>
+			</h1>
+			<p class='lead' data-i18n='templates.gallery.lead'>
+				Four directions, four audiences. Click any card to walk through the live template — the
+				code lives in this repo, so customizing one for your brand takes days, not months.
+			</p>
+		</section>
+
+		<section class='grid-wrap'>
+			<div class='tpl-grid'>
+				{
+					templates.map((tpl) => (
+						<article class={`pv pv-${tpl.kind}`}>
+							<a href={`/templates/${tpl.slug}`} class='pv-frame' aria-label={`Open ${tpl.name} ${tpl.accent}`}>
+								<iframe
+									src={`/templates/${tpl.slug}`}
+									title={`${tpl.name} ${tpl.accent} preview`}
+									loading='lazy'
+									tabindex='-1'
+									aria-hidden='true'
+								/>
+								<span class='pv-open'>Open template ↗</span>
+							</a>
+							<div class='pv-meta'>
+								<div class='pv-top'>
+									<span class='pv-cat' data-i18n={tpl.catKey}>{en[tpl.catKey]}</span>
+									<span class='pv-days'>{tpl.days} <span data-i18n='templates.days.word'>days</span></span>
+								</div>
+								<h2>
+									{tpl.name} <span class='hl'>{tpl.accent}</span>
+								</h2>
+								<p class='pv-lead' data-i18n={`tpl.${tpl.slug}.lead`}>{en[`tpl.${tpl.slug}.lead`] ?? ''}</p>
+								<div class='pv-foot'>
+									<span class='pv-price'>{tpl.price}</span>
+									<a href={`/?template=${tpl.slug}#contato`} class='pv-cta' data-i18n='templates.want'>
+										I want this template →
+									</a>
+								</div>
+							</div>
+						</article>
+					))
+				}
+			</div>
+		</section>
+
+		<section class='cta'>
+			<h2 class='reveal'>
+				<span data-i18n='templates.cta.head1'>Is this</span>
+				<span class='hl' data-i18n='templates.cta.head2'>the one?</span>
+			</h2>
+			<p class='sub reveal d1' data-i18n='templates.cta.sub'>
+				Send me your domain, logo and what needs to change. In a few business days the site is live.
+			</p>
+			<a href='/#contato' class='btn btn-primary reveal d2' data-i18n='templates.want'>
+				I want this template
+			</a>
+		</section>
+	</main>
+	<SiteFooter />
+</Layout>
+
+<style>
+	.hero {
+		text-align: center;
+		padding: 80px 32px 56px;
+		max-width: 1100px;
+		margin: 0 auto;
+	}
+	.hero .eyebrow {
+		display: block;
+		margin-bottom: 16px;
+	}
+	.hero h1 {
+		font-size: clamp(48px, 8vw, 112px);
+		font-weight: 800;
+		letter-spacing: -0.04em;
+		line-height: 0.96;
+		max-width: 16ch;
+		margin: 0 auto;
+	}
+	.hero .lead {
+		margin: 28px auto 0;
+		max-width: 60ch;
+		font-size: clamp(16px, 1.5vw, 19px);
+		line-height: 1.5;
+		color: var(--ink-2);
+	}
+
+	.grid-wrap {
+		max-width: var(--maxw);
+		margin: 40px auto 0;
+		padding: 0 32px;
+	}
+	.tpl-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 40px;
+	}
+	@media (max-width: 900px) {
+		.tpl-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	/* Card */
+	.pv {
+		display: flex;
+		flex-direction: column;
+		background: var(--bg-3);
+		border: 1px solid var(--rule);
+		border-radius: 20px;
+		overflow: hidden;
+		transition: transform 0.4s var(--ease-out-expo), box-shadow 0.4s var(--ease-out-expo);
+	}
+	.pv:hover {
+		transform: translateY(-6px);
+		box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.18);
+	}
+
+	.pv-frame {
+		position: relative;
+		display: block;
+		aspect-ratio: 16 / 11;
+		overflow: hidden;
+		background: var(--bg-2);
+		border-bottom: 1px solid var(--rule);
+	}
+	.pv-frame iframe {
+		position: absolute;
+		inset: 0;
+		width: 250%;
+		height: 250%;
+		transform: scale(0.4);
+		transform-origin: top left;
+		border: 0;
+		pointer-events: none;
+		background: var(--bg-3);
+	}
+	/* Subtle overlay + hover label */
+	.pv-frame::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(180deg, transparent 60%, rgba(26, 26, 28, 0.18));
+		pointer-events: none;
+		opacity: 0;
+		transition: opacity 0.3s;
+	}
+	.pv:hover .pv-frame::after {
+		opacity: 1;
+	}
+	.pv-open {
+		position: absolute;
+		bottom: 16px;
+		left: 50%;
+		transform: translateX(-50%) translateY(8px);
+		background: var(--ink);
+		color: #fff;
+		font-family: var(--mono);
+		font-size: 12px;
+		font-weight: 600;
+		padding: 8px 16px;
+		border-radius: 999px;
+		letter-spacing: 0.04em;
+		opacity: 0;
+		transition: all 0.3s var(--ease-out-expo);
+	}
+	.pv:hover .pv-open {
+		opacity: 1;
+		transform: translateX(-50%) translateY(0);
+	}
+
+	/* Meta */
+	.pv-meta {
+		padding: 28px 28px 24px;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+	.pv-top {
+		display: flex;
+		justify-content: space-between;
+		font-family: var(--mono);
+		font-size: 12px;
+		color: var(--ink-3);
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+	}
+	.pv-cat {
+		color: var(--accent);
+		font-weight: 600;
+	}
+	.pv-meta h2 {
+		font-size: clamp(26px, 3vw, 36px);
+		font-weight: 800;
+		letter-spacing: -0.02em;
+		line-height: 1;
+	}
+	.pv-lead {
+		font-size: 14px;
+		line-height: 1.6;
+		color: var(--ink-2);
+	}
+	.pv-foot {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-top: 4px;
+		padding-top: 18px;
+		border-top: 1px solid var(--rule);
+	}
+	.pv-price {
+		font-weight: 700;
+		color: var(--ink);
+		font-size: 15px;
+	}
+	.pv-cta {
+		font-family: var(--mono);
+		font-size: 13px;
+		color: var(--accent);
+		font-weight: 600;
+		transition: gap 0.2s;
+	}
+	.pv-cta:hover {
+		text-decoration: underline;
+	}
+
+	/* CTA */
+	.cta {
+		padding: 120px 32px;
+		text-align: center;
+	}
+	.cta h2 {
+		font-size: clamp(40px, 6vw, 72px);
+		font-weight: 800;
+		letter-spacing: -0.035em;
+		line-height: 1.02;
+		max-width: 18ch;
+		margin: 0 auto;
+	}
+	.cta .sub {
+		margin: 20px auto 36px;
+		font-size: 18px;
+		color: var(--ink-2);
+		max-width: 50ch;
+		line-height: 1.5;
+	}
+</style>

@@ -1,6 +1,25 @@
 # dependencies
 node_modules/
 
-.vscode/
+# build output
+dist/
+.vercel/
+.astro/
 
-.ideia/
+# IDE / editor settings
+.vscode/
+.idea/
+
+# devcontainer (personal docker setup)
+.devcontainer/
+
+# tooling state
+.claude/
+
+# handoff bundle (não vai pro repo)
+/Fabs Site-handoff/
+/FabsSite-handoff/
+
+# env
+.env
+.env.local

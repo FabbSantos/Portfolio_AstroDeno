@@ -1,0 +1,160 @@
+---
+import type { TemplateMeta } from '../../data/templates';
+import { translations } from '../../i18n/translations';
+
+interface Props {
+	tpl: TemplateMeta;
+	class?: string;
+}
+const { tpl, class: cls } = Astro.props;
+// SSR default text (English); swapped client-side via data-i18n.
+const cat = translations.en[tpl.catKey] ?? '';
+const desc = translations.en[tpl.descKey] ?? '';
+---
+
+<a href={`/templates/${tpl.slug}`} class:list={['tpl-card', cls]}>
+	<div class='tpl-frame' style={`background:${tpl.grad}`}>
+		<iframe
+			src={`/templates/${tpl.slug}`}
+			title={`${tpl.name} ${tpl.accent} preview`}
+			loading='lazy'
+			tabindex='-1'
+			aria-hidden='true'></iframe>
+		<span class='tpl-open'>Abrir →</span>
+	</div>
+	<div class='tpl-meta'>
+		<div class='top'>
+			<span class='cat' data-i18n={tpl.catKey}>{cat}</span>
+			<span>{tpl.days}d</span>
+		</div>
+		<h4>{tpl.name} <span class='hl'>{tpl.accent}</span></h4>
+		<p class='desc' data-i18n={tpl.descKey}>{desc}</p>
+		<div class='foot'>
+			<span class='price'>{tpl.price}</span>
+			<span class='pick' data-i18n='templates.pick'>Choose</span>
+		</div>
+	</div>
+</a>
+
+<style>
+	.tpl-card {
+		background: #fff;
+		border-radius: 18px;
+		overflow: hidden;
+		border: 1px solid var(--rule);
+		transition:
+			transform 0.35s var(--ease-out-expo),
+			box-shadow 0.35s;
+		display: flex;
+		flex-direction: column;
+	}
+	.tpl-card:hover {
+		transform: translateY(-6px);
+		box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.18);
+	}
+
+	/* Live iframe preview (same approach as /templates gallery) */
+	.tpl-frame {
+		position: relative;
+		aspect-ratio: 16 / 10;
+		overflow: hidden;
+		border-bottom: 1px solid var(--rule);
+	}
+	.tpl-frame iframe {
+		position: absolute;
+		inset: 0;
+		width: 250%;
+		height: 250%;
+		transform: scale(0.4);
+		transform-origin: top left;
+		border: 0;
+		pointer-events: none;
+		background: #fff;
+	}
+	.tpl-frame::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(180deg, transparent 60%, rgba(26, 26, 28, 0.18));
+		opacity: 0;
+		transition: opacity 0.3s;
+		pointer-events: none;
+	}
+	.tpl-card:hover .tpl-frame::after {
+		opacity: 1;
+	}
+	.tpl-open {
+		position: absolute;
+		bottom: 16px;
+		left: 50%;
+		transform: translateX(-50%) translateY(8px);
+		background: var(--ink);
+		color: #fff;
+		font-family: var(--mono);
+		font-size: 12px;
+		font-weight: 600;
+		padding: 8px 16px;
+		border-radius: 999px;
+		letter-spacing: 0.04em;
+		opacity: 0;
+		transition: all 0.3s var(--ease-out-expo);
+	}
+	.tpl-card:hover .tpl-open {
+		opacity: 1;
+		transform: translateX(-50%) translateY(0);
+	}
+
+	/* Meta */
+	.tpl-meta {
+		padding: 22px 24px;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+	.top {
+		display: flex;
+		justify-content: space-between;
+		font-family: var(--mono);
+		font-size: 12px;
+		color: var(--ink-3);
+	}
+	.top .cat {
+		color: var(--accent);
+		font-weight: 600;
+	}
+	.tpl-meta h4 {
+		font-size: 21px;
+		font-weight: 700;
+		letter-spacing: -0.02em;
+	}
+	.desc {
+		font-size: 13px;
+		color: var(--ink-2);
+		line-height: 1.5;
+	}
+	.foot {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-top: 8px;
+		padding-top: 14px;
+		border-top: 1px solid var(--rule);
+		font-size: 13px;
+	}
+	.foot .price {
+		font-weight: 600;
+		color: var(--ink);
+	}
+	.foot .pick {
+		color: var(--accent);
+		font-weight: 500;
+	}
+	.foot .pick::after {
+		content: ' →';
+		display: inline-block;
+		transition: transform 0.2s;
+	}
+	.tpl-card:hover .foot .pick::after {
+		transform: translateX(4px);
+	}
+</style>

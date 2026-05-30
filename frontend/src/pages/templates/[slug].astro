@@ -1,0 +1,861 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import TopBar from '../../components/site/TopBar.astro';
+import SiteFooter from '../../components/site/SiteFooter.astro';
+import TemplateCard from '../../components/templates/TemplateCard.astro';
+import { templates, type TemplateMeta } from '../../data/templates';
+import { translations } from '../../i18n/translations';
+
+export function getStaticPaths() {
+	return templates.map((tpl) => ({ params: { slug: tpl.slug }, props: { tpl } }));
+}
+
+interface Props {
+	tpl: TemplateMeta;
+}
+const { tpl } = Astro.props;
+const en = translations.en;
+const idx = templates.findIndex((t) => t.slug === tpl.slug);
+const total = templates.length;
+const num = String(idx + 1).padStart(2, '0');
+const cat = en[tpl.catKey] ?? '';
+const lead = en[`tpl.${tpl.slug}.lead`] ?? '';
+const related = [1, 2, 3].map((o) => templates[(idx + o) % total]);
+const included = ['templates.included.1', 'templates.included.2', 'templates.included.3', 'templates.included.4', 'templates.included.5'];
+const steps = [
+	{ t: 'templates.steps.1.t', d: 'templates.steps.1.d' },
+	{ t: 'templates.steps.2.t', d: 'templates.steps.2.d' },
+	{ t: 'templates.steps.3.t', d: 'templates.steps.3.d' },
+];
+---
+
+<Layout title={`${tpl.name} ${tpl.accent} — Template · Fabrício Bahiense`} description={lead}>
+	<TopBar active='templates' />
+	<main id='main-content'>
+		<a href='/templates' class='back' data-i18n='templates.back'>Back to templates</a>
+
+		<section class='hero'>
+			<div class='top'>
+				<div class='meta'>
+					<b><span data-i18n='templates.meta.label'>Template</span> {num} / {total}</b>
+					· <span data-i18n={tpl.catKey}>{cat}</span> ·
+					<span data-i18n='templates.delivery'>delivery in</span>
+					<b>{tpl.days} <span data-i18n='templates.days.word'>days</span></b>
+				</div>
+				<span class='price'>{tpl.price}</span>
+			</div>
+			<h1>{tpl.name} <span class='hl'>{tpl.accent}</span></h1>
+			<p class='lead' data-i18n={`tpl.${tpl.slug}.lead`}>{lead}</p>
+			<div class='actions'>
+				<a href={`/?template=${tpl.slug}#contato`} class='btn btn-primary' data-i18n='templates.want'>I want this template</a>
+			</div>
+		</section>
+
+		<div class='preview-wrap'>
+			<div class='picker' aria-label='Try accent colors'>
+				<span class='eyebrow'>Accent</span>
+				<button class='sw is-active' data-c='#FF5964' style='background:#FF5964' aria-label='Red'></button>
+				<button class='sw' data-c='#7C3AED' style='background:#7C3AED' aria-label='Purple'></button>
+				<button class='sw' data-c='#16A34A' style='background:#16A34A' aria-label='Green'></button>
+				<button class='sw' data-c='#0EA5E9' style='background:#0EA5E9' aria-label='Blue'></button>
+				<button class='sw' data-c='#E07A1F' style='background:#E07A1F' aria-label='Orange'></button>
+			</div>
+			<div class='preview' id='tpl-preview' style={`background:${tpl.grad}`}>
+				<div class='browser'>
+					<div class='bar'>
+						<i></i><i></i><i></i>
+						<div class='url'>{tpl.slug}.com</div>
+					</div>
+					<div class={`body wf-body wf-${tpl.kind}`}>
+						<div class='wf-nav'>
+							<span class='wf-dot'></span>
+							<span class='wf-bar w50'></span>
+							<span class='wf-bar w30'></span>
+							<span class='wf-bar w30'></span>
+							<span class='wf-cta'></span>
+						</div>
+
+						{tpl.kind === 'saas' && (
+							<>
+								<div class='wf-hero'>
+									<div class='wf-h1'></div>
+									<div class='wf-bar w70'></div>
+									<div class='wf-bar w50'></div>
+									<div class='wf-ctas'><span class='wf-cta'></span><span class='wf-cta ghost'></span></div>
+								</div>
+								<div class='wf-pricing'>
+									<div class='wf-pcard'></div>
+									<div class='wf-pcard mid'></div>
+									<div class='wf-pcard'></div>
+								</div>
+							</>
+						)}
+
+						{tpl.kind === 'agency' && (
+							<>
+								<div class='wf-hero'>
+									<div class='wf-h1'></div>
+									<div class='wf-bar w70'></div>
+								</div>
+								<div class='wf-grid2'>
+									<div class='wf-tile'></div>
+									<div class='wf-tile'></div>
+									<div class='wf-tile'></div>
+									<div class='wf-tile'></div>
+								</div>
+							</>
+						)}
+
+						{tpl.kind === 'shop' && (
+							<>
+								<div class='wf-hero'>
+									<div class='wf-h1'></div>
+									<div class='wf-bar w50'></div>
+								</div>
+								<div class='wf-grid3'>
+									<div class='wf-prod'></div>
+									<div class='wf-prod'></div>
+									<div class='wf-prod'></div>
+								</div>
+							</>
+						)}
+
+						{tpl.kind === 'event' && (
+							<>
+								<div class='wf-hero'>
+									<div class='wf-h1'></div>
+									<div class='wf-bar w50'></div>
+								</div>
+								<div class='wf-list'>
+									{[1, 2, 3, 4].map(() => (
+										<div class='wf-row'>
+											<span class='wf-av'></span>
+											<div>
+												<div class='wf-bar w50'></div>
+												<div class='wf-bar w30'></div>
+											</div>
+										</div>
+									))}
+								</div>
+							</>
+						)}
+
+						{tpl.kind === 'cv' && (
+							<>
+								<div class='wf-name'></div>
+								<div class='wf-bar w50'></div>
+								<div class='wf-timeline'>
+									{[1, 2, 3, 4].map(() => (
+										<div class='wf-tline'>
+											<span class='wf-tdot'></span>
+											<div class='wf-bar w70'></div>
+										</div>
+									))}
+								</div>
+							</>
+						)}
+
+						{tpl.kind === 'app' && (
+							<div class='wf-app'>
+								<div class='wf-phone'>
+									<div class='wf-screen'>
+										<div class='wf-bar w50'></div>
+										<div class='wf-tile'></div>
+										<div class='wf-bar w70'></div>
+										<div class='wf-bar w50'></div>
+									</div>
+								</div>
+							</div>
+						)}
+
+						{tpl.kind === 'longform' && (
+							<>
+								<div class='wf-hero'>
+									<div class='wf-h1'></div>
+								</div>
+								<div class='wf-cols'>
+									<div class='wf-col'>
+										<div class='wf-bar w70'></div>
+										<div class='wf-bar'></div>
+										<div class='wf-bar w50'></div>
+										<div class='wf-bar w70'></div>
+										<div class='wf-bar'></div>
+									</div>
+									<div class='wf-col'>
+										<div class='wf-bar'></div>
+										<div class='wf-bar w70'></div>
+										<div class='wf-bar w50'></div>
+										<div class='wf-bar'></div>
+										<div class='wf-bar w70'></div>
+									</div>
+								</div>
+							</>
+						)}
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<section class='specs reveal'>
+			<div class='col'>
+				<h3 data-i18n='templates.included.title'>What's included</h3>
+				<ul>
+					{included.map((k) => <li data-i18n={k}>{en[k]}</li>)}
+				</ul>
+			</div>
+			<div class='col'>
+				<h3 data-i18n='templates.steps.title'>How it works</h3>
+				<ol class='steps'>
+					{
+						steps.map((s, i) => (
+							<li>
+								<span class='step-n'>{i + 1}</span>
+								<div>
+									<b data-i18n={s.t}>{en[s.t]}</b>
+									<p data-i18n={s.d}>{en[s.d]}</p>
+								</div>
+							</li>
+						))
+					}
+				</ol>
+			</div>
+		</section>
+
+		<section class='related reveal'>
+			<h3><span data-i18n='templates.related'>Other templates</span></h3>
+			<div class='rel-grid'>
+				{related.map((r) => <TemplateCard tpl={r} />)}
+			</div>
+		</section>
+
+		<section class='cta'>
+			<h2 class='reveal'>
+				<span data-i18n='templates.cta.head1'>Is this</span>
+				<span class='hl' data-i18n='templates.cta.head2'>the one?</span>
+			</h2>
+			<p class='reveal d1' data-i18n='templates.cta.sub'>
+				Send me your domain, logo and what needs to change. In a few business days the site is live.
+			</p>
+			<a href={`/?template=${tpl.slug}#contato`} class='btn btn-primary reveal d2' data-i18n='templates.want'>
+				I want this template
+			</a>
+		</section>
+	</main>
+	<SiteFooter />
+</Layout>
+
+<style>
+	.back {
+		max-width: 1100px;
+		margin: 24px auto 0;
+		padding: 0 32px;
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-family: var(--mono);
+		font-size: 13px;
+		color: var(--ink-3);
+		transition:
+			color 0.2s,
+			gap 0.2s;
+	}
+	.back::before {
+		content: '‹';
+		font-size: 18px;
+		line-height: 0;
+	}
+	.back:hover {
+		color: var(--accent);
+		gap: 14px;
+	}
+
+	.hero {
+		padding: 40px 32px 56px;
+		max-width: 1100px;
+		margin: 0 auto;
+	}
+	.hero .top {
+		display: flex;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 16px;
+		align-items: flex-end;
+		margin-bottom: 28px;
+	}
+	.hero .meta {
+		font-family: var(--mono);
+		font-size: 13px;
+		color: var(--ink-3);
+	}
+	.hero .meta b {
+		color: var(--ink);
+		font-weight: 600;
+	}
+	.hero .price {
+		background: var(--ink);
+		color: #fff;
+		padding: 10px 18px;
+		border-radius: 999px;
+		font-size: 14px;
+		font-weight: 600;
+	}
+	.hero h1 {
+		font-size: clamp(56px, 9vw, 128px);
+		font-weight: 800;
+		letter-spacing: -0.045em;
+		line-height: 0.92;
+		max-width: 14ch;
+	}
+	.hero .lead {
+		margin-top: 24px;
+		max-width: 54ch;
+		font-size: clamp(17px, 1.6vw, 21px);
+		line-height: 1.5;
+		color: var(--ink-2);
+	}
+	.hero .actions {
+		display: flex;
+		gap: 14px;
+		margin-top: 32px;
+		flex-wrap: wrap;
+	}
+
+	/* Preview */
+	.preview-wrap {
+		max-width: var(--maxw);
+		margin: 0 auto;
+		padding: 0 32px;
+	}
+	.preview {
+		border-radius: 24px;
+		padding: 64px 48px;
+		box-shadow: 0 50px 120px -30px rgba(0, 0, 0, 0.18);
+	}
+	.browser {
+		background: #fff;
+		border-radius: 14px;
+		overflow: hidden;
+		box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.25);
+	}
+	.browser .bar {
+		height: 36px;
+		background: var(--bg-2);
+		display: flex;
+		align-items: center;
+		padding: 0 14px;
+		gap: 6px;
+		border-bottom: 1px solid var(--rule);
+	}
+	.browser .bar i {
+		width: 11px;
+		height: 11px;
+		border-radius: 50%;
+		background: var(--ink-4);
+	}
+	.browser .bar .url {
+		margin-left: 14px;
+		flex: 1;
+		padding: 5px 16px;
+		background: #fff;
+		border-radius: 6px;
+		color: var(--ink-3);
+		font-family: var(--mono);
+		font-size: 13px;
+		text-align: center;
+	}
+	/* === Wireframe body (per-template kind) ===
+	   Pure structural blocks — no fake copy, no fake images. Accent stripes use
+	   `--tpl-accent` (set by the colour picker) and fall back to the site accent. */
+	.browser .body.wf-body {
+		padding: 28px 32px;
+		min-height: 520px;
+		display: flex;
+		flex-direction: column;
+		gap: 18px;
+		background: linear-gradient(180deg, #fff, var(--bg));
+	}
+	.wf-nav {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding-bottom: 14px;
+		border-bottom: 1px solid rgba(26, 26, 28, 0.08);
+	}
+	.wf-dot {
+		width: 18px;
+		height: 18px;
+		border-radius: 50%;
+		background: var(--ink);
+		flex-shrink: 0;
+	}
+	.wf-bar {
+		height: 8px;
+		background: rgba(26, 26, 28, 0.14);
+		border-radius: 4px;
+		min-width: 36px;
+	}
+	.wf-bar.w30 {
+		width: 36px;
+	}
+	.wf-bar.w50 {
+		width: 56px;
+	}
+	.wf-bar.w70 {
+		width: 72px;
+	}
+	.wf-cta {
+		width: 70px;
+		height: 22px;
+		border-radius: 999px;
+		background: var(--tpl-accent, var(--accent));
+		margin-left: auto;
+		transition: background 0.25s;
+	}
+	.wf-cta.ghost {
+		background: transparent;
+		border: 1px solid rgba(26, 26, 28, 0.18);
+	}
+	.wf-hero {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+	.wf-h1 {
+		height: 28px;
+		width: 60%;
+		background: var(--ink);
+		border-radius: 6px;
+	}
+	.wf-hero .wf-bar {
+		height: 10px;
+	}
+	.wf-hero .wf-bar.w50 {
+		width: 220px;
+		max-width: 60%;
+	}
+	.wf-hero .wf-bar.w70 {
+		width: 320px;
+		max-width: 80%;
+	}
+	.wf-ctas {
+		display: flex;
+		gap: 10px;
+		margin-top: 10px;
+	}
+	.wf-ctas .wf-cta {
+		margin-left: 0;
+		width: 90px;
+		height: 28px;
+	}
+
+	/* saas: pricing row */
+	.wf-pricing {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		gap: 12px;
+		margin-top: auto;
+	}
+	.wf-pcard {
+		aspect-ratio: 3 / 4;
+		border: 1px solid rgba(26, 26, 28, 0.1);
+		border-radius: 10px;
+		padding: 14px;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		background: #fff;
+	}
+	.wf-pcard::before {
+		content: '';
+		height: 12px;
+		width: 50%;
+		background: rgba(26, 26, 28, 0.14);
+		border-radius: 3px;
+	}
+	.wf-pcard::after {
+		content: '';
+		height: 22px;
+		width: 60%;
+		background: rgba(26, 26, 28, 0.2);
+		border-radius: 4px;
+		margin-top: 2px;
+	}
+	.wf-pcard.mid {
+		border-color: var(--tpl-accent, var(--accent));
+		box-shadow: 0 0 0 2px var(--tpl-accent, var(--accent)) inset;
+		transition: border-color 0.25s, box-shadow 0.25s;
+	}
+	.wf-pcard.mid::after {
+		background: var(--tpl-accent, var(--accent));
+		transition: background 0.25s;
+	}
+
+	/* agency: 2x2 case grid */
+	.wf-grid2 {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 12px;
+		margin-top: auto;
+	}
+	.wf-tile {
+		aspect-ratio: 4 / 3;
+		background: rgba(26, 26, 28, 0.14);
+		border-radius: 8px;
+		position: relative;
+	}
+	.wf-tile::after {
+		content: '';
+		position: absolute;
+		left: 12px;
+		bottom: 12px;
+		width: 40px;
+		height: 6px;
+		background: var(--tpl-accent, var(--accent));
+		border-radius: 3px;
+		transition: background 0.25s;
+	}
+
+	/* shop: 3-col product grid */
+	.wf-grid3 {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 12px;
+		margin-top: auto;
+	}
+	.wf-prod {
+		aspect-ratio: 3 / 4;
+		background: rgba(26, 26, 28, 0.14);
+		border-radius: 8px;
+		position: relative;
+	}
+	.wf-prod::before {
+		content: '';
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		width: 28px;
+		height: 14px;
+		background: var(--tpl-accent, var(--accent));
+		border-radius: 3px;
+		transition: background 0.25s;
+	}
+	.wf-prod::after {
+		content: '';
+		position: absolute;
+		left: 10px;
+		bottom: 10px;
+		width: 36px;
+		height: 6px;
+		background: rgba(255, 255, 255, 0.7);
+		border-radius: 3px;
+	}
+
+	/* event: speaker rows */
+	.wf-list {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		margin-top: auto;
+	}
+	.wf-row {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 10px 12px;
+		border: 1px solid rgba(26, 26, 28, 0.08);
+		border-radius: 10px;
+		background: #fff;
+	}
+	.wf-av {
+		width: 36px;
+		height: 36px;
+		border-radius: 50%;
+		background: var(--tpl-accent, var(--accent));
+		opacity: 0.7;
+		flex-shrink: 0;
+		transition: background 0.25s;
+	}
+	.wf-row > div {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+	.wf-row .wf-bar {
+		height: 6px;
+	}
+
+	/* cv: timeline */
+	.wf-name {
+		height: 40px;
+		width: 50%;
+		background: var(--ink);
+		border-radius: 6px;
+	}
+	.wf-timeline {
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+		margin-top: 8px;
+		padding-left: 16px;
+		border-left: 2px solid rgba(26, 26, 28, 0.12);
+	}
+	.wf-tline {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+	}
+	.wf-tdot {
+		width: 12px;
+		height: 12px;
+		border-radius: 50%;
+		background: var(--tpl-accent, var(--accent));
+		margin-left: -23px;
+		flex-shrink: 0;
+		transition: background 0.25s;
+	}
+	.wf-tline .wf-bar {
+		flex: 1;
+		max-width: 60%;
+	}
+
+	/* app: phone mockup */
+	.wf-app {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex: 1;
+		padding: 8px 0;
+	}
+	.wf-phone {
+		width: 130px;
+		aspect-ratio: 9 / 16;
+		background: #fff;
+		border: 8px solid var(--ink);
+		border-radius: 22px;
+		padding: 10px;
+	}
+	.wf-screen {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		height: 100%;
+	}
+	.wf-screen .wf-tile {
+		flex: 1;
+		aspect-ratio: auto;
+		background: var(--tpl-accent, var(--accent));
+		opacity: 0.18;
+		border-radius: 4px;
+		transition: background 0.25s;
+	}
+	.wf-screen .wf-tile::after {
+		display: none;
+	}
+	.wf-screen .wf-bar {
+		height: 6px;
+	}
+
+	/* longform: two-column text */
+	.wf-cols {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 28px;
+		margin-top: 8px;
+		flex: 1;
+	}
+	.wf-col {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+	.wf-col .wf-bar {
+		width: 100%;
+		height: 8px;
+	}
+	.wf-col .wf-bar.w70 {
+		width: 70%;
+	}
+	.wf-col .wf-bar.w50 {
+		width: 50%;
+	}
+
+	/* Picker */
+	.picker {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		margin: 0 0 20px;
+		padding: 0 8px;
+	}
+	.picker .eyebrow {
+		color: var(--ink-3);
+	}
+	.sw {
+		width: 22px;
+		height: 22px;
+		border-radius: 50%;
+		border: 2px solid transparent;
+		cursor: pointer;
+		padding: 0;
+		transition: transform 0.2s, border-color 0.2s;
+	}
+	.sw:hover {
+		transform: scale(1.12);
+	}
+	.sw.is-active {
+		border-color: var(--ink);
+	}
+
+	@media (max-width: 600px) {
+		.browser .body.wf-body {
+			padding: 20px;
+		}
+		.wf-pricing,
+		.wf-grid3 {
+			grid-template-columns: 1fr 1fr;
+		}
+		.wf-cols {
+			grid-template-columns: 1fr;
+		}
+	}
+	@media (max-width: 780px) {
+		.preview {
+			padding: 24px 16px;
+			border-radius: 18px;
+		}
+	}
+
+	/* Specs / steps */
+	.specs {
+		max-width: 1100px;
+		margin: 120px auto;
+		padding: 0 32px;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 80px;
+	}
+	.specs .col h3 {
+		font-size: 28px;
+		font-weight: 800;
+		letter-spacing: -0.02em;
+		margin-bottom: 24px;
+	}
+	.specs ul {
+		list-style: none;
+		display: flex;
+		flex-direction: column;
+	}
+	.specs ul li {
+		padding: 14px 0;
+		border-bottom: 1px solid var(--rule);
+		font-size: 15px;
+		color: var(--ink);
+	}
+	.steps {
+		list-style: none;
+		display: flex;
+		flex-direction: column;
+		gap: 18px;
+	}
+	.steps li {
+		display: flex;
+		gap: 16px;
+		align-items: flex-start;
+	}
+	.steps .step-n {
+		flex-shrink: 0;
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		background: var(--accent-soft);
+		color: var(--accent);
+		font-family: var(--mono);
+		font-weight: 700;
+		font-size: 14px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.steps b {
+		font-size: 16px;
+		font-weight: 700;
+	}
+	.steps p {
+		font-size: 14px;
+		color: var(--ink-2);
+		margin-top: 4px;
+		line-height: 1.5;
+	}
+	@media (max-width: 900px) {
+		.specs {
+			grid-template-columns: 1fr;
+			gap: 48px;
+			margin: 80px auto;
+		}
+	}
+
+	/* Related */
+	.related {
+		max-width: var(--maxw);
+		margin: 0 auto;
+		padding: 0 32px 40px;
+	}
+	.related h3 {
+		font-size: clamp(28px, 4vw, 44px);
+		font-weight: 800;
+		letter-spacing: -0.03em;
+		margin-bottom: 32px;
+	}
+	.rel-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 16px;
+	}
+	@media (max-width: 780px) {
+		.rel-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	/* CTA */
+	.cta {
+		padding: 120px 32px;
+		text-align: center;
+		background: var(--bg-2);
+		border-top: 1px solid var(--rule);
+		margin-top: 80px;
+	}
+	.cta h2 {
+		font-size: clamp(40px, 6vw, 72px);
+		font-weight: 800;
+		letter-spacing: -0.035em;
+		line-height: 1.02;
+		max-width: 18ch;
+		margin: 0 auto;
+	}
+	.cta p {
+		margin: 20px auto 36px;
+		font-size: 18px;
+		color: var(--ink-2);
+		max-width: 50ch;
+		line-height: 1.5;
+	}
+</style>
+
+<script>
+	// Accent colour picker: repaints the wireframe via a CSS custom property
+	// on the preview element. No fake content — only the accent stripes shift.
+	const preview = document.getElementById('tpl-preview') as HTMLElement | null;
+	if (preview) {
+		document.querySelectorAll<HTMLButtonElement>('.picker .sw').forEach((btn) => {
+			btn.addEventListener('click', () => {
+				const c = btn.dataset.c;
+				if (!c) return;
+				preview.style.setProperty('--tpl-accent', c);
+				document.querySelectorAll('.picker .sw').forEach((b) => b.classList.remove('is-active'));
+				btn.classList.add('is-active');
+			});
+		});
+	}
+</script>

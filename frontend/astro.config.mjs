@@ -9,7 +9,7 @@ import vue from "@astrojs/vue";
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://fabsantos.dev', // Substitua pelo seu domínio real
+  site: 'https://fabbahiense.dev',
   server: { port: 4321, host: "0.0.0.0" },
   integrations: [tailwind(), vue(), sitemap()],
   output: "hybrid",

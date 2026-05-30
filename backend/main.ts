@@ -6,6 +6,7 @@ import { oakCors } from "https://deno.land/x/cors/mod.ts";
 // Configuração de CORS whitelist (segurança melhorada)
 const ALLOWED_ORIGINS = [
   'https://fabsantos.dev',
+  'https://fabbahiense.dev',
   'https://www.fabsantos.dev',
   'http://localhost:4321', // Desenvolvimento
   'http://localhost:5173', // Desenvolvimento alternativo

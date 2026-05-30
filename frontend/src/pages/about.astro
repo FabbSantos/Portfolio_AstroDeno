@@ -1,0 +1,434 @@
+---
+import Layout from '../layouts/Layout.astro';
+import TopBar from '../components/site/TopBar.astro';
+import SiteFooter from '../components/site/SiteFooter.astro';
+import { translations } from '../i18n/translations';
+
+const t = translations.en;
+
+const stats = [
+	{ v: '8+', key: 'about.stats.years' },
+	{ v: '20+', key: 'about.stats.products' },
+	{ v: '7', key: 'about.stats.clients' },
+	{ v: '10+', key: 'about.stats.focus' },
+];
+
+const career = [
+	{ period: '2016 — 19', role: 'about.career.r1.role', desc: 'about.career.r1.desc', tags: 'HTML · JS · PHP' },
+	{ period: '2018 — 19', role: 'about.career.r2.role', desc: 'about.career.r2.desc', tags: 'PHP · jQuery · MySQL' },
+	{ period: '2020 — 22', role: 'about.career.r3.role', desc: 'about.career.r3.desc', tags: 'HubSpot · React · HTML' },
+	{ period: '2022 — 24', role: 'about.career.r4.role', desc: 'about.career.r4.desc', tags: 'Astro · Qwik' },
+	{ period: 'ago/24 — jan/25', role: 'about.career.r5.role', desc: 'about.career.r5.desc', tags: 'AI · LLM · React' },
+	{ period: 'jan/25 — mai/25', role: 'about.career.r6.role', desc: 'about.career.r6.desc', tags: 'Vue · Nuxt · Astro · Next' },
+	{ period: 'mai/25 — now', role: 'about.career.r7.role', desc: 'about.career.r7.desc', tags: 'C# · AWS · DevOps', now: true },
+];
+
+const stack = [
+	{
+		icon: 'B',
+		title: 'about.stack.col1',
+		items: ['about.stack.c1.b1', 'about.stack.c1.b2', 'about.stack.c1.b3', 'about.stack.c1.b4'],
+	},
+	{
+		icon: 'M',
+		title: 'about.stack.col2',
+		items: ['about.stack.c2.b1', 'about.stack.c2.b2', 'about.stack.c2.b3', 'about.stack.c2.b4'],
+	},
+	{
+		icon: 'A',
+		title: 'about.stack.col3',
+		items: ['about.stack.c3.b1', 'about.stack.c3.b2', 'about.stack.c3.b3', 'about.stack.c3.b4'],
+	},
+];
+---
+
+<Layout title='About — Fabrício Bahiense'>
+	<TopBar active='about' />
+	<main id='main-content'>
+		<section class='hero'>
+			<p class='eyebrow accent'>
+				<span class='dot'></span>
+				<span data-i18n='about.hero.eyebrow'>Chapter 01 · About</span>
+			</p>
+			<h1>
+				<span data-i18n='about.hero.head1'>About</span> <span class='hl' data-i18n='about.hero.head2'>me.</span>
+			</h1>
+			<p class='role'>
+				<span data-i18n='about.hero.role'>Senior Software Engineer</span>
+				<span class='pipe'>·</span>
+				<span data-i18n='about.hero.since'>since 2018</span>
+			</p>
+			<p class='sub' data-i18n='about.hero.sub'>
+				I'm Fabrício Bahiense, based in Rio de Janeiro. I started in tech back in school, interned
+				in 2018, and have been writing code ever since. Here's the honest summary.
+			</p>
+		</section>
+
+		<div class='stats'>
+			{
+				stats.map((s) => (
+					<div class='stat'>
+						<div class='v'>{s.v}</div>
+						<div class='l' data-i18n={s.key}>{t[s.key]}</div>
+					</div>
+				))
+			}
+		</div>
+
+		<section class='story reveal'>
+			<blockquote class='story-quote'>
+				<span data-i18n='about.story.quote'>{t['about.story.quote']}</span>
+				<span class='by' data-i18n='about.story.by'>— Fab</span>
+			</blockquote>
+			<p class='lead-p' data-i18n='about.story.p1'>{t['about.story.p1']}</p>
+			<p data-i18n='about.story.p2'>{t['about.story.p2']}</p>
+			<p data-i18n='about.story.p3'>{t['about.story.p3']}</p>
+		</section>
+
+		<section class='section career'>
+			<div class='sec-head reveal'>
+				<span class='eyebrow accent' data-i18n='about.career.eyebrow'>Path</span>
+				<h2>
+					<span data-i18n='about.career.head1'>From intern</span>
+					<span class='hl' data-i18n='about.career.head2'>to senior.</span>
+				</h2>
+				<p data-i18n='about.career.lead'>{t['about.career.lead']}</p>
+			</div>
+			<div class='career-rows'>
+				{
+					career.map((c, i) => (
+						<div class:list={['career-row', 'reveal', `d${i + 1}`, { now: c.now }]}>
+							<span class='yr'>{c.period}</span>
+							<span class='role' data-i18n={c.role}>{t[c.role]}</span>
+							<span class='desc' data-i18n={c.desc}>{t[c.desc]}</span>
+							<span class='tags' set:html={c.tags.split(' · ').join('<br>')} />
+						</div>
+					))
+				}
+			</div>
+		</section>
+
+		<section class='stack-band'>
+			<div class='stack-inner'>
+				<div class='sec-head reveal'>
+					<span class='eyebrow accent' data-i18n='about.stack.eyebrow'>Stack</span>
+					<h2>
+						<span data-i18n='about.stack.head1'>What I use</span>
+						<span class='hl' data-i18n='about.stack.head2'>every day.</span>
+					</h2>
+					<p data-i18n='about.stack.lead'>{t['about.stack.lead']}</p>
+				</div>
+				<div class='stack-grid'>
+					{
+						stack.map((col, i) => (
+							<div class:list={['stack-col', 'reveal', `d${i + 1}`]}>
+								<div class='ic'>{col.icon}</div>
+								<h4 data-i18n={col.title}>{t[col.title]}</h4>
+								<ul>
+									{col.items.map((k) => (
+										<li data-i18n={k}>{t[k]}</li>
+									))}
+								</ul>
+							</div>
+						))
+					}
+				</div>
+			</div>
+		</section>
+
+		<section class='cta'>
+			<h2 class='reveal'>
+				<span data-i18n='about.cta.head1'>Like what you see?</span>
+				<span class='hl' data-i18n='about.cta.head2'>Let's talk.</span>
+			</h2>
+			<p class='sub reveal d1' data-i18n='about.cta.sub'>
+				I reply within 24 business hours. No CRM, no auto-reply.
+			</p>
+			<a href='/#contato' class='btn btn-primary reveal d2' data-i18n='hero.cta.hire'>Get in touch</a>
+		</section>
+	</main>
+	<SiteFooter />
+</Layout>
+
+<style>
+	.hero {
+		text-align: center;
+		padding: 80px 32px 40px;
+		max-width: 1100px;
+		margin: 0 auto;
+	}
+	.hero .eyebrow {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		margin-bottom: 28px;
+	}
+	.hero .eyebrow .dot {
+		width: 7px;
+		height: 7px;
+		border-radius: 50%;
+		background: var(--accent);
+	}
+	.hero h1 {
+		font-size: clamp(64px, 11vw, 156px);
+		font-weight: 800;
+		letter-spacing: -0.045em;
+		line-height: 0.92;
+		max-width: 14ch;
+		margin: 0 auto;
+	}
+	.hero .role {
+		margin-top: 24px;
+		font-family: var(--mono);
+		font-size: clamp(13px, 1.4vw, 16px);
+		color: var(--ink-2);
+	}
+	.hero .role .pipe {
+		color: var(--ink-4);
+		margin: 0 12px;
+	}
+	.hero .sub {
+		margin: 32px auto 0;
+		max-width: 52ch;
+		font-size: clamp(16px, 1.5vw, 19px);
+		line-height: 1.5;
+		color: var(--ink-2);
+	}
+
+	/* Stats */
+	.stats {
+		max-width: var(--maxw);
+		margin: 80px auto 0;
+		padding: 48px 32px;
+		border-top: 1px solid var(--rule);
+		border-bottom: 1px solid var(--rule);
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 24px;
+	}
+	.stat .v {
+		font-size: 48px;
+		font-weight: 800;
+		letter-spacing: -0.035em;
+		line-height: 1;
+	}
+	.stat .l {
+		font-family: var(--mono);
+		font-size: 12px;
+		color: var(--ink-2);
+		margin-top: 8px;
+	}
+
+	/* Story */
+	.story {
+		padding: 80px 32px 0;
+		max-width: 880px;
+		margin: 0 auto;
+	}
+	.story-quote {
+		display: block;
+		font-size: clamp(26px, 3.4vw, 40px);
+		font-weight: 500;
+		line-height: 1.25;
+		letter-spacing: -0.015em;
+		color: var(--ink);
+		margin-bottom: 48px;
+	}
+	.story-quote::before {
+		content: '\201C';
+		color: var(--accent);
+		font-size: 1.4em;
+		display: block;
+		line-height: 0.6;
+		margin-bottom: 8px;
+	}
+	.story-quote .by {
+		display: block;
+		margin-top: 14px;
+		font-family: var(--mono);
+		font-size: 13px;
+		font-weight: 500;
+		color: var(--ink-3);
+	}
+	.story p {
+		font-size: 19px;
+		line-height: 1.7;
+		color: var(--ink-2);
+		margin-bottom: 20px;
+	}
+	.story .lead-p::first-letter {
+		font-size: 64px;
+		font-weight: 800;
+		line-height: 0.8;
+		float: left;
+		padding: 6px 14px 0 0;
+		color: var(--accent);
+	}
+
+	/* Career */
+	.career-rows {
+		border-top: 1px solid var(--rule);
+	}
+	.career-row {
+		display: grid;
+		grid-template-columns: 150px 1fr 1.4fr auto;
+		gap: 32px;
+		padding: 24px 0;
+		border-bottom: 1px solid var(--rule);
+		align-items: center;
+		transition:
+			padding-left 0.4s cubic-bezier(0.7, 0, 0.3, 1),
+			background 0.25s;
+	}
+	.career-row:hover {
+		padding-left: 16px;
+		background: var(--bg-2);
+	}
+	.career-row .yr {
+		font-family: var(--mono);
+		font-size: 13px;
+		color: var(--ink-3);
+	}
+	.career-row.now .yr {
+		color: var(--accent);
+		font-weight: 600;
+	}
+	.career-row .role {
+		font-size: 22px;
+		font-weight: 700;
+		letter-spacing: -0.015em;
+		line-height: 1.1;
+	}
+	.career-row .desc {
+		font-size: 14px;
+		color: var(--ink-2);
+		line-height: 1.55;
+	}
+	.career-row .tags {
+		font-family: var(--mono);
+		font-size: 12px;
+		color: var(--ink-3);
+		text-align: right;
+		line-height: 1.7;
+	}
+	@media (max-width: 900px) {
+		.career-row {
+			grid-template-columns: 1fr;
+			gap: 8px;
+			padding: 20px 0;
+		}
+		.career-row .tags {
+			text-align: left;
+		}
+	}
+
+	/* Stack */
+	.stack-band {
+		background: var(--bg-2);
+		padding: 120px 32px;
+		margin-top: 40px;
+	}
+	.stack-inner {
+		max-width: var(--maxw);
+		margin: 0 auto;
+	}
+	.stack-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 16px;
+		margin-top: 48px;
+	}
+	.stack-col {
+		background: #fff;
+		border: 1px solid var(--rule);
+		border-radius: 18px;
+		padding: 32px;
+		transition:
+			transform 0.35s,
+			box-shadow 0.35s;
+	}
+	.stack-col:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.12);
+	}
+	.stack-col .ic {
+		width: 44px;
+		height: 44px;
+		border-radius: 12px;
+		background: var(--accent-soft);
+		color: var(--accent);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-family: var(--mono);
+		font-weight: 700;
+		font-size: 18px;
+		margin-bottom: 18px;
+	}
+	.stack-col h4 {
+		font-size: 18px;
+		font-weight: 700;
+		letter-spacing: -0.01em;
+		margin-bottom: 14px;
+	}
+	.stack-col ul {
+		list-style: none;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+	.stack-col li {
+		font-size: 14px;
+		color: var(--ink-2);
+		line-height: 1.55;
+	}
+	.stack-col li :global(b) {
+		color: var(--ink);
+		font-weight: 600;
+	}
+	@media (max-width: 780px) {
+		.stats {
+			grid-template-columns: 1fr 1fr;
+		}
+		.stack-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	/* CTA */
+	.cta {
+		padding: 120px 32px;
+		text-align: center;
+	}
+	.cta h2 {
+		font-size: clamp(48px, 7vw, 80px);
+		font-weight: 800;
+		letter-spacing: -0.035em;
+		line-height: 1.02;
+		max-width: 18ch;
+		margin: 0 auto;
+	}
+	.cta .sub {
+		margin: 20px auto 36px;
+		font-size: 18px;
+		color: var(--ink-2);
+		max-width: 50ch;
+		line-height: 1.5;
+	}
+	.cta .email {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		font-family: var(--mono);
+		font-weight: 600;
+		font-size: clamp(20px, 3vw, 32px);
+		color: var(--accent);
+		transition: gap 0.25s;
+	}
+	.cta .email::after {
+		content: '→';
+	}
+	.cta .email:hover {
+		gap: 18px;
+	}
+</style>

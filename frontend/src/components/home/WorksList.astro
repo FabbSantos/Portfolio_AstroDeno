@@ -1,0 +1,177 @@
+---
+import type { PortfolioWork } from '../../api/works';
+
+interface Props {
+	works: PortfolioWork[];
+}
+const { works } = Astro.props;
+const rows = works.slice(0, 6);
+
+const statusLabel: Record<PortfolioWork['status'], string> = {
+	live: 'Live',
+	archived: 'Archived',
+	nda: 'NDA',
+	beta: 'Beta',
+};
+// status text gets translated only for live/archived (UI strings); nda/beta are static
+const statusI18n: Partial<Record<PortfolioWork['status'], string>> = {
+	live: 'works.status.live',
+	archived: 'works.status.archived',
+};
+---
+
+<section class='section' id='trabalhos'>
+	<div class='sec-head reveal'>
+		<span class='eyebrow accent' data-i18n='works.eyebrow'>Work</span>
+		<h2>
+			<span data-i18n='works.head1'>What shipped to</span>
+			<span class='hl' data-i18n='works.head2'>production.</span>
+		</h2>
+		<p data-i18n='works.lead'>Each row is a product real people used (or use). No vanity metrics.</p>
+	</div>
+
+	<div class='works-list'>
+		{
+			rows.map((w, i) => (
+				<a
+					href={w.href || '/work'}
+					class:list={['work-row', 'reveal', `d${Math.min(i + 1, 8)}`]}
+					target={w.href ? '_blank' : undefined}
+					rel={w.href ? 'noopener' : undefined}
+				>
+					<div class='work-num'>{String(i + 1).padStart(2, '0')}</div>
+					<div class='work-title'>{w.title}</div>
+					<div class='work-desc' data-i18n={w.descKey}>{w.desc}</div>
+					<div class='work-meta'>
+						{w.year && <span class='yr'>{w.year}</span>}
+						<span
+							class:list={['work-status', w.status]}
+							data-i18n={statusI18n[w.status]}
+						>
+							{statusLabel[w.status]}
+						</span>
+					</div>
+					<div class='arr'>↗</div>
+				</a>
+			))
+		}
+	</div>
+
+	<div class='works-all'>
+		<a href='/work' class='btn-link' data-i18n='works.all'>See all work</a>
+	</div>
+</section>
+
+<style>
+	.works-list {
+		border-top: 1px solid var(--rule);
+	}
+	.work-row {
+		display: grid;
+		grid-template-columns: 60px 1fr 1.2fr 140px 40px;
+		gap: 32px;
+		padding: 32px 0;
+		border-bottom: 1px solid var(--rule);
+		align-items: center;
+		transition:
+			padding-left 0.4s cubic-bezier(0.7, 0, 0.3, 1),
+			background 0.25s;
+		position: relative;
+	}
+	.work-row:hover {
+		padding-left: 16px;
+		background: var(--bg-2);
+	}
+	.work-row:hover .arr {
+		color: var(--accent);
+		transform: translate(4px, -4px);
+	}
+	.work-num {
+		font-family: var(--mono);
+		font-size: 13px;
+		color: var(--ink-3);
+	}
+	.work-title {
+		font-size: clamp(28px, 3.5vw, 42px);
+		font-weight: 700;
+		letter-spacing: -0.02em;
+		line-height: 1;
+	}
+	.work-desc {
+		font-size: 14px;
+		color: var(--ink-2);
+		line-height: 1.55;
+	}
+	.work-meta {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		align-items: flex-start;
+		font-size: 13px;
+	}
+	.work-meta .yr {
+		font-family: var(--mono);
+		color: var(--ink-2);
+	}
+	.work-status {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		padding: 3px 10px;
+		border: 1px solid var(--rule-2);
+		border-radius: 999px;
+		font-size: 11px;
+		font-weight: 500;
+		color: var(--ink-3);
+	}
+	.work-status.live {
+		color: #16a34a;
+		border-color: rgba(22, 163, 74, 0.3);
+		background: rgba(22, 163, 74, 0.06);
+	}
+	.work-status.live::before {
+		content: '';
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: #16a34a;
+		animation: pulse 2s infinite;
+	}
+	.work-status.nda,
+	.work-status.beta {
+		color: var(--accent);
+		background: var(--accent-soft);
+		border-color: rgba(255, 89, 100, 0.3);
+	}
+	.arr {
+		font-size: 22px;
+		color: var(--ink-4);
+		transition:
+			color 0.25s,
+			transform 0.4s cubic-bezier(0.7, 0, 0.3, 1);
+		text-align: right;
+	}
+	.works-all {
+		margin-top: 48px;
+		text-align: center;
+	}
+
+	@keyframes pulse {
+		50% {
+			opacity: 0.4;
+		}
+	}
+
+	@media (max-width: 900px) {
+		.work-row {
+			grid-template-columns: 40px 1fr;
+			gap: 14px;
+			padding: 24px 0;
+		}
+		.work-desc,
+		.work-meta,
+		.arr {
+			display: none;
+		}
+	}
+</style>

@@ -1,0 +1,122 @@
+---
+// Home hero — giant name (Inter, no serif-italic), mono eyebrow, accent emphasis.
+---
+
+<section class='hero'>
+	<p class='eyebrow accent hero-eyebrow'>
+		<span class='dot'></span>
+		<span data-i18n='hero.eyebrow'>Open to select work · 2026</span>
+	</p>
+	<h1 class='hero-name'>Fabrício <span class='hl'>Bahiense.</span></h1>
+	<p class='hero-role'>
+		<span data-i18n='hero.role'>Senior Software Engineer</span>
+		<span class='pipe'>·</span>
+		<span data-i18n='hero.location'>Rio de Janeiro, BR</span>
+	</p>
+	<p class='hero-sub' data-i18n='hero.sub'>
+		I build web platforms, developer tooling and digital products — from
+		high-performance frontends to scalable cloud backends.
+	</p>
+	<div class='hero-actions'>
+		<a href='/work' class='btn btn-primary' data-i18n='hero.cta.work'>See my work</a>
+		<a href='/#contato' class='btn-link' data-i18n='hero.cta.hire'>Get in touch</a>
+	</div>
+</section>
+
+<style>
+	.hero {
+		text-align: center;
+		padding: 80px 32px 40px;
+		max-width: var(--maxw);
+		margin: 0 auto;
+	}
+	.hero-eyebrow {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		margin-bottom: 28px;
+		opacity: 0;
+		transform: translateY(20px);
+		animation: enter 0.8s var(--ease-out-expo) 0.1s both;
+	}
+	.hero-eyebrow .dot {
+		width: 7px;
+		height: 7px;
+		border-radius: 50%;
+		background: var(--accent);
+		animation: pulse 2s infinite;
+	}
+	.hero-name {
+		font-size: clamp(64px, 11vw, 156px);
+		font-weight: 800;
+		letter-spacing: -0.045em;
+		line-height: 0.92;
+		color: var(--ink);
+		max-width: 14ch;
+		margin: 0 auto;
+		opacity: 0;
+		transform: translateY(30px);
+		animation: enter 1s var(--ease-out-expo) 0.25s both;
+	}
+	.hero-role {
+		margin-top: 24px;
+		font-family: var(--mono);
+		font-size: clamp(13px, 1.4vw, 16px);
+		letter-spacing: 0.02em;
+		color: var(--ink-2);
+		opacity: 0;
+		transform: translateY(20px);
+		animation: enter 0.9s var(--ease-out-expo) 0.45s both;
+	}
+	.hero-role .pipe {
+		color: var(--ink-4);
+		margin: 0 12px;
+	}
+	.hero-sub {
+		margin: 36px auto 0;
+		max-width: 50ch;
+		font-size: clamp(16px, 1.5vw, 19px);
+		line-height: 1.5;
+		color: var(--ink-2);
+		opacity: 0;
+		transform: translateY(20px);
+		animation: enter 0.9s var(--ease-out-expo) 0.6s both;
+	}
+	.hero-actions {
+		display: flex;
+		gap: 16px;
+		justify-content: center;
+		margin-top: 36px;
+		flex-wrap: wrap;
+		opacity: 0;
+		transform: translateY(20px);
+		animation: enter 0.9s var(--ease-out-expo) 0.75s both;
+	}
+
+	@keyframes enter {
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+	@keyframes pulse {
+		50% {
+			opacity: 0.4;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.hero-eyebrow,
+		.hero-name,
+		.hero-role,
+		.hero-sub,
+		.hero-actions {
+			opacity: 1;
+			transform: none;
+			animation: none;
+		}
+		.hero-eyebrow .dot {
+			animation: none;
+		}
+	}
+</style>

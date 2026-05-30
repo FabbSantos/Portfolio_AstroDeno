@@ -1,0 +1,1327 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import TemplateGuard from '../../components/templates/TemplateGuard.astro';
+/*
+ * Mirante — Brazilian real-estate launch landing.
+ *
+ * Conversion-first. Lead capture in the hero, numbers band, gallery, floor
+ * plans, location map and a high-intent form at the bottom. Vocabulary,
+ * conditions and footer match how launches are actually sold in Brazil
+ * (CRECI, memorial de incorporação, decorado etc.).
+ *
+ * To clone for a real client: copy this file, swap brand + address + numbers
+ * + photos. The structure is the same shape every launch uses.
+ */
+
+const stats = [
+	{ v: '76', l: 'unidades' },
+	{ v: '2–3', l: 'dormitórios' },
+	{ v: '84–132m²', l: 'área privativa' },
+	{ v: '1–2', l: 'vagas' },
+	{ v: '18', l: 'itens de lazer' },
+	{ v: '320m', l: 'do metrô' },
+];
+
+const amenities = [
+	'Piscina coberta · aquecida',
+	'Academia · 24h',
+	'Salão de festas',
+	'Espaço gourmet',
+	'Espaço pet',
+	'Coworking',
+	'Brinquedoteca',
+	'Bicicletário · 80 vagas',
+	'Lavanderia compartilhada',
+	'Portaria 24h · com facial',
+];
+
+const tipologias = [
+	{ tag: 'Tipologia A', m2: '84m²', d: '2 dorms · 1 suíte · 1 vaga', layout: 'pl-A' },
+	{ tag: 'Tipologia B', m2: '102m²', d: '3 dorms · 1 suíte · 1 vaga', layout: 'pl-B', mid: true },
+	{ tag: 'Tipologia C', m2: '132m²', d: '3 dorms · 2 suítes · 2 vagas', layout: 'pl-C' },
+];
+
+const poi = [
+	{ n: '01', name: 'Metrô Faria Lima', d: '320m', top: '52%', left: '54%' },
+	{ n: '02', name: 'Av. Faria Lima', d: '500m', top: '40%', left: '64%' },
+	{ n: '03', name: 'Shopping Eldorado', d: '900m', top: '30%', left: '30%' },
+	{ n: '04', name: 'Praça Pôr-do-Sol', d: '700m', top: '70%', left: '40%' },
+	{ n: '05', name: 'Hospital Albert Einstein', d: '2.4km', top: '20%', left: '78%' },
+	{ n: '06', name: 'Parque Villa-Lobos', d: '1.8km', top: '80%', left: '70%' },
+];
+---
+
+<Layout title='Mirante · Real estate launch template' description='Brazilian-style real-estate launch landing — Mirante by Fab Bahiense.'>
+	<TemplateGuard />
+	<div class='tpl tpl-mirante'>
+		<a href='/templates' class='ribbon'>
+			← Templates · Mirante <span class='r-sep'>—</span>
+			<span class='r-cta'>Quero esse template</span>
+		</a>
+
+		<!-- Topbar -->
+		<header class='tb'>
+			<div class='tb-inner'>
+				<a href='#' class='brand'>
+					Mirante <span class='dot'>●</span> <span class='loc'>Pinheiros</span>
+				</a>
+				<nav class='tb-nav'>
+					<a href='#projeto'>O empreendimento</a>
+					<a href='#plantas'>Plantas</a>
+					<a href='#local'>Localização</a>
+					<a href='#valores'>Condições</a>
+				</nav>
+				<a href='#lead' class='tb-cta'>Falar com consultor →</a>
+			</div>
+		</header>
+
+		<!-- Hero -->
+		<section class='hero'>
+			<div class='hero-l'>
+				<p class='eyebrow'>
+					<span class='live-dot'></span>
+					Lançamento · Pinheiros, SP · Pré-vendas abertas
+				</p>
+				<h1>
+					Pinheiros, <span class='hl'>em outro nível.</span>
+				</h1>
+				<p class='sub'>
+					Lançamento residencial com <b>76 unidades</b>, 2 a 3 dormitórios e 84 a 132m².
+					A <b>320m da estação Faria Lima</b>.
+				</p>
+
+				<form class='mini-form' onsubmit='event.preventDefault()'>
+					<p class='mf-h'>Quero conhecer · pré-venda</p>
+					<div class='mf-row'>
+						<label class='f'>
+							<span class='lbl'>Nome</span>
+							<input type='text' name='name' required />
+						</label>
+						<label class='f'>
+							<span class='lbl'>Telefone</span>
+							<input type='tel' name='phone' required placeholder='(11) 99999-9999' />
+						</label>
+					</div>
+					<button type='submit' class='btn-acc'>Quero ser contatado</button>
+					<p class='mf-foot'>
+						Sem spam. Resposta em até 1 dia útil.
+						<a href='#' class='wpp'>ou WhatsApp direto ↗</a>
+					</p>
+				</form>
+			</div>
+
+			<div class='hero-r'>
+				<div class='img i-fachada'><span class='img-l'>Fachada</span></div>
+				<div class='img i-vista'><span class='img-l'>Vista</span></div>
+				<div class='img i-decorado'><span class='img-l'>Decorado</span></div>
+				<div class='img i-lazer'><span class='img-l'>Lazer</span></div>
+			</div>
+		</section>
+
+		<!-- Numbers band -->
+		<section class='numbers'>
+			<div class='n-grid'>
+				{stats.map((s) => (
+					<div class='n'>
+						<span class='v'>{s.v}</span>
+						<span class='l'>{s.l}</span>
+					</div>
+				))}
+			</div>
+		</section>
+
+		<!-- O empreendimento -->
+		<section class='projeto' id='projeto'>
+			<div class='p-grid'>
+				<div class='p-l'>
+					<p class='eyebrow'>// O empreendimento</p>
+					<h2>
+						Pensado para <span class='hl'>Pinheiros</span>,<br />
+						por quem mora aqui.
+					</h2>
+					<p>
+						O Mirante é um lançamento residencial assinado pela Helios + Coastal, na esquina
+						da Cardeal Arcoverde com a Sumidouro — coração de Pinheiros, com toda a
+						movimentação do bairro a pé.
+					</p>
+					<p>
+						Apartamentos de 84m² a 132m², com 2 ou 3 dormitórios — sendo 1 ou 2 suítes —, vaga
+						coberta na garagem e área privativa pensada para receber em casa. Lazer completo
+						no térreo e na cobertura.
+					</p>
+					<p>
+						Pré-vendas abertas com condições de lançamento. Decorado disponível para visita
+						com hora marcada.
+					</p>
+				</div>
+				<div class='p-r'>
+					<p class='eyebrow'>// Lazer + serviços</p>
+					<ul class='amen'>
+						{amenities.map((a) => (
+							<li>{a}</li>
+						))}
+					</ul>
+				</div>
+			</div>
+		</section>
+
+		<!-- Plantas -->
+		<section class='plantas' id='plantas'>
+			<div class='sec-h'>
+				<p class='eyebrow'>// Plantas</p>
+				<h2>
+					Três tipologias.<br />
+					<span class='hl'>Escolha a sua.</span>
+				</h2>
+			</div>
+			<div class='pl-grid'>
+				{tipologias.map((t) => (
+					<article class={`pl-card ${t.mid ? 'is-mid' : ''}`}>
+						{t.mid && <span class='pl-badge'>Mais procurado</span>}
+						<div class={`pl-mock ${t.layout}`}>
+							<div class='rm r-sala'>Sala</div>
+							<div class='rm r-var'>Varanda</div>
+							<div class='rm r-dorm'>Dorm</div>
+							<div class='rm r-suite'>Suíte</div>
+							<div class='rm r-cozi'>Cozi</div>
+							<div class='rm r-wc'>Banho</div>
+						</div>
+						<div class='pl-meta'>
+							<span class='pl-tag'>{t.tag}</span>
+							<h3>{t.m2}</h3>
+							<p>{t.d}</p>
+							<a href='#lead' class='link'>Ver disponibilidade →</a>
+						</div>
+					</article>
+				))}
+			</div>
+		</section>
+
+		<!-- Localização -->
+		<section class='local' id='local'>
+			<div class='sec-h'>
+				<p class='eyebrow'>// Localização · Pinheiros, São Paulo</p>
+				<h2>
+					Tudo a <span class='hl'>menos de 1km.</span>
+				</h2>
+			</div>
+			<div class='local-grid'>
+				<div class='map'>
+					<div class='map-grid'></div>
+					<span class='map-here'>Mirante</span>
+					{poi.map((p) => (
+						<span class='pin' style={`top:${p.top};left:${p.left}`} aria-label={p.name}>
+							{p.n}
+						</span>
+					))}
+				</div>
+				<ul class='poi'>
+					{poi.map((p) => (
+						<li>
+							<span class='p-n'>{p.n}</span>
+							<div class='p-info'>
+								<b>{p.name}</b>
+								<span class='p-d'>{p.d}</span>
+							</div>
+						</li>
+					))}
+				</ul>
+			</div>
+		</section>
+
+		<!-- Condições -->
+		<section class='valores' id='valores'>
+			<div class='sec-h'>
+				<p class='eyebrow'>// Condições · pré-venda</p>
+				<h2>
+					Três formas <span class='hl'>de fechar.</span>
+				</h2>
+			</div>
+			<div class='val-grid'>
+				<div class='val'>
+					<span class='v-tag'>À vista</span>
+					<p class='v-h'>Desconto de até <b>12%</b></p>
+					<p class='v-d'>Pagamento integral em até 30 dias com escritura imediata.</p>
+					<ul>
+						<li>Sem juros, sem correção</li>
+						<li>Negociação direta</li>
+						<li>Escritura em até 60 dias</li>
+					</ul>
+				</div>
+				<div class='val is-mid'>
+					<span class='v-badge'>Mais procurado</span>
+					<span class='v-tag'>Financiamento direto</span>
+					<p class='v-h'>Entrada de <b>10%</b> + 60×</p>
+					<p class='v-d'>Financiamento direto com a construtora, sem juros até as chaves.</p>
+					<ul>
+						<li>Sem análise bancária</li>
+						<li>Aprovação em 48h</li>
+						<li>Reajuste pelo INCC</li>
+					</ul>
+				</div>
+				<div class='val'>
+					<span class='v-tag'>Financiamento bancário</span>
+					<p class='v-h'>Entrada de <b>20%</b></p>
+					<p class='v-d'>Saldo financiado em até 35 anos com bancos parceiros.</p>
+					<ul>
+						<li>Itaú, Bradesco e Santander</li>
+						<li>Pré-aprovação no plantão</li>
+						<li>Usa FGTS</li>
+					</ul>
+				</div>
+			</div>
+			<p class='val-foot'>* Tabela de valores e condições sujeitas a alteração. Consulte um consultor.</p>
+		</section>
+
+		<!-- Big lead form -->
+		<section class='lead' id='lead'>
+			<div class='lead-inner'>
+				<div class='lead-l'>
+					<p class='eyebrow'>// Quero conhecer</p>
+					<h2>
+						Vamos marcar <span class='hl'>sua visita?</span>
+					</h2>
+					<p class='lead-sub'>
+						Preencha aqui e um consultor entra em contato em até 24h úteis. Sem compromisso —
+						visita ao decorado dura cerca de 45 minutos.
+					</p>
+					<ul class='lead-bullets'>
+						<li><span class='b-ic'>✓</span> Tour completo pelo decorado</li>
+						<li><span class='b-ic'>✓</span> Tabela de unidades disponíveis</li>
+						<li><span class='b-ic'>✓</span> Simulação de financiamento</li>
+						<li><span class='b-ic'>✓</span> Sem cobrança · sem compromisso</li>
+					</ul>
+				</div>
+				<form class='big-form' onsubmit='event.preventDefault()'>
+					<div class='bf-row'>
+						<label class='f'>
+							<span class='lbl'>Nome completo</span>
+							<input type='text' name='name' required />
+						</label>
+					</div>
+					<div class='bf-row two'>
+						<label class='f'>
+							<span class='lbl'>E-mail</span>
+							<input type='email' name='email' required />
+						</label>
+						<label class='f'>
+							<span class='lbl'>Telefone</span>
+							<input type='tel' name='phone' required placeholder='(11) 99999-9999' />
+						</label>
+					</div>
+					<div class='bf-row two'>
+						<label class='f'>
+							<span class='lbl'>Tipologia de interesse</span>
+							<select name='tipo'>
+								<option>Não tenho preferência</option>
+								<option>84m² · 2 dorms</option>
+								<option>102m² · 3 dorms</option>
+								<option>132m² · 3 dorms + 2 suítes</option>
+							</select>
+						</label>
+						<label class='f'>
+							<span class='lbl'>Melhor horário</span>
+							<select name='time'>
+								<option>Manhã</option>
+								<option>Tarde</option>
+								<option>Noite</option>
+								<option>Sábado</option>
+							</select>
+						</label>
+					</div>
+					<label class='f'>
+						<span class='lbl'>Mensagem (opcional)</span>
+						<textarea name='msg' rows='3' placeholder='Algo que possamos preparar antes da visita?'></textarea>
+					</label>
+					<button type='submit' class='btn-acc lg'>Quero ser contatado →</button>
+					<p class='mf-foot'>
+						Ao enviar, você concorda com nossa
+						<a href='#'>Política de Privacidade</a>. Seus dados não são compartilhados.
+					</p>
+				</form>
+			</div>
+		</section>
+
+		<!-- Footer -->
+		<footer class='ft'>
+			<div class='ft-inner'>
+				<div class='ft-brand'>
+					<a href='#' class='brand'>Mirante <span class='dot'>●</span></a>
+					<p>R. Cardeal Arcoverde, 1450 · Pinheiros · São Paulo, SP</p>
+				</div>
+				<div class='ft-info'>
+					<div>
+						<h4>Construtora</h4>
+						<p>Helios + Coastal Empreendimentos</p>
+					</div>
+					<div>
+						<h4>Atendimento</h4>
+						<p>
+							0800 800 1450<br />
+							vendas@mirantepinheiros.com.br
+						</p>
+					</div>
+					<div>
+						<h4>Decorado</h4>
+						<p>
+							Visita com hora marcada<br />
+							Seg–Sáb · 10h às 19h
+						</p>
+					</div>
+				</div>
+			</div>
+			<div class='ft-bot'>
+				<span>
+					CRECI/SP J-12345 · CNPJ 00.000.000/0001-00 · Memorial de incorporação 4ª RI de São
+					Paulo
+				</span>
+				<span class='ft-r'>© 2026 · Imagens meramente ilustrativas</span>
+			</div>
+		</footer>
+	</div>
+</Layout>
+
+<style>
+	.tpl-mirante {
+		--accent: #a77b43;
+		--accent-soft: rgba(167, 123, 67, 0.12);
+		--tpl-bg: #faf6ee;
+		--tpl-bg-2: #f3ecdc;
+		--tpl-ink: #1f2937;
+		--tpl-ink-2: #4b5563;
+		--tpl-ink-3: #9ca3af;
+		--tpl-rule: rgba(31, 41, 55, 0.08);
+		--tpl-rule-2: rgba(31, 41, 55, 0.16);
+
+		background: var(--tpl-bg);
+		color: var(--tpl-ink);
+		min-height: 100vh;
+	}
+	.tpl-mirante .hl {
+		color: var(--accent);
+	}
+	.tpl-mirante b {
+		color: var(--tpl-ink);
+		font-weight: 700;
+	}
+
+	/* Ribbon */
+	.ribbon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		padding: 10px 16px;
+		background: var(--tpl-ink);
+		color: #fff;
+		font-family: var(--mono);
+		font-size: 12px;
+		letter-spacing: 0.04em;
+	}
+	.ribbon .r-sep {
+		opacity: 0.4;
+	}
+	.ribbon .r-cta {
+		color: var(--accent);
+		font-weight: 600;
+	}
+
+	.eyebrow {
+		font-family: var(--mono);
+		font-size: 11px;
+		font-weight: 700;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--accent);
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	/* Topbar */
+	.tb {
+		position: sticky;
+		top: 0;
+		z-index: 40;
+		background: rgba(250, 246, 238, 0.92);
+		backdrop-filter: blur(14px);
+		border-bottom: 1px solid var(--tpl-rule);
+	}
+	.tb-inner {
+		max-width: 1240px;
+		margin: 0 auto;
+		padding: 18px 32px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 24px;
+	}
+	.brand {
+		font-weight: 700;
+		font-size: 19px;
+		letter-spacing: -0.02em;
+		color: var(--tpl-ink);
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+	}
+	.brand .dot {
+		color: var(--accent);
+		font-size: 9px;
+	}
+	.brand .loc {
+		font-family: var(--mono);
+		font-size: 12px;
+		color: var(--tpl-ink-3);
+		font-weight: 500;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		margin-left: 4px;
+	}
+	.tb-nav {
+		display: flex;
+		gap: 26px;
+		font-size: 14px;
+		color: var(--tpl-ink-2);
+	}
+	.tb-nav a:hover {
+		color: var(--accent);
+	}
+	.tb-cta {
+		font-family: var(--mono);
+		font-size: 13px;
+		color: var(--tpl-ink);
+		font-weight: 600;
+		border-bottom: 2px solid var(--accent);
+		padding-bottom: 2px;
+	}
+	@media (max-width: 960px) {
+		.tb-nav,
+		.brand .loc {
+			display: none;
+		}
+	}
+
+	/* Buttons */
+	.btn-acc {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		padding: 14px 24px;
+		background: var(--tpl-ink);
+		color: #fff;
+		font-size: 14px;
+		font-weight: 600;
+		border-radius: 4px;
+		border: 2px solid var(--tpl-ink);
+		transition: all 0.2s;
+	}
+	.btn-acc:hover {
+		background: var(--accent);
+		border-color: var(--accent);
+	}
+	.btn-acc.lg {
+		padding: 18px 28px;
+		font-size: 15px;
+	}
+
+	/* Hero */
+	.hero {
+		max-width: 1240px;
+		margin: 0 auto;
+		padding: 56px 32px 64px;
+		display: grid;
+		grid-template-columns: 1fr 1.1fr;
+		gap: 56px;
+		align-items: center;
+	}
+	.hero-l .eyebrow {
+		margin-bottom: 24px;
+	}
+	.live-dot {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: var(--accent);
+		box-shadow: 0 0 0 0 var(--accent);
+		animation: pulse 2s infinite;
+	}
+	@keyframes pulse {
+		0% { box-shadow: 0 0 0 0 rgba(167, 123, 67, 0.5); }
+		70% { box-shadow: 0 0 0 10px rgba(167, 123, 67, 0); }
+		100% { box-shadow: 0 0 0 0 rgba(167, 123, 67, 0); }
+	}
+	.hero h1 {
+		font-size: clamp(48px, 6.5vw, 96px);
+		font-weight: 800;
+		letter-spacing: -0.04em;
+		line-height: 0.98;
+		max-width: 14ch;
+	}
+	.hero .sub {
+		margin-top: 24px;
+		font-size: 17px;
+		color: var(--tpl-ink-2);
+		line-height: 1.55;
+		max-width: 48ch;
+	}
+
+	/* Mini form */
+	.mini-form {
+		margin-top: 32px;
+		padding: 24px;
+		background: #fff;
+		border: 1px solid var(--tpl-rule);
+		border-radius: 12px;
+		max-width: 460px;
+		box-shadow: 0 30px 60px -20px rgba(31, 41, 55, 0.12);
+	}
+	.mf-h {
+		font-family: var(--mono);
+		font-size: 11px;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		color: var(--accent);
+		text-transform: uppercase;
+		margin-bottom: 16px;
+	}
+	.mf-row {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 12px;
+		margin-bottom: 14px;
+	}
+	.f {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+	.lbl {
+		font-family: var(--mono);
+		font-size: 11px;
+		color: var(--tpl-ink-3);
+		font-weight: 600;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+	}
+	.f input,
+	.f select,
+	.f textarea {
+		font: inherit;
+		font-family: var(--sans);
+		font-size: 14px;
+		padding: 11px 12px;
+		border: 1px solid var(--tpl-rule-2);
+		border-radius: 6px;
+		background: var(--tpl-bg);
+		color: var(--tpl-ink);
+		transition: border-color 0.2s, box-shadow 0.2s;
+		width: 100%;
+	}
+	.f input:focus,
+	.f select:focus,
+	.f textarea:focus {
+		outline: none;
+		border-color: var(--accent);
+		box-shadow: 0 0 0 3px var(--accent-soft);
+	}
+	.mini-form .btn-acc {
+		width: 100%;
+	}
+	.mf-foot {
+		margin-top: 12px;
+		font-family: var(--mono);
+		font-size: 11px;
+		color: var(--tpl-ink-3);
+		text-align: center;
+	}
+	.mf-foot .wpp,
+	.mf-foot a {
+		color: var(--accent);
+		font-weight: 600;
+		margin-left: 4px;
+	}
+
+	/* Hero gallery */
+	.hero-r {
+		display: grid;
+		grid-template-columns: 1.3fr 1fr;
+		grid-template-rows: 1fr 1fr;
+		gap: 8px;
+		aspect-ratio: 1.1;
+		max-height: 600px;
+	}
+	.img {
+		border-radius: 4px;
+		position: relative;
+		overflow: hidden;
+		display: flex;
+		align-items: flex-end;
+		padding: 12px;
+	}
+	.img .img-l {
+		font-family: var(--mono);
+		font-size: 10px;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: #fff;
+		background: rgba(31, 41, 55, 0.55);
+		backdrop-filter: blur(4px);
+		padding: 4px 8px;
+		border-radius: 2px;
+	}
+	.i-fachada {
+		grid-row: 1 / 3;
+		background:
+			linear-gradient(135deg, rgba(31, 41, 55, 0.6), rgba(167, 123, 67, 0.3)),
+			linear-gradient(180deg, #4b5563 0%, #1f2937 100%);
+	}
+	.i-vista {
+		background:
+			linear-gradient(180deg, rgba(255, 200, 130, 0.5) 0%, rgba(167, 123, 67, 0.4) 50%, rgba(31, 41, 55, 0.7) 100%);
+	}
+	.i-decorado {
+		background:
+			linear-gradient(135deg, #f3ecdc, #d9b98e);
+	}
+	.i-lazer {
+		grid-column: 1 / 3;
+		background:
+			linear-gradient(135deg, rgba(167, 123, 67, 0.4), rgba(31, 41, 55, 0.3)),
+			linear-gradient(90deg, #6b7280, #a77b43);
+	}
+	@media (max-width: 960px) {
+		.hero {
+			grid-template-columns: 1fr;
+			gap: 40px;
+		}
+		.hero-r {
+			max-height: 460px;
+		}
+	}
+
+	/* Numbers band */
+	.numbers {
+		background: var(--tpl-ink);
+		color: #fff;
+		padding: 32px 32px;
+	}
+	.n-grid {
+		max-width: 1240px;
+		margin: 0 auto;
+		display: grid;
+		grid-template-columns: repeat(6, 1fr);
+		gap: 24px;
+	}
+	.n {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		border-left: 2px solid var(--accent);
+		padding-left: 14px;
+	}
+	.n .v {
+		font-size: 28px;
+		font-weight: 800;
+		letter-spacing: -0.025em;
+		font-variant-numeric: tabular-nums;
+	}
+	.n .l {
+		font-family: var(--mono);
+		font-size: 11px;
+		color: rgba(255, 255, 255, 0.55);
+		letter-spacing: 0.06em;
+	}
+	@media (max-width: 900px) {
+		.n-grid {
+			grid-template-columns: repeat(3, 1fr);
+			gap: 18px;
+		}
+	}
+	@media (max-width: 540px) {
+		.n-grid {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	/* Sections base */
+	.sec-h {
+		max-width: 1240px;
+		margin: 0 auto 48px;
+		padding: 0 32px;
+	}
+	.sec-h .eyebrow {
+		display: block;
+		margin-bottom: 16px;
+	}
+	.sec-h h2 {
+		font-size: clamp(36px, 5vw, 64px);
+		font-weight: 800;
+		letter-spacing: -0.035em;
+		line-height: 1.04;
+	}
+
+	/* Empreendimento */
+	.projeto {
+		max-width: 1240px;
+		margin: 0 auto;
+		padding: 100px 32px;
+	}
+	.p-grid {
+		display: grid;
+		grid-template-columns: 1.4fr 1fr;
+		gap: 64px;
+	}
+	.p-l .eyebrow {
+		display: block;
+		margin-bottom: 18px;
+	}
+	.p-l h2 {
+		font-size: clamp(36px, 5vw, 60px);
+		font-weight: 800;
+		letter-spacing: -0.035em;
+		line-height: 1.04;
+		margin-bottom: 28px;
+	}
+	.p-l p {
+		font-size: 17px;
+		color: var(--tpl-ink-2);
+		line-height: 1.7;
+		margin-bottom: 16px;
+	}
+	.p-r .eyebrow {
+		display: block;
+		margin-bottom: 18px;
+	}
+	.amen {
+		list-style: none;
+		display: flex;
+		flex-direction: column;
+	}
+	.amen li {
+		padding: 12px 0;
+		font-size: 15px;
+		color: var(--tpl-ink-2);
+		border-bottom: 1px solid var(--tpl-rule);
+	}
+	.amen li::before {
+		content: '✓';
+		color: var(--accent);
+		font-weight: 700;
+		margin-right: 10px;
+	}
+	@media (max-width: 900px) {
+		.p-grid {
+			grid-template-columns: 1fr;
+			gap: 40px;
+		}
+	}
+
+	/* Plantas */
+	.plantas {
+		padding: 60px 0 100px;
+	}
+	.pl-grid {
+		max-width: 1240px;
+		margin: 0 auto;
+		padding: 0 32px;
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 20px;
+	}
+	.pl-card {
+		background: #fff;
+		border: 1px solid var(--tpl-rule);
+		border-radius: 8px;
+		overflow: hidden;
+		position: relative;
+		transition: transform 0.35s, box-shadow 0.35s;
+	}
+	.pl-card:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 30px 60px -20px rgba(31, 41, 55, 0.12);
+	}
+	.pl-card.is-mid {
+		border-color: var(--accent);
+		box-shadow: 0 30px 80px -30px rgba(167, 123, 67, 0.4);
+	}
+	.pl-badge {
+		position: absolute;
+		top: 12px;
+		right: 12px;
+		background: var(--accent);
+		color: #fff;
+		font-family: var(--mono);
+		font-size: 10px;
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		padding: 5px 10px;
+		text-transform: uppercase;
+		z-index: 2;
+	}
+	/* Floor plan wireframe */
+	.pl-mock {
+		padding: 12px;
+		background: var(--tpl-bg-2);
+		aspect-ratio: 1.2;
+		display: grid;
+		gap: 4px;
+	}
+	.rm {
+		background: #fff;
+		border: 1px solid var(--tpl-rule-2);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-family: var(--mono);
+		font-size: 10px;
+		color: var(--tpl-ink-3);
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+	}
+	/* Tipologia A — 84m² */
+	.pl-A {
+		grid-template-columns: 1.4fr 1fr 1fr;
+		grid-template-rows: 1.2fr 1fr 0.55fr;
+	}
+	.pl-A .r-sala { grid-column: 1 / 3; grid-row: 1; }
+	.pl-A .r-var { grid-column: 3; grid-row: 1; }
+	.pl-A .r-cozi { grid-column: 1; grid-row: 2; }
+	.pl-A .r-dorm { grid-column: 2; grid-row: 2; }
+	.pl-A .r-suite { grid-column: 3; grid-row: 2; }
+	.pl-A .r-wc { grid-column: 1 / 4; grid-row: 3; }
+	/* Tipologia B — 102m² */
+	.pl-B {
+		grid-template-columns: 1.5fr 1fr 1fr;
+		grid-template-rows: 1.2fr 1fr 1fr 0.5fr;
+	}
+	.pl-B .r-sala { grid-column: 1 / 4; grid-row: 1; }
+	.pl-B .r-cozi { grid-column: 1; grid-row: 2; }
+	.pl-B .r-var { grid-column: 2 / 4; grid-row: 2; }
+	.pl-B .r-dorm { grid-column: 1; grid-row: 3; }
+	.pl-B .r-suite { grid-column: 2 / 4; grid-row: 3; }
+	.pl-B .r-wc { grid-column: 1 / 4; grid-row: 4; }
+	/* Tipologia C — 132m² */
+	.pl-C {
+		grid-template-columns: 1.4fr 1.2fr 1fr;
+		grid-template-rows: 1.4fr 1fr 1fr;
+	}
+	.pl-C .r-sala { grid-column: 1 / 3; grid-row: 1; }
+	.pl-C .r-var { grid-column: 3; grid-row: 1 / 3; }
+	.pl-C .r-dorm { grid-column: 1; grid-row: 2; }
+	.pl-C .r-suite { grid-column: 2; grid-row: 2; }
+	.pl-C .r-cozi { grid-column: 1; grid-row: 3; }
+	.pl-C .r-wc { grid-column: 2 / 4; grid-row: 3; }
+
+	.pl-meta {
+		padding: 22px 22px 24px;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+	.pl-tag {
+		font-family: var(--mono);
+		font-size: 11px;
+		color: var(--accent);
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		margin-bottom: 4px;
+	}
+	.pl-meta h3 {
+		font-size: 32px;
+		font-weight: 800;
+		letter-spacing: -0.02em;
+		line-height: 1;
+	}
+	.pl-meta p {
+		font-size: 14px;
+		color: var(--tpl-ink-2);
+		margin-bottom: 8px;
+	}
+	.link {
+		font-family: var(--mono);
+		font-size: 12px;
+		color: var(--accent);
+		font-weight: 700;
+		border-bottom: 2px solid var(--accent);
+		padding-bottom: 2px;
+		align-self: flex-start;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+	}
+	@media (max-width: 900px) {
+		.pl-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	/* Localização */
+	.local {
+		padding: 60px 0 100px;
+	}
+	.local-grid {
+		max-width: 1240px;
+		margin: 0 auto;
+		padding: 0 32px;
+		display: grid;
+		grid-template-columns: 1.4fr 1fr;
+		gap: 40px;
+	}
+	.map {
+		position: relative;
+		aspect-ratio: 1.3;
+		background:
+			radial-gradient(circle at 50% 50%, rgba(167, 123, 67, 0.18), transparent 60%),
+			linear-gradient(135deg, #ede5d2 0%, #f3ecdc 100%);
+		border-radius: 8px;
+		border: 1px solid var(--tpl-rule);
+		overflow: hidden;
+	}
+	.map-grid {
+		position: absolute;
+		inset: 0;
+		background-image:
+			linear-gradient(rgba(31, 41, 55, 0.06) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(31, 41, 55, 0.06) 1px, transparent 1px);
+		background-size: 40px 40px;
+	}
+	.map-here {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		background: var(--tpl-ink);
+		color: #fff;
+		font-family: var(--mono);
+		font-size: 11px;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		padding: 8px 14px;
+		border-radius: 4px;
+		box-shadow: 0 10px 30px -10px rgba(31, 41, 55, 0.4);
+	}
+	.map-here::after {
+		content: '';
+		position: absolute;
+		top: 100%;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 0;
+		height: 0;
+		border-left: 6px solid transparent;
+		border-right: 6px solid transparent;
+		border-top: 6px solid var(--tpl-ink);
+	}
+	.pin {
+		position: absolute;
+		width: 30px;
+		height: 30px;
+		border-radius: 50%;
+		background: var(--accent);
+		color: #fff;
+		font-family: var(--mono);
+		font-size: 11px;
+		font-weight: 700;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transform: translate(-50%, -50%);
+		box-shadow: 0 4px 12px rgba(167, 123, 67, 0.5);
+		border: 2px solid #fff;
+	}
+	.poi {
+		list-style: none;
+		display: flex;
+		flex-direction: column;
+	}
+	.poi li {
+		display: grid;
+		grid-template-columns: 36px 1fr;
+		gap: 14px;
+		padding: 16px 0;
+		border-bottom: 1px solid var(--tpl-rule);
+		align-items: center;
+	}
+	.p-n {
+		font-family: var(--mono);
+		font-size: 13px;
+		font-weight: 700;
+		color: var(--accent);
+		text-align: center;
+	}
+	.p-info {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 12px;
+	}
+	.p-info b {
+		font-size: 15px;
+		font-weight: 600;
+	}
+	.p-d {
+		font-family: var(--mono);
+		font-size: 12px;
+		color: var(--tpl-ink-3);
+	}
+	@media (max-width: 900px) {
+		.local-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	/* Condições */
+	.valores {
+		background: var(--tpl-bg-2);
+		padding: 100px 0;
+	}
+	.val-grid {
+		max-width: 1240px;
+		margin: 0 auto;
+		padding: 0 32px;
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 16px;
+	}
+	.val {
+		background: #fff;
+		border: 1px solid var(--tpl-rule);
+		border-radius: 8px;
+		padding: 32px 28px;
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+		position: relative;
+	}
+	.val.is-mid {
+		border-color: var(--accent);
+		box-shadow: 0 30px 80px -30px rgba(167, 123, 67, 0.45);
+	}
+	.v-badge {
+		position: absolute;
+		top: -12px;
+		left: 50%;
+		transform: translateX(-50%);
+		background: var(--accent);
+		color: #fff;
+		font-family: var(--mono);
+		font-size: 10px;
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		padding: 5px 12px;
+		text-transform: uppercase;
+		border-radius: 2px;
+	}
+	.v-tag {
+		font-family: var(--mono);
+		font-size: 12px;
+		color: var(--tpl-ink-3);
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+	.v-h {
+		font-size: 26px;
+		font-weight: 800;
+		letter-spacing: -0.025em;
+		line-height: 1.1;
+		color: var(--tpl-ink);
+	}
+	.v-h b {
+		color: var(--accent);
+	}
+	.v-d {
+		font-size: 14px;
+		color: var(--tpl-ink-2);
+		line-height: 1.5;
+	}
+	.val ul {
+		list-style: none;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		margin-top: 4px;
+		padding-top: 14px;
+		border-top: 1px solid var(--tpl-rule);
+	}
+	.val li {
+		font-size: 13px;
+		color: var(--tpl-ink-2);
+	}
+	.val li::before {
+		content: '–';
+		margin-right: 8px;
+		color: var(--accent);
+		font-weight: 700;
+	}
+	.val-foot {
+		max-width: 1240px;
+		margin: 28px auto 0;
+		padding: 0 32px;
+		font-family: var(--mono);
+		font-size: 11px;
+		color: var(--tpl-ink-3);
+		text-align: center;
+	}
+	@media (max-width: 900px) {
+		.val-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	/* Big lead form */
+	.lead {
+		padding: 100px 0;
+		background: var(--tpl-ink);
+		color: #fff;
+	}
+	.lead-inner {
+		max-width: 1240px;
+		margin: 0 auto;
+		padding: 0 32px;
+		display: grid;
+		grid-template-columns: 1fr 1.1fr;
+		gap: 56px;
+		align-items: center;
+	}
+	.lead-l .eyebrow {
+		color: var(--accent);
+		display: block;
+		margin-bottom: 16px;
+	}
+	.lead-l h2 {
+		font-size: clamp(36px, 5vw, 56px);
+		font-weight: 800;
+		letter-spacing: -0.035em;
+		line-height: 1.05;
+	}
+	.lead-sub {
+		margin: 20px 0 28px;
+		font-size: 16px;
+		color: rgba(255, 255, 255, 0.7);
+		line-height: 1.55;
+		max-width: 44ch;
+	}
+	.lead-bullets {
+		list-style: none;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+	.lead-bullets li {
+		font-size: 14px;
+		color: rgba(255, 255, 255, 0.85);
+		display: flex;
+		align-items: center;
+		gap: 12px;
+	}
+	.b-ic {
+		color: var(--accent);
+		font-weight: 700;
+	}
+
+	.big-form {
+		background: #fff;
+		color: var(--tpl-ink);
+		padding: 32px;
+		border-radius: 8px;
+		box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.3);
+	}
+	.bf-row {
+		margin-bottom: 16px;
+	}
+	.bf-row.two {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 14px;
+	}
+	.big-form .btn-acc {
+		width: 100%;
+		margin-top: 8px;
+	}
+	.big-form .mf-foot {
+		margin-top: 14px;
+		text-align: left;
+		color: var(--tpl-ink-3);
+	}
+	.big-form .mf-foot a {
+		color: var(--accent);
+	}
+	@media (max-width: 900px) {
+		.lead-inner {
+			grid-template-columns: 1fr;
+			gap: 40px;
+		}
+		.bf-row.two {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	/* Footer */
+	.ft {
+		padding: 60px 32px 28px;
+		background: var(--tpl-bg-2);
+		border-top: 1px solid var(--tpl-rule);
+	}
+	.ft-inner {
+		max-width: 1240px;
+		margin: 0 auto;
+		display: grid;
+		grid-template-columns: 1.4fr 2fr;
+		gap: 48px;
+	}
+	.ft-brand .brand {
+		color: var(--tpl-ink);
+	}
+	.ft-brand p {
+		margin-top: 10px;
+		font-family: var(--mono);
+		font-size: 13px;
+		color: var(--tpl-ink-2);
+	}
+	.ft-info {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 28px;
+	}
+	.ft-info h4 {
+		font-family: var(--mono);
+		font-size: 11px;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+		color: var(--accent);
+		margin-bottom: 10px;
+	}
+	.ft-info p {
+		font-size: 14px;
+		color: var(--tpl-ink-2);
+		line-height: 1.6;
+	}
+	.ft-bot {
+		max-width: 1240px;
+		margin: 40px auto 0;
+		padding-top: 22px;
+		border-top: 1px solid var(--tpl-rule);
+		display: flex;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 14px;
+		font-family: var(--mono);
+		font-size: 11px;
+		color: var(--tpl-ink-3);
+	}
+	@media (max-width: 900px) {
+		.ft-inner {
+			grid-template-columns: 1fr;
+			gap: 32px;
+		}
+		.ft-info {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+</style>

@@ -1,0 +1,973 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import TemplateGuard from '../../components/templates/TemplateGuard.astro';
+/*
+ * Stratus — SaaS / B2B landing template.
+ *
+ * Self-contained: own topbar, sections and footer. Uses the site Layout only
+ * for SEO + fonts. Accent + body background are overridden via the wrapper
+ * (.tpl-stratus) so it lives in its own visual world.
+ *
+ * To clone for a client: copy this file out of /pages/templates and replace
+ * brand name, copy and the --accent / --tpl-bg values.
+ */
+---
+
+<Layout title='Stratus · SaaS landing template' description='SaaS landing template — Stratus by Fab Bahiense.'>
+	<TemplateGuard />
+	<div class='tpl tpl-stratus'>
+		<!-- Tiny ribbon back to the gallery (only visible on this demo page) -->
+		<a href='/templates' class='ribbon'>
+			← Templates · Stratus <span class='r-sep'>—</span>
+			<span class='r-cta'>Want this template?</span>
+		</a>
+
+		<!-- Topbar -->
+		<header class='tb' id='tpl-topbar'>
+			<div class='tb-inner'>
+				<a href='#' class='brand'>Stratus<span class='dot'>.</span></a>
+				<nav class='tb-nav'>
+					<a href='#features'>Features</a>
+					<a href='#pricing'>Pricing</a>
+					<a href='#faq'>FAQ</a>
+					<a href='#'>Docs</a>
+				</nav>
+				<div class='tb-actions'>
+					<a href='#' class='tb-link'>Sign in</a>
+					<a href='#cta' class='btn-acc'>Start free trial</a>
+				</div>
+			</div>
+		</header>
+
+		<!-- Hero -->
+		<section class='hero'>
+			<a href='#' class='pill'>
+				<span class='pill-tag'>NEW</span>
+				Stratus 3.0 is here — anomaly detection out of the box <span class='arr'>→</span>
+			</a>
+			<h1>
+				Analytics,
+				<br /><span class='hl'>without the friction.</span>
+			</h1>
+			<p class='lead'>
+				The first analytics platform that configures itself. Plug your stack in 60 seconds.
+				14&#8209;day trial, no credit card, no sales call.
+			</p>
+			<div class='cta-row'>
+				<a href='#cta' class='btn-acc lg'>Start free for 14 days</a>
+				<a href='#' class='btn-ghost lg'>▶ Watch 90s demo</a>
+			</div>
+			<p class='proof'>
+				<span class='proof-stars'>★★★★★</span>
+				<b>4.9</b> on G2 · trusted by 600+ engineering teams
+			</p>
+		</section>
+
+		<!-- Product wireframe (dashboard mock) -->
+		<section class='product'>
+			<div class='dash'>
+				<div class='dash-side'>
+					<div class='ds-logo'></div>
+					<div class='ds-item is-on'></div>
+					<div class='ds-item'></div>
+					<div class='ds-item'></div>
+					<div class='ds-item'></div>
+					<div class='ds-item'></div>
+					<div class='ds-spacer'></div>
+					<div class='ds-item'></div>
+				</div>
+				<div class='dash-main'>
+					<div class='dm-bar'>
+						<div class='dm-title'></div>
+						<div class='dm-search'></div>
+						<div class='dm-avatar'></div>
+					</div>
+					<div class='dm-stats'>
+						<div class='dm-stat'><span class='ds-v'>+24.6%</span><span class='ds-l'></span></div>
+						<div class='dm-stat'><span class='ds-v'>89,204</span><span class='ds-l'></span></div>
+						<div class='dm-stat'><span class='ds-v'>1.4s</span><span class='ds-l'></span></div>
+						<div class='dm-stat'><span class='ds-v'>3.2k</span><span class='ds-l'></span></div>
+					</div>
+					<div class='dm-chart'>
+						<svg viewBox='0 0 600 200' preserveAspectRatio='none' aria-hidden='true'>
+							<defs>
+								<linearGradient id='g' x1='0' x2='0' y1='0' y2='1'>
+									<stop offset='0' stop-color='var(--accent)' stop-opacity='0.35' />
+									<stop offset='1' stop-color='var(--accent)' stop-opacity='0' />
+								</linearGradient>
+							</defs>
+							<path d='M0,160 L40,140 L80,150 L120,120 L160,128 L200,90 L240,110 L280,70 L320,80 L360,50 L400,60 L440,30 L480,55 L520,40 L560,25 L600,35 L600,200 L0,200 Z' fill='url(#g)' />
+							<path d='M0,160 L40,140 L80,150 L120,120 L160,128 L200,90 L240,110 L280,70 L320,80 L360,50 L400,60 L440,30 L480,55 L520,40 L560,25 L600,35' fill='none' stroke='var(--accent)' stroke-width='2.5' />
+						</svg>
+					</div>
+					<div class='dm-table'>
+						{Array.from({ length: 4 }).map(() => (
+							<div class='dm-row'>
+								<span class='dm-cell w20'></span>
+								<span class='dm-cell w30'></span>
+								<span class='dm-cell w15'></span>
+								<span class='dm-cell w15'></span>
+								<span class='dm-cell w20'></span>
+							</div>
+						))}
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Logos -->
+		<section class='logos'>
+			<p class='logos-l'>Powering analytics at fast-moving companies</p>
+			<div class='logos-row'>
+				{['Nimbus', 'Forma', 'Lattice', 'Aperture', 'Vector', 'Quadra'].map((n) => (
+					<span class='logo-wm'>{n}</span>
+				))}
+			</div>
+		</section>
+
+		<!-- Features -->
+		<section class='features' id='features'>
+			<div class='sec-h'>
+				<span class='eyebrow'>// FEATURES</span>
+				<h2>Everything you need.<br /><span class='hl'>Nothing you don't.</span></h2>
+			</div>
+			<div class='feat-grid'>
+				<article class='feat'>
+					<div class='feat-ic'>⚡</div>
+					<h3>Setup in 60 seconds</h3>
+					<p>Drop in a single snippet. Auto-detects pages, events and conversions on first load.</p>
+				</article>
+				<article class='feat'>
+					<div class='feat-ic'>🔒</div>
+					<h3>Compliant by default</h3>
+					<p>SOC 2 Type II, GDPR, LGPD. Data stays in the region you choose, no exceptions.</p>
+				</article>
+				<article class='feat'>
+					<div class='feat-ic'>🛰</div>
+					<h3>Anomaly detection</h3>
+					<p>Statistical models alert you before customers do. Zero config, zero false positives.</p>
+				</article>
+				<article class='feat'>
+					<div class='feat-ic'>🧩</div>
+					<h3>Plays well with others</h3>
+					<p>Native SDKs for Node, Python, Go, Rust. Webhooks for everything else.</p>
+				</article>
+				<article class='feat'>
+					<div class='feat-ic'>📈</div>
+					<h3>Built for scale</h3>
+					<p>Handles 50M events per minute on a single tenant. Your traffic spike is our Tuesday.</p>
+				</article>
+				<article class='feat'>
+					<div class='feat-ic'>💬</div>
+					<h3>Real humans on Slack</h3>
+					<p>Shared channel with our engineers. P1 incidents answered in under 5 minutes.</p>
+				</article>
+			</div>
+		</section>
+
+		<!-- Pricing -->
+		<section class='pricing' id='pricing'>
+			<div class='sec-h'>
+				<span class='eyebrow'>// PRICING</span>
+				<h2>Simple, <span class='hl'>honest pricing.</span></h2>
+				<p class='sec-l'>14-day free trial on every plan. Annual saves 20%. No setup fees, ever.</p>
+			</div>
+			<div class='price-grid'>
+				<div class='price-card'>
+					<div class='pc-name'>Starter</div>
+					<div class='pc-price'>$29<span>/mo</span></div>
+					<p class='pc-d'>For solo founders and small teams getting going.</p>
+					<a href='#' class='btn-ghost full'>Start free trial</a>
+					<ul>
+						<li>1M events/month</li>
+						<li>30-day retention</li>
+						<li>5 dashboards</li>
+						<li>Email support</li>
+					</ul>
+				</div>
+				<div class='price-card mid'>
+					<div class='pc-badge'>MOST POPULAR</div>
+					<div class='pc-name'>Growth</div>
+					<div class='pc-price'>$129<span>/mo</span></div>
+					<p class='pc-d'>For startups serious about understanding their users.</p>
+					<a href='#' class='btn-acc full'>Start free trial</a>
+					<ul>
+						<li>25M events/month</li>
+						<li>1-year retention</li>
+						<li>Unlimited dashboards</li>
+						<li>Anomaly detection</li>
+						<li>Shared Slack channel</li>
+					</ul>
+				</div>
+				<div class='price-card'>
+					<div class='pc-name'>Scale</div>
+					<div class='pc-price'>Talk to us</div>
+					<p class='pc-d'>SLA, SSO/SAML, custom data residency and dedicated support.</p>
+					<a href='#' class='btn-ghost full'>Book a call</a>
+					<ul>
+						<li>Unlimited events</li>
+						<li>Custom retention</li>
+						<li>SSO/SAML · audit logs</li>
+						<li>99.99% SLA</li>
+						<li>Dedicated engineer</li>
+					</ul>
+				</div>
+			</div>
+		</section>
+
+		<!-- FAQ -->
+		<section class='faq' id='faq'>
+			<div class='sec-h'>
+				<span class='eyebrow'>// QUESTIONS</span>
+				<h2>The honest <span class='hl'>FAQ.</span></h2>
+			</div>
+			<div class='faq-list'>
+				<details>
+					<summary>Do I need a credit card to start the trial?</summary>
+					<p>No. You give us an email, we give you 14 days. If you don't love it, just close the tab.</p>
+				</details>
+				<details>
+					<summary>How is Stratus different from the rest?</summary>
+					<p>Most tools want a 6-hour onboarding workshop. Stratus configures itself from the first request and gives you something useful in under a minute. That's the whole pitch.</p>
+				</details>
+				<details>
+					<summary>Where does my data live?</summary>
+					<p>You pick: US, EU, or São Paulo. Data never leaves the region you choose. We're SOC 2 Type II, GDPR and LGPD compliant.</p>
+				</details>
+				<details>
+					<summary>Can I export everything if I leave?</summary>
+					<p>Yes — full historical data as Parquet or CSV, anytime. No lock-in, no hostage data.</p>
+				</details>
+			</div>
+		</section>
+
+		<!-- Final CTA -->
+		<section class='cta' id='cta'>
+			<h2>Stop guessing. <span class='hl'>Start knowing.</span></h2>
+			<p>Set up takes a minute. Insight starts the same day.</p>
+			<div class='cta-row center'>
+				<a href='#' class='btn-acc lg'>Start free trial</a>
+				<a href='#' class='btn-ghost lg'>Talk to sales</a>
+			</div>
+		</section>
+
+		<!-- Footer -->
+		<footer class='ft'>
+			<div class='ft-inner'>
+				<div class='ft-brand'>
+					<a href='#' class='brand'>Stratus<span class='dot'>.</span></a>
+					<p>Analytics, without the friction.</p>
+				</div>
+				<div class='ft-col'>
+					<h4>Product</h4>
+					<a href='#'>Features</a><a href='#'>Pricing</a><a href='#'>Integrations</a>
+					<a href='#'>Changelog</a>
+				</div>
+				<div class='ft-col'>
+					<h4>Company</h4>
+					<a href='#'>About</a><a href='#'>Customers</a><a href='#'>Blog</a><a href='#'>Careers</a>
+				</div>
+				<div class='ft-col'>
+					<h4>Resources</h4>
+					<a href='#'>Docs</a><a href='#'>API</a><a href='#'>Status</a><a href='#'>Security</a>
+				</div>
+			</div>
+			<div class='ft-bot'>
+				<span>© 2026 Stratus, Inc.</span>
+				<span class='ft-links'>
+					<a href='#'>Privacy</a><a href='#'>Terms</a><a href='#'>DPA</a>
+				</span>
+			</div>
+		</footer>
+	</div>
+</Layout>
+
+<style>
+	/* ===== Theme overrides for this template ===== */
+	.tpl-stratus {
+		--accent: #ff5c3d;
+		--accent-soft: rgba(255, 92, 61, 0.1);
+		--tpl-bg: #fffaf7;
+		--tpl-ink: #1a1a1c;
+		--tpl-ink-2: #5c5c61;
+		--tpl-ink-3: #8e8e93;
+		--tpl-rule: rgba(26, 26, 28, 0.07);
+		--tpl-rule-2: rgba(26, 26, 28, 0.14);
+
+		background: var(--tpl-bg);
+		color: var(--tpl-ink);
+		min-height: 100vh;
+	}
+	.tpl-stratus .hl {
+		color: var(--accent);
+	}
+
+	/* Ribbon */
+	.ribbon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		padding: 10px 16px;
+		background: var(--tpl-ink);
+		color: #fff;
+		font-family: var(--mono);
+		font-size: 12px;
+		font-weight: 500;
+		letter-spacing: 0.04em;
+		text-decoration: none;
+	}
+	.ribbon .r-sep {
+		opacity: 0.4;
+	}
+	.ribbon .r-cta {
+		color: var(--accent);
+		font-weight: 600;
+	}
+	.ribbon:hover .r-cta {
+		text-decoration: underline;
+	}
+
+	/* Topbar */
+	.tb {
+		position: sticky;
+		top: 0;
+		z-index: 40;
+		background: rgba(255, 250, 247, 0.85);
+		backdrop-filter: saturate(180%) blur(14px);
+		border-bottom: 1px solid var(--tpl-rule);
+	}
+	.tb-inner {
+		max-width: 1240px;
+		margin: 0 auto;
+		padding: 16px 32px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 24px;
+	}
+	.brand {
+		font-weight: 800;
+		font-size: 18px;
+		letter-spacing: -0.02em;
+		color: var(--tpl-ink);
+	}
+	.brand .dot {
+		color: var(--accent);
+	}
+	.tb-nav {
+		display: flex;
+		gap: 28px;
+		font-size: 14px;
+		color: var(--tpl-ink-2);
+	}
+	.tb-nav a:hover {
+		color: var(--tpl-ink);
+	}
+	.tb-actions {
+		display: flex;
+		gap: 14px;
+		align-items: center;
+	}
+	.tb-link {
+		font-size: 14px;
+		color: var(--tpl-ink-2);
+	}
+	.tb-link:hover {
+		color: var(--tpl-ink);
+	}
+	@media (max-width: 860px) {
+		.tb-nav,
+		.tb-link {
+			display: none;
+		}
+	}
+
+	/* Buttons */
+	.btn-acc,
+	.btn-ghost {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 10px 18px;
+		border-radius: 999px;
+		font-size: 14px;
+		font-weight: 600;
+		transition: all 0.2s;
+		border: 1px solid transparent;
+	}
+	.btn-acc {
+		background: var(--tpl-ink);
+		color: #fff;
+	}
+	.btn-acc:hover {
+		background: var(--accent);
+		transform: translateY(-1px);
+	}
+	.btn-ghost {
+		border-color: var(--tpl-rule-2);
+		color: var(--tpl-ink);
+	}
+	.btn-ghost:hover {
+		background: var(--tpl-ink);
+		color: #fff;
+		border-color: var(--tpl-ink);
+	}
+	.btn-acc.lg,
+	.btn-ghost.lg {
+		padding: 14px 26px;
+		font-size: 15px;
+	}
+	.btn-acc.full,
+	.btn-ghost.full {
+		width: 100%;
+		justify-content: center;
+	}
+
+	/* Hero */
+	.hero {
+		max-width: 1100px;
+		margin: 0 auto;
+		padding: 80px 32px 60px;
+		text-align: center;
+	}
+	.pill {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		padding: 6px 14px 6px 6px;
+		background: var(--accent-soft);
+		color: var(--accent);
+		border: 1px solid rgba(255, 92, 61, 0.25);
+		border-radius: 999px;
+		font-family: var(--mono);
+		font-size: 12px;
+		font-weight: 600;
+		margin-bottom: 28px;
+	}
+	.pill-tag {
+		background: var(--accent);
+		color: #fff;
+		padding: 3px 8px;
+		border-radius: 999px;
+		font-size: 10px;
+		letter-spacing: 0.06em;
+	}
+	.hero h1 {
+		font-size: clamp(48px, 7.5vw, 96px);
+		font-weight: 800;
+		letter-spacing: -0.045em;
+		line-height: 0.96;
+		max-width: 16ch;
+		margin: 0 auto;
+	}
+	.hero .lead {
+		margin: 28px auto 0;
+		max-width: 56ch;
+		font-size: clamp(17px, 1.6vw, 21px);
+		line-height: 1.55;
+		color: var(--tpl-ink-2);
+	}
+	.cta-row {
+		display: flex;
+		gap: 12px;
+		justify-content: center;
+		margin-top: 32px;
+		flex-wrap: wrap;
+	}
+	.cta-row.center {
+		justify-content: center;
+	}
+	.proof {
+		margin-top: 32px;
+		font-family: var(--mono);
+		font-size: 13px;
+		color: var(--tpl-ink-3);
+	}
+	.proof-stars {
+		color: var(--accent);
+		letter-spacing: 2px;
+		margin-right: 8px;
+	}
+
+	/* Product (dashboard wireframe) */
+	.product {
+		max-width: 1240px;
+		margin: 0 auto;
+		padding: 0 32px 80px;
+	}
+	.dash {
+		background: #fff;
+		border-radius: 18px;
+		box-shadow: 0 50px 120px -30px rgba(0, 0, 0, 0.22), 0 0 0 1px var(--tpl-rule);
+		display: grid;
+		grid-template-columns: 200px 1fr;
+		overflow: hidden;
+		min-height: 480px;
+	}
+	.dash-side {
+		background: linear-gradient(180deg, #fcf3ee, #fff);
+		padding: 20px 14px;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		border-right: 1px solid var(--tpl-rule);
+	}
+	.ds-logo {
+		width: 28px;
+		height: 28px;
+		border-radius: 8px;
+		background: var(--tpl-ink);
+		margin-bottom: 16px;
+	}
+	.ds-item {
+		height: 32px;
+		border-radius: 8px;
+		background: rgba(26, 26, 28, 0.05);
+	}
+	.ds-item.is-on {
+		background: var(--accent-soft);
+		box-shadow: inset 3px 0 0 var(--accent);
+	}
+	.ds-spacer {
+		flex: 1;
+	}
+	.dash-main {
+		padding: 24px 28px;
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+	}
+	.dm-bar {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		padding-bottom: 16px;
+		border-bottom: 1px solid var(--tpl-rule);
+	}
+	.dm-title {
+		width: 180px;
+		height: 18px;
+		background: var(--tpl-ink);
+		border-radius: 4px;
+	}
+	.dm-search {
+		flex: 1;
+		max-width: 240px;
+		height: 30px;
+		background: rgba(26, 26, 28, 0.06);
+		border-radius: 8px;
+		margin-left: auto;
+	}
+	.dm-avatar {
+		width: 30px;
+		height: 30px;
+		border-radius: 50%;
+		background: var(--accent);
+	}
+	.dm-stats {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 12px;
+	}
+	.dm-stat {
+		padding: 14px 16px;
+		background: rgba(26, 26, 28, 0.04);
+		border-radius: 12px;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+	.ds-v {
+		font-family: var(--mono);
+		font-size: 20px;
+		font-weight: 700;
+		color: var(--tpl-ink);
+	}
+	.ds-l {
+		display: block;
+		height: 6px;
+		width: 60%;
+		background: rgba(26, 26, 28, 0.12);
+		border-radius: 3px;
+	}
+	.dm-chart {
+		background: rgba(26, 26, 28, 0.02);
+		border: 1px solid var(--tpl-rule);
+		border-radius: 12px;
+		padding: 14px;
+		min-height: 200px;
+	}
+	.dm-chart svg {
+		width: 100%;
+		height: 200px;
+		display: block;
+	}
+	.dm-table {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+	.dm-row {
+		display: flex;
+		gap: 14px;
+		padding: 10px 0;
+		border-bottom: 1px solid var(--tpl-rule);
+	}
+	.dm-cell {
+		height: 10px;
+		background: rgba(26, 26, 28, 0.1);
+		border-radius: 3px;
+	}
+	.dm-cell.w15 {
+		width: 15%;
+	}
+	.dm-cell.w20 {
+		width: 20%;
+	}
+	.dm-cell.w30 {
+		width: 30%;
+	}
+	@media (max-width: 780px) {
+		.dash {
+			grid-template-columns: 1fr;
+		}
+		.dash-side {
+			display: none;
+		}
+		.dm-stats {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	/* Logos */
+	.logos {
+		max-width: 1100px;
+		margin: 0 auto;
+		padding: 60px 32px 80px;
+		text-align: center;
+	}
+	.logos-l {
+		font-family: var(--mono);
+		font-size: 12px;
+		letter-spacing: 0.15em;
+		text-transform: uppercase;
+		color: var(--tpl-ink-3);
+		margin-bottom: 28px;
+	}
+	.logos-row {
+		display: flex;
+		justify-content: center;
+		gap: 48px;
+		flex-wrap: wrap;
+	}
+	.logo-wm {
+		font-family: 'Georgia', serif;
+		font-size: 22px;
+		font-style: italic;
+		color: var(--tpl-ink-3);
+		opacity: 0.5;
+		letter-spacing: -0.02em;
+	}
+
+	/* Section heads */
+	.sec-h {
+		text-align: center;
+		max-width: 720px;
+		margin: 0 auto 56px;
+	}
+	.eyebrow {
+		font-family: var(--mono);
+		font-size: 12px;
+		font-weight: 600;
+		letter-spacing: 0.14em;
+		color: var(--accent);
+		display: block;
+		margin-bottom: 16px;
+	}
+	.sec-h h2 {
+		font-size: clamp(36px, 5vw, 64px);
+		font-weight: 800;
+		letter-spacing: -0.035em;
+		line-height: 1.05;
+	}
+	.sec-l {
+		margin-top: 16px;
+		font-size: 17px;
+		color: var(--tpl-ink-2);
+		line-height: 1.55;
+	}
+
+	/* Features */
+	.features {
+		max-width: 1240px;
+		margin: 0 auto;
+		padding: 100px 32px;
+	}
+	.feat-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 20px;
+	}
+	.feat {
+		padding: 32px 28px;
+		background: #fff;
+		border: 1px solid var(--tpl-rule);
+		border-radius: 18px;
+		transition: transform 0.3s, box-shadow 0.3s;
+	}
+	.feat:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.12);
+	}
+	.feat-ic {
+		width: 48px;
+		height: 48px;
+		border-radius: 12px;
+		background: var(--accent-soft);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 22px;
+		margin-bottom: 18px;
+	}
+	.feat h3 {
+		font-size: 19px;
+		font-weight: 700;
+		letter-spacing: -0.01em;
+		margin-bottom: 10px;
+	}
+	.feat p {
+		font-size: 15px;
+		line-height: 1.55;
+		color: var(--tpl-ink-2);
+	}
+	@media (max-width: 900px) {
+		.feat-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	/* Pricing */
+	.pricing {
+		max-width: 1240px;
+		margin: 0 auto;
+		padding: 80px 32px 100px;
+	}
+	.price-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 20px;
+	}
+	.price-card {
+		padding: 36px 32px;
+		background: #fff;
+		border: 1px solid var(--tpl-rule);
+		border-radius: 20px;
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+		position: relative;
+	}
+	.price-card.mid {
+		border-color: var(--accent);
+		box-shadow: 0 30px 80px -30px rgba(255, 92, 61, 0.35), 0 0 0 1px var(--accent);
+		transform: translateY(-8px);
+	}
+	.pc-badge {
+		position: absolute;
+		top: -12px;
+		left: 50%;
+		transform: translateX(-50%);
+		background: var(--accent);
+		color: #fff;
+		font-family: var(--mono);
+		font-size: 10px;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		padding: 5px 12px;
+		border-radius: 999px;
+	}
+	.pc-name {
+		font-family: var(--mono);
+		font-size: 13px;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: var(--tpl-ink-3);
+	}
+	.pc-price {
+		font-size: 44px;
+		font-weight: 800;
+		letter-spacing: -0.035em;
+		line-height: 1;
+	}
+	.pc-price span {
+		font-size: 16px;
+		font-weight: 500;
+		color: var(--tpl-ink-3);
+		margin-left: 4px;
+	}
+	.pc-d {
+		font-size: 14px;
+		color: var(--tpl-ink-2);
+		line-height: 1.5;
+	}
+	.price-card ul {
+		list-style: none;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		font-size: 14px;
+		margin-top: 4px;
+		color: var(--tpl-ink-2);
+	}
+	.price-card li::before {
+		content: '✓ ';
+		color: var(--accent);
+		font-weight: 700;
+	}
+	@media (max-width: 900px) {
+		.price-grid {
+			grid-template-columns: 1fr;
+		}
+		.price-card.mid {
+			transform: none;
+		}
+	}
+
+	/* FAQ */
+	.faq {
+		max-width: 800px;
+		margin: 0 auto;
+		padding: 80px 32px;
+	}
+	.faq-list {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+	.faq details {
+		padding: 22px 24px;
+		border: 1px solid var(--tpl-rule);
+		border-radius: 14px;
+		background: #fff;
+		transition: border-color 0.2s;
+	}
+	.faq details[open] {
+		border-color: var(--accent);
+	}
+	.faq summary {
+		cursor: pointer;
+		list-style: none;
+		font-weight: 600;
+		font-size: 16px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+	.faq summary::-webkit-details-marker {
+		display: none;
+	}
+	.faq summary::after {
+		content: '+';
+		font-size: 22px;
+		color: var(--accent);
+		font-weight: 400;
+		transition: transform 0.25s;
+	}
+	.faq details[open] summary::after {
+		transform: rotate(45deg);
+	}
+	.faq p {
+		margin-top: 14px;
+		font-size: 15px;
+		line-height: 1.6;
+		color: var(--tpl-ink-2);
+	}
+
+	/* Final CTA */
+	.cta {
+		max-width: 1240px;
+		margin: 0 auto 100px;
+		padding: 100px 32px;
+		text-align: center;
+		background: linear-gradient(135deg, #ffe8de, #ffd4c2);
+		border-radius: 32px;
+	}
+	.cta h2 {
+		font-size: clamp(40px, 6vw, 80px);
+		font-weight: 800;
+		letter-spacing: -0.04em;
+		line-height: 1.02;
+		max-width: 16ch;
+		margin: 0 auto;
+	}
+	.cta p {
+		margin: 18px auto 32px;
+		font-size: 18px;
+		color: var(--tpl-ink-2);
+	}
+
+	/* Footer */
+	.ft {
+		background: var(--tpl-ink);
+		color: rgba(255, 255, 255, 0.75);
+		padding: 80px 32px 32px;
+	}
+	.ft-inner {
+		max-width: 1240px;
+		margin: 0 auto;
+		display: grid;
+		grid-template-columns: 2fr 1fr 1fr 1fr;
+		gap: 40px;
+	}
+	.ft-brand .brand {
+		color: #fff;
+		font-size: 22px;
+	}
+	.ft-brand p {
+		margin-top: 12px;
+		font-size: 14px;
+		color: rgba(255, 255, 255, 0.5);
+		max-width: 28ch;
+	}
+	.ft-col h4 {
+		color: #fff;
+		font-size: 13px;
+		font-family: var(--mono);
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		margin-bottom: 16px;
+	}
+	.ft-col a {
+		display: block;
+		font-size: 14px;
+		color: rgba(255, 255, 255, 0.6);
+		padding: 4px 0;
+		transition: color 0.2s;
+	}
+	.ft-col a:hover {
+		color: var(--accent);
+	}
+	.ft-bot {
+		max-width: 1240px;
+		margin: 60px auto 0;
+		padding-top: 24px;
+		border-top: 1px solid rgba(255, 255, 255, 0.1);
+		font-size: 13px;
+		display: flex;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 16px;
+		color: rgba(255, 255, 255, 0.4);
+	}
+	.ft-links a {
+		color: rgba(255, 255, 255, 0.6);
+		margin-left: 18px;
+	}
+	@media (max-width: 780px) {
+		.ft-inner {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+</style>
