@@ -186,6 +186,9 @@ export const translations: Record<Locale, Record<string, string>> = {
 		'contact.form.message': 'Message',
 		'contact.form.placeholder': 'Tell me what you have in mind…',
 		'contact.form.send': 'Send message',
+		'contact.form.sending': 'Sending…',
+		'contact.form.success': 'Sent. I reply within 24h.',
+		'contact.form.error': "Couldn't send. Try again or email contato@fabbahiense.dev.",
 		'contact.form.or': 'or email me directly at',
 
 		// ===== Footer =====
@@ -454,6 +457,9 @@ export const translations: Record<Locale, Record<string, string>> = {
 		'contact.form.message': 'Mensagem',
 		'contact.form.placeholder': 'Me conta o que você tem em mente…',
 		'contact.form.send': 'Enviar mensagem',
+		'contact.form.sending': 'Enviando…',
+		'contact.form.success': 'Enviado. Respondo em até 24h.',
+		'contact.form.error': 'Não consegui enviar. Tenta de novo ou escreve em contato@fabbahiense.dev.',
 		'contact.form.or': 'ou me escreva direto em',
 
 		// ===== Footer =====

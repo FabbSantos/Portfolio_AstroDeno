@@ -1,7 +1,6 @@
 ---
-// Home contact — small form (name / email / subject / message) that builds a
-// mailto: link on submit. No backend, no third-party service — every email
-// still lands straight in the inbox, as the copy promises.
+// Home contact — POSTs to /api/contact (Astro endpoint using Resend).
+// Needs RESEND_API_KEY set in Vercel env vars + the domain verified on Resend.
 ---
 
 <section class='contact' id='contato'>
@@ -45,7 +44,8 @@
 				data-i18n-placeholder='contact.form.placeholder'
 				placeholder='Tell me what you have in mind…'></textarea>
 		</label>
-		<button type='submit' class='btn btn-primary' data-i18n='contact.form.send'>Send message</button>
+		<button type='submit' class='btn btn-primary' id='contact-submit' data-i18n='contact.form.send'>Send message</button>
+		<p class='form-status' id='contact-status' role='status' aria-live='polite'></p>
 	</form>
 
 	<p class='or reveal d3'>
@@ -151,6 +151,22 @@
 		align-self: flex-start;
 		margin-top: 6px;
 	}
+	.form button:disabled {
+		opacity: 0.6;
+		cursor: progress;
+	}
+
+	.form-status {
+		margin: 0;
+		min-height: 1.2em;
+		font-family: var(--mono);
+		font-size: 13px;
+		color: var(--ink-3);
+		transition: color 0.25s;
+	}
+	.form-status.is-sending { color: var(--ink-2); }
+	.form-status.is-ok { color: #16a34a; }
+	.form-status.is-err { color: var(--accent); }
 
 	.or {
 		margin-top: 32px;
@@ -306,19 +322,61 @@
 		refreshPlaceholder();
 		window.addEventListener('locale-changed', refreshPlaceholder);
 
-		form.addEventListener('submit', (e) => {
+		const submitBtn = document.getElementById('contact-submit') as HTMLButtonElement;
+		const status = document.getElementById('contact-status') as HTMLElement;
+
+		const setStatus = async (kind: 'idle' | 'sending' | 'ok' | 'err') => {
+			status.classList.remove('is-sending', 'is-ok', 'is-err');
+			if (kind === 'idle') {
+				status.textContent = '';
+				return;
+			}
+			const { t } = await import('../../i18n/i18n');
+			if (kind === 'sending') {
+				status.classList.add('is-sending');
+				status.textContent = t('contact.form.sending');
+			} else if (kind === 'ok') {
+				status.classList.add('is-ok');
+				status.textContent = t('contact.form.success');
+			} else {
+				status.classList.add('is-err');
+				status.textContent = t('contact.form.error');
+			}
+		};
+
+		form.addEventListener('submit', async (e) => {
 			e.preventDefault();
 			if (!form.reportValidity()) return;
+
 			const data = new FormData(form);
-			const name = String(data.get('name') || '').trim();
-			const email = String(data.get('email') || '').trim();
-			const subject = String(data.get('subject') || 'Hi') || 'Hi';
-			const message = String(data.get('message') || '').trim();
-			const body = `${message}\n\n— ${name}\n${email}`;
-			const url = `mailto:contato@fabbahiense.dev?subject=${encodeURIComponent(
-				`[Portfolio] ${subject}`
-			)}&body=${encodeURIComponent(body)}`;
-			window.location.href = url;
+			const payload = {
+				name: String(data.get('name') || '').trim(),
+				email: String(data.get('email') || '').trim(),
+				subject: String(data.get('subject') || 'Contato'),
+				message: String(data.get('message') || '').trim(),
+			};
+
+			submitBtn.disabled = true;
+			await setStatus('sending');
+
+			try {
+				const res = await fetch('/api/contact', {
+					method: 'POST',
+					headers: { 'content-type': 'application/json' },
+					body: JSON.stringify(payload),
+				});
+				const json = (await res.json().catch(() => ({}))) as { ok?: boolean };
+				if (res.ok && json.ok) {
+					form.reset();
+					await setStatus('ok');
+				} else {
+					await setStatus('err');
+				}
+			} catch {
+				await setStatus('err');
+			} finally {
+				submitBtn.disabled = false;
+			}
 		});
 	}
 </script>

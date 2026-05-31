@@ -3,11 +3,12 @@ import { translations, type Locale } from './translations';
 const STORAGE_KEY = 'portfolio-lang';
 
 export function getLocale(): Locale {
-	if (typeof window === 'undefined') return 'en';
+	if (typeof window === 'undefined') return 'pt';
 	const saved = localStorage.getItem(STORAGE_KEY) as Locale | null;
 	if (saved && (saved === 'en' || saved === 'pt')) return saved;
+	// pt-BR is the default; only switch to en for explicitly English browsers.
 	const browserLang = navigator.language.toLowerCase();
-	return browserLang.startsWith('pt') ? 'pt' : 'en';
+	return browserLang.startsWith('en') ? 'en' : 'pt';
 }
 
 export function setLocale(locale: Locale): void {
