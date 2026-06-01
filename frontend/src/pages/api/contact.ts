@@ -14,8 +14,12 @@ import { Resend } from 'resend';
 
 export const prerender = false;
 
-const TO = 'contato@fabbahiense.dev';
-const FROM = 'Portfolio · fabbahiense.dev <noreply@send.fabbahiense.dev>';
+// Sending direct to Gmail bypasses name.com's anti-spoofing on the
+// forwarding service (it doesn't like `noreply@fabbahiense.dev` →
+// `contato@fabbahiense.dev` where domains match). Nobody sees this TO
+// in the UI — emails still land in the same inbox.
+const TO = 'fabriciobs2000@gmail.com';
+const FROM = 'Portfolio · fabbahiense.dev <noreply@fabbahiense.dev>';
 
 const isEmail = (s: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
 
