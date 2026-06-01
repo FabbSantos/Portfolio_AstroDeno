@@ -15,7 +15,7 @@ import { Resend } from 'resend';
 export const prerender = false;
 
 const TO = 'contato@fabbahiense.dev';
-const FROM = 'Portfolio · fabbahiense.dev <noreply@fabbahiense.dev>';
+const FROM = 'Portfolio · fabbahiense.dev <noreply@send.fabbahiense.dev>';
 
 const isEmail = (s: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
 
