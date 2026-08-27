@@ -1,367 +1,129 @@
 ---
+/**
+ * Site layout (portfolio pages). Template demos use DemoLayout instead.
+ *
+ * - Locale comes from the URL (Astro i18n). `lang`, hreflang, og:locale and
+ *   canonical are all derived from it — nothing is swapped client-side.
+ * - Fonts are self-hosted (@fontsource-variable), no render-blocking third party.
+ */
+import '@fontsource-variable/inter';
+import '@fontsource-variable/jetbrains-mono';
+import '../styles/base.css';
+import '../styles/site.css';
 import SpeedInsights from '@vercel/speed-insights/astro';
+import { SITE } from '../data/site';
+import { templates } from '../data/templates';
+import { LOCALES, LANG_TAG, OG_LOCALE, localeOf, localePath, stripLocale, useT } from '../i18n';
 
 interface Props {
 	title: string;
-	description?: string;
+	description: string;
+	/** Keep crawlers out (demos, thank-you pages). */
+	noindex?: boolean;
+	/** Absolute or site-relative path to a 1200×630 image. */
+	ogImage?: string;
+	/** JSON-LD type override. Default: Person. */
+	ogType?: 'website' | 'article';
 }
 
-const {
-	title,
-	description = 'Portfolio of Fabrício Bahiense, a Senior Software Engineer specializing in high-impact, scalable web applications and digital experiences.',
-} = Astro.props;
+const { title, description, noindex = false, ogImage = '/og.png', ogType = 'website' } = Astro.props;
+const locale = localeOf(Astro);
+const t = useT(locale);
+const path = stripLocale(Astro.url.pathname);
+const site = Astro.site ?? new URL(SITE.url);
+const canonical = new URL(localePath(locale, path), site).href;
+const alternates = LOCALES.map((l) => ({ locale: l, href: new URL(localePath(l, path), site).href }));
+const ogImageAbs = new URL(ogImage, site).href;
+
+const jsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'Person',
+	name: SITE.name,
+	url: site.href,
+	email: `mailto:${SITE.email}`,
+	jobTitle: locale === 'pt' ? 'Engenheiro de Software Sênior' : 'Senior Software Engineer',
+	address: { '@type': 'PostalAddress', addressLocality: 'Rio de Janeiro', addressRegion: 'RJ', addressCountry: 'BR' },
+	sameAs: [SITE.social.github, SITE.social.linkedin, SITE.social.instagram],
+	knowsAbout: ['TypeScript', 'JavaScript', 'React', 'Vue', 'Next.js', 'Nuxt', 'Astro', 'Node.js', 'C#', 'AWS', 'LLM integration'],
+	makesOffer: templates.map((tpl) => ({
+		'@type': 'Offer',
+		name: `${tpl.name} ${tpl.accent}`,
+		url: new URL(localePath(locale, `/templates/${tpl.slug}`), site).href,
+		priceCurrency: 'BRL',
+		price: tpl.priceFrom,
+		priceSpecification: { '@type': 'PriceSpecification', minPrice: tpl.priceFrom, priceCurrency: 'BRL' },
+	})),
+};
 ---
 
 <!doctype html>
-<html lang='pt-BR'>
+<html lang={LANG_TAG[locale]}>
 	<head>
 		<meta charset='UTF-8' />
 		<meta name='viewport' content='width=device-width,initial-scale=1' />
 
-		<!-- SEO Meta Tags -->
 		<title>{title}</title>
 		<meta name='description' content={description} />
-		<meta name='author' content='Fabrício Bahiense' />
-		<meta
-			name='keywords'
-			content='senior software engineer, full stack developer, web development, portfolio, react, vue, .net, node.js, aws'
-		/>
+		<meta name='author' content={SITE.name} />
+		{noindex && <meta name='robots' content='noindex,follow' />}
+		<link rel='canonical' href={canonical} />
+		{alternates.map((a) => <link rel='alternate' hreflang={LANG_TAG[a.locale]} href={a.href} />)}
+		<link rel='alternate' hreflang='x-default' href={new URL(path, site).href} />
 
-		<!-- Open Graph / Facebook / LinkedIn / WhatsApp -->
-		<meta property='og:type' content='website' />
-		<meta property='og:url' content={Astro.url.href} />
+		<!-- Open Graph / LinkedIn / WhatsApp -->
+		<meta property='og:type' content={ogType} />
+		<meta property='og:url' content={canonical} />
 		<meta property='og:title' content={title} />
 		<meta property='og:description' content={description} />
-		<meta property='og:image' content={new URL('/og.png', Astro.url).href} />
+		<meta property='og:image' content={ogImageAbs} />
 		<meta property='og:image:width' content='1200' />
 		<meta property='og:image:height' content='630' />
-		<meta property='og:locale' content='pt_BR' />
-		<meta property='og:site_name' content='Fabrício Bahiense Portfolio' />
+		<meta property='og:locale' content={OG_LOCALE[locale]} />
+		{LOCALES.filter((l) => l !== locale).map((l) => <meta property='og:locale:alternate' content={OG_LOCALE[l]} />)}
+		<meta property='og:site_name' content={t.meta.siteName} />
 
-		<!-- Twitter Card -->
+		<!-- Twitter -->
 		<meta name='twitter:card' content='summary_large_image' />
-		<meta name='twitter:url' content={Astro.url.href} />
 		<meta name='twitter:title' content={title} />
 		<meta name='twitter:description' content={description} />
-		<meta name='twitter:image' content={new URL('/og.png', Astro.url).href} />
+		<meta name='twitter:image' content={ogImageAbs} />
 
-		<!-- Canonical URL -->
-		<link rel='canonical' href={Astro.url.href} />
-
-		<!-- Fonts: Inter (sans) + JetBrains Mono (technical labels) -->
-		<link rel='preconnect' href='https://fonts.googleapis.com' />
-		<link rel='preconnect' href='https://fonts.gstatic.com' crossorigin />
-		<link
-			href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap'
-			rel='stylesheet'
-		/>
-
-		<!-- Favicons -->
+		<!-- Icons / manifest -->
 		<link rel='apple-touch-icon' sizes='180x180' href='/apple-touch-icon.png' />
 		<link rel='icon' type='image/png' sizes='32x32' href='/favicon-32x32.png' />
 		<link rel='icon' type='image/png' sizes='16x16' href='/favicon-16x16.png' />
 		<link rel='manifest' href='/site.webmanifest' />
 		<link rel='mask-icon' href='/safari-pinned-tab.svg' color='#FF5964' />
-
-		<!-- Theme Colors -->
 		<meta name='msapplication-TileColor' content='#FF5964' />
 		<meta name='theme-color' content='#FBFBFD' />
-
-		<!-- Generator -->
 		<meta name='generator' content={Astro.generator} />
 
+		<!-- JS gate for scroll-reveal (content stays visible without JS) -->
+		<script is:inline>document.documentElement.classList.add('js');</script>
+
 		<!-- Vercel Web Analytics + Speed Insights: drop beacons when this document is
-		     embedded (the template demos are iframed on / and /templates), otherwise
-		     one home visit counts as 5 pageviews and pollutes the vitals. -->
+		     embedded in an iframe (template previews), so a home visit counts once. -->
 		<script is:inline>
 			(function () {
-				var framed = false;
-				try { framed = window.self !== window.top; } catch (e) { framed = true; }
+				let framed = false;
+				try { framed = window.self !== window.top; } catch { framed = true; }
 				if (!framed) return;
 				window.speedInsightsBeforeSend = function () { return null; };
-				window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+				window.va = window.va || function (...args) { (window.vaq = window.vaq || []).push(args); };
 				window.va('beforeSend', function () { return null; });
 			})();
 		</script>
 
-		<!-- Schema.org JSON-LD Structured Data -->
-		<script
-			type='application/ld+json'
-			is:inline
-			set:html={JSON.stringify({
-				'@context': 'https://schema.org',
-				'@type': 'Person',
-				name: 'Fabrício Bahiense',
-				url: Astro.site || 'https://fabsantos.dev',
-				jobTitle: 'Senior Software Engineer',
-				description:
-					'Senior Software Engineer specializing in high-impact, scalable web applications',
-				sameAs: [
-					'https://github.com/FabbSantos',
-					'https://www.linkedin.com/in/fabricio-b-santos/',
-					'https://www.instagram.com/fabbahiense_',
-				],
-				knowsAbout: [
-					'JavaScript',
-					'TypeScript',
-					'React',
-					'Vue',
-					'Astro',
-					'Web Development',
-					'Mobile Development',
-				],
-			})}
-		/>
+		<script type='application/ld+json' is:inline set:html={JSON.stringify(jsonLd)} />
 	</head>
 
 	<body>
-		<a href='#main-content' class='skip-link' data-i18n='a11y.skip'>Skip to main content</a>
+		<a href='#main-content' class='skip-link'>{t.common.skip}</a>
 		<slot />
-
-		<!-- Vercel Speed Insights (Web Vitals). Web Analytics is injected by the
-		     adapter (`webAnalytics.enabled` in astro.config.mjs). -->
 		<SpeedInsights />
-
 		<script>
-			import { initI18n } from '../i18n/i18n';
 			import { initSite } from '../scripts/site';
-
-			initI18n();
 			initSite();
 		</script>
 	</body>
 </html>
-
-<style is:global>
-	:root {
-		--bg: #fbfbfd;
-		--bg-2: #f2f2f4;
-		--bg-3: #ffffff;
-		--ink: #1a1a1c;
-		--ink-2: #5c5c61;
-		--ink-3: #8e8e93;
-		--ink-4: #c7c7cc;
-		--accent: #ff5964; /* same bright-pink as the old theme */
-		--accent-2: #7c3aed;
-		--accent-soft: rgba(255, 89, 100, 0.1);
-		--rule: rgba(26, 26, 28, 0.07);
-		--rule-2: rgba(26, 26, 28, 0.14);
-		--sans: 'Inter', -apple-system, system-ui, sans-serif;
-		--mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
-
-		/* easings reused across components */
-		--ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-		--maxw: 1300px;
-	}
-
-	* {
-		box-sizing: border-box;
-		margin: 0;
-		padding: 0;
-	}
-
-	html {
-		scroll-behavior: smooth;
-	}
-
-	html,
-	body {
-		background: var(--bg);
-		color: var(--ink);
-		font-family: var(--sans);
-		font-size: 17px;
-		line-height: 1.47;
-		-webkit-font-smoothing: antialiased;
-		/* `clip` (not `hidden`) prevents horizontal scrollbars without breaking
-		   position:sticky on the topbar. */
-		overflow-x: clip;
-	}
-
-	::selection {
-		background: var(--accent);
-		color: #fff;
-	}
-
-	a {
-		color: inherit;
-		text-decoration: none;
-	}
-
-	button {
-		font: inherit;
-		cursor: pointer;
-		border: none;
-		background: none;
-		color: inherit;
-	}
-
-	img {
-		max-width: 100%;
-		display: block;
-	}
-
-	code {
-		font-family: var(--mono);
-		font-size: 0.88em;
-		background: var(--accent-soft);
-		color: var(--accent);
-		padding: 1px 6px;
-		border-radius: 4px;
-	}
-
-	/* ===== Lenis smooth scroll ===== */
-	html.lenis,
-	html.lenis body {
-		height: auto;
-	}
-	.lenis.lenis-smooth {
-		scroll-behavior: auto !important;
-	}
-	.lenis.lenis-stopped {
-		overflow: hidden;
-	}
-
-	/* ===== Skip link (a11y) ===== */
-	.skip-link {
-		position: absolute;
-		top: -100px;
-		left: 0;
-		background: var(--accent);
-		color: #fff;
-		padding: 0.75rem 1.5rem;
-		z-index: 9999;
-		font-weight: 600;
-		border-radius: 0 0 0.5rem 0;
-	}
-	.skip-link:focus {
-		top: 0;
-	}
-
-	/* ===== Shared design-system primitives ===== */
-
-	/* Mono eyebrow / section label */
-	.eyebrow {
-		font-family: var(--mono);
-		font-size: 12px;
-		font-weight: 600;
-		letter-spacing: 0.14em;
-		text-transform: uppercase;
-		color: var(--ink-3);
-	}
-	.eyebrow.accent {
-		color: var(--accent);
-	}
-
-	/* Emphasis word: weight + accent colour (replaces the serif-italic) */
-	.hl {
-		color: var(--accent);
-		font-weight: 800;
-	}
-
-	/* Buttons */
-	.btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		padding: 13px 24px;
-		border-radius: 999px;
-		font-size: 15px;
-		font-weight: 500;
-		transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-		border: 1px solid transparent;
-	}
-	.btn-primary {
-		background: var(--ink);
-		color: #fff;
-	}
-	.btn-primary:hover {
-		background: var(--accent);
-		transform: translateY(-1px);
-	}
-	.btn-ghost {
-		border-color: var(--rule-2);
-		color: var(--ink);
-	}
-	.btn-ghost:hover {
-		background: var(--bg-2);
-	}
-	.btn-link {
-		color: var(--accent);
-		font-weight: 500;
-	}
-	.btn-link::after {
-		content: ' →';
-		display: inline-block;
-		transition: transform 0.2s;
-	}
-	.btn-link:hover::after {
-		transform: translateX(4px);
-	}
-
-	/* Section wrapper + heading */
-	.section {
-		padding: 120px 32px;
-		max-width: var(--maxw);
-		margin: 0 auto;
-	}
-	.sec-head {
-		margin-bottom: 60px;
-		max-width: 780px;
-	}
-	.sec-head h2,
-	.sec-head h3 {
-		font-size: clamp(40px, 5.5vw, 72px);
-		font-weight: 800;
-		letter-spacing: -0.035em;
-		line-height: 1.02;
-	}
-	.sec-head .eyebrow {
-		display: block;
-		margin-bottom: 14px;
-	}
-	.sec-head p {
-		margin-top: 18px;
-		font-size: 18px;
-		color: var(--ink-2);
-		line-height: 1.55;
-		max-width: 60ch;
-	}
-
-	/* Scroll reveal */
-	.reveal {
-		opacity: 0;
-		transform: translateY(28px);
-		transition:
-			opacity 0.9s var(--ease-out-expo),
-			transform 0.9s var(--ease-out-expo);
-	}
-	.reveal.in {
-		opacity: 1;
-		transform: none;
-	}
-	.reveal.d1 { transition-delay: 0.05s; }
-	.reveal.d2 { transition-delay: 0.1s; }
-	.reveal.d3 { transition-delay: 0.15s; }
-	.reveal.d4 { transition-delay: 0.2s; }
-	.reveal.d5 { transition-delay: 0.25s; }
-	.reveal.d6 { transition-delay: 0.3s; }
-	.reveal.d7 { transition-delay: 0.35s; }
-	.reveal.d8 { transition-delay: 0.4s; }
-
-	@media (prefers-reduced-motion: reduce) {
-		html {
-			scroll-behavior: auto;
-		}
-		*,
-		*::before,
-		*::after {
-			animation-duration: 0.01ms !important;
-			animation-iteration-count: 1 !important;
-			transition-duration: 0.01ms !important;
-		}
-		.reveal {
-			opacity: 1;
-			transform: none;
-		}
-	}
-</style>

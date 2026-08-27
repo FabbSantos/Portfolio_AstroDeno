@@ -1,0 +1,55 @@
+---
+/**
+ * Demo-only helper for template pages that contain forms: every
+ * `<form data-demo-form>` has its submit intercepted and a short toast tells
+ * the visitor the real form is wired up on the client's deploy.
+ * Not part of the deliverable — drop it when cloning the template.
+ */
+interface Props {
+	/** Toast text, already in the demo's language. */
+	note: string;
+}
+const { note } = Astro.props;
+---
+
+<div class='demo-toast' role='status' aria-live='polite' data-demo-toast hidden>{note}</div>
+
+<script>
+	const toast = document.querySelector<HTMLElement>('[data-demo-toast]');
+	let timer: number | undefined;
+
+	document.querySelectorAll<HTMLFormElement>('form[data-demo-form]').forEach((form) => {
+		form.addEventListener('submit', (ev) => {
+			ev.preventDefault();
+			if (!toast) return;
+			toast.hidden = false;
+			window.clearTimeout(timer);
+			timer = window.setTimeout(() => {
+				toast.hidden = true;
+			}, 4000);
+		});
+	});
+</script>
+
+<style>
+	.demo-toast {
+		position: fixed;
+		left: 50%;
+		bottom: 24px;
+		transform: translateX(-50%);
+		z-index: 1100;
+		max-width: calc(100vw - 32px);
+		padding: 12px 18px;
+		border-radius: 999px;
+		background: #1a1a1c;
+		color: #fff;
+		font-family: var(--mono);
+		font-size: 13px;
+		letter-spacing: 0.02em;
+		text-align: center;
+		box-shadow: 0 18px 40px -16px rgba(0, 0, 0, 0.45);
+	}
+	.demo-toast[hidden] {
+		display: none;
+	}
+</style>

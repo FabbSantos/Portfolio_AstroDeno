@@ -1,0 +1,440 @@
+---
+/**
+ * /work · /en/work — flagships, client cases and the lab.
+ * Every action is a real link (no modal, no <button> rows).
+ * Rendered by src/pages/work.astro and src/pages/en/work.astro.
+ */
+import { Image } from 'astro:assets';
+import Layout from '../layouts/Layout.astro';
+import TopBar from '../components/site/TopBar.astro';
+import SiteFooter from '../components/site/SiteFooter.astro';
+import { SITE, whatsappUrl } from '../data/site';
+import { cases, flagships, lab, type Work } from '../data/works';
+import { fmt, localeOf, localePath, pick, useT } from '../i18n';
+
+const locale = localeOf(Astro);
+const t = useT(locale);
+const w = t.work;
+
+const ownProducts = flagships();
+const clientCases = cases();
+const experiments = lab();
+
+const contactHref = localePath(locale, '/#contato');
+const wa = whatsappUrl(locale);
+const accessHref = (id: string) => localePath(locale, `/#contato?assunto=acesso-${id}`);
+const statusLabel = (s: Work['status']) => t.common[s];
+
+const eyebrow = fmt(w.hero.eyebrow, { from: SITE.since, to: new Date().getFullYear() });
+
+const groups = [
+	{ id: 'produtos', copy: w.flagships, items: ownProducts },
+	{ id: 'cases', copy: w.cases, items: clientCases },
+];
+---
+
+<Layout title={t.meta.work.title} description={t.meta.work.description}>
+	<TopBar active='work' />
+	<main id='main-content'>
+		<!-- Hero -->
+		<section class='page-hero'>
+			<p class='eyebrow accent'>
+				<span class='dot' aria-hidden='true'></span>
+				{eyebrow}
+			</p>
+			<h1>{w.hero.head1} <span class='hl'>{w.hero.head2}</span></h1>
+			<p class='lead'>{w.hero.lead}</p>
+		</section>
+
+		<!-- Flagships + Cases -->
+		{
+			groups.map((g) => (
+				<section class='section cases' id={g.id}>
+					<div class='sec-head reveal'>
+						<span class='eyebrow accent'>{g.copy.eyebrow}</span>
+						<h2>
+							{g.copy.head1} <span class='hl'>{g.copy.head2}</span>
+						</h2>
+						<p>{g.copy.lead}</p>
+					</div>
+
+					<div class='case-list'>
+						{g.items.map((item, i) => (
+							<article class:list={['case', 'reveal', `d${Math.min(i + 1, 3)}`]}>
+								{item.image && (
+									<div class='thumb'>
+										<Image
+											src={item.image}
+											widths={[480, 960]}
+											sizes='(max-width: 900px) 100vw, 480px'
+											format='webp'
+											loading='lazy'
+											alt={fmt(w.card.thumbAlt, { title: item.title })}
+										/>
+									</div>
+								)}
+								<div class='body'>
+									<div class='meta'>
+										{(item.client || item.year) && (
+											<span class='client'>{[item.client, item.year].filter(Boolean).join(' · ')}</span>
+										)}
+										<span class:list={['pill', item.status]}>{statusLabel(item.status)}</span>
+									</div>
+									<h3>{item.title}</h3>
+									<p class='desc'>{pick(item.desc, locale)}</p>
+									{item.role && (
+										<p class='role'>
+											<span class='label'>{w.card.role}</span> {pick(item.role, locale)}
+										</p>
+									)}
+									{item.outcome && (
+										<div class='outcome'>
+											<span class='eyebrow'>{w.card.outcome}</span>
+											<p>{pick(item.outcome, locale)}</p>
+										</div>
+									)}
+									<ul class='tags' aria-label='Stack'>
+										{item.tags.map((tag) => (
+											<li>{tag}</li>
+										))}
+									</ul>
+									<div class='action'>
+										{item.href ? (
+											<a href={item.href} class='btn-link ext' target='_blank' rel='noopener'>
+												{t.common.viewProject} <span aria-hidden='true'>↗</span>
+												<span class='sr-only'>({t.common.openInNewTab})</span>
+											</a>
+										) : item.status === 'archived' ? (
+											<span class='offline'>{t.common.offline}</span>
+										) : (
+											<a href={accessHref(item.id)} class='btn-link'>
+												{t.common.requestAccess}
+											</a>
+										)}
+									</div>
+								</div>
+							</article>
+						))}
+					</div>
+				</section>
+			))
+		}
+
+		<!-- Lab (collapsed by default so the page leads with real work) -->
+		<section class='section lab' id='lab'>
+			<div class='sec-head reveal'>
+				<span class='eyebrow accent'>{w.lab.eyebrow}</span>
+				<h2>{w.lab.head1} <span class='hl'>{w.lab.head2}</span></h2>
+				<p>{w.lab.lead}</p>
+			</div>
+
+			<details class='lab-details'>
+				<summary>
+					<span class='chev' aria-hidden='true'>›</span>
+					{fmt(w.lab.summary, { n: experiments.length })}
+				</summary>
+				<ul class='lab-rows'>
+					{
+						experiments.map((item) => (
+							<li class='lab-row'>
+								<div class='lab-main'>
+									<h3>{item.title}</h3>
+									<p class='desc'>{pick(item.desc, locale)}</p>
+									<ul class='tags' aria-label='Stack'>
+										{item.tags.map((tag) => (
+											<li>{tag}</li>
+										))}
+									</ul>
+								</div>
+								<div class='lab-action'>
+									{item.href ? (
+										<a href={item.href} class='btn-link ext' target='_blank' rel='noopener'>
+											{t.common.viewProject} <span aria-hidden='true'>↗</span>
+											<span class='sr-only'>({t.common.openInNewTab})</span>
+										</a>
+									) : (
+										<span class='offline'>{t.common.offline}</span>
+									)}
+								</div>
+							</li>
+						))
+					}
+				</ul>
+			</details>
+		</section>
+
+		<!-- CTA -->
+		<section class='cta-band'>
+			<h2>{w.cta.head1} <span class='hl'>{w.cta.head2}</span></h2>
+			<p class='sub'>{w.cta.sub}</p>
+			<div class='actions'>
+				<a href={contactHref} class='btn btn-primary'>{t.common.ctaContact}</a>
+				{
+					wa && (
+						<a href={wa} class='btn btn-whatsapp' target='_blank' rel='noopener'>
+							{t.common.ctaWhatsapp}
+						</a>
+					)
+				}
+			</div>
+		</section>
+	</main>
+	<SiteFooter />
+</Layout>
+
+<style>
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
+
+	.section.cases {
+		padding-top: 80px;
+		padding-bottom: 40px;
+	}
+
+	/* Case cards */
+	.case-list {
+		display: flex;
+		flex-direction: column;
+		gap: 24px;
+	}
+	.case {
+		display: grid;
+		grid-template-columns: minmax(0, 480px) 1fr;
+		gap: 40px;
+		padding: 28px;
+		background: var(--bg-3);
+		border: 1px solid var(--rule);
+		border-radius: 22px;
+		transition:
+			transform 0.35s var(--ease-out-expo),
+			box-shadow 0.35s;
+	}
+	.case:hover {
+		transform: translateY(-3px);
+		box-shadow: 0 30px 60px -24px rgba(0, 0, 0, 0.14);
+	}
+	.thumb {
+		align-self: start;
+		border-radius: 14px;
+		overflow: hidden;
+		border: 1px solid var(--rule);
+		background: var(--bg-2);
+		aspect-ratio: 16 / 10;
+	}
+	.thumb :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: top;
+	}
+	.body {
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+		min-width: 0;
+	}
+	.meta {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 10px 14px;
+		font-family: var(--mono);
+		font-size: 12px;
+		color: var(--ink-3);
+	}
+	.case h3 {
+		font-size: var(--fs-h3);
+		font-weight: 800;
+		letter-spacing: -0.03em;
+		line-height: 1.02;
+		text-wrap: balance;
+	}
+	.case .desc {
+		font-size: 17px;
+		color: var(--ink-2);
+		line-height: 1.55;
+		max-width: 60ch;
+	}
+	.case .role {
+		font-size: 15px;
+		color: var(--ink-2);
+		line-height: 1.5;
+	}
+	.case .role .label {
+		font-weight: 600;
+		color: var(--ink);
+	}
+	.outcome {
+		border-left: 3px solid var(--accent);
+		padding: 4px 0 4px 16px;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+	.outcome p {
+		font-size: 17px;
+		font-weight: 600;
+		color: var(--ink);
+		line-height: 1.45;
+	}
+
+	/* Tag chips */
+	.tags {
+		list-style: none;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+	}
+	.tags li {
+		font-family: var(--mono);
+		font-size: 11px;
+		letter-spacing: 0.02em;
+		padding: 4px 10px;
+		border-radius: 999px;
+		border: 1px solid var(--rule-2);
+		color: var(--ink-2);
+		background: var(--bg);
+	}
+
+	.action {
+		margin-top: auto;
+		padding-top: 6px;
+		display: flex;
+		align-items: center;
+		min-height: 44px;
+	}
+	.action .btn-link,
+	.lab-action .btn-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		min-height: 44px;
+		font-size: 15px;
+	}
+	.btn-link.ext::after {
+		content: none;
+	}
+	.offline {
+		font-family: var(--mono);
+		font-size: 12px;
+		color: var(--ink-3);
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+	}
+
+	/* Lab */
+	.section.lab {
+		padding-top: 80px;
+		padding-bottom: 40px;
+	}
+	.lab-details {
+		border-top: 1px solid var(--rule);
+	}
+	.lab-details summary {
+		list-style: none;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		min-height: 56px;
+		padding: 14px 0;
+		font-weight: 600;
+		font-size: 17px;
+		color: var(--ink);
+		border-bottom: 1px solid var(--rule);
+		transition: color 0.2s;
+	}
+	.lab-details summary::-webkit-details-marker {
+		display: none;
+	}
+	.lab-details summary:hover {
+		color: var(--accent-text);
+	}
+	.lab-details summary .chev {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 28px;
+		height: 28px;
+		border-radius: 50%;
+		background: var(--bg-2);
+		color: var(--ink-2);
+		font-size: 20px;
+		line-height: 1;
+		transition: transform 0.3s var(--ease-out-expo);
+	}
+	.lab-details[open] summary .chev {
+		transform: rotate(90deg);
+	}
+	.lab-rows {
+		list-style: none;
+	}
+	.lab-row {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		gap: 24px;
+		align-items: center;
+		padding: 22px 0;
+		border-bottom: 1px solid var(--rule);
+		transition:
+			padding-left 0.4s cubic-bezier(0.7, 0, 0.3, 1),
+			background 0.25s;
+	}
+	.lab-row:hover {
+		padding-left: 12px;
+		background: var(--bg-2);
+	}
+	.lab-main {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		min-width: 0;
+	}
+	.lab-row h3 {
+		font-size: 20px;
+		font-weight: 700;
+		letter-spacing: -0.015em;
+		line-height: 1.15;
+	}
+	.lab-row .desc {
+		font-size: 15px;
+		color: var(--ink-2);
+		line-height: 1.55;
+		max-width: 70ch;
+	}
+
+	@media (max-width: 900px) {
+		.case {
+			grid-template-columns: 1fr;
+			gap: 22px;
+			padding: 18px;
+			border-radius: 18px;
+		}
+		.lab-row {
+			grid-template-columns: 1fr;
+			gap: 6px;
+		}
+	}
+	@media (max-width: 780px) {
+		.section.cases,
+		.section.lab {
+			padding-left: 20px;
+			padding-right: 20px;
+		}
+		.section.cases {
+			padding-top: 64px;
+		}
+		.case .desc {
+			font-size: 16px;
+		}
+	}
+</style>

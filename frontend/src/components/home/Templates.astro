@@ -1,24 +1,60 @@
 ---
-import { templates } from '../../data/templates';
+/**
+ * Home band — "Templates · sites prontos em dias".
+ * One list of cards: a 2×2 grid from 900px up, a snap scroller below that
+ * (touch scrolls natively, mouse can drag, prev/next buttons for everyone).
+ */
+import { SITE } from '../../data/site';
+import { formatBRL, templates } from '../../data/templates';
+import { fmt, localeOf, localePath, useT } from '../../i18n';
 import TemplateCard from '../templates/TemplateCard.astro';
+
+const locale = localeOf(Astro);
+const t = useT(locale);
+
+const n = templates.length;
+const nWord = t.templates.numberWords[n] ?? String(n);
+const NWord = nWord.charAt(0).toUpperCase() + nWord.slice(1);
+const prices = templates.map((tpl) => tpl.priceFrom);
+const lead = fmt(t.templates.band.lead, {
+	N: NWord,
+	n: nWord,
+	days: SITE.promises.templateDays,
+	min: formatBRL(Math.min(...prices)),
+	max: formatBRL(Math.max(...prices)),
+});
 ---
 
-<section class='tpl-band' id='templates'>
-	<div class='sec-head reveal'>
-		<span class='eyebrow accent' data-i18n='templates.eyebrow'>Extras · ready-made templates</span>
-		<h2>
-			<span data-i18n='templates.head1'>Need something</span>
-			<span class='hl' data-i18n='templates.head2'>yesterday?</span>
-		</h2>
-		<p data-i18n='templates.lead'>
-			Seven templates I wrote myself. You pick one, I customize and ship it in 5–10 business days
-			— with your domain and brand.
-		</p>
-	</div>
+<section class='tpl-band' id='templates' aria-labelledby='templates-title'>
+	<div class='inner'>
+		<div class='sec-head reveal'>
+			<span class='eyebrow accent'>{t.templates.band.eyebrow}</span>
+			<h2 id='templates-title'>
+				{t.templates.band.head} <span class='hl'>{t.templates.band.headAccent}</span>
+			</h2>
+			<p>{lead}</p>
+		</div>
 
-	<div class='scroller'>
-		<div class='tpl-track'>
-			{templates.map((t) => <TemplateCard tpl={t} class='snap-card' />)}
+		<ul class='scroller' id='tpl-scroller' role='list' aria-label={t.templates.band.listLabel}>
+			{
+				templates.map((tpl) => (
+					<li class='tpl-item'>
+						<TemplateCard tpl={tpl} locale={locale} heading='h3' />
+					</li>
+				))
+			}
+		</ul>
+
+		<div class='band-foot'>
+			<a href={localePath(locale, '/templates')} class='btn-link'>{t.templates.band.viewAll}</a>
+			<div class='scroller-nav'>
+				<button type='button' data-scroll='prev' data-for='#tpl-scroller' aria-label={t.templates.band.scrollPrev}>
+					←
+				</button>
+				<button type='button' data-scroll='next' data-for='#tpl-scroller' aria-label={t.templates.band.scrollNext}>
+					→
+				</button>
+			</div>
 		</div>
 	</div>
 </section>
@@ -27,16 +63,26 @@ import TemplateCard from '../templates/TemplateCard.astro';
 	.tpl-band {
 		padding: 120px 0;
 	}
-	.tpl-band .sec-head {
-		padding: 0 32px;
+	.inner {
 		max-width: var(--maxw);
-		margin: 0 auto 60px;
+		margin: 0 auto;
 	}
+	.sec-head {
+		padding: 0 32px;
+	}
+
+	/* Mobile / tablet: snap scroller */
 	.scroller {
+		list-style: none;
+		display: flex;
+		gap: 20px;
+		padding: 8px 32px 24px;
 		overflow-x: auto;
 		overflow-y: hidden;
 		scroll-snap-type: x mandatory;
+		scroll-padding-inline: 32px;
 		-webkit-overflow-scrolling: touch;
+		touch-action: pan-x pan-y;
 		scrollbar-width: none;
 		cursor: grab;
 		user-select: none;
@@ -48,20 +94,83 @@ import TemplateCard from '../templates/TemplateCard.astro';
 	.scroller::-webkit-scrollbar {
 		display: none;
 	}
-	.tpl-track {
+	.tpl-item {
 		display: flex;
-		gap: 20px;
-		width: max-content;
-		padding: 8px 32px 32px;
+		flex: 0 0 min(84vw, 420px);
+		scroll-snap-align: start;
 	}
-	.tpl-track :global(.snap-card) {
-		flex-shrink: 0;
-		width: 420px;
-		scroll-snap-align: center;
+	.tpl-item > :global(.tpl-card) {
+		width: 100%;
 	}
-	@media (max-width: 780px) {
-		.tpl-track :global(.snap-card) {
-			width: 84vw;
+
+	.band-foot {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 16px;
+		padding: 8px 32px 0;
+	}
+	.scroller-nav {
+		display: flex;
+		gap: 10px;
+	}
+	.scroller-nav button {
+		width: 44px;
+		height: 44px;
+		border-radius: 50%;
+		border: 1px solid var(--rule-2);
+		background: var(--bg-3);
+		color: var(--ink);
+		font-size: 18px;
+		line-height: 1;
+		transition:
+			background 0.25s,
+			border-color 0.25s,
+			transform 0.25s;
+	}
+	.scroller-nav button:hover {
+		background: var(--ink);
+		border-color: var(--ink);
+		color: #fff;
+		transform: translateY(-1px);
+	}
+
+	/* Desktop: 2×2 grid, no scrolling */
+	@media (min-width: 900px) {
+		.scroller {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 24px;
+			padding: 8px 32px 0;
+			overflow: visible;
+			scroll-snap-type: none;
+			cursor: default;
+			user-select: auto;
+		}
+		.tpl-item {
+			flex: initial;
+		}
+		.scroller-nav {
+			display: none;
+		}
+		.band-foot {
+			padding-top: 36px;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.tpl-band {
+			padding: 96px 0;
+		}
+		.sec-head,
+		.band-foot {
+			padding-left: 20px;
+			padding-right: 20px;
+		}
+		.scroller {
+			padding-left: 20px;
+			padding-right: 20px;
+			scroll-padding-inline: 20px;
 		}
 	}
 </style>

@@ -1,93 +1,114 @@
 /**
- * Curated "featured" projects shown in the home DeviceShowcase rotator.
+ * Editorial picks for the home DeviceShowcase rotator. Images are imported
+ * from src/assets so astro:assets optimizes them (webp, srcset, immutable cache).
  *
- * Decoupled from the works API on purpose — the showcase is an editorial pick.
- * Source data lives in backend/models/work.json; these are 3 hand-picked
- * highlights that read well as full-screen device scenes.
- *
- * TODO(fab): swap these for Pulsar, Quasar and one of the templates once
- * they're ready to show — those are the future flagships.
+ * Order matters: scene 0 is the LCP image and the first thing a visitor sees.
  */
+import type { ImageMetadata } from 'astro';
+import type { Bi } from './site';
+import pulsar from '../assets/featured/pulsar_dash.png';
+import quasar from '../assets/featured/quasar_dash.png';
+import nexus from '../assets/featured/nexus.png';
+import mirante from '../assets/featured/mirante.png';
+import filadelfo from '../assets/featured/filadelfo.png';
+import vilaolimpia from '../assets/featured/vilaolimpia.png';
+
 export interface FeaturedProject {
 	id: string;
-	/** Short tag shown above the title (mono, uppercase). e.g. "Frontend · React" */
-	badge: string;
-	/** Project name shown as the big headline. */
+	badge: Bi;
 	title: string;
-	/** One-sentence description shown below the title. */
-	desc: string;
-	/** Domain shown in the browser-mock URL bar. */
-	url: string;
-	/** Optional CTA link (opens in a new tab). */
+	desc: Bi;
+	/** Text for the browser-mock URL bar. Use a real host or a neutral label —
+	 *  never a domain you don't own. */
+	urlLabel: Bi;
+	/** Optional link. External links open in a new tab; internal ones are locale-prefixed. */
 	href?: string;
-	/** Optional screenshot. Drop the file in /public/featured/ and reference
-	 *  it as "/featured/yourfile.webp". When provided, it fills the scene with
-	 *  a dark gradient overlay and the text sits on top. */
-	image?: string;
-	/** Optional pinned tint — leave undefined to let the component cycle tints. */
-	tint?: 't0' | 't1' | 't2';
-	/** Stronger full-image dark overlay — use when the source image already has
-	 *  its own headline/copy that competes with the rotator text. */
+	image: ImageMetadata;
+	alt: Bi;
+	/** Stronger overlay when the screenshot has its own headline competing with the text. */
 	dim?: boolean;
+	tint?: 't0' | 't1' | 't2';
 }
 
 export const featured: FeaturedProject[] = [
 	{
 		id: 'pulsar',
-		badge: 'SaaS · Observability',
+		badge: { pt: 'Produto · Observabilidade', en: 'Product · Observability' },
 		title: 'Pulsar',
-		desc: 'Observability npm for Node — plugs into pino or console.log. C# version coming next.',
-		url: 'pulsar.dev',
-		// href: '',  // currently on a test client domain — no public URL yet
-		image: '/featured/pulsar_dash.png',
-		// alt available: '/featured/pulsar_live.png' (busier live-stream view)
+		desc: {
+			pt: 'Observabilidade pra Node — logs, métricas e alertas com um npm que encaixa em pino ou console.log.',
+			en: 'Observability for Node — logs, metrics and alerts from an npm that plugs into pino or console.log.',
+		},
+		urlLabel: { pt: 'pulsar · produto próprio', en: 'pulsar · own product' },
+		// TODO(fab): href pública do Pulsar
+		image: pulsar,
+		alt: { pt: 'Dashboard do Pulsar com métricas de logs', en: 'Pulsar dashboard with log metrics' },
 	},
 	{
 		id: 'quasar',
-		badge: 'SaaS · WhatsApp marketing',
+		badge: { pt: 'Produto · Marketing por WhatsApp', en: 'Product · WhatsApp marketing' },
 		title: 'Quasar',
-		desc: 'Mass campaigns, flow-based automations and native integrations with Calendar, CRMs and more.',
-		url: 'quasar.app',
-		// href: '',  // currently on a test client domain — no public URL yet
-		image: '/featured/quasar_dash.png',
-		// alt available: '/featured/quasar.png' (Campaigns list view)
+		desc: {
+			pt: 'Campanhas em massa, automações por fluxo e integrações nativas com Calendar e CRMs.',
+			en: 'Mass campaigns, flow-based automations and native Calendar/CRM integrations.',
+		},
+		urlLabel: { pt: 'quasar · produto próprio', en: 'quasar · own product' },
+		// TODO(fab): href pública do Quasar
+		image: quasar,
+		alt: { pt: 'Painel de campanhas do Quasar', en: 'Quasar campaigns dashboard' },
 	},
 	{
 		id: 'nexus',
-		badge: 'Tech Lead · Full stack',
+		badge: { pt: 'Tech Lead · Plataforma multicanal', en: 'Tech Lead · Multichannel platform' },
 		title: 'Nexus Comunicação',
-		desc: 'Multi-channel communication platform built end-to-end as Tech Lead — one of the biggest systems I have shipped.',
-		url: 'nexuscomunicacao.com.br',
-		href: 'https://app.nexuscomunicacao.com.br',  // confirm + uncomment
-		image: '/featured/nexus.png',
-	},
-	{
-		id: 'mirante',
-		badge: 'Template · Real estate',
-		title: 'Mirante',
-		desc: 'Brazilian-style real-estate launch landing — built to convert visits into scheduled tours.',
-		url: 'mirantepinheiros.com.br',
-		href: '/templates/mirante',
-		image: '/featured/mirante.png',
+		desc: {
+			pt: 'SMS, WhatsApp e RCS num painel só — painel, API, filas e infra AWS, liderados ponta a ponta.',
+			en: 'SMS, WhatsApp and RCS in one dashboard — dashboard, API, queues and AWS infra, led end to end.',
+		},
+		urlLabel: { pt: 'app.nexuscomunicacao.com.br', en: 'app.nexuscomunicacao.com.br' },
+		href: 'https://app.nexuscomunicacao.com.br',
+		image: nexus,
+		alt: { pt: 'Painel da plataforma Nexus Comunicação', en: 'Nexus Comunicação platform dashboard' },
 	},
 	{
 		id: 'filadelfo',
-		badge: 'Frontend · Real estate',
+		badge: { pt: 'Frontend · Imobiliário', en: 'Frontend · Real estate' },
 		title: 'Filadelfo Vila Nova Conceição',
-		desc: 'Residential building with view to Ibirapuera Park. Astro + Tailwind.',
-		url: 'conx.com.br/filadelfo',
+		desc: {
+			pt: 'Lançamento residencial com vista pro Parque Ibirapuera. Astro + Tailwind.',
+			en: 'Residential launch overlooking Ibirapuera Park. Astro + Tailwind.',
+		},
+		urlLabel: { pt: 'conx.com.br/filadelfo', en: 'conx.com.br/filadelfo' },
 		href: 'https://conx.com.br/filadelfo/',
-		image: '/featured/filadelfo.png',
+		image: filadelfo,
+		alt: { pt: 'Site do Filadelfo Vila Nova Conceição', en: 'Filadelfo Vila Nova Conceição website' },
 		dim: true,
 	},
 	{
 		id: 'vila-olimpia',
-		badge: 'Frontend · Real estate',
-		title: 'Vila Olímpia',
-		desc: 'Institutional site for a residential development in Vila Olímpia, São Paulo.',
-		url: 'vilaolimpiabypassarelli.com.br',
+		badge: { pt: 'Frontend · Imobiliário', en: 'Frontend · Real estate' },
+		title: 'Vila Olímpia by Passareli',
+		desc: {
+			pt: 'Site institucional de empreendimento residencial em Vila Olímpia, São Paulo.',
+			en: 'Institutional site for a residential development in Vila Olímpia, São Paulo.',
+		},
+		urlLabel: { pt: 'vilaolimpiabypassarelli.com.br', en: 'vilaolimpiabypassarelli.com.br' },
 		href: 'https://vilaolimpiabypassarelli.com.br/',
-		image: '/featured/vilaolimpia.png',
+		image: vilaolimpia,
+		alt: { pt: 'Site do Vila Olímpia by Passareli', en: 'Vila Olímpia by Passareli website' },
 		dim: true,
+	},
+	{
+		id: 'mirante',
+		badge: { pt: 'Template · Imobiliário', en: 'Template · Real estate' },
+		title: 'Mirante',
+		desc: {
+			pt: 'Landing de lançamento imobiliário no padrão BR — feita pra converter visita em call com corretor.',
+			en: 'Brazilian-style real-estate launch landing — built to convert visits into scheduled tours.',
+		},
+		urlLabel: { pt: 'template · demo', en: 'template · demo' },
+		href: '/templates/mirante',
+		image: mirante,
+		alt: { pt: 'Demo do template Mirante', en: 'Mirante template demo' },
 	},
 ];

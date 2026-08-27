@@ -1,0 +1,213 @@
+---
+/**
+ * /templates (and /en/templates) — the gallery.
+ * Hero → grid of cards (each links to its sales page) → how it works +
+ * what's included → CTA band.
+ */
+import Layout from '../layouts/Layout.astro';
+import TopBar from '../components/site/TopBar.astro';
+import SiteFooter from '../components/site/SiteFooter.astro';
+import TemplateCard from '../components/templates/TemplateCard.astro';
+import { SITE, whatsappUrl } from '../data/site';
+import { templates } from '../data/templates';
+import { fmt, localeOf, localePath, useT } from '../i18n';
+
+const locale = localeOf(Astro);
+const t = useT(locale);
+
+const months = SITE.promises.adjustmentsMonths;
+const n = templates.length;
+const nWord = t.templates.numberWords[n] ?? String(n);
+const NWord = nWord.charAt(0).toUpperCase() + nWord.slice(1);
+
+const lead = fmt(t.templates.gallery.lead, { N: NWord, n: nWord, months });
+const included = t.templates.included.items.map((s) => fmt(s, { months }));
+const steps = t.templates.steps.items.map((s) => ({ title: s.title, desc: fmt(s.desc, { months }) }));
+
+// TODO(fab): the contact form should read `?assunto=template` and preselect the subject.
+const wantHref = localePath(locale, '/?assunto=template#contato');
+const wa = whatsappUrl(locale, t.templates.cta.whatsappGallery);
+---
+
+<Layout title={t.meta.templates.title} description={t.meta.templates.description}>
+	<TopBar active='templates' />
+
+	<main id='main-content'>
+		<section class='page-hero'>
+			<p class='eyebrow accent'><span class='dot'></span>{t.templates.gallery.eyebrow}</p>
+			<h1>{t.templates.gallery.head} <span class='hl'>{t.templates.gallery.headAccent}</span></h1>
+			<p class='lead'>{lead}</p>
+		</section>
+
+		<section class='gallery' aria-label={t.templates.gallery.listLabel}>
+			<ul class='grid' role='list'>
+				{
+					templates.map((tpl) => (
+						<li>
+							<TemplateCard tpl={tpl} locale={locale} heading='h2' />
+						</li>
+					))
+				}
+			</ul>
+		</section>
+
+		<section class='section how'>
+			<div class='how-grid'>
+				<div class='col reveal'>
+					<h2>{t.templates.steps.title}</h2>
+					<ol class='steps'>
+						{
+							steps.map((s, i) => (
+								<li>
+									<span class='num' aria-hidden='true'>{String(i + 1).padStart(2, '0')}</span>
+									<div>
+										<h3>{s.title}</h3>
+										<p>{s.desc}</p>
+									</div>
+								</li>
+							))
+						}
+					</ol>
+				</div>
+				<div class='col reveal d1'>
+					<h2>{t.templates.included.title}</h2>
+					<ul class='included'>
+						{included.map((s) => <li>{s}</li>)}
+					</ul>
+				</div>
+			</div>
+		</section>
+
+		<section class='cta-band'>
+			<h2>{t.templates.cta.head} <span class='hl'>{t.templates.cta.headAccent}</span></h2>
+			<p class='sub'>{t.templates.cta.sub}</p>
+			<div class='actions'>
+				<a href={wantHref} class='btn btn-primary'>{t.templates.cta.button}</a>
+				{
+					wa && (
+						<a href={wa} class='btn btn-whatsapp' target='_blank' rel='noopener'>
+							{t.common.ctaWhatsapp}
+						</a>
+					)
+				}
+			</div>
+		</section>
+	</main>
+
+	<SiteFooter />
+</Layout>
+
+<style>
+	.gallery {
+		max-width: var(--maxw);
+		margin: 0 auto;
+		padding: 24px 32px 0;
+	}
+	.grid {
+		list-style: none;
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 24px;
+	}
+	.grid li {
+		display: flex;
+	}
+	.grid li > :global(.tpl-card) {
+		width: 100%;
+	}
+
+	/* How it works + what's included */
+	.how {
+		padding-top: 100px;
+		padding-bottom: 40px;
+	}
+	.how-grid {
+		display: grid;
+		grid-template-columns: 1.2fr 1fr;
+		gap: 64px;
+		padding-top: 64px;
+		border-top: 1px solid var(--rule);
+	}
+	.col h2 {
+		font-size: var(--fs-h3);
+		font-weight: 800;
+		letter-spacing: -0.03em;
+		line-height: 1.05;
+		margin-bottom: 32px;
+	}
+	.steps,
+	.included {
+		list-style: none;
+	}
+	.steps li {
+		display: grid;
+		grid-template-columns: 40px 1fr;
+		gap: 16px;
+		padding: 20px 0;
+		border-top: 1px solid var(--rule);
+	}
+	.steps .num {
+		font-family: var(--mono);
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--accent-text);
+		padding-top: 4px;
+	}
+	.steps h3 {
+		font-size: 19px;
+		font-weight: 700;
+		letter-spacing: -0.02em;
+		margin-bottom: 6px;
+	}
+	.steps p {
+		font-size: 15px;
+		color: var(--ink-2);
+		line-height: 1.55;
+	}
+	.included li {
+		position: relative;
+		padding: 14px 0 14px 32px;
+		border-top: 1px solid var(--rule);
+		font-size: 16px;
+		color: var(--ink-2);
+		line-height: 1.5;
+	}
+	.included li::before {
+		content: '✓';
+		position: absolute;
+		left: 0;
+		top: 14px;
+		width: 22px;
+		height: 22px;
+		border-radius: 50%;
+		display: grid;
+		place-items: center;
+		background: var(--accent-soft);
+		color: var(--accent-text);
+		font-family: var(--mono);
+		font-size: 12px;
+		font-weight: 700;
+	}
+
+	@media (max-width: 900px) {
+		.grid {
+			grid-template-columns: 1fr;
+			max-width: 560px;
+			margin: 0 auto;
+		}
+		.how-grid {
+			grid-template-columns: 1fr;
+			gap: 48px;
+		}
+	}
+	@media (max-width: 600px) {
+		.gallery,
+		.how {
+			padding-left: 20px;
+			padding-right: 20px;
+		}
+		.how {
+			padding-top: 72px;
+		}
+	}
+</style>

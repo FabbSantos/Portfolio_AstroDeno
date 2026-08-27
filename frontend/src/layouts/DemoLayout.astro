@@ -1,0 +1,56 @@
+---
+/**
+ * Layout for template DEMO pages (/templates/<slug>/demo).
+ *
+ * Deliberately minimal: tokens + fonts only. No Person JSON-LD, no portfolio
+ * OG image, no analytics/vitals beacons, no site script. `noindex` always —
+ * demos carry fictional business data (fake CRECI, fake ratings) and must not
+ * be indexed as Fabrício's content.
+ */
+import '@fontsource-variable/inter';
+import '@fontsource-variable/jetbrains-mono';
+import '../styles/base.css';
+import DemoRibbon from '../components/templates/DemoRibbon.astro';
+import type { Locale } from '../i18n';
+import { LANG_TAG } from '../i18n';
+
+interface Props {
+	slug: string;
+	title: string;
+	description: string;
+	/** Language the demo copy is written in. */
+	locale: Locale;
+	/** Theme colour for the browser UI. */
+	themeColor?: string;
+}
+const { slug, title, description, locale, themeColor = '#ffffff' } = Astro.props;
+---
+
+<!doctype html>
+<html lang={LANG_TAG[locale]}>
+	<head>
+		<meta charset='UTF-8' />
+		<meta name='viewport' content='width=device-width,initial-scale=1' />
+		<title>{title}</title>
+		<meta name='description' content={description} />
+		<meta name='robots' content='noindex,nofollow' />
+		<meta name='theme-color' content={themeColor} />
+		<link rel='icon' type='image/png' sizes='32x32' href='/favicon-32x32.png' />
+		<!-- Framed previews (cards) must not paint the ribbon -->
+		<script is:inline>
+			try { if (window.self !== window.top) document.documentElement.classList.add('is-framed'); } catch { document.documentElement.classList.add('is-framed'); }
+		</script>
+	</head>
+	<body>
+		<DemoRibbon slug={slug} locale={locale} />
+		<main id='main-content'>
+			<slot />
+		</main>
+	</body>
+</html>
+
+<style is:global>
+	.is-framed .demo-ribbon {
+		display: none;
+	}
+</style>

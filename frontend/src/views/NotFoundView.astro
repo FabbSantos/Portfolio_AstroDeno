@@ -1,0 +1,71 @@
+---
+/**
+ * 404 view. Astro emits a single /404.html, so in practice this renders in
+ * PT — locale is still read from the URL so the view never hardcodes it.
+ */
+import Layout from '../layouts/Layout.astro';
+import TopBar from '../components/site/TopBar.astro';
+import SiteFooter from '../components/site/SiteFooter.astro';
+import { localeOf, localePath, useT } from '../i18n';
+
+const locale = localeOf(Astro);
+const t = useT(locale);
+
+const actions = [
+	{ href: localePath(locale, '/work'), label: t.notFound.work, cls: 'btn-ghost' },
+	{ href: localePath(locale, '/templates'), label: t.notFound.templates, cls: 'btn-ghost' },
+	{ href: localePath(locale, '/#contato'), label: t.notFound.contact, cls: 'btn-primary' },
+];
+---
+
+<Layout title={t.meta.notFound.title} description={t.meta.notFound.description} noindex={true}>
+	<TopBar />
+
+	<main id='main-content' class='nf'>
+		<section class='page-hero'>
+			<span class='eyebrow accent'><span class='dot'></span>{t.notFound.eyebrow}</span>
+			<h1>{t.notFound.head1} <span class='hl'>{t.notFound.head2}</span></h1>
+			<p class='lead'>{t.notFound.sub}</p>
+
+			<div class='actions'>
+				{
+					actions.map((a) => (
+						<a class:list={['btn', a.cls]} href={a.href}>
+							{a.label}
+						</a>
+					))
+				}
+			</div>
+		</section>
+	</main>
+
+	<SiteFooter />
+</Layout>
+
+<style>
+	.nf {
+		min-height: calc(100vh - 220px);
+		min-height: calc(100svh - 220px);
+		display: grid;
+		place-items: center;
+		padding-bottom: 48px;
+	}
+	.nf .page-hero {
+		padding-bottom: 56px;
+	}
+	.actions {
+		display: flex;
+		gap: 12px;
+		justify-content: center;
+		flex-wrap: wrap;
+		margin-top: 36px;
+	}
+	@media (max-width: 480px) {
+		.actions {
+			flex-direction: column;
+			align-items: stretch;
+			max-width: 320px;
+			margin-inline: auto;
+		}
+	}
+</style>

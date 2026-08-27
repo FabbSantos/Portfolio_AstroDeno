@@ -1,112 +1,279 @@
 ---
-// Home contact — POSTs to /api/contact (Astro endpoint using Resend).
-// Needs RESEND_API_KEY set in Vercel env vars + the domain verified on Resend.
+/**
+ * Home contact (#contato) — POSTs JSON to /api/contact (Resend).
+ * Strings come from t.contact; the client script gets its few runtime strings
+ * from the #contact-i18n JSON block (no client-side dictionary).
+ *
+ * TODO(fab): confirmar percentuais do pagamento (aceite/entrega) —
+ * texto em src/i18n/{pt,en}/contact.ts → faq.items[1].
+ */
+import { SITE, whatsappUrl } from '../../data/site';
+import { SERVICES } from '../../data/services';
+import { templates } from '../../data/templates';
+import { fmt, localeOf, localePath, pick, useT } from '../../i18n';
+
+const locale = localeOf(Astro);
+const t = useT(locale);
+const c = t.contact;
+const wa = whatsappUrl(locale);
+const privacyHref = localePath(locale, locale === 'pt' ? '/privacidade' : '/privacy');
+// Optional Cloudflare Turnstile — widget + script only render when the public key is set.
+const turnstileKey = String(import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '');
+
+const deadlines = [
+	{ value: '', label: c.form.deadlineAny },
+	{ value: 'week', label: c.form.deadlineWeek },
+	{ value: 'month', label: c.form.deadlineMonth },
+	{ value: 'quarter', label: c.form.deadlineQuarter },
+	{ value: 'flexible', label: c.form.deadlineFlexible },
+];
+
+/** Runtime strings for the client script. */
+const clientStrings = {
+	sending: c.form.sending,
+	prefill: c.form.templatePrefill,
+	errors: c.errors,
+	email: SITE.email,
+};
+const clientJson = JSON.stringify(clientStrings).replace(/</g, '\\u003c');
+/** "Recebi, {name}!" → text before/after the name slot (filled client-side). */
+const [successBefore = '', successAfter = ''] = c.success.title.split('{name}');
 ---
 
-<section class='contact' id='contato'>
-	<h2 class='reveal'>
-		<span data-i18n='contact.head1'>Let's</span>
-		<span class='hl' data-i18n='contact.head2'>talk?</span>
-	</h2>
-	<p class='sub reveal d1' data-i18n='contact.sub'>
-		I reply within 24 business hours. No CRM, no auto-reply — every email lands straight in my
-		inbox.
-	</p>
+<section class='contact section' id='contato'>
+	<div class='head'>
+		<span class='eyebrow accent reveal'>{c.eyebrow}</span>
+		<h2>
+			<span class='reveal'>{c.head1}</span>
+			<span class='hl reveal d1'>{c.head2}</span>
+		</h2>
+		<p class='sub reveal d2'>{c.sub}</p>
+	</div>
 
-	<form class='form reveal d2' id='contact-form' novalidate>
-		<div class='row'>
-			<label class='field'>
-				<span class='eyebrow' data-i18n='contact.form.name'>Name</span>
-				<input name='name' autocomplete='name' required />
-			</label>
-			<label class='field'>
-				<span class='eyebrow' data-i18n='contact.form.email'>Email</span>
-				<input name='email' type='email' autocomplete='email' required />
-			</label>
+	<div class='grid'>
+		<div class='form-col'>
+			<form class='form' id='contact-form' method='post' action='/api/contact' novalidate>
+				<div class='row'>
+					<label class='field'>
+						<span class='eyebrow'>{c.form.name} <span class='req' aria-hidden='true'>*</span></span>
+						<input name='name' autocomplete='name' required maxlength='120' />
+					</label>
+					<label class='field'>
+						<span class='eyebrow'>{c.form.email} <span class='req' aria-hidden='true'>*</span></span>
+						<input name='email' type='email' autocomplete='email' required maxlength='254' inputmode='email' />
+					</label>
+				</div>
+
+				<div class='row'>
+					<label class='field'>
+						<span class='eyebrow'>{c.form.whatsapp} <span class='opt'>· {c.form.optional}</span></span>
+						<input name='whatsapp' type='tel' autocomplete='tel' inputmode='tel' maxlength='30' />
+					</label>
+					<label class='field'>
+						<span class='eyebrow'>{c.form.company} <span class='opt'>· {c.form.optional}</span></span>
+						<input name='company' autocomplete='organization' maxlength='120' />
+					</label>
+				</div>
+
+				<div class='row'>
+					<label class='field'>
+						<span class='eyebrow'>{c.form.need}</span>
+						<select name='need'>
+							<optgroup label={c.form.needGroupServices}>
+								{SERVICES.map((s) => (
+									<option value={s.id} selected={s.id === 'landing'}>
+										{pick(s.name, locale)}
+									</option>
+								))}
+							</optgroup>
+							<optgroup label={c.form.needGroupTemplates}>
+								{templates.map((tpl) => (
+									<option value={tpl.slug} data-name={`${tpl.name} ${tpl.accent}`}>
+										{fmt(c.form.needTemplate, { name: `${tpl.name} ${tpl.accent}` })}
+									</option>
+								))}
+								<option value='template'>{c.form.needTemplateAny}</option>
+							</optgroup>
+							<optgroup label={c.form.needGroupOther}>
+								<option value='acesso-pulsar'>{c.form.needPulsar}</option>
+								<option value='acesso-quasar'>{c.form.needQuasar}</option>
+								<option value='other'>{c.form.needOther}</option>
+							</optgroup>
+						</select>
+					</label>
+					<label class='field'>
+						<span class='eyebrow'>{c.form.deadline}</span>
+						<select name='deadline'>
+							{deadlines.map((d) => <option value={d.value}>{d.label}</option>)}
+						</select>
+					</label>
+				</div>
+
+				<label class='field'>
+					<span class='eyebrow'>{c.form.message} <span class='req' aria-hidden='true'>*</span></span>
+					<textarea name='message' rows='5' required minlength='10' maxlength='5000' placeholder={c.form.messagePlaceholder}></textarea>
+				</label>
+
+				<!-- Honeypot: off-screen, not display:none (bots skip hidden fields). -->
+				<div class='hp' aria-hidden='true'>
+					<label>
+						Website
+						<input name='hp' type='text' tabindex='-1' autocomplete='off' />
+					</label>
+				</div>
+
+				<input type='hidden' name='template' value='' />
+				<input type='hidden' name='page' value='' />
+				<input type='hidden' name='ref' value='' />
+				<input type='hidden' name='utm_source' value='' />
+				<input type='hidden' name='utm_medium' value='' />
+				<input type='hidden' name='utm_campaign' value='' />
+				<input type='hidden' name='locale' value={locale} />
+
+				{turnstileKey && <div class='cf-turnstile' data-sitekey={turnstileKey} data-language={locale === 'pt' ? 'pt-br' : 'en'} data-size='flexible' />}
+
+				<div class='actions'>
+					<button type='submit' class='btn btn-primary' id='contact-submit'>{t.common.ctaContact}</button>
+					{wa && (
+						<a class='btn btn-whatsapp' href={wa} target='_blank' rel='noopener'>
+							{t.common.ctaWhatsapp}
+						</a>
+					)}
+				</div>
+
+				<div class='form-status' id='contact-status' role='status' aria-live='polite'>
+					<span data-msg></span>
+					<a data-mailto href={`mailto:${SITE.email}`} hidden>{c.errors.mailto}</a>
+				</div>
+
+				<p class='legal'>
+					{c.lgpd.before}<a href={privacyHref}>{c.lgpd.link}</a>{c.lgpd.after}
+				</p>
+				<p class='legal'>
+					{c.or} <a class='email' href={`mailto:${SITE.email}`}>{SITE.email}</a>
+				</p>
+			</form>
+
+			<div class='sent' id='contact-sent' role='status' aria-live='polite' tabindex='-1' hidden>
+				<h3>{successBefore}<span data-name></span>{successAfter}</h3>
+				<p>{wa ? c.success.body : c.success.bodyNoWhatsapp}</p>
+				<div class='actions'>
+					{wa && (
+						<a class='btn btn-whatsapp' href={wa} target='_blank' rel='noopener'>
+							{t.common.ctaWhatsapp}
+						</a>
+					)}
+					<a class='btn btn-ghost' href={SITE.social.linkedin} target='_blank' rel='noopener'>{c.success.linkedin}</a>
+				</div>
+			</div>
 		</div>
-		<label class='field'>
-			<span class='eyebrow' data-i18n='contact.form.subject'>Subject</span>
-			<select name='subject'>
-				<option value='Just saying hi' data-i18n='contact.form.subject.hi'>Just saying hi</option>
-				<option value='New project' data-i18n='contact.form.subject.project'>New project</option>
-				<option value='About a template' data-i18n='contact.form.subject.template'>
-					About a template
-				</option>
-				<option value='Other' data-i18n='contact.form.subject.other'>Other</option>
-			</select>
-		</label>
-		<label class='field'>
-			<span class='eyebrow' data-i18n='contact.form.message'>Message</span>
-			<textarea
-				name='message'
-				rows='5'
-				required
-				data-i18n-placeholder='contact.form.placeholder'
-				placeholder='Tell me what you have in mind…'></textarea>
-		</label>
-		<button type='submit' class='btn btn-primary' id='contact-submit' data-i18n='contact.form.send'>Send message</button>
-		<p class='form-status' id='contact-status' role='status' aria-live='polite'></p>
-	</form>
 
-	<p class='or reveal d3'>
-		<span data-i18n='contact.form.or'>or email me directly at</span>
-		<a href='mailto:contato@fabbahiense.dev' class='email'>contato@fabbahiense.dev</a>
-	</p>
+		<aside class='side'>
+			<div class='faq'>
+				<h3 class='eyebrow'>{c.faq.title}</h3>
+				{c.faq.items.map((item) => (
+					<details class='faq-item'>
+						<summary>{item.q}</summary>
+						<p>{item.a}</p>
+					</details>
+				))}
+			</div>
 
-	<ul class='social reveal d4'>
-		<li>
-			<a class='box menu-item' href='https://github.com/FabbSantos' target='_blank' rel='noopener' aria-label='GitHub'>
-				<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='currentColor' aria-hidden='true'>
-					<path fill-rule='evenodd' clip-rule='evenodd' d='M11.9958 0.599998C9.16481 0.601467 6.42662 1.60416 4.27087 3.42879C2.11513 5.25341 0.682406 7.78098 0.228891 10.5596C-0.224624 13.3381 0.330635 16.1865 1.7954 18.5953C3.26015 21.0042 5.53889 22.8165 8.22415 23.7081C8.81656 23.818 9.0397 23.4509 9.0397 23.1387C9.0397 22.8265 9.02785 21.9213 9.0239 20.9317C5.7064 21.6484 5.00538 19.5318 5.00538 19.5318C4.46431 18.1574 3.68233 17.7961 3.68233 17.7961C2.60019 17.0617 3.7633 17.0755 3.7633 17.0755C4.96194 17.1599 5.59188 18.2987 5.59188 18.2987C6.65427 20.111 8.38212 19.5868 9.06142 19.2805C9.16805 18.5127 9.47809 17.9905 9.81971 17.694C7.16966 17.3955 4.38532 16.3784 4.38532 11.835C4.3689 10.6567 4.80865 9.51714 5.6136 8.65219C5.49116 8.35375 5.08239 7.14817 5.7301 5.51064C5.7301 5.51064 6.73128 5.19256 9.01009 6.72603C10.9647 6.19454 13.027 6.19454 14.9816 6.72603C17.2584 5.19256 18.2576 5.51064 18.2576 5.51064C18.9073 7.14425 18.4985 8.34982 18.3761 8.65219C19.1836 9.51728 19.6243 10.6588 19.6063 11.8389C19.6063 16.3922 16.8161 17.3955 14.1621 17.6881C14.5886 18.0572 14.9697 18.7778 14.9697 19.8852C14.9697 21.4717 14.9559 22.7479 14.9559 23.1387C14.9559 23.4548 15.1711 23.8239 15.7754 23.7081C18.461 22.8164 20.7399 21.0038 22.2047 18.5945C23.6694 16.1852 24.2244 13.3364 23.7703 10.5576C23.3163 7.77879 21.8829 5.25119 19.7264 3.42688C17.57 1.60257 14.8311 0.600536 11.9998 0.599998H11.9958Z'></path>
-				</svg>
-			</a>
-		</li>
-		<li>
-			<a class='box menu-item' href='https://www.linkedin.com/in/fabricio-b-santos/' target='_blank' rel='noopener' aria-label='LinkedIn'>
-				<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='currentColor' viewBox='0 0 24 24' aria-hidden='true'>
-					<path d='M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-2 8c0 .557-.447 1.008-1 1.008s-1-.45-1-1.008c0-.557.447-1.008 1-1.008s1 .452 1 1.008zm0 2h-2v6h2v-6zm3 0h-2v6h2v-2.861c0-1.722 2.002-1.881 2.002 0v2.861h1.998v-3.359c0-3.284-3.128-3.164-4-1.548v-1.093z'></path>
-				</svg>
-			</a>
-		</li>
-		<li>
-			<a class='box menu-item' href='https://www.instagram.com/fabbahiense_' target='_blank' rel='noopener' aria-label='Instagram'>
-				<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='currentColor' viewBox='0 0 0.72 0.72' aria-hidden='true'>
-					<path d='M0.48 0.36v0a0.12 0.12 0 1 0 -0.035 0.085A0.115 0.115 0 0 0 0.48 0.362l0 -0.002V0.36zm0.065 0a0.184 0.184 0 1 1 -0.054 -0.131 0.178 0.178 0 0 1 0.054 0.128l0 0.003v0zm0.051 -0.192v0a0.043 0.043 0 1 1 -0.013 -0.031c0.008 0.008 0.012 0.018 0.012 0.03v0.001zm-0.235 -0.103 -0.036 0q-0.033 0 -0.049 0t-0.045 0.001c-0.018 0.001 -0.034 0.002 -0.05 0.005l0.002 0c-0.013 0.002 -0.024 0.005 -0.035 0.009l0.001 0a0.124 0.124 0 0 0 -0.068 0.068l0 0.001a0.179 0.179 0 0 0 -0.009 0.032l0 0.001a0.353 0.353 0 0 0 -0.005 0.048l0 0.001q-0.001 0.028 -0.001 0.045t0 0.049 0 0.036 0 0.036 0 0.049 0.001 0.045c0.001 0.018 0.002 0.034 0.005 0.05l0 -0.002c0.002 0.013 0.005 0.024 0.009 0.035l0 -0.001a0.124 0.124 0 0 0 0.068 0.068l0.001 0c0.01 0.004 0.021 0.007 0.032 0.009l0.001 0c0.014 0.002 0.031 0.004 0.048 0.005l0.001 0q0.028 0.001 0.045 0.001t0.049 0l0.036 -0.001 0.036 0q0.033 0 0.049 0t0.045 -0.001c0.018 -0.001 0.034 -0.002 0.05 -0.005l-0.002 0c0.013 -0.002 0.024 -0.005 0.035 -0.009l-0.001 0a0.124 0.124 0 0 0 0.068 -0.068l0 -0.001c0.004 -0.01 0.007 -0.021 0.009 -0.032l0 -0.001c0.002 -0.014 0.004 -0.031 0.005 -0.048l0 -0.001q0.001 -0.028 0.001 -0.045t0 -0.049 0 -0.036 0 -0.036 0 -0.049 -0.001 -0.045c-0.001 -0.018 -0.002 -0.034 -0.005 -0.05l0 0.002a0.188 0.188 0 0 0 -0.009 -0.035l0 0.001a0.124 0.124 0 0 0 -0.068 -0.068l-0.001 0a0.179 0.179 0 0 0 -0.032 -0.009l-0.001 0a0.353 0.353 0 0 0 -0.048 -0.005l-0.001 0q-0.028 -0.001 -0.045 -0.001t-0.049 0zM0.72 0.36q0 0.107 -0.002 0.149a0.199 0.199 0 0 1 -0.21 0.209l0 0q-0.041 0.002 -0.149 0.002t-0.149 -0.002a0.199 0.199 0 0 1 -0.209 -0.21l0 0q-0.002 -0.041 -0.002 -0.149t0.002 -0.149A0.199 0.199 0 0 1 0.212 0.002L0.211 0.002q0.041 -0.002 0.149 -0.002t0.149 0.002a0.199 0.199 0 0 1 0.209 0.21l0 0Q0.72 0.253 0.72 0.36z'></path>
-				</svg>
-			</a>
-		</li>
-	</ul>
+			<div class='social-wrap'>
+				<span class='eyebrow'>{c.social.title}</span>
+				<ul class='social'>
+					<li>
+						<a class='box' href={SITE.social.github} target='_blank' rel='noopener' aria-label={c.social.github}>
+							<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='currentColor' aria-hidden='true'>
+								<path fill-rule='evenodd' clip-rule='evenodd' d='M11.9958 0.599998C9.16481 0.601467 6.42662 1.60416 4.27087 3.42879C2.11513 5.25341 0.682406 7.78098 0.228891 10.5596C-0.224624 13.3381 0.330635 16.1865 1.7954 18.5953C3.26015 21.0042 5.53889 22.8165 8.22415 23.7081C8.81656 23.818 9.0397 23.4509 9.0397 23.1387C9.0397 22.8265 9.02785 21.9213 9.0239 20.9317C5.7064 21.6484 5.00538 19.5318 5.00538 19.5318C4.46431 18.1574 3.68233 17.7961 3.68233 17.7961C2.60019 17.0617 3.7633 17.0755 3.7633 17.0755C4.96194 17.1599 5.59188 18.2987 5.59188 18.2987C6.65427 20.111 8.38212 19.5868 9.06142 19.2805C9.16805 18.5127 9.47809 17.9905 9.81971 17.694C7.16966 17.3955 4.38532 16.3784 4.38532 11.835C4.3689 10.6567 4.80865 9.51714 5.6136 8.65219C5.49116 8.35375 5.08239 7.14817 5.7301 5.51064C5.7301 5.51064 6.73128 5.19256 9.01009 6.72603C10.9647 6.19454 13.027 6.19454 14.9816 6.72603C17.2584 5.19256 18.2576 5.51064 18.2576 5.51064C18.9073 7.14425 18.4985 8.34982 18.3761 8.65219C19.1836 9.51728 19.6243 10.6588 19.6063 11.8389C19.6063 16.3922 16.8161 17.3955 14.1621 17.6881C14.5886 18.0572 14.9697 18.7778 14.9697 19.8852C14.9697 21.4717 14.9559 22.7479 14.9559 23.1387C14.9559 23.4548 15.1711 23.8239 15.7754 23.7081C18.461 22.8164 20.7399 21.0038 22.2047 18.5945C23.6694 16.1852 24.2244 13.3364 23.7703 10.5576C23.3163 7.77879 21.8829 5.25119 19.7264 3.42688C17.57 1.60257 14.8311 0.600536 11.9998 0.599998H11.9958Z'></path>
+							</svg>
+						</a>
+					</li>
+					<li>
+						<a class='box' href={SITE.social.linkedin} target='_blank' rel='noopener' aria-label={c.social.linkedin}>
+							<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='currentColor' viewBox='0 0 24 24' aria-hidden='true'>
+								<path d='M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-2 8c0 .557-.447 1.008-1 1.008s-1-.45-1-1.008c0-.557.447-1.008 1-1.008s1 .452 1 1.008zm0 2h-2v6h2v-6zm3 0h-2v6h2v-2.861c0-1.722 2.002-1.881 2.002 0v2.861h1.998v-3.359c0-3.284-3.128-3.164-4-1.548v-1.093z'></path>
+							</svg>
+						</a>
+					</li>
+					<li>
+						<a class='box' href={SITE.social.instagram} target='_blank' rel='noopener' aria-label={c.social.instagram}>
+							<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='currentColor' viewBox='0 0 0.72 0.72' aria-hidden='true'>
+								<path d='M0.48 0.36v0a0.12 0.12 0 1 0 -0.035 0.085A0.115 0.115 0 0 0 0.48 0.362l0 -0.002V0.36zm0.065 0a0.184 0.184 0 1 1 -0.054 -0.131 0.178 0.178 0 0 1 0.054 0.128l0 0.003v0zm0.051 -0.192v0a0.043 0.043 0 1 1 -0.013 -0.031c0.008 0.008 0.012 0.018 0.012 0.03v0.001zm-0.235 -0.103 -0.036 0q-0.033 0 -0.049 0t-0.045 0.001c-0.018 0.001 -0.034 0.002 -0.05 0.005l0.002 0c-0.013 0.002 -0.024 0.005 -0.035 0.009l0.001 0a0.124 0.124 0 0 0 -0.068 0.068l0 0.001a0.179 0.179 0 0 0 -0.009 0.032l0 0.001a0.353 0.353 0 0 0 -0.005 0.048l0 0.001q-0.001 0.028 -0.001 0.045t0 0.049 0 0.036 0 0.036 0 0.049 0.001 0.045c0.001 0.018 0.002 0.034 0.005 0.05l0 -0.002c0.002 0.013 0.005 0.024 0.009 0.035l0 -0.001a0.124 0.124 0 0 0 0.068 0.068l0.001 0c0.01 0.004 0.021 0.007 0.032 0.009l0.001 0c0.014 0.002 0.031 0.004 0.048 0.005l0.001 0q0.028 0.001 0.045 0.001t0.049 0l0.036 -0.001 0.036 0q0.033 0 0.049 0t0.045 -0.001c0.018 -0.001 0.034 -0.002 0.05 -0.005l-0.002 0c0.013 -0.002 0.024 -0.005 0.035 -0.009l-0.001 0a0.124 0.124 0 0 0 0.068 -0.068l0 -0.001c0.004 -0.01 0.007 -0.021 0.009 -0.032l0 -0.001c0.002 -0.014 0.004 -0.031 0.005 -0.048l0 -0.001q0.001 -0.028 0.001 -0.045t0 -0.049 0 -0.036 0 -0.036 0 -0.049 -0.001 -0.045c-0.001 -0.018 -0.002 -0.034 -0.005 -0.05l0 0.002a0.188 0.188 0 0 0 -0.009 -0.035l0 0.001a0.124 0.124 0 0 0 -0.068 -0.068l-0.001 0a0.179 0.179 0 0 0 -0.032 -0.009l-0.001 0a0.353 0.353 0 0 0 -0.048 -0.005l-0.001 0q-0.028 -0.001 -0.045 -0.001t-0.049 0zM0.72 0.36q0 0.107 -0.002 0.149a0.199 0.199 0 0 1 -0.21 0.209l0 0q-0.041 0.002 -0.149 0.002t-0.149 -0.002a0.199 0.199 0 0 1 -0.209 -0.21l0 0q-0.002 -0.041 -0.002 -0.149t0.002 -0.149A0.199 0.199 0 0 1 0.212 0.002L0.211 0.002q0.041 -0.002 0.149 -0.002t0.149 0.002a0.199 0.199 0 0 1 0.209 0.21l0 0Q0.72 0.253 0.72 0.36z'></path>
+							</svg>
+						</a>
+					</li>
+				</ul>
+			</div>
+		</aside>
+	</div>
+
+	<script is:inline type='application/json' id='contact-i18n' set:html={clientJson} />
+	{turnstileKey && <script is:inline async defer src='https://challenges.cloudflare.com/turnstile/v0/api.js'></script>}
 </section>
 
 <style>
 	.contact {
-		padding: 120px 32px;
+		scroll-margin-top: 80px;
+	}
+	.head {
 		text-align: center;
+		max-width: 860px;
+		margin: 0 auto 56px;
+	}
+	.head > .eyebrow {
+		display: block;
+		margin-bottom: 16px;
 	}
 	.contact h2 {
-		font-size: clamp(48px, 7vw, 88px);
+		font-size: var(--fs-h2);
 		font-weight: 800;
 		letter-spacing: -0.04em;
 		line-height: 1.02;
-		max-width: 18ch;
-		margin: 0 auto;
+		text-wrap: balance;
+	}
+	.contact h2 span {
+		display: block;
+	}
+	/* Second line stays ≥ 28px bold, so the bright accent passes AA-large. */
+	.contact h2 .hl {
+		font-size: var(--fs-h3);
+		letter-spacing: -0.025em;
+		line-height: 1.12;
+		margin-top: 14px;
 	}
 	.contact .sub {
-		margin: 20px auto 48px;
+		margin: 22px auto 0;
 		font-size: 18px;
 		color: var(--ink-2);
-		max-width: 50ch;
+		max-width: 52ch;
 		line-height: 1.5;
+	}
+
+	.grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 48px;
+		max-width: 1040px;
+		margin: 0 auto;
+	}
+	@media (min-width: 900px) {
+		.grid {
+			grid-template-columns: minmax(0, 1fr) 320px;
+			gap: 72px;
+			align-items: start;
+		}
 	}
 
 	/* Form */
 	.form {
-		max-width: 560px;
-		margin: 0 auto;
-		text-align: left;
 		display: flex;
 		flex-direction: column;
 		gap: 18px;
+		text-align: left;
+	}
+	.form[hidden] {
+		display: none;
 	}
 	.form .row {
 		display: grid;
@@ -117,28 +284,48 @@
 		display: flex;
 		flex-direction: column;
 		gap: 8px;
+		min-width: 0;
 	}
 	.field .eyebrow {
 		display: block;
+	}
+	.field .req {
+		color: var(--accent-text);
+	}
+	.field .opt {
+		text-transform: none;
+		letter-spacing: 0.04em;
+		font-weight: 500;
+		color: var(--ink-3);
 	}
 	.field input,
 	.field select,
 	.field textarea {
 		font: inherit;
 		font-family: var(--sans);
-		padding: 12px 14px;
+		font-size: 16px;
+		min-height: 44px;
+		padding: 10px 14px;
 		border: 1px solid var(--rule-2);
 		background: var(--bg-3);
 		color: var(--ink);
 		border-radius: 10px;
+		width: 100%;
 		transition:
 			border-color 0.2s,
 			box-shadow 0.2s;
-		width: 100%;
+	}
+	.field select {
+		appearance: none;
+		padding-right: 40px;
+		background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235c5c61' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+		background-repeat: no-repeat;
+		background-position: right 14px center;
 	}
 	.field textarea {
 		resize: vertical;
-		min-height: 120px;
+		min-height: 140px;
+		line-height: 1.5;
 	}
 	.field input:focus,
 	.field select:focus,
@@ -147,54 +334,192 @@
 		border-color: var(--accent);
 		box-shadow: 0 0 0 4px var(--accent-soft);
 	}
-	.form button {
-		align-self: flex-start;
+	.field input:user-invalid,
+	.field textarea:user-invalid {
+		border-color: var(--accent-text);
+	}
+
+	/* Honeypot — off-screen but focusable-by-bot; tabindex -1 keeps it out of the tab order. */
+	.hp {
+		position: absolute;
+		left: -9999px;
+		top: auto;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+	}
+
+	.cf-turnstile {
+		min-height: 65px;
+	}
+
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+		align-items: center;
 		margin-top: 6px;
 	}
 	.form button:disabled {
-		opacity: 0.6;
+		opacity: 0.65;
 		cursor: progress;
+	}
+	.form button[aria-busy='true']::before {
+		content: '';
+		width: 14px;
+		height: 14px;
+		border-radius: 50%;
+		border: 2px solid rgba(255, 255, 255, 0.35);
+		border-top-color: #fff;
+		animation: spin 0.8s linear infinite;
+	}
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.form-status {
 		margin: 0;
-		min-height: 1.2em;
-		font-family: var(--mono);
-		font-size: 13px;
-		color: var(--ink-3);
-		transition: color 0.25s;
+		font-size: 15px;
+		line-height: 1.5;
+		color: var(--ink-2);
+		display: none;
+		gap: 4px 12px;
+		flex-wrap: wrap;
+		align-items: baseline;
 	}
-	.form-status.is-sending { color: var(--ink-2); }
-	.form-status.is-ok { color: #16a34a; }
-	.form-status.is-err { color: var(--accent); }
+	.form-status.is-err {
+		display: flex;
+		color: var(--accent-text);
+	}
+	.form-status a {
+		font-weight: 600;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+		color: var(--accent-text);
+		min-height: 44px;
+		display: inline-flex;
+		align-items: center;
+	}
 
-	.or {
-		margin-top: 32px;
+	.legal {
+		margin: 0;
+		font-size: 13px;
+		line-height: 1.55;
 		color: var(--ink-3);
-		font-size: 14px;
 	}
-	.or .email {
+	.legal + .legal {
+		margin-top: -8px;
+	}
+	.legal a {
+		color: var(--accent-text);
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+	.legal .email {
 		font-family: var(--mono);
 		font-weight: 600;
-		color: var(--accent);
-		margin-left: 6px;
+		text-decoration: none;
 	}
-	.or .email:hover {
+	.legal .email:hover {
 		text-decoration: underline;
 	}
 
-	.social {
-		list-style: none;
-		margin: 24px 0 0;
-		padding: 0;
-		display: flex;
-		justify-content: center;
-		gap: 20px;
+	/* Success card */
+	.sent {
+		border: 1px solid var(--rule-2);
+		background: var(--bg-3);
+		border-radius: 18px;
+		padding: 32px 28px;
+		text-align: left;
+	}
+	.sent[hidden] {
+		display: none;
+	}
+	.sent:focus {
+		outline: none;
+		box-shadow: 0 0 0 4px var(--accent-soft);
+	}
+	.sent h3 {
+		font-size: var(--fs-h3);
+		font-weight: 800;
+		letter-spacing: -0.03em;
+		line-height: 1.05;
+	}
+	.sent p {
+		margin: 14px 0 22px;
+		font-size: 17px;
+		color: var(--ink-2);
+		max-width: 46ch;
 	}
 
-	/* Same .box + shine ::before from the 2024 LinkCard. Dark icons on a
-	   subtle light pill so they read on the new theme; the diagonal shine
-	   sweeps across every 1s like before. */
+	/* Aside */
+	.side {
+		display: flex;
+		flex-direction: column;
+		gap: 40px;
+	}
+	.faq h3 {
+		display: block;
+		margin-bottom: 8px;
+	}
+	.faq-item {
+		border-top: 1px solid var(--rule);
+	}
+	.faq-item:last-child {
+		border-bottom: 1px solid var(--rule);
+	}
+	.faq-item summary {
+		list-style: none;
+		cursor: pointer;
+		min-height: 44px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		padding: 10px 0;
+		font-weight: 600;
+		font-size: 15px;
+	}
+	.faq-item summary::-webkit-details-marker {
+		display: none;
+	}
+	.faq-item summary::after {
+		content: '+';
+		font-family: var(--mono);
+		font-size: 18px;
+		color: var(--ink-3);
+		transition: transform 0.25s var(--ease-out-expo);
+	}
+	.faq-item[open] summary::after {
+		transform: rotate(45deg);
+	}
+	.faq-item summary:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 2px;
+		border-radius: 4px;
+	}
+	.faq-item p {
+		margin: 0 0 16px;
+		font-size: 15px;
+		line-height: 1.55;
+		color: var(--ink-2);
+	}
+
+	.social-wrap .eyebrow {
+		display: block;
+		margin-bottom: 14px;
+	}
+	.social {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		gap: 14px;
+	}
+
+	/* Same .box + shine ::before from the 2024 LinkCard. */
 	.box {
 		position: relative;
 		width: 44px;
@@ -207,18 +532,18 @@
 		background: var(--bg-3);
 		border: 1px solid var(--rule);
 		overflow: hidden;
-		transition: color 0.25s, transform 0.25s var(--ease-out-expo),
-			border-color 0.25s, box-shadow 0.25s;
+		transition:
+			color 0.25s,
+			transform 0.25s var(--ease-out-expo),
+			border-color 0.25s,
+			box-shadow 0.25s;
 	}
 	.box:hover {
-		color: var(--accent);
+		color: var(--accent-text);
 		border-color: var(--accent);
 		transform: translateY(-2px);
 		box-shadow: 0 8px 20px -10px var(--accent-soft);
 	}
-	/* Normalize all icon sizes regardless of intrinsic svg attributes — the
-	   flex centering on .box only behaves consistently if every child is the
-	   same size. */
 	.box svg {
 		width: 22px;
 		height: 22px;
@@ -240,12 +565,9 @@
 			rgba(94, 93, 93, 0) 100%
 		);
 		transform: skewX(-30deg);
-		/* Same sweep shape from 2024 but stretched: the actual shine takes ~25%
-		   of the cycle (1.5s of 6s) and the remaining 75% is idle off-screen. */
 		animation: slide 6s cubic-bezier(0.41, 0.29, 0.45, 1) infinite;
 		pointer-events: none;
 	}
-
 	@keyframes slide {
 		0% {
 			top: 10%;
@@ -274,8 +596,11 @@
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.box::before {
+		.box::before,
+		.form button[aria-busy='true']::before {
 			animation: none;
+		}
+		.box::before {
 			opacity: 0;
 		}
 	}
@@ -284,80 +609,153 @@
 		.form .row {
 			grid-template-columns: 1fr;
 		}
+		.head {
+			margin-bottom: 40px;
+		}
+		.sent {
+			padding: 24px 20px;
+		}
 	}
 </style>
 
 <script>
+	import { track } from '@vercel/analytics';
+
+	declare global {
+		interface Window {
+			turnstile?: { reset: (widget?: string | HTMLElement) => void };
+		}
+	}
+
+	interface Strings {
+		sending: string;
+		prefill: string;
+		errors: Record<string, string> & { generic: string; mailSubject: string };
+		email: string;
+	}
+
 	const form = document.getElementById('contact-form') as HTMLFormElement | null;
-	if (form) {
-		// Pre-select "About a template" when arriving with ?subject=template
-		const params = new URLSearchParams(window.location.search);
-		const subj = params.get('subject');
-		if (subj) {
-			const select = form.elements.namedItem('subject') as HTMLSelectElement;
-			const match = Array.from(select.options).find((o) =>
-				o.value.toLowerCase().includes(subj.toLowerCase())
-			);
-			if (match) select.value = match.value;
-		}
-		const tpl = params.get('template');
-		if (tpl) {
-			const textarea = form.elements.namedItem('message') as HTMLTextAreaElement;
-			if (!textarea.value) textarea.value = `Hi! I'd like to chat about the "${tpl}" template.\n\n`;
-			const select = form.elements.namedItem('subject') as HTMLSelectElement;
-			const match = Array.from(select.options).find((o) =>
-				o.value.toLowerCase().includes('template')
-			);
-			if (match) select.value = match.value;
-		}
+	const sent = document.getElementById('contact-sent');
+	const status = document.getElementById('contact-status');
+	const submit = document.getElementById('contact-submit') as HTMLButtonElement | null;
+	const i18nEl = document.getElementById('contact-i18n');
 
-		// Translate the textarea placeholder when locale changes (data-i18n only
-		// swaps textContent — placeholders need their own listener).
-		const refreshPlaceholder = () => {
-			document.querySelectorAll<HTMLElement>('[data-i18n-placeholder]').forEach((el) => {
-				const key = el.dataset.i18nPlaceholder!;
-				import('../../i18n/i18n').then(({ t }) => el.setAttribute('placeholder', t(key)));
-			});
+	if (form && sent && status && submit && i18nEl) {
+		const strings = JSON.parse(i18nEl.textContent || '{}') as Strings;
+		const field = <T extends Element>(name: string) => form.elements.namedItem(name) as T | null;
+		const need = field<HTMLSelectElement>('need');
+		const message = field<HTMLTextAreaElement>('message');
+		const setHidden = (name: string, value: string) => {
+			const el = field<HTMLInputElement>(name);
+			if (el) el.value = value;
 		};
-		refreshPlaceholder();
-		window.addEventListener('locale-changed', refreshPlaceholder);
-
-		const submitBtn = document.getElementById('contact-submit') as HTMLButtonElement;
-		const status = document.getElementById('contact-status') as HTMLElement;
-
-		const setStatus = async (kind: 'idle' | 'sending' | 'ok' | 'err') => {
-			status.classList.remove('is-sending', 'is-ok', 'is-err');
-			if (kind === 'idle') {
-				status.textContent = '';
-				return;
-			}
-			const { t } = await import('../../i18n/i18n');
-			if (kind === 'sending') {
-				status.classList.add('is-sending');
-				status.textContent = t('contact.form.sending');
-			} else if (kind === 'ok') {
-				status.classList.add('is-ok');
-				status.textContent = t('contact.form.success');
-			} else {
-				status.classList.add('is-err');
-				status.textContent = t('contact.form.error');
-			}
+		const selectNeed = (value: string | null): boolean => {
+			if (!value || !need) return false;
+			const opt = Array.from(need.options).find((o) => o.value === value);
+			if (!opt) return false;
+			need.value = value;
+			return true;
 		};
 
+		/* ---- Pre-fill from the URL ------------------------------------------ */
+		const params = new URLSearchParams(location.search);
+		const tplParam = params.get('template');
+		if (tplParam && selectNeed(tplParam) && need) {
+			setHidden('template', tplParam);
+			const tplName = need.selectedOptions[0]?.dataset.name ?? tplParam;
+			if (message && !message.value) message.value = `${strings.prefill.replace('{name}', tplName)}\n\n`;
+		}
+		selectNeed(params.get('servico'));
+		selectNeed(params.get('assunto'));
+
+		setHidden('page', location.pathname.slice(0, 300));
+		setHidden('ref', document.referrer.slice(0, 300));
+
+		// First-touch UTM: keep the values the visitor arrived with for the session.
+		const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign'] as const;
+		const STORE = 'fb:utm';
+		let utm: Partial<Record<(typeof UTM_KEYS)[number], string>> = {};
+		try {
+			utm = JSON.parse(sessionStorage.getItem(STORE) || 'null') || {};
+		} catch {
+			utm = {};
+		}
+		if (!Object.keys(utm).length) {
+			for (const k of UTM_KEYS) {
+				const v = params.get(k);
+				if (v) utm[k] = v.slice(0, 100);
+			}
+			if (Object.keys(utm).length) {
+				try {
+					sessionStorage.setItem(STORE, JSON.stringify(utm));
+				} catch {
+					/* private mode / storage disabled */
+				}
+			}
+		}
+		for (const k of UTM_KEYS) setHidden(k, utm[k] ?? '');
+
+		/* ---- Status helpers -------------------------------------------------- */
+		const msgEl = status.querySelector<HTMLElement>('[data-msg]');
+		const mailEl = status.querySelector<HTMLAnchorElement>('[data-mailto]');
+
+		const hideError = () => {
+			status.classList.remove('is-err');
+			if (msgEl) msgEl.textContent = '';
+			if (mailEl) mailEl.hidden = true;
+		};
+
+		const showError = (code: string, p: { name: string; email: string; whatsapp: string; message: string }) => {
+			const text = strings.errors[code] ?? strings.errors.generic;
+			if (msgEl) msgEl.textContent = text;
+			if (mailEl) {
+				const needLabel = need?.selectedOptions[0]?.textContent?.trim() ?? '';
+				const subject = strings.errors.mailSubject.replace('{need}', needLabel);
+				const body = [p.message, '', p.name, p.email, p.whatsapp].filter((l, i) => l || i === 1).join('\n');
+				mailEl.href = `mailto:${strings.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+				mailEl.hidden = false;
+			}
+			status.classList.add('is-err');
+			window.turnstile?.reset();
+		};
+
+		const showSuccess = (name: string) => {
+			const nameEl = sent.querySelector<HTMLElement>('[data-name]');
+			if (nameEl) nameEl.textContent = name.split(/\s+/)[0] ?? name;
+			form.hidden = true;
+			sent.hidden = false;
+			sent.focus({ preventScroll: false });
+		};
+
+		/* ---- Submit ---------------------------------------------------------- */
 		form.addEventListener('submit', async (e) => {
 			e.preventDefault();
 			if (!form.reportValidity()) return;
 
 			const data = new FormData(form);
+			const get = (k: string) => String(data.get(k) ?? '').trim();
 			const payload = {
-				name: String(data.get('name') || '').trim(),
-				email: String(data.get('email') || '').trim(),
-				subject: String(data.get('subject') || 'Contato'),
-				message: String(data.get('message') || '').trim(),
+				name: get('name'),
+				email: get('email'),
+				whatsapp: get('whatsapp').replace(/[^0-9+\- ()]/g, ''),
+				company: get('company'),
+				need: get('need'),
+				deadline: get('deadline'),
+				message: get('message'),
+				template: get('template'),
+				page: get('page'),
+				ref: get('ref'),
+				utm: { source: get('utm_source'), medium: get('utm_medium'), campaign: get('utm_campaign') },
+				locale: get('locale') || 'pt',
+				hp: get('hp'),
+				turnstileToken: get('cf-turnstile-response'),
 			};
 
-			submitBtn.disabled = true;
-			await setStatus('sending');
+			const label = submit.textContent;
+			submit.disabled = true;
+			submit.setAttribute('aria-busy', 'true');
+			submit.textContent = strings.sending;
+			hideError();
 
 			try {
 				const res = await fetch('/api/contact', {
@@ -365,17 +763,22 @@
 					headers: { 'content-type': 'application/json' },
 					body: JSON.stringify(payload),
 				});
-				const json = (await res.json().catch(() => ({}))) as { ok?: boolean };
+				const json = (await res.json().catch(() => ({}))) as { ok?: boolean; code?: string };
 				if (res.ok && json.ok) {
-					form.reset();
-					await setStatus('ok');
+					showSuccess(payload.name);
+					track('contact_submit', { need: payload.need, template: payload.template || null, locale: payload.locale });
 				} else {
-					await setStatus('err');
+					const code = json.code || (res.status === 429 ? 'RATE_LIMITED' : 'UNKNOWN');
+					showError(code, payload);
+					track('contact_error', { code });
 				}
 			} catch {
-				await setStatus('err');
+				showError('NETWORK', payload);
+				track('contact_error', { code: 'NETWORK' });
 			} finally {
-				submitBtn.disabled = false;
+				submit.disabled = false;
+				submit.removeAttribute('aria-busy');
+				submit.textContent = label;
 			}
 		});
 	}

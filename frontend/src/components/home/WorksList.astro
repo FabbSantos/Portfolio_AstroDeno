@@ -1,177 +1,226 @@
 ---
-import type { PortfolioWork } from '../../api/works';
+/**
+ * #trabalhos — flagships + client cases from src/data/works.ts (no lab).
+ * Each row is one link: the public URL when there is one, otherwise the
+ * contact form with ?assunto=acesso-<id>.
+ */
+import { Image } from 'astro:assets';
+import { homeWorks } from '../../data/works';
+import { localeOf, localePath, pick, useT } from '../../i18n';
 
-interface Props {
-	works: PortfolioWork[];
-}
-const { works } = Astro.props;
-const rows = works.slice(0, 6);
+const locale = localeOf(Astro);
+const t = useT(locale);
 
-const statusLabel: Record<PortfolioWork['status'], string> = {
-	live: 'Live',
-	archived: 'Archived',
-	nda: 'NDA',
-	beta: 'Beta',
-};
-// status text gets translated only for live/archived (UI strings); nda/beta are static
-const statusI18n: Partial<Record<PortfolioWork['status'], string>> = {
-	live: 'works.status.live',
-	archived: 'works.status.archived',
-};
+const rows = homeWorks(6);
+const home = localePath(locale, '/');
+const accessHref = (id: string) => `${home}?assunto=${encodeURIComponent(`acesso-${id}`)}#contato`;
 ---
 
 <section class='section' id='trabalhos'>
 	<div class='sec-head reveal'>
-		<span class='eyebrow accent' data-i18n='works.eyebrow'>Work</span>
+		<span class='eyebrow accent'>{t.works.eyebrow}</span>
 		<h2>
-			<span data-i18n='works.head1'>What shipped to</span>
-			<span class='hl' data-i18n='works.head2'>production.</span>
+			{t.works.head1}
+			<span class='hl'>{t.works.head2}</span>
 		</h2>
-		<p data-i18n='works.lead'>Each row is a product real people used (or use). No vanity metrics.</p>
+		<p>{t.works.lead}</p>
 	</div>
 
-	<div class='works-list'>
+	<ol class='works-list reveal d1' aria-label={t.works.listLabel}>
 		{
-			rows.map((w, i) => (
-				<a
-					href={w.href || '/work'}
-					class:list={['work-row', 'reveal', `d${Math.min(i + 1, 8)}`]}
-					target={w.href ? '_blank' : undefined}
-					rel={w.href ? 'noopener' : undefined}
-				>
-					<div class='work-num'>{String(i + 1).padStart(2, '0')}</div>
-					<div class='work-title'>{w.title}</div>
-					<div class='work-desc' data-i18n={w.descKey}>{w.desc}</div>
-					<div class='work-meta'>
-						{w.year && <span class='yr'>{w.year}</span>}
-						<span
-							class:list={['work-status', w.status]}
-							data-i18n={statusI18n[w.status]}
+			rows.map((w, i) => {
+				const external = !!w.href;
+				return (
+					<li>
+						<a
+							class='work-row'
+							href={external ? w.href : accessHref(w.id)}
+							target={external ? '_blank' : undefined}
+							rel={external ? 'noopener' : undefined}
 						>
-							{statusLabel[w.status]}
-						</span>
-					</div>
-					<div class='arr'>↗</div>
-				</a>
-			))
+							<span class='work-num' aria-hidden='true'>
+								{String(i + 1).padStart(2, '0')}
+							</span>
+							<span class='work-thumb'>
+								{w.image ? (
+									<Image class='work-thumb-img' src={w.image} alt='' width={144} height={96} format='webp' loading='lazy' />
+								) : (
+									<span class='work-thumb-ph' aria-hidden='true' />
+								)}
+							</span>
+							<span class='work-title'>{w.title}</span>
+							<span class='work-desc'>{pick(w.desc, locale)}</span>
+							{w.role && <span class='work-role'>{pick(w.role, locale)}</span>}
+							<span class:list={['pill', 'work-status', w.status]}>{t.common[w.status]}</span>
+							<span class='work-action'>
+								{external ? (
+									<>
+										{t.common.viewProject} <span class='arr' aria-hidden='true'>↗</span>
+										<span class='sr-only'>({t.common.openInNewTab})</span>
+									</>
+								) : (
+									<>
+										{t.common.requestAccess} <span class='arr' aria-hidden='true'>→</span>
+									</>
+								)}
+							</span>
+						</a>
+					</li>
+				);
+			})
 		}
-	</div>
+	</ol>
 
 	<div class='works-all'>
-		<a href='/work' class='btn-link' data-i18n='works.all'>See all work</a>
+		<a href={localePath(locale, '/work')} class='btn-link'>{t.works.all}</a>
 	</div>
 </section>
 
 <style>
 	.works-list {
+		list-style: none;
 		border-top: 1px solid var(--rule);
 	}
 	.work-row {
 		display: grid;
-		grid-template-columns: 60px 1fr 1.2fr 140px 40px;
-		gap: 32px;
-		padding: 32px 0;
-		border-bottom: 1px solid var(--rule);
+		grid-template-columns: 40px 72px minmax(0, 1fr) auto auto;
+		grid-template-areas:
+			'num thumb title status action'
+			'num thumb desc status action'
+			'num thumb role status action';
+		column-gap: 24px;
+		row-gap: 6px;
 		align-items: center;
+		padding: 28px 0;
+		border-bottom: 1px solid var(--rule);
 		transition:
 			padding-left 0.4s cubic-bezier(0.7, 0, 0.3, 1),
 			background 0.25s;
-		position: relative;
 	}
 	.work-row:hover {
 		padding-left: 16px;
 		background: var(--bg-2);
 	}
-	.work-row:hover .arr {
-		color: var(--accent);
-		transform: translate(4px, -4px);
-	}
 	.work-num {
+		grid-area: num;
 		font-family: var(--mono);
 		font-size: 13px;
 		color: var(--ink-3);
+	}
+	.work-thumb {
+		grid-area: thumb;
+		display: block;
+		width: 72px;
+		height: 48px;
+		border-radius: 8px;
+		overflow: hidden;
+		background: var(--bg-2);
+		box-shadow: 0 0 0 1px var(--rule-2);
+	}
+	.work-thumb-img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: top center;
+	}
+	.work-thumb-ph {
+		display: block;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(135deg, var(--accent-soft), rgba(124, 58, 237, 0.12));
 	}
 	.work-title {
-		font-size: clamp(28px, 3.5vw, 42px);
+		grid-area: title;
+		font-size: var(--fs-h3);
 		font-weight: 700;
-		letter-spacing: -0.02em;
-		line-height: 1;
+		letter-spacing: -0.025em;
+		line-height: 1.02;
+		color: var(--ink);
 	}
 	.work-desc {
-		font-size: 14px;
+		grid-area: desc;
+		font-size: 15px;
+		line-height: 1.5;
 		color: var(--ink-2);
-		line-height: 1.55;
+		max-width: 64ch;
 	}
-	.work-meta {
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-		align-items: flex-start;
-		font-size: 13px;
-	}
-	.work-meta .yr {
+	.work-role {
+		grid-area: role;
 		font-family: var(--mono);
-		color: var(--ink-2);
-	}
-	.work-status {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		padding: 3px 10px;
-		border: 1px solid var(--rule-2);
-		border-radius: 999px;
-		font-size: 11px;
-		font-weight: 500;
+		font-size: 12px;
+		letter-spacing: 0.02em;
 		color: var(--ink-3);
 	}
-	.work-status.live {
-		color: #16a34a;
-		border-color: rgba(22, 163, 74, 0.3);
-		background: rgba(22, 163, 74, 0.06);
+	.work-status {
+		grid-area: status;
+		justify-self: start;
 	}
-	.work-status.live::before {
-		content: '';
-		width: 6px;
-		height: 6px;
-		border-radius: 50%;
-		background: #16a34a;
-		animation: pulse 2s infinite;
+	.work-action {
+		grid-area: action;
+		justify-self: end;
+		font-size: 14px;
+		font-weight: 600;
+		color: var(--accent-text);
+		white-space: nowrap;
 	}
-	.work-status.nda,
-	.work-status.beta {
-		color: var(--accent);
-		background: var(--accent-soft);
-		border-color: rgba(255, 89, 100, 0.3);
+	.work-action .arr {
+		display: inline-block;
+		transition: transform 0.3s var(--ease-out-expo);
 	}
-	.arr {
-		font-size: 22px;
-		color: var(--ink-4);
-		transition:
-			color 0.25s,
-			transform 0.4s cubic-bezier(0.7, 0, 0.3, 1);
-		text-align: right;
+	.work-row:hover .work-action .arr {
+		transform: translate(3px, -2px);
 	}
 	.works-all {
 		margin-top: 48px;
 		text-align: center;
 	}
-
-	@keyframes pulse {
-		50% {
-			opacity: 0.4;
-		}
+	.works-all .btn-link {
+		display: inline-flex;
+		align-items: center;
+		min-height: 44px;
+	}
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
 	}
 
+	/* Stacked rows: description stays visible under the title — never hidden. */
 	@media (max-width: 900px) {
 		.work-row {
-			grid-template-columns: 40px 1fr;
-			gap: 14px;
-			padding: 24px 0;
+			grid-template-columns: 28px 72px minmax(0, 1fr);
+			grid-template-areas:
+				'num thumb title'
+				'desc desc desc'
+				'role role role'
+				'status status action';
+			column-gap: 14px;
+			row-gap: 10px;
+			padding: 22px 0;
 		}
-		.work-desc,
-		.work-meta,
-		.arr {
-			display: none;
+		.work-row:hover {
+			padding-left: 0;
+			background: transparent;
+		}
+		.work-desc {
+			max-width: none;
+		}
+		.work-action {
+			justify-self: end;
+		}
+	}
+	@media (max-width: 600px) {
+		.work-title {
+			font-size: 24px;
+		}
+		.work-desc {
+			font-size: 14px;
 		}
 	}
 </style>

@@ -1,0 +1,429 @@
+---
+/**
+ * /templates/<slug> (and /en/templates/<slug>) — the sales page of one template.
+ * Hero (meta, name, price, CTAs) → the real demo in a browser frame →
+ * what's in it / what's included / how it works → other templates → CTA band.
+ */
+import Layout from '../layouts/Layout.astro';
+import TopBar from '../components/site/TopBar.astro';
+import SiteFooter from '../components/site/SiteFooter.astro';
+import TemplateCard from '../components/templates/TemplateCard.astro';
+import { SITE, whatsappUrl } from '../data/site';
+import { demoPath, formatBRL, templates, type TemplateMeta } from '../data/templates';
+import { fmt, localeOf, localePath, pick, useT } from '../i18n';
+
+interface Props {
+	tpl: TemplateMeta;
+}
+const { tpl } = Astro.props;
+const locale = localeOf(Astro);
+const t = useT(locale);
+
+const months = SITE.promises.adjustmentsMonths;
+const name = `${tpl.name} ${tpl.accent}`;
+const index = templates.findIndex((x) => x.slug === tpl.slug) + 1;
+const others = templates.filter((x) => x.slug !== tpl.slug);
+
+const title = fmt(t.meta.templateDetail.title, { name: tpl.name, accent: tpl.accent });
+const description = pick(tpl.lead, locale);
+const meta = fmt(t.templates.detail.meta, {
+	n: index,
+	total: templates.length,
+	cat: pick(tpl.cat, locale),
+	days: tpl.days,
+});
+const sections = pick(tpl.sections, locale);
+const included = t.templates.included.items.map((s) => fmt(s, { months }));
+const steps = t.templates.steps.items.map((s) => ({ title: s.title, desc: fmt(s.desc, { months }) }));
+
+const demo = demoPath(tpl.slug);
+const demoTitle = fmt(t.templates.detail.demoTitle, { name });
+const demoUrlLabel = `${new URL(SITE.url).host}${demo}`;
+const wantHref = localePath(locale, `/?template=${tpl.slug}#contato`);
+const wa = whatsappUrl(locale, fmt(t.templates.cta.whatsappDetail, { name }));
+---
+
+<Layout title={title} description={description}>
+	<TopBar active='templates' />
+
+	<main id='main-content'>
+		<section class='detail-hero'>
+			<a href={localePath(locale, '/templates')} class='back'>← {t.templates.detail.back}</a>
+			<p class='eyebrow accent'>{meta}</p>
+			<h1>{tpl.name} <span class='hl'>{tpl.accent}</span></h1>
+			<p class='lead'>{description}</p>
+			<p class='price'>
+				<span class='from'>{t.common.from}</span>
+				<strong>{formatBRL(tpl.priceFrom)}</strong>
+			</p>
+			<div class='actions'>
+				<a href={wantHref} class='btn btn-primary'>{t.templates.detail.want}</a>
+				<a href={demo} class='btn btn-ghost' target='_blank' rel='noopener'>
+					{t.templates.detail.fullDemo}
+					<span class='sr-only'>({t.common.openInNewTab})</span>
+				</a>
+			</div>
+		</section>
+
+		<section class='demo'>
+			<div class='browser'>
+				<div class='chrome' aria-hidden='true'>
+					<span class='dots'><i></i><i></i><i></i></span>
+					<span class='url'>{demoUrlLabel}</span>
+				</div>
+				<iframe src={demo} title={demoTitle} loading='lazy'></iframe>
+			</div>
+			<p class='demo-note'>{t.templates.detail.demoNote}</p>
+		</section>
+
+		<section class='section info'>
+			<div class='info-grid'>
+				<div class='col reveal'>
+					<h2>{t.templates.detail.sectionsTitle}</h2>
+					<ol class='sections'>
+						{sections.map((s) => <li>{s}</li>)}
+					</ol>
+				</div>
+				<div class='col reveal d1'>
+					<h2>{t.templates.included.title}</h2>
+					<ul class='included'>
+						{included.map((s) => <li>{s}</li>)}
+					</ul>
+				</div>
+				<div class='col reveal d2'>
+					<h2>{t.templates.steps.title}</h2>
+					<ol class='steps'>
+						{
+							steps.map((s, i) => (
+								<li>
+									<span class='num' aria-hidden='true'>{String(i + 1).padStart(2, '0')}</span>
+									<div>
+										<h3>{s.title}</h3>
+										<p>{s.desc}</p>
+									</div>
+								</li>
+							))
+						}
+					</ol>
+				</div>
+			</div>
+		</section>
+
+		<section class='section related' aria-labelledby='related-title'>
+			<div class='sec-head reveal'>
+				<h2 id='related-title'>{t.templates.detail.related}</h2>
+			</div>
+			<ul class='related-grid' role='list'>
+				{
+					others.map((o) => (
+						<li>
+							<TemplateCard tpl={o} locale={locale} heading='h3' />
+						</li>
+					))
+				}
+			</ul>
+		</section>
+
+		<section class='cta-band'>
+			<h2>{t.templates.cta.head} <span class='hl'>{t.templates.cta.headAccent}</span></h2>
+			<p class='sub'>{t.templates.cta.sub}</p>
+			<div class='actions'>
+				<a href={wantHref} class='btn btn-primary'>{t.templates.detail.want}</a>
+				{
+					wa && (
+						<a href={wa} class='btn btn-whatsapp' target='_blank' rel='noopener'>
+							{t.common.ctaWhatsapp}
+						</a>
+					)
+				}
+			</div>
+		</section>
+	</main>
+
+	<SiteFooter />
+</Layout>
+
+<style>
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+		white-space: nowrap;
+	}
+
+	/* Hero */
+	.detail-hero {
+		max-width: var(--maxw);
+		margin: 0 auto;
+		padding: 48px 32px 40px;
+	}
+	.back {
+		display: inline-flex;
+		align-items: center;
+		min-height: 44px;
+		font-family: var(--mono);
+		font-size: 13px;
+		color: var(--ink-3);
+		transition: color 0.2s;
+	}
+	.back:hover {
+		color: var(--ink);
+	}
+	.detail-hero .eyebrow {
+		display: block;
+		margin: 20px 0 16px;
+	}
+	.detail-hero h1 {
+		font-size: var(--fs-h1);
+		font-weight: 800;
+		letter-spacing: -0.04em;
+		line-height: 0.98;
+		max-width: 14ch;
+		text-wrap: balance;
+	}
+	.detail-hero .lead {
+		margin-top: 24px;
+		max-width: 60ch;
+		font-size: var(--fs-lead);
+		line-height: 1.5;
+		color: var(--ink-2);
+	}
+	.price {
+		margin-top: 28px;
+		display: flex;
+		align-items: baseline;
+		gap: 10px;
+	}
+	.price .from {
+		font-family: var(--mono);
+		font-size: 12px;
+		font-weight: 600;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--ink-3);
+	}
+	.price strong {
+		font-size: 28px;
+		font-weight: 800;
+		letter-spacing: -0.03em;
+	}
+	.detail-hero .actions {
+		display: flex;
+		gap: 12px;
+		flex-wrap: wrap;
+		margin-top: 28px;
+	}
+
+	/* Demo in a browser frame */
+	.demo {
+		max-width: var(--maxw);
+		margin: 0 auto;
+		padding: 0 32px;
+	}
+	.browser {
+		border: 1px solid var(--rule-2);
+		border-radius: 18px;
+		overflow: hidden;
+		background: var(--bg-3);
+		box-shadow: 0 40px 80px -40px rgba(0, 0, 0, 0.25);
+	}
+	.chrome {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		padding: 10px 16px;
+		background: var(--bg-2);
+		border-bottom: 1px solid var(--rule);
+	}
+	.dots {
+		display: flex;
+		gap: 6px;
+	}
+	.dots i {
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		background: var(--ink-4);
+	}
+	.url {
+		flex: 1;
+		font-family: var(--mono);
+		font-size: 12px;
+		color: var(--ink-3);
+		background: var(--bg-3);
+		border-radius: 8px;
+		padding: 6px 12px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.browser iframe {
+		display: block;
+		width: 100%;
+		aspect-ratio: 16 / 10;
+		border: 0;
+		background: #fff;
+	}
+	.demo-note {
+		margin-top: 14px;
+		font-family: var(--mono);
+		font-size: 12px;
+		color: var(--ink-3);
+		text-align: center;
+	}
+
+	/* Info columns */
+	.info {
+		padding-top: 100px;
+		padding-bottom: 20px;
+	}
+	.info-grid {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 48px;
+		padding-top: 64px;
+		border-top: 1px solid var(--rule);
+	}
+	.col h2 {
+		font-size: 24px;
+		font-weight: 800;
+		letter-spacing: -0.03em;
+		line-height: 1.1;
+		margin-bottom: 24px;
+	}
+	.sections,
+	.included,
+	.steps {
+		list-style: none;
+	}
+	.sections li {
+		display: flex;
+		gap: 12px;
+		padding: 12px 0;
+		border-top: 1px solid var(--rule);
+		font-size: 15px;
+		color: var(--ink-2);
+		counter-increment: sec;
+	}
+	.sections li::before {
+		content: counter(sec, decimal-leading-zero);
+		font-family: var(--mono);
+		font-size: 12px;
+		font-weight: 600;
+		color: var(--accent-text);
+		padding-top: 3px;
+		min-width: 24px;
+	}
+	.included li {
+		position: relative;
+		padding: 12px 0 12px 32px;
+		border-top: 1px solid var(--rule);
+		font-size: 15px;
+		color: var(--ink-2);
+		line-height: 1.5;
+	}
+	.included li::before {
+		content: '✓';
+		position: absolute;
+		left: 0;
+		top: 12px;
+		width: 22px;
+		height: 22px;
+		border-radius: 50%;
+		display: grid;
+		place-items: center;
+		background: var(--accent-soft);
+		color: var(--accent-text);
+		font-family: var(--mono);
+		font-size: 12px;
+		font-weight: 700;
+	}
+	.steps li {
+		display: grid;
+		grid-template-columns: 32px 1fr;
+		gap: 12px;
+		padding: 14px 0;
+		border-top: 1px solid var(--rule);
+	}
+	.steps .num {
+		font-family: var(--mono);
+		font-size: 12px;
+		font-weight: 600;
+		color: var(--accent-text);
+		padding-top: 4px;
+	}
+	.steps h3 {
+		font-size: 17px;
+		font-weight: 700;
+		letter-spacing: -0.02em;
+		margin-bottom: 4px;
+	}
+	.steps p {
+		font-size: 14px;
+		color: var(--ink-2);
+		line-height: 1.55;
+	}
+
+	/* Other templates */
+	.related {
+		padding-top: 80px;
+		padding-bottom: 20px;
+	}
+	.related .sec-head {
+		margin-bottom: 36px;
+	}
+	.related-grid {
+		list-style: none;
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 24px;
+	}
+	.related-grid li {
+		display: flex;
+	}
+	.related-grid li > :global(.tpl-card) {
+		width: 100%;
+	}
+
+	@media (max-width: 1000px) {
+		.info-grid {
+			grid-template-columns: 1fr;
+			gap: 40px;
+		}
+		.related-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+	@media (max-width: 780px) {
+		.browser iframe {
+			aspect-ratio: auto;
+			height: min(72vh, 640px);
+		}
+	}
+	@media (max-width: 640px) {
+		.related-grid {
+			grid-template-columns: 1fr;
+			max-width: 560px;
+		}
+	}
+	@media (max-width: 600px) {
+		.detail-hero,
+		.demo,
+		.info,
+		.related {
+			padding-left: 20px;
+			padding-right: 20px;
+		}
+		.detail-hero {
+			padding-top: 24px;
+		}
+		.info {
+			padding-top: 72px;
+		}
+		.price strong {
+			font-size: 24px;
+		}
+	}
+</style>
