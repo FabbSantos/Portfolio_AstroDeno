@@ -1,4 +1,6 @@
 ---
+import SpeedInsights from '@vercel/speed-insights/astro';
+
 interface Props {
 	title: string;
 	description?: string;
@@ -68,6 +70,20 @@ const {
 		<!-- Generator -->
 		<meta name='generator' content={Astro.generator} />
 
+		<!-- Vercel Web Analytics + Speed Insights: drop beacons when this document is
+		     embedded (the template demos are iframed on / and /templates), otherwise
+		     one home visit counts as 5 pageviews and pollutes the vitals. -->
+		<script is:inline>
+			(function () {
+				var framed = false;
+				try { framed = window.self !== window.top; } catch (e) { framed = true; }
+				if (!framed) return;
+				window.speedInsightsBeforeSend = function () { return null; };
+				window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+				window.va('beforeSend', function () { return null; });
+			})();
+		</script>
+
 		<!-- Schema.org JSON-LD Structured Data -->
 		<script
 			type='application/ld+json'
@@ -101,6 +117,10 @@ const {
 	<body>
 		<a href='#main-content' class='skip-link' data-i18n='a11y.skip'>Skip to main content</a>
 		<slot />
+
+		<!-- Vercel Speed Insights (Web Vitals). Web Analytics is injected by the
+		     adapter (`webAnalytics.enabled` in astro.config.mjs). -->
+		<SpeedInsights />
 
 		<script>
 			import { initI18n } from '../i18n/i18n';
