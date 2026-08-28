@@ -1,0 +1,119 @@
+---
+import { Image } from 'astro:assets';
+import type { StratusConfig } from '../schema';
+
+interface Props {
+	config: StratusConfig;
+}
+const { brand, header, legal, footer } = Astro.props.config;
+const copyright = footer.copyright ?? `© ${new Date().getFullYear()} ${legal.company ?? brand.name}`;
+---
+
+<footer class='ft'>
+	<div class='ft-inner' style={`--cols:${footer.columns.length}`}>
+		<div class='ft-brand'>
+			<a href={header.brandHref} class='brand'>
+				{
+					brand.logo ? (
+						<Image class='brand-logo' src={brand.logo} alt={brand.name} height={28} densities={[1, 2]} format='webp' loading='lazy' decoding='async' />
+					) : (
+						<>
+							{brand.name}
+							{header.brandDot && <span class='dot'>.</span>}
+						</>
+					)
+				}
+			</a>
+			{brand.tagline && <p>{brand.tagline}</p>}
+		</div>
+		{
+			footer.columns.map((col) => (
+				<nav class='ft-col' aria-label={col.h}>
+					<h4>{col.h}</h4>
+					{col.links.map((l) => (
+						<a href={l.href}>{l.label}</a>
+					))}
+				</nav>
+			))
+		}
+	</div>
+	<div class='ft-bot'>
+		<span>{copyright}</span>
+		{
+			footer.legalLinks.length > 0 && (
+				<span class='ft-links'>
+					{footer.legalLinks.map((l) => (
+						<a href={l.href}>{l.label}</a>
+					))}
+				</span>
+			)
+		}
+	</div>
+</footer>
+
+<style>
+	.ft {
+		background: var(--ink);
+		color: color-mix(in srgb, #fff 75%, transparent);
+		padding: 80px 32px 32px;
+	}
+	.ft-inner {
+		max-width: 1240px;
+		margin: 0 auto;
+		display: grid;
+		grid-template-columns: 2fr repeat(var(--cols, 3), 1fr);
+		gap: 40px;
+	}
+	.ft-brand :global(.brand) {
+		color: #fff;
+		font-size: 22px;
+	}
+	.ft-brand :global(.brand-logo) {
+		filter: brightness(0) invert(1);
+	}
+	.ft-brand p {
+		margin-top: 12px;
+		font-size: 14px;
+		color: color-mix(in srgb, #fff 50%, transparent);
+		max-width: 28ch;
+	}
+	.ft-col h4 {
+		color: #fff;
+		font-size: 13px;
+		font-family: var(--mono);
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		margin-bottom: 16px;
+	}
+	.ft-col a {
+		display: block;
+		font-size: 14px;
+		color: color-mix(in srgb, #fff 60%, transparent);
+		padding: 4px 0;
+		transition: color 0.2s;
+	}
+	.ft-col a:hover {
+		color: var(--accent);
+	}
+	.ft-bot {
+		max-width: 1240px;
+		margin: 60px auto 0;
+		padding-top: 24px;
+		border-top: 1px solid color-mix(in srgb, #fff 10%, transparent);
+		font-size: 13px;
+		display: flex;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 16px;
+		color: color-mix(in srgb, #fff 40%, transparent);
+	}
+	.ft-links a {
+		color: color-mix(in srgb, #fff 60%, transparent);
+		margin-left: 18px;
+	}
+	@media (max-width: 780px) {
+		.ft-inner {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+</style>

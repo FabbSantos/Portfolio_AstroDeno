@@ -1,0 +1,239 @@
+---
+/**
+ * Hero: live eyebrow, h1 with accent span, rich sub, the mini lead form
+ * (core LeadForm: nome + telefone, WhatsApp link when configured) and the
+ * 4-tile photo gallery (first tile eager / high priority — it is the LCP).
+ */
+import { Image } from 'astro:assets';
+import LeadForm from '../../core/LeadForm.astro';
+import type { LeadField } from '../../core/schema';
+import type { MiranteConfig } from '../schema';
+import { md } from './_md';
+
+interface Props {
+	config: MiranteConfig;
+}
+const { config } = Astro.props;
+const { hero, contact } = config;
+const { miniForm } = hero;
+
+const fields: LeadField[] = [
+	{ name: 'nome', label: miniForm.labels.nome, type: 'text', required: true, autocomplete: 'name' },
+	{ name: 'telefone', label: miniForm.labels.telefone, type: 'tel', required: true, placeholder: '(11) 99999-9999' },
+];
+
+const whatsapp = contact.whatsapp
+	? `https://wa.me/${contact.whatsapp.number}?text=${encodeURIComponent(contact.whatsapp.message)}`
+	: null;
+
+/** srcset widths, capped at the source width (never upscale). */
+const widths = (w: number) => [...[480, 960, 1440].filter((x) => x < w), w];
+/** Rendered tile widths: #1 tall left column, #2/#3 right column, #4 full-width strip. */
+const sizes = ['(max-width: 960px) 56vw, 330px', '(max-width: 960px) 43vw, 260px', '(max-width: 960px) 43vw, 260px', '(max-width: 960px) calc(100vw - 64px), 590px'];
+---
+
+<section class='hero' aria-labelledby='hero-title'>
+	<div class='hero-l'>
+		<p class='eyebrow'>
+			<span class='live-dot' aria-hidden='true'></span>
+			{hero.eyebrow}
+		</p>
+		<h1 id='hero-title'>
+			{hero.title} <span class='hl'>{hero.titleAccent}</span>
+		</h1>
+		<p class='sub' set:html={md(hero.sub)} />
+
+		<div class='mini-form'>
+			<p class='mf-h'>{miniForm.title}</p>
+			<LeadForm site={config} id='mirante-hero' variant='mini' fields={fields} cta={miniForm.cta} source='hero' />
+			{
+				(miniForm.foot || whatsapp) && (
+					<p class='mf-foot'>
+						{miniForm.foot}
+						{whatsapp && (
+							<a href={whatsapp} class='wpp' target='_blank' rel='noopener'>
+								{miniForm.whatsappLabel}
+							</a>
+						)}
+					</p>
+				)
+			}
+		</div>
+	</div>
+
+	<div class='hero-r'>
+		{
+			hero.gallery.map((g, i) => (
+				<figure class='img'>
+					<Image
+						src={g.image}
+						alt={g.alt}
+						widths={widths(g.image.width)}
+						sizes={sizes[i]}
+						format='webp'
+						loading={i === 0 ? 'eager' : 'lazy'}
+						fetchpriority={i === 0 ? 'high' : undefined}
+						decoding='async'
+					/>
+					<figcaption class='img-l'>{g.label}</figcaption>
+				</figure>
+			))
+		}
+	</div>
+</section>
+
+<style>
+	.hero {
+		max-width: 1240px;
+		margin: 0 auto;
+		padding: 56px 32px 64px;
+		display: grid;
+		grid-template-columns: 1fr 1.1fr;
+		gap: 56px;
+		align-items: center;
+	}
+	.hero-l .eyebrow {
+		margin-bottom: 24px;
+	}
+	.live-dot {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: var(--accent);
+		box-shadow: 0 0 0 0 var(--accent);
+		animation: mirante-pulse 2s infinite;
+	}
+	@keyframes mirante-pulse {
+		0% {
+			box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 50%, transparent);
+		}
+		70% {
+			box-shadow: 0 0 0 10px transparent;
+		}
+		100% {
+			box-shadow: 0 0 0 0 transparent;
+		}
+	}
+	.hero h1 {
+		font-size: clamp(48px, 6.5vw, 96px);
+		font-weight: 800;
+		letter-spacing: -0.04em;
+		line-height: 0.98;
+		max-width: 14ch;
+	}
+	.hero .sub {
+		margin-top: 24px;
+		font-size: 17px;
+		color: var(--ink-2);
+		line-height: 1.55;
+		max-width: 48ch;
+	}
+	.hero .sub :global(strong) {
+		color: var(--ink);
+		font-weight: 700;
+	}
+
+	/* Mini form (core LeadForm inside the white card) */
+	.mini-form {
+		margin-top: 32px;
+		padding: 24px;
+		background: #fff;
+		border: 1px solid var(--rule);
+		border-radius: var(--r-box);
+		max-width: 460px;
+		box-shadow: 0 30px 60px -20px color-mix(in srgb, var(--ink) 12%, transparent);
+	}
+	.mf-h {
+		font-family: var(--mono);
+		font-size: 11px;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		color: var(--accent);
+		text-transform: uppercase;
+		margin-bottom: 16px;
+	}
+	.mini-form :global(.lead-form .lf-body) {
+		grid-template-columns: 1fr 1fr;
+		gap: 14px 12px;
+		align-items: end;
+	}
+	.mini-form :global(.lead-form .lf-submit) {
+		grid-column: 1 / -1;
+	}
+	.mini-form :global(.lead-form .lf-status) {
+		text-align: center;
+	}
+
+	/* Hero gallery */
+	.hero-r {
+		display: grid;
+		grid-template-columns: 1.3fr 1fr;
+		grid-template-rows: 1fr 1fr;
+		gap: 8px;
+		aspect-ratio: 1.1;
+		max-height: 600px;
+	}
+	.img {
+		border-radius: var(--r-btn);
+		position: relative;
+		overflow: hidden;
+		display: flex;
+		align-items: flex-end;
+		padding: 12px;
+	}
+	.img :global(img) {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+	.img-l {
+		position: relative;
+		z-index: 1;
+		font-family: var(--mono);
+		font-size: 10px;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: #fff;
+		background: color-mix(in srgb, var(--ink) 55%, transparent);
+		backdrop-filter: blur(4px);
+		-webkit-backdrop-filter: blur(4px);
+		padding: 4px 8px;
+		border-radius: var(--r-tag);
+	}
+	/* Tinted gradients show while the photos load */
+	.img:nth-child(1) {
+		grid-row: 1 / 3;
+		background:
+			linear-gradient(135deg, color-mix(in srgb, var(--ink) 60%, transparent), color-mix(in srgb, var(--accent) 30%, transparent)),
+			linear-gradient(180deg, var(--ink-2) 0%, var(--ink) 100%);
+	}
+	.img:nth-child(2) {
+		background: linear-gradient(
+			180deg,
+			color-mix(in srgb, var(--accent-2) 50%, #fff) 0%,
+			color-mix(in srgb, var(--accent) 40%, transparent) 50%,
+			color-mix(in srgb, var(--ink) 70%, transparent) 100%
+		);
+	}
+	.img:nth-child(3) {
+		background: linear-gradient(135deg, var(--bg-2), color-mix(in srgb, var(--accent) 45%, var(--bg-2)));
+	}
+	.img:nth-child(4) {
+		grid-column: 1 / 3;
+		background:
+			linear-gradient(135deg, color-mix(in srgb, var(--accent) 40%, transparent), color-mix(in srgb, var(--ink) 30%, transparent)),
+			linear-gradient(90deg, var(--ink-3), var(--accent));
+	}
+	@media (max-width: 960px) {
+		.hero {
+			grid-template-columns: 1fr;
+			gap: 40px;
+		}
+		.hero-r {
+			max-height: 460px;
+		}
+	}
+</style>

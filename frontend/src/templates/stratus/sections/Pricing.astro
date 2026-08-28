@@ -1,0 +1,136 @@
+---
+import type { StratusConfig } from '../schema';
+import { md } from './_md';
+
+interface Props {
+	config: StratusConfig;
+}
+const { pricing } = Astro.props.config;
+---
+
+{
+	pricing && (
+		<section class='pricing' id='pricing' aria-labelledby='pricing-title'>
+			<div class='sec-h'>
+				{pricing.eyebrow && <span class='eyebrow'>{pricing.eyebrow}</span>}
+				<h2 id='pricing-title' set:html={md(pricing.title)} />
+				{pricing.lead && <p class='sec-l' set:html={md(pricing.lead)} />}
+			</div>
+			<div class='price-grid'>
+				{pricing.plans.map((p) => (
+					<article class:list={['price-card', { mid: p.featured }]}>
+						{p.badge && <div class='pc-badge'>{p.badge}</div>}
+						<h3 class='pc-name'>{p.name}</h3>
+						<div class='pc-price'>
+							{p.price}
+							{p.period && <span>{p.period}</span>}
+						</div>
+						<p class='pc-d'>{p.desc}</p>
+						<a href={p.cta.href} class:list={[p.featured ? 'btn-acc' : 'btn-ghost', 'full']}>
+							{p.cta.label}
+						</a>
+						{p.bullets.length > 0 && (
+							<ul>
+								{p.bullets.map((b) => (
+									<li>{b}</li>
+								))}
+							</ul>
+						)}
+					</article>
+				))}
+			</div>
+		</section>
+	)
+}
+
+<style>
+	.pricing {
+		max-width: 1240px;
+		margin: 0 auto;
+		padding: 80px 32px 100px;
+	}
+	.price-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 20px;
+	}
+	.price-card {
+		padding: 36px 32px;
+		background: var(--bg-3);
+		border: 1px solid var(--rule);
+		border-radius: var(--r-price);
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+		position: relative;
+	}
+	.price-card.mid {
+		border-color: var(--accent);
+		box-shadow:
+			0 30px 80px -30px color-mix(in srgb, var(--accent) 35%, transparent),
+			0 0 0 1px var(--accent);
+		transform: translateY(-8px);
+	}
+	.pc-badge {
+		position: absolute;
+		top: -12px;
+		left: 50%;
+		transform: translateX(-50%);
+		background: var(--accent);
+		color: #fff;
+		font-family: var(--mono);
+		font-size: 10px;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		padding: 5px 12px;
+		border-radius: 999px;
+		white-space: nowrap;
+	}
+	.pc-name {
+		font-family: var(--mono);
+		font-size: 13px;
+		font-weight: 400;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: var(--ink-3);
+	}
+	.pc-price {
+		font-size: 44px;
+		font-weight: 800;
+		letter-spacing: -0.035em;
+		line-height: 1;
+	}
+	.pc-price span {
+		font-size: 16px;
+		font-weight: 500;
+		color: var(--ink-3);
+		margin-left: 4px;
+	}
+	.pc-d {
+		font-size: 14px;
+		color: var(--ink-2);
+		line-height: 1.5;
+	}
+	.price-card ul {
+		list-style: none;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		font-size: 14px;
+		margin-top: 4px;
+		color: var(--ink-2);
+	}
+	.price-card li::before {
+		content: '✓ ';
+		color: var(--accent);
+		font-weight: 700;
+	}
+	@media (max-width: 900px) {
+		.price-grid {
+			grid-template-columns: 1fr;
+		}
+		.price-card.mid {
+			transform: none;
+		}
+	}
+</style>

@@ -1,0 +1,107 @@
+---
+/**
+ * Generic "thank you" page (target for `contact.form.successUrl`). noindex.
+ */
+import type { BaseSite } from '../schema';
+import Page from '../Page.astro';
+
+interface Props {
+	site: BaseSite;
+}
+const { site } = Astro.props;
+const { brand, contact } = site;
+const en = brand.locale === 'en';
+const home = new URL(site.seo.canonical).origin;
+const wa = contact.whatsapp;
+
+const t = en
+	? {
+			eyebrow: 'Message received',
+			title: 'Thank you!',
+			text: `${brand.name} has received your message and will get back to you shortly.`,
+			back: 'Back to home',
+			wa: 'Or chat on WhatsApp',
+		}
+	: {
+			eyebrow: 'Mensagem recebida',
+			title: 'Obrigado!',
+			text: `${brand.name} recebeu sua mensagem e vai responder em breve.`,
+			back: 'Voltar ao início',
+			wa: 'Ou fale agora pelo WhatsApp',
+		};
+---
+
+<Page site={site} class='core-page' noindex>
+	<main class='thanks'>
+		<p class='thanks-eyebrow'>{t.eyebrow}</p>
+		<h1>{t.title}</h1>
+		<p class='thanks-text'>{t.text}</p>
+		<div class='thanks-actions'>
+			<a class='thanks-btn' href={home}>{t.back}</a>
+			{
+				wa && (
+					<a
+						class='thanks-link'
+						href={`https://wa.me/${wa.number}?text=${encodeURIComponent(wa.message)}`}
+						target='_blank'
+						rel='noopener noreferrer'
+					>
+						{t.wa} →
+					</a>
+				)
+			}
+		</div>
+	</main>
+</Page>
+
+<style>
+	.thanks {
+		min-height: 100svh;
+		display: grid;
+		align-content: center;
+		justify-items: center;
+		text-align: center;
+		gap: 12px;
+		padding: 48px 20px;
+	}
+	.thanks-eyebrow {
+		font-family: var(--mono);
+		font-size: 12px;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--accent-text);
+	}
+	.thanks h1 {
+		font-size: var(--fs-h2);
+		letter-spacing: -0.03em;
+		line-height: 1;
+	}
+	.thanks-text {
+		max-width: 480px;
+		font-size: var(--fs-lead);
+		color: var(--ink-2);
+	}
+	.thanks-actions {
+		display: grid;
+		gap: 14px;
+		justify-items: center;
+		margin-top: 20px;
+	}
+	.thanks-btn {
+		display: inline-flex;
+		align-items: center;
+		min-height: 48px;
+		padding: 0 26px;
+		border-radius: var(--radius);
+		background: var(--accent);
+		color: #fff;
+		font-weight: 700;
+	}
+	.thanks-link {
+		color: var(--ink-2);
+		font-size: 15px;
+	}
+	.thanks-link:hover {
+		color: var(--ink);
+	}
+</style>

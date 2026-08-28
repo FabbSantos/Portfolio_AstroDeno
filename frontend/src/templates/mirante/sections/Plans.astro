@@ -1,0 +1,216 @@
+---
+/**
+ * Floor plans. Each card shows the client's plan image or, when `image` is
+ * null, a CSS wireframe (three room layouts, cycled by index).
+ */
+import { Image } from 'astro:assets';
+import type { MiranteConfig } from '../schema';
+import { md } from './_md';
+
+interface Props {
+	config: MiranteConfig;
+}
+const { plans } = Astro.props.config;
+
+const layouts = ['pl-A', 'pl-B', 'pl-C'];
+const roomClasses = ['r-sala', 'r-var', 'r-dorm', 'r-suite', 'r-cozi', 'r-wc'];
+/** srcset widths, capped at the source width. */
+const widths = (w: number) => [...[480, 960].filter((x) => x < w), w];
+---
+
+<section class='plantas' id='plantas' aria-labelledby='plantas-title'>
+	<div class='sec-h'>
+		{plans.eyebrow && <p class='eyebrow'>{plans.eyebrow}</p>}
+		<h2 id='plantas-title' set:html={md(plans.title)} />
+	</div>
+	<div class='pl-grid'>
+		{
+			plans.items.map((t, i) => (
+				<article class:list={['pl-card', { 'is-mid': t.featured }]}>
+					{t.badge && <span class='pl-badge'>{t.badge}</span>}
+					{t.image ? (
+						<div class='pl-img'>
+							<Image
+								src={t.image}
+								alt={t.alt ?? `${t.tag} · ${t.m2}`}
+								widths={widths(t.image.width)}
+								sizes='(max-width: 900px) calc(100vw - 64px), 390px'
+								format='webp'
+								loading='lazy'
+								decoding='async'
+							/>
+						</div>
+					) : (
+						<div class:list={['pl-mock', layouts[i % layouts.length]]} aria-hidden='true'>
+							{plans.rooms.map((r, j) => (
+								<div class:list={['rm', roomClasses[j]]}>{r}</div>
+							))}
+						</div>
+					)}
+					<div class='pl-meta'>
+						<span class='pl-tag'>{t.tag}</span>
+						<h3>{t.m2}</h3>
+						<p>{t.desc}</p>
+						<a href={plans.link.href} class='link'>
+							{plans.link.label}
+						</a>
+					</div>
+				</article>
+			))
+		}
+	</div>
+</section>
+
+<style>
+	.plantas {
+		padding: 60px 0 100px;
+	}
+	.pl-grid {
+		max-width: 1240px;
+		margin: 0 auto;
+		padding: 0 32px;
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 20px;
+	}
+	.pl-card {
+		background: #fff;
+		border: 1px solid var(--rule);
+		border-radius: var(--r-card);
+		overflow: hidden;
+		position: relative;
+		transition:
+			transform 0.35s,
+			box-shadow 0.35s;
+	}
+	.pl-card:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 30px 60px -20px color-mix(in srgb, var(--ink) 12%, transparent);
+	}
+	.pl-card.is-mid {
+		border-color: var(--accent);
+		box-shadow: 0 30px 80px -30px var(--accent-glow);
+	}
+	.pl-badge {
+		position: absolute;
+		top: 12px;
+		right: 12px;
+		background: var(--accent);
+		color: #fff;
+		font-family: var(--mono);
+		font-size: 10px;
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		padding: 5px 10px;
+		text-transform: uppercase;
+		z-index: 2;
+	}
+	/* Client's plan image (6:5, white background) */
+	.pl-img {
+		aspect-ratio: 1.2;
+		background: #fff;
+		border-bottom: 1px solid var(--rule);
+		overflow: hidden;
+	}
+	.pl-img :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+	}
+	/* Floor plan wireframe (fallback) */
+	.pl-mock {
+		padding: 12px;
+		background: var(--bg-2);
+		aspect-ratio: 1.2;
+		display: grid;
+		gap: 4px;
+	}
+	.rm {
+		background: #fff;
+		border: 1px solid var(--rule-2);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-family: var(--mono);
+		font-size: 10px;
+		color: var(--ink-3);
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+	}
+	/* Layout A — 2 dorms */
+	.pl-A {
+		grid-template-columns: 1.4fr 1fr 1fr;
+		grid-template-rows: 1.2fr 1fr 0.55fr;
+	}
+	.pl-A .r-sala { grid-column: 1 / 3; grid-row: 1; }
+	.pl-A .r-var { grid-column: 3; grid-row: 1; }
+	.pl-A .r-cozi { grid-column: 1; grid-row: 2; }
+	.pl-A .r-dorm { grid-column: 2; grid-row: 2; }
+	.pl-A .r-suite { grid-column: 3; grid-row: 2; }
+	.pl-A .r-wc { grid-column: 1 / 4; grid-row: 3; }
+	/* Layout B — 3 dorms */
+	.pl-B {
+		grid-template-columns: 1.5fr 1fr 1fr;
+		grid-template-rows: 1.2fr 1fr 1fr 0.5fr;
+	}
+	.pl-B .r-sala { grid-column: 1 / 4; grid-row: 1; }
+	.pl-B .r-cozi { grid-column: 1; grid-row: 2; }
+	.pl-B .r-var { grid-column: 2 / 4; grid-row: 2; }
+	.pl-B .r-dorm { grid-column: 1; grid-row: 3; }
+	.pl-B .r-suite { grid-column: 2 / 4; grid-row: 3; }
+	.pl-B .r-wc { grid-column: 1 / 4; grid-row: 4; }
+	/* Layout C — 3 dorms + 2 suítes */
+	.pl-C {
+		grid-template-columns: 1.4fr 1.2fr 1fr;
+		grid-template-rows: 1.4fr 1fr 1fr;
+	}
+	.pl-C .r-sala { grid-column: 1 / 3; grid-row: 1; }
+	.pl-C .r-var { grid-column: 3; grid-row: 1 / 3; }
+	.pl-C .r-dorm { grid-column: 1; grid-row: 2; }
+	.pl-C .r-suite { grid-column: 2; grid-row: 2; }
+	.pl-C .r-cozi { grid-column: 1; grid-row: 3; }
+	.pl-C .r-wc { grid-column: 2 / 4; grid-row: 3; }
+
+	.pl-meta {
+		padding: 22px 22px 24px;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+	.pl-tag {
+		font-family: var(--mono);
+		font-size: 11px;
+		color: var(--accent);
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		margin-bottom: 4px;
+	}
+	.pl-meta h3 {
+		font-size: 32px;
+		font-weight: 800;
+		letter-spacing: -0.02em;
+		line-height: 1;
+	}
+	.pl-meta p {
+		font-size: 14px;
+		color: var(--ink-2);
+		margin-bottom: 8px;
+	}
+	.link {
+		font-family: var(--mono);
+		font-size: 12px;
+		color: var(--accent);
+		font-weight: 700;
+		border-bottom: 2px solid var(--accent);
+		padding-bottom: 2px;
+		align-self: flex-start;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+	}
+	@media (max-width: 900px) {
+		.pl-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

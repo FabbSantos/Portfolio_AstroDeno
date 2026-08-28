@@ -1,0 +1,162 @@
+/* ==========================================================================
+   Mirante — rules shared by more than one section (wrapper, eyebrow, brand,
+   section heads, LeadForm skin, form foot). Everything else is scoped inside
+   sections/*.astro. Tokens come from core/ThemeVars.astro; no literal
+   colours except #fff/#000.
+   ========================================================================== */
+.tpl-mirante {
+	/* The original palette had a darker ink-2 (#4b5563) and a lighter ink-3 (#9ca3af) than the core mixes. */
+	--ink-2: color-mix(in srgb, var(--ink) 80%, var(--bg));
+	--ink-3: color-mix(in srgb, var(--ink) 42%, var(--bg));
+	/* Corner radii derived from theme.radius (8px → 4 / 6 / 8 / 12 / 2). */
+	--r-btn: calc(var(--radius) / 2);
+	--r-input: calc(var(--radius) - 2px);
+	--r-card: var(--radius);
+	--r-box: calc(var(--radius) + 4px);
+	--r-tag: calc(var(--radius) / 4);
+
+	background: var(--bg);
+	color: var(--ink);
+	font-family: var(--sans);
+	min-height: 100vh;
+}
+
+/* Accent span in the h1 / `**text**` inside headings (see sections/_md.ts). */
+.tpl-mirante .hl,
+.tpl-mirante :is(h1, h2, h3) strong {
+	color: var(--accent);
+	font-weight: inherit;
+}
+
+.tpl-mirante .eyebrow {
+	font-family: var(--mono);
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--accent);
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+
+/* Brand (topbar + footer) */
+.tpl-mirante .brand {
+	font-weight: 700;
+	font-size: 19px;
+	letter-spacing: -0.02em;
+	color: var(--ink);
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+.tpl-mirante .brand .dot {
+	color: var(--accent);
+	font-size: 9px;
+}
+.tpl-mirante .brand .loc {
+	font-family: var(--mono);
+	font-size: 12px;
+	color: var(--ink-3);
+	font-weight: 500;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	margin-left: 4px;
+}
+.tpl-mirante .brand-logo {
+	height: 28px;
+	width: auto;
+}
+
+/* Section heads (plantas / local / valores) */
+.tpl-mirante .sec-h {
+	max-width: 1240px;
+	margin: 0 auto 48px;
+	padding: 0 32px;
+}
+.tpl-mirante .sec-h .eyebrow {
+	display: block;
+	margin-bottom: 16px;
+}
+.tpl-mirante .sec-h h2 {
+	font-size: clamp(36px, 5vw, 64px);
+	font-weight: 800;
+	letter-spacing: -0.035em;
+	line-height: 1.04;
+}
+
+/* Core LeadForm skinned as the Mirante form (hero mini + big lead form) */
+.tpl-mirante .lead-form .lf-field label {
+	font-family: var(--mono);
+	font-size: 11px;
+	color: var(--ink-3);
+	font-weight: 600;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+}
+.tpl-mirante .lead-form .lf-req {
+	color: var(--accent);
+}
+.tpl-mirante .lead-form .lf-field input,
+.tpl-mirante .lead-form .lf-field select,
+.tpl-mirante .lead-form .lf-field textarea {
+	font-family: var(--sans);
+	font-size: 14px;
+	padding: 11px 12px;
+	border: 1px solid var(--rule-2);
+	border-radius: var(--r-input);
+	background: var(--bg);
+	color: var(--ink);
+	transition:
+		border-color 0.2s,
+		box-shadow 0.2s;
+}
+.tpl-mirante .lead-form .lf-field textarea {
+	min-height: 0;
+}
+.tpl-mirante .lead-form .lf-field input:focus,
+.tpl-mirante .lead-form .lf-field select:focus,
+.tpl-mirante .lead-form .lf-field textarea:focus {
+	outline: none;
+	border-color: var(--accent);
+	box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.tpl-mirante .lead-form .lf-submit {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	width: 100%;
+	min-height: 0;
+	padding: 14px 24px;
+	background: var(--ink);
+	color: #fff;
+	font-size: 14px;
+	font-weight: 600;
+	border-radius: var(--r-btn);
+	border: 2px solid var(--ink);
+	transition: all 0.2s;
+}
+.tpl-mirante .lead-form .lf-submit:hover {
+	background: var(--accent);
+	border-color: var(--accent);
+	transform: none;
+}
+.tpl-mirante .lead-form .lf-status {
+	font-family: var(--mono);
+	font-size: 12px;
+}
+
+/* Small print under the forms */
+.tpl-mirante .mf-foot {
+	margin-top: 12px;
+	font-family: var(--mono);
+	font-size: 11px;
+	color: var(--ink-3);
+	text-align: center;
+}
+.tpl-mirante .mf-foot a {
+	color: var(--accent);
+	font-weight: 600;
+	margin-left: 4px;
+}

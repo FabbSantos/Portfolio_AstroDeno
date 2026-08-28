@@ -23,3 +23,6 @@ dist/
 .env
 .env.local
 .env*.local
+
+# client sites scaffolded by scripts/new-client.mjs (each is its own repo)
+clients/

@@ -1,0 +1,34 @@
+---
+/**
+ * Brava — everything between <body> and </body>, in page order.
+ * The portfolio demo renders this inside DemoLayout (+ ThemeVars);
+ * a client site renders it through BravaPage (core Page adds Head,
+ * ThemeVars, WhatsAppFab and LgpdNotice).
+ */
+import './styles.css';
+import type { BravaConfig } from './schema';
+import Ticker from './sections/Ticker.astro';
+import Topbar from './sections/Topbar.astro';
+import Hero from './sections/Hero.astro';
+import Shop from './sections/Shop.astro';
+import Lookbook from './sections/Lookbook.astro';
+import Story from './sections/Story.astro';
+import Newsletter from './sections/Newsletter.astro';
+import Footer from './sections/Footer.astro';
+
+interface Props {
+	config: BravaConfig;
+}
+const { config } = Astro.props;
+---
+
+<div class='tpl tpl-brava' id='top'>
+	<Ticker config={config} />
+	<Topbar config={config} />
+	<Hero config={config} />
+	<Shop config={config} />
+	<Lookbook config={config} />
+	<Story config={config} />
+	<Newsletter config={config} />
+	<Footer config={config} />
+</div>

@@ -1,0 +1,155 @@
+---
+/** Product grid. Cards link to `href` when given; image or tinted gradient. */
+import { Image } from 'astro:assets';
+import type { BravaConfig } from '../schema';
+import { md } from './_md';
+
+interface Props {
+	config: BravaConfig;
+}
+const { config } = Astro.props;
+const { shop } = config;
+---
+
+<section class='shop' id='shop' aria-labelledby='shop-title'>
+	<div class='shop-h'>
+		<span class='eyebrow'>{shop.eyebrow}</span>
+		<h2 id='shop-title' set:html={md(shop.title)} />
+	</div>
+	<div class='prod-grid'>
+		{
+			shop.products.map((p) => {
+				const Card = p.href ? 'a' : 'div';
+				return (
+					<Card href={p.href} class:list={['prod', { 'is-sold': p.sold }]} style={p.tint ? `--tint:${p.tint}` : undefined}>
+						<div class='prod-img'>
+							{p.image && (
+								<Image
+									src={p.image}
+									alt={p.alt ?? p.name}
+									widths={[400, 800]}
+									sizes='(max-width: 780px) 50vw, 33vw'
+									format='webp'
+									loading='lazy'
+									decoding='async'
+								/>
+							)}
+							{p.tag && <span class='p-tag'>{p.tag}</span>}
+							{p.sold && <span class='p-sold'>{shop.soldLabel}</span>}
+						</div>
+						<div class='prod-meta'>
+							<span class='p-n'>{p.n}</span>
+							<div>
+								<h3>{p.name}</h3>
+								<p>{p.price}</p>
+							</div>
+						</div>
+					</Card>
+				);
+			})
+		}
+	</div>
+</section>
+
+<style>
+	.shop {
+		max-width: 1240px;
+		margin: 0 auto;
+		padding: 80px 32px;
+	}
+	.shop-h {
+		margin-bottom: 40px;
+	}
+	.shop-h h2 {
+		font-size: clamp(40px, 6vw, 80px);
+		font-weight: 900;
+		letter-spacing: -0.04em;
+		line-height: 1;
+	}
+	.prod-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 28px 20px;
+	}
+	.prod {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		transition: transform 0.3s;
+	}
+	.prod:hover {
+		transform: translateY(-4px);
+	}
+	.prod-img {
+		aspect-ratio: 4 / 5;
+		background: linear-gradient(
+			135deg,
+			color-mix(in srgb, var(--tint, var(--accent)) 8%, #fff),
+			color-mix(in srgb, var(--tint, var(--accent)) 22%, #fff)
+		);
+		border-radius: 4px;
+		position: relative;
+		overflow: hidden;
+	}
+	.prod-img :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+	.prod.is-sold .prod-img {
+		filter: grayscale(1) opacity(0.6);
+	}
+	.p-tag {
+		position: absolute;
+		top: 12px;
+		left: 12px;
+		background: var(--ink);
+		color: #fff;
+		font-family: var(--mono);
+		font-size: 10px;
+		font-weight: 700;
+		padding: 4px 8px;
+		letter-spacing: 0.08em;
+	}
+	.p-sold {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%) rotate(-6deg);
+		background: var(--ink);
+		color: #fff;
+		font-family: var(--mono);
+		font-weight: 700;
+		font-size: 14px;
+		letter-spacing: 0.1em;
+		padding: 6px 14px;
+	}
+	.prod-meta {
+		display: flex;
+		gap: 12px;
+		align-items: flex-start;
+	}
+	.p-n {
+		font-family: var(--mono);
+		font-size: 11px;
+		color: var(--ink-3);
+		padding-top: 4px;
+	}
+	.prod-meta h3 {
+		font-size: 17px;
+		font-weight: 700;
+		letter-spacing: -0.01em;
+	}
+	.prod-meta p {
+		font-family: var(--mono);
+		font-size: 14px;
+		color: var(--accent);
+		font-weight: 600;
+		margin-top: 4px;
+	}
+	@media (max-width: 780px) {
+		.prod-grid {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+</style>

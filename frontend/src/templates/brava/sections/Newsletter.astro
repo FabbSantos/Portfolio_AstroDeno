@@ -1,0 +1,166 @@
+---
+/**
+ * Newsletter block (inverted: ink background) with the core LeadForm in
+ * `mini` variant — one e-mail field (+ optional name), provider from config.
+ */
+import LeadForm from '../../core/LeadForm.astro';
+import type { LeadField } from '../../core/schema';
+import type { BravaConfig } from '../schema';
+import { md } from './_md';
+
+interface Props {
+	config: BravaConfig;
+}
+const { config } = Astro.props;
+const { newsletter } = config;
+
+const fields: LeadField[] = [
+	...(newsletter.name
+		? [
+				{
+					name: 'name',
+					label: newsletter.name.label,
+					type: 'text' as const,
+					required: true,
+					placeholder: newsletter.name.placeholder,
+					autocomplete: 'name',
+				},
+			]
+		: []),
+	{
+		name: 'email',
+		label: newsletter.email.label,
+		type: 'email',
+		required: true,
+		placeholder: newsletter.email.placeholder,
+	},
+];
+---
+
+<section class='news' aria-labelledby='news-title'>
+	<div class='news-inner'>
+		<h2 id='news-title' set:html={md(newsletter.title)} />
+		<p>{newsletter.sub}</p>
+		<LeadForm
+			site={config}
+			id='newsletter'
+			variant='mini'
+			class='news-form'
+			fields={fields}
+			cta={newsletter.cta}
+			foot={newsletter.foot}
+		/>
+	</div>
+</section>
+
+<style>
+	.news {
+		max-width: 1240px;
+		margin: 100px auto 0;
+		padding: 80px 32px;
+		background: var(--ink);
+		border-radius: var(--radius);
+		color: #fff;
+	}
+	.news-inner {
+		max-width: 640px;
+		margin: 0 auto;
+		text-align: center;
+	}
+	.news h2 {
+		font-size: clamp(36px, 5vw, 56px);
+		font-weight: 900;
+		letter-spacing: -0.035em;
+		line-height: 1.05;
+	}
+	.news p {
+		margin: 18px auto 32px;
+		font-size: 16px;
+		color: color-mix(in srgb, #fff 70%, transparent);
+		max-width: 50ch;
+	}
+</style>
+
+<style is:global>
+	/* Highlight on the dark block uses the light accent (theme.accent2). */
+	.tpl-brava .news .hl {
+		color: var(--accent-2);
+	}
+
+	/* Core LeadForm restyled as the joined input + button row. */
+	.tpl-brava .news .lead-form.news-form {
+		max-width: 460px;
+		margin: 0 auto;
+		color: #fff;
+		text-align: left;
+	}
+	.tpl-brava .news .lead-form.news-form .lf-body {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0;
+	}
+	.tpl-brava .news .lead-form.news-form .lf-field {
+		flex: 1 1 160px;
+		gap: 0;
+	}
+	/* Label stays for assistive tech; the placeholder carries it visually. */
+	.tpl-brava .news .lead-form.news-form .lf-field label {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+	}
+	.tpl-brava .news .lead-form.news-form .lf-field input {
+		min-height: 0;
+		padding: 14px 18px;
+		border: 2px solid color-mix(in srgb, #fff 15%, transparent);
+		border-right: none;
+		border-radius: 0;
+		background: color-mix(in srgb, #fff 5%, transparent);
+		color: #fff;
+		font-size: 14px;
+	}
+	.tpl-brava .news .lead-form.news-form .lf-field input::placeholder {
+		color: color-mix(in srgb, #fff 40%, transparent);
+	}
+	.tpl-brava .news .lead-form.news-form .lf-field input:focus {
+		outline: none;
+		border-color: var(--accent);
+	}
+	.tpl-brava .news .lead-form.news-form .lf-submit {
+		flex: 0 0 auto;
+		min-height: 0;
+		margin: 0;
+		padding: 14px 28px;
+		border: 2px solid var(--accent);
+		border-radius: 0;
+		background: var(--accent);
+		color: #fff;
+		font-family: var(--mono);
+		font-size: 13px;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		transition: all 0.2s;
+	}
+	.tpl-brava .news .lead-form.news-form .lf-submit:hover {
+		transform: none;
+		box-shadow: none;
+		background: color-mix(in srgb, var(--accent) 80%, #000);
+		border-color: color-mix(in srgb, var(--accent) 80%, #000);
+	}
+	.tpl-brava .news .lead-form.news-form .lf-status {
+		text-align: center;
+		color: color-mix(in srgb, #fff 85%, transparent);
+	}
+	.tpl-brava .news .lead-form.news-form .lf-status[data-kind='ok'] {
+		color: var(--accent-2);
+	}
+	.tpl-brava .news .lead-form.news-form .lf-foot {
+		text-align: center;
+		color: color-mix(in srgb, #fff 50%, transparent);
+	}
+</style>

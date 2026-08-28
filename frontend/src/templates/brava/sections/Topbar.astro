@@ -1,0 +1,117 @@
+---
+/**
+ * Desktop topbar (nav · brand · actions) ≥ 781px; the core MobileNav
+ * (brand + 44px hamburger) takes over below that.
+ */
+import MobileNav from '../../core/MobileNav.astro';
+import type { BravaConfig } from '../schema';
+
+interface Props {
+	config: BravaConfig;
+}
+const { config } = Astro.props;
+const { brand, nav, topbar } = config;
+const { cart } = topbar;
+
+const cartLabel = cart.count != null ? `${cart.label} (${cart.count})` : cart.label;
+const mobileNav = [...nav, ...topbar.links, ...(cart.show ? [{ label: cartLabel, href: cart.href }] : [])];
+---
+
+<header class='tb'>
+	<div class='tb-inner'>
+		<nav class='tb-nav left' aria-label='Menu'>
+			{nav.map((l) => <a href={l.href}>{l.label}</a>)}
+		</nav>
+		<a href={topbar.brandHref} class='brand'>{brand.name}</a>
+		<div class='tb-actions'>
+			{topbar.links.map((l) => <a href={l.href}>{l.label}</a>)}
+			{
+				cart.show && (
+					<a href={cart.href} class='cart'>
+						{cart.label}
+						{cart.count != null && <span class='cart-c'>{cart.count}</span>}
+					</a>
+				)
+			}
+		</div>
+	</div>
+</header>
+
+<MobileNav class='tb-mobile' id='brava-nav' brand={brand.name} brandHref={topbar.brandHref} nav={mobileNav} />
+
+<style>
+	.tb {
+		position: sticky;
+		top: 0;
+		z-index: 40;
+		background: var(--topbar);
+		backdrop-filter: blur(14px);
+		-webkit-backdrop-filter: blur(14px);
+		border-bottom: 1px solid var(--rule);
+	}
+	.tb-inner {
+		max-width: 1240px;
+		margin: 0 auto;
+		padding: 18px 32px;
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		align-items: center;
+		gap: 24px;
+	}
+	.tb-nav {
+		display: flex;
+		gap: 24px;
+		font-family: var(--mono);
+		font-size: 12px;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: var(--ink-2);
+	}
+	.tb-nav.left a:hover {
+		color: var(--accent);
+	}
+	.tb-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: 18px;
+		font-family: var(--mono);
+		font-size: 12px;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: var(--ink-2);
+	}
+	.cart {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+	}
+	.cart-c {
+		background: var(--accent);
+		color: #fff;
+		padding: 2px 7px;
+		border-radius: 999px;
+		font-size: 10px;
+	}
+	@media (max-width: 780px) {
+		.tb {
+			display: none;
+		}
+	}
+</style>
+
+<style is:global>
+	/* Core MobileNav: only below the desktop breakpoint, brand styled like .brand */
+	.tpl-brava .mnav.tb-mobile {
+		display: none;
+	}
+	.tpl-brava .tb-mobile .mnav-brand {
+		font-weight: 900;
+		font-size: 22px;
+		letter-spacing: -0.02em;
+	}
+	@media (max-width: 780px) {
+		.tpl-brava .mnav.tb-mobile {
+			display: block;
+		}
+	}
+</style>

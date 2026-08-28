@@ -1,0 +1,161 @@
+---
+/**
+ * High-intent lead block (ink background): pitch + bullets on the left,
+ * the core LeadForm (`full`) in a white card on the right. Field labels come
+ * from `lead.labels`; the "tipologia" options from `plans.items`.
+ */
+import LeadForm from '../../core/LeadForm.astro';
+import type { LeadField } from '../../core/schema';
+import type { MiranteConfig } from '../schema';
+import { md } from './_md';
+
+interface Props {
+	config: MiranteConfig;
+}
+const { config } = Astro.props;
+const { lead, plans, legal } = config;
+const L = lead.labels;
+
+const fields: LeadField[] = [
+	{ name: 'nome', label: L.nome, type: 'text', required: true, autocomplete: 'name' },
+	{ name: 'email', label: L.email, type: 'email', required: true },
+	{ name: 'telefone', label: L.telefone, type: 'tel', required: true, placeholder: '(11) 99999-9999' },
+	{ name: 'tipologia', label: L.tipologia, type: 'select', options: [L.qualquer, ...plans.items.map((t) => `${t.tag} · ${t.m2}`)] },
+	{ name: 'horario', label: L.horario, type: 'select', options: lead.times },
+	{ name: 'mensagem', label: L.mensagem, type: 'textarea', placeholder: lead.messagePlaceholder },
+];
+
+// "…concorda com nossa Política de Privacidade." → the label becomes a link when legal.privacyUrl exists.
+const footParts = lead.foot && legal.privacyUrl && lead.foot.includes(lead.privacyLabel) ? lead.foot.split(lead.privacyLabel) : null;
+---
+
+<section class='lead' id='lead' aria-labelledby='lead-title'>
+	<div class='lead-inner'>
+		<div class='lead-l'>
+			{lead.eyebrow && <p class='eyebrow'>{lead.eyebrow}</p>}
+			<h2 id='lead-title' set:html={md(lead.title)} />
+			<p class='lead-sub'>{lead.sub}</p>
+			{
+				lead.bullets.length > 0 && (
+					<ul class='lead-bullets'>
+						{lead.bullets.map((b) => (
+							<li>
+								<span class='b-ic' aria-hidden='true'>
+									✓
+								</span>
+								{b}
+							</li>
+						))}
+					</ul>
+				)
+			}
+		</div>
+		<div class='big-form'>
+			<LeadForm site={config} id='mirante-lead' variant='full' fields={fields} cta={lead.cta} source='lead' />
+			{
+				lead.foot && (
+					<p class='mf-foot'>
+						{footParts ? (
+							<>
+								{footParts[0]}
+								<a href={legal.privacyUrl}>{lead.privacyLabel}</a>
+								{footParts.slice(1).join(lead.privacyLabel)}
+							</>
+						) : (
+							lead.foot
+						)}
+					</p>
+				)
+			}
+		</div>
+	</div>
+</section>
+
+<style>
+	.lead {
+		padding: 100px 0;
+		background: var(--ink);
+		color: #fff;
+	}
+	.lead-inner {
+		max-width: 1240px;
+		margin: 0 auto;
+		padding: 0 32px;
+		display: grid;
+		grid-template-columns: 1fr 1.1fr;
+		gap: 56px;
+		align-items: center;
+	}
+	.lead-l .eyebrow {
+		color: var(--accent);
+		display: block;
+		margin-bottom: 16px;
+	}
+	.lead-l h2 {
+		font-size: clamp(36px, 5vw, 56px);
+		font-weight: 800;
+		letter-spacing: -0.035em;
+		line-height: 1.05;
+	}
+	.lead-sub {
+		margin: 20px 0 28px;
+		font-size: 16px;
+		color: color-mix(in srgb, #fff 70%, transparent);
+		line-height: 1.55;
+		max-width: 44ch;
+	}
+	.lead-bullets {
+		list-style: none;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+	.lead-bullets li {
+		font-size: 14px;
+		color: color-mix(in srgb, #fff 85%, transparent);
+		display: flex;
+		align-items: center;
+		gap: 12px;
+	}
+	.b-ic {
+		color: var(--accent);
+		font-weight: 700;
+	}
+
+	.big-form {
+		background: #fff;
+		color: var(--ink);
+		padding: 32px;
+		border-radius: var(--r-card);
+		box-shadow: 0 40px 80px -20px color-mix(in srgb, #000 30%, transparent);
+	}
+	.big-form :global(.lead-form .lf-body) {
+		gap: 16px 14px;
+	}
+	/* Name spans both columns; the rest pairs up (e-mail + phone, plan + time). */
+	.big-form :global(.lead-form .lf-field:first-child) {
+		grid-column: 1 / -1;
+	}
+	.big-form :global(.lead-form .lf-submit) {
+		justify-self: stretch;
+		margin-top: 8px;
+		padding: 18px 28px;
+		font-size: 15px;
+	}
+	.lead .big-form .mf-foot {
+		margin-top: 14px;
+		text-align: left;
+	}
+	.lead .big-form .mf-foot a {
+		color: var(--accent);
+	}
+	@media (max-width: 900px) {
+		.lead-inner {
+			grid-template-columns: 1fr;
+			gap: 40px;
+		}
+		.big-form :global(.lead-form .lf-body) {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

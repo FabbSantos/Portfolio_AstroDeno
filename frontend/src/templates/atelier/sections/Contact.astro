@@ -1,0 +1,104 @@
+---
+/**
+ * Closing section: e-mail first (mailto from `contact.email`), optional
+ * LeadForm (`contact.inquiry`, wired to `contact.form.provider`), socials.
+ */
+import LeadForm from '../../core/LeadForm.astro';
+import type { AtelierConfig } from '../schema';
+import { md } from './_md';
+
+interface Props {
+	config: AtelierConfig;
+}
+const { config } = Astro.props;
+const { contact } = config;
+---
+
+<section class='contact' id='contact' aria-labelledby='contact-title'>
+	<span class='eyebrow'>{contact.eyebrow}</span>
+	<h2 id='contact-title' set:html={md(contact.title)} />
+	{contact.sub && <p class='c-sub'>{contact.sub}</p>}
+	<a href={`mailto:${contact.email}`} class='c-mail'>{contact.email} →</a>
+	{
+		contact.inquiry && (
+			<LeadForm
+				site={config}
+				id='atelier-inquiry'
+				variant='full'
+				fields={contact.inquiry.fields}
+				cta={contact.inquiry.cta}
+				foot={contact.inquiry.foot}
+				class='c-form'
+				source='atelier-contact'
+			/>
+		)
+	}
+	{
+		contact.socials.length > 0 && (
+			<p class='c-foot'>
+				{contact.socialsLead}{' '}
+				{contact.socials.map((s, i) => (
+					<>
+						{i > 0 && ' · '}
+						<a href={s.href} rel='noopener'>
+							{s.label}
+						</a>
+					</>
+				))}
+			</p>
+		)
+	}
+</section>
+
+<style>
+	.contact {
+		max-width: 880px;
+		margin: 0 auto;
+		padding: 120px 32px;
+		text-align: center;
+	}
+	.contact h2 {
+		font-size: clamp(40px, 6vw, 80px);
+		font-weight: 800;
+		letter-spacing: -0.04em;
+		line-height: 1.05;
+		max-width: 16ch;
+		margin: 14px auto 0;
+	}
+	.c-sub {
+		margin: 28px auto;
+		font-size: 17px;
+		color: var(--ink-2);
+		max-width: 50ch;
+		line-height: 1.55;
+	}
+	.c-mail {
+		font-size: clamp(22px, 3vw, 32px);
+		font-weight: 700;
+		color: var(--accent);
+		letter-spacing: -0.02em;
+		display: inline-block;
+		border-bottom: 2px solid var(--accent);
+		padding-bottom: 4px;
+		overflow-wrap: anywhere;
+	}
+	.c-form {
+		max-width: 620px;
+		margin: 48px auto 0;
+		text-align: left;
+	}
+	.c-foot {
+		margin-top: 56px;
+		font-family: var(--mono);
+		font-size: 13px;
+		color: var(--ink-3);
+	}
+	.c-foot a {
+		color: var(--ink);
+		margin: 0 4px;
+		border-bottom: 1px solid currentColor;
+	}
+	.c-foot a:hover {
+		color: var(--accent);
+	}
+</style>

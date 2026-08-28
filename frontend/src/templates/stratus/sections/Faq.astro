@@ -1,0 +1,80 @@
+---
+import type { StratusConfig } from '../schema';
+import { md } from './_md';
+
+interface Props {
+	config: StratusConfig;
+}
+const { faq } = Astro.props.config;
+---
+
+{
+	faq && (
+		<section class='faq' id='faq' aria-labelledby='faq-title'>
+			<div class='sec-h'>
+				{faq.eyebrow && <span class='eyebrow'>{faq.eyebrow}</span>}
+				<h2 id='faq-title' set:html={md(faq.title)} />
+			</div>
+			<div class='faq-list'>
+				{faq.items.map((item) => (
+					<details>
+						<summary>{item.q}</summary>
+						<p set:html={md(item.a)} />
+					</details>
+				))}
+			</div>
+		</section>
+	)
+}
+
+<style>
+	.faq {
+		max-width: 800px;
+		margin: 0 auto;
+		padding: 80px 32px;
+	}
+	.faq-list {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+	.faq details {
+		padding: 22px 24px;
+		border: 1px solid var(--rule);
+		border-radius: var(--r-faq);
+		background: var(--bg-3);
+		transition: border-color 0.2s;
+	}
+	.faq details[open] {
+		border-color: var(--accent);
+	}
+	.faq summary {
+		cursor: pointer;
+		list-style: none;
+		font-weight: 600;
+		font-size: 16px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 16px;
+	}
+	.faq summary::-webkit-details-marker {
+		display: none;
+	}
+	.faq summary::after {
+		content: '+';
+		font-size: 22px;
+		color: var(--accent);
+		font-weight: 400;
+		transition: transform 0.25s;
+	}
+	.faq details[open] summary::after {
+		transform: rotate(45deg);
+	}
+	.faq p {
+		margin-top: 14px;
+		font-size: 15px;
+		line-height: 1.6;
+		color: var(--ink-2);
+	}
+</style>

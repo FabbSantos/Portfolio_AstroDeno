@@ -1,0 +1,114 @@
+---
+/**
+ * Desktop topbar (brand · nav · sign-in · CTA) ≥ 900px; below that the core
+ * MobileNav takes over (44px hamburger, inert panel, Escape). Only one of the
+ * two is displayed at any width.
+ */
+import { Image } from 'astro:assets';
+import MobileNav from '../../core/MobileNav.astro';
+import type { StratusConfig } from '../schema';
+
+interface Props {
+	config: StratusConfig;
+}
+const { config } = Astro.props;
+const { brand, nav, header } = config;
+const mobileNav = header.signIn ? [...nav, header.signIn] : nav;
+---
+
+<header class='tb'>
+	<div class='tb-inner'>
+		<a href={header.brandHref} class='brand'>
+			{
+				brand.logo ? (
+					<Image class='brand-logo' src={brand.logo} alt={brand.name} height={28} densities={[1, 2]} format='webp' loading='eager' />
+				) : (
+					<>
+						{brand.name}
+						{header.brandDot && <span class='dot'>.</span>}
+					</>
+				)
+			}
+		</a>
+		<nav class='tb-nav' aria-label='Main'>
+			{nav.map((l) => <a href={l.href}>{l.label}</a>)}
+		</nav>
+		<div class='tb-actions'>
+			{
+				header.signIn && (
+					<a href={header.signIn.href} class='tb-link'>
+						{header.signIn.label}
+					</a>
+				)
+			}
+			<a href={header.cta.href} class='btn-acc'>{header.cta.label}</a>
+		</div>
+	</div>
+</header>
+<div class='tb-mobile'>
+	<MobileNav brand={brand.name} brandHref={header.brandHref} nav={mobileNav} cta={header.cta} id='stratus-nav' />
+</div>
+
+<style>
+	.tb {
+		position: sticky;
+		top: 0;
+		z-index: 40;
+		background: color-mix(in srgb, var(--bg) 85%, transparent);
+		backdrop-filter: saturate(180%) blur(14px);
+		-webkit-backdrop-filter: saturate(180%) blur(14px);
+		border-bottom: 1px solid var(--rule);
+	}
+	.tb-inner {
+		max-width: 1240px;
+		margin: 0 auto;
+		padding: 16px 32px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 24px;
+	}
+	.tb-nav {
+		display: flex;
+		gap: 28px;
+		font-size: 14px;
+		color: var(--ink-2);
+	}
+	.tb-nav a:hover {
+		color: var(--ink);
+	}
+	.tb-actions {
+		display: flex;
+		gap: 14px;
+		align-items: center;
+	}
+	.tb-link {
+		font-size: 14px;
+		color: var(--ink-2);
+	}
+	.tb-link:hover {
+		color: var(--ink);
+	}
+
+	/* Mobile: core MobileNav, restyled to the Stratus look */
+	.tb-mobile {
+		display: none;
+	}
+	.tb-mobile :global(.mnav-brand) {
+		font-weight: 800;
+		font-size: 18px;
+		letter-spacing: -0.02em;
+	}
+	.tb-mobile :global(.mnav-cta) {
+		border-radius: 999px;
+		background: var(--ink);
+	}
+	@media (max-width: 899.98px) {
+		.tb {
+			display: none;
+		}
+		.tb-mobile {
+			display: block;
+		}
+	}
+</style>

@@ -1,0 +1,16 @@
+---
+/** Full standalone Brava page for a client site: core Page + BravaBody. */
+import Page from '../core/Page.astro';
+import BravaBody from './BravaBody.astro';
+import type { BravaConfig } from './schema';
+
+interface Props {
+	config: BravaConfig;
+	noindex?: boolean;
+}
+const { config, noindex = false } = Astro.props;
+---
+
+<Page site={config} class='page-brava' noindex={noindex}>
+	<BravaBody config={config} />
+</Page>

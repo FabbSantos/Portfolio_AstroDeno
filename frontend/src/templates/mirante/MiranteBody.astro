@@ -1,0 +1,35 @@
+---
+/**
+ * Mirante — everything between <body> and </body>, minus the floating
+ * WhatsApp button / LGPD bar (core Page adds those). Used by MirantePage
+ * (client sites) and by the portfolio demo (inside DemoLayout).
+ */
+import './styles.css';
+import type { MiranteConfig } from './schema';
+import Topbar from './sections/Topbar.astro';
+import Hero from './sections/Hero.astro';
+import Numbers from './sections/Numbers.astro';
+import Project from './sections/Project.astro';
+import Plans from './sections/Plans.astro';
+import Location from './sections/Location.astro';
+import Conditions from './sections/Conditions.astro';
+import Lead from './sections/Lead.astro';
+import Footer from './sections/Footer.astro';
+
+interface Props {
+	config: MiranteConfig;
+}
+const { config } = Astro.props;
+---
+
+<div class='tpl tpl-mirante'>
+	<Topbar config={config} />
+	<Hero config={config} />
+	<Numbers config={config} />
+	<Project config={config} />
+	<Plans config={config} />
+	<Location config={config} />
+	<Conditions config={config} />
+	<Lead config={config} />
+	<Footer config={config} />
+</div>

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /obrigado
+
+Sitemap: https://__DOMAIN__/sitemap-index.xml

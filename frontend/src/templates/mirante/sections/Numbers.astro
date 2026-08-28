@@ -1,0 +1,67 @@
+---
+/** Numbers band (ink background) — one column per stat, 3 / 2 columns on small screens. */
+import type { MiranteConfig } from '../schema';
+
+interface Props {
+	config: MiranteConfig;
+}
+const { stats } = Astro.props.config;
+---
+
+<section class='numbers'>
+	<div class='n-grid' style={`--cols:${stats.length}`}>
+		{
+			stats.map((s) => (
+				<div class='n'>
+					<span class='v'>{s.v}</span>
+					<span class='l'>{s.l}</span>
+				</div>
+			))
+		}
+	</div>
+</section>
+
+<style>
+	.numbers {
+		background: var(--ink);
+		color: #fff;
+		padding: 32px 32px;
+	}
+	.n-grid {
+		max-width: 1240px;
+		margin: 0 auto;
+		display: grid;
+		grid-template-columns: repeat(var(--cols, 6), 1fr);
+		gap: 24px;
+	}
+	.n {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		border-left: 2px solid var(--accent);
+		padding-left: 14px;
+	}
+	.n .v {
+		font-size: 28px;
+		font-weight: 800;
+		letter-spacing: -0.025em;
+		font-variant-numeric: tabular-nums;
+	}
+	.n .l {
+		font-family: var(--mono);
+		font-size: 11px;
+		color: color-mix(in srgb, #fff 55%, transparent);
+		letter-spacing: 0.06em;
+	}
+	@media (max-width: 900px) {
+		.n-grid {
+			grid-template-columns: repeat(3, 1fr);
+			gap: 18px;
+		}
+	}
+	@media (max-width: 540px) {
+		.n-grid {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+</style>

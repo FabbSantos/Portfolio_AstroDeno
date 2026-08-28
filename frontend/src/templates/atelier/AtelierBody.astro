@@ -1,0 +1,30 @@
+---
+/**
+ * Atelier — everything between <main> and </main>. Used by the portfolio demo
+ * (DemoLayout + ThemeVars + this) and by AtelierPage (core Page + this).
+ */
+import './styles.css';
+import type { AtelierConfig } from './schema';
+import Topbar from './sections/Topbar.astro';
+import Hero from './sections/Hero.astro';
+import Work from './sections/Work.astro';
+import Process from './sections/Process.astro';
+import Studio from './sections/Studio.astro';
+import Contact from './sections/Contact.astro';
+import Footer from './sections/Footer.astro';
+
+interface Props {
+	config: AtelierConfig;
+}
+const { config } = Astro.props;
+---
+
+<div class='tpl tpl-atelier'>
+	<Topbar config={config} />
+	<Hero config={config} />
+	<Work config={config} />
+	<Process config={config} />
+	<Studio config={config} />
+	<Contact config={config} />
+	<Footer config={config} />
+</div>

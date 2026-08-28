@@ -1,0 +1,21 @@
+---
+/**
+ * Full standalone Mirante page for a client site: core Page (head, theme
+ * tokens, WhatsApp FAB, LGPD bar) wrapping MiranteBody.
+ */
+import Page from '../core/Page.astro';
+import MiranteBody from './MiranteBody.astro';
+import type { MiranteConfig } from './schema';
+
+interface Props {
+	config: MiranteConfig;
+	noindex?: boolean;
+}
+const { config, noindex = false } = Astro.props;
+---
+
+<Page site={config} class='page-mirante' noindex={noindex}>
+	<main id='main-content'>
+		<MiranteBody config={config} />
+	</main>
+</Page>

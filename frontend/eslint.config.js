@@ -2,7 +2,7 @@ import tseslint from 'typescript-eslint';
 import eslintPluginAstro from 'eslint-plugin-astro';
 
 export default [
-	{ ignores: ['dist/**', '.vercel/**', '.astro/**', 'node_modules/**', '*.config.*'] },
+	{ ignores: ['dist/**', '.vercel/**', '.astro/**', 'node_modules/**', '*.config.*', 'src/env.d.ts'] },
 	...tseslint.configs.recommended,
 	...eslintPluginAstro.configs.recommended,
 	{
