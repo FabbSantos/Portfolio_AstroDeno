@@ -1,0 +1,22 @@
+---
+/**
+ * Full standalone page for a client deploy: core Page (head, theme, WhatsApp
+ * FAB, LGPD notice) wrapping the Atelier body. `src/pages/index.astro` of a
+ * scaffolded client is just `<AtelierPage config={site} />`.
+ */
+import Page from '../core/Page.astro';
+import AtelierBody from './AtelierBody.astro';
+import type { AtelierConfig } from './schema';
+
+interface Props {
+	config: AtelierConfig;
+	noindex?: boolean;
+}
+const { config, noindex = false } = Astro.props;
+---
+
+<Page site={config} class='page-atelier' noindex={noindex}>
+	<main id='main-content'>
+		<AtelierBody config={config} />
+	</main>
+</Page>

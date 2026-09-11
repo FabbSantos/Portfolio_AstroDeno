@@ -1,0 +1,215 @@
+---
+/**
+ * Generic LGPD privacy page. Copy adapts to locale, form provider, analytics
+ * and the `legal` block (company, CNPJ, contact e-mail).
+ */
+import type { BaseSite } from '../schema';
+import Page from '../Page.astro';
+
+interface Props {
+	site: BaseSite;
+}
+const { site } = Astro.props;
+const { brand, contact, analytics, legal } = site;
+const en = brand.locale === 'en';
+const provider = contact.form.provider;
+const hasCookies = Boolean(analytics.ga4 || analytics.metaPixel);
+const home = new URL(site.seo.canonical).origin;
+
+const PROVIDERS: Record<typeof provider, { pt: string; en: string } | null> = {
+	none: null,
+	whatsapp: {
+		pt: 'WhatsApp (Meta Platforms) — a mensagem é aberta no seu próprio aplicativo; este site não armazena o conteúdo.',
+		en: 'WhatsApp (Meta Platforms) — the message opens in your own app; this site does not store its content.',
+	},
+	formspree: {
+		pt: 'Formspree (formspree.io), que recebe o formulário e o encaminha para o nosso e-mail.',
+		en: 'Formspree (formspree.io), which receives the form and forwards it to our e-mail.',
+	},
+	web3forms: {
+		pt: 'Web3Forms (web3forms.com), que recebe o formulário e o encaminha para o nosso e-mail.',
+		en: 'Web3Forms (web3forms.com), which receives the form and forwards it to our e-mail.',
+	},
+	resend: {
+		pt: 'Resend (resend.com), serviço de envio de e-mail que entrega a mensagem à nossa caixa de entrada.',
+		en: 'Resend (resend.com), an e-mail delivery service that brings the message to our inbox.',
+	},
+	webhook: {
+		pt: 'um serviço de automação configurado por nós para receber e organizar os contatos.',
+		en: 'an automation service we configured to receive and organise contacts.',
+	},
+};
+
+const processors: string[] = [];
+const p = PROVIDERS[provider];
+if (p) processors.push(en ? p.en : p.pt);
+if (analytics.ga4) processors.push(en ? 'Google Analytics (Google LLC), for aggregated visit statistics.' : 'Google Analytics (Google LLC), para estatísticas agregadas de visitas.');
+if (analytics.metaPixel) processors.push(en ? 'Meta Pixel (Meta Platforms), to measure ad campaigns.' : 'Meta Pixel (Meta Platforms), para medir campanhas de anúncios.');
+if (analytics.plausibleDomain) processors.push(en ? 'Plausible Analytics, cookieless visit statistics.' : 'Plausible Analytics, estatísticas de visitas sem cookies.');
+processors.push(en ? 'The hosting provider of this site, which logs technical data (IP address, browser) for security.' : 'O provedor de hospedagem deste site, que registra dados técnicos (endereço IP, navegador) por segurança.');
+
+const updated = new Date().toLocaleDateString(en ? 'en-US' : 'pt-BR', { month: 'long', year: 'numeric' });
+
+const t = en
+	? {
+			title: 'Privacy Policy',
+			intro: `${brand.name} respects your privacy. This page explains which data this site collects, why, and your rights under the Brazilian General Data Protection Law (LGPD, Law 13.709/2018).`,
+			collect: 'What we collect',
+			collectText:
+				'When you send the contact form we collect only what you type: name, phone/WhatsApp, e-mail and your message. While browsing, the server records technical data (IP address, browser) for security purposes.',
+			purpose: 'Why we collect it',
+			purposeText: 'Form data is used exclusively to reply to your request and follow up on it. We never sell your data or share it for third-party marketing.',
+			share: 'Who processes it',
+			shareText: 'To make this site work, your data may pass through:',
+			retention: 'How long we keep it',
+			retentionText: 'Contact messages stay in our inbox for up to 12 months after the last interaction, unless a legal obligation requires a longer period.',
+			cookies: 'Cookies',
+			cookiesText: hasCookies
+				? 'Analytics cookies are only set after you accept the notice shown on your first visit. You can clear them at any time in your browser.'
+				: 'This site does not use tracking cookies.',
+			rights: 'Your rights',
+			rightsList: [
+				'confirm whether we process your data and access it;',
+				'correct incomplete or outdated data;',
+				'request anonymisation, blocking or deletion;',
+				'request portability to another provider;',
+				'withdraw consent at any time.',
+			],
+			rightsHow: 'To exercise any of these rights, contact us:',
+			contactTitle: 'Contact',
+			updated: `Last updated: ${updated}.`,
+			back: 'Back to home',
+		}
+	: {
+			title: 'Política de Privacidade',
+			intro: `${brand.name} respeita a sua privacidade. Esta página explica quais dados este site coleta, por que coleta e quais são os seus direitos segundo a Lei Geral de Proteção de Dados (LGPD, Lei nº 13.709/2018).`,
+			collect: 'Quais dados coletamos',
+			collectText:
+				'Ao enviar o formulário de contato, coletamos apenas o que você informa: nome, telefone/WhatsApp, e-mail e a mensagem. Durante a navegação, o servidor registra dados técnicos (endereço IP, navegador) por segurança.',
+			purpose: 'Para que usamos',
+			purposeText: 'Os dados do formulário são usados exclusivamente para responder ao seu contato e dar seguimento ao atendimento. Não vendemos nem compartilhamos seus dados para marketing de terceiros.',
+			share: 'Com quem compartilhamos',
+			shareText: 'Para este site funcionar, seus dados podem passar por:',
+			retention: 'Por quanto tempo guardamos',
+			retentionText: 'Mensagens de contato ficam na nossa caixa de e-mail por até 12 meses após o último contato, salvo obrigação legal de guarda por mais tempo.',
+			cookies: 'Cookies',
+			cookiesText: hasCookies
+				? 'Cookies de análise só são gravados depois que você aceita o aviso exibido na primeira visita. Você pode apagá-los a qualquer momento no navegador.'
+				: 'Este site não usa cookies de rastreamento.',
+			rights: 'Seus direitos',
+			rightsList: [
+				'confirmar se tratamos seus dados e acessá-los;',
+				'corrigir dados incompletos ou desatualizados;',
+				'pedir anonimização, bloqueio ou eliminação;',
+				'pedir portabilidade para outro fornecedor;',
+				'revogar o consentimento a qualquer momento.',
+			],
+			rightsHow: 'Para exercer qualquer um desses direitos, fale com a gente:',
+			contactTitle: 'Contato',
+			updated: `Última atualização: ${updated}.`,
+			back: 'Voltar ao início',
+		};
+---
+
+<Page site={site} class='core-page'>
+	<main class='legal'>
+		<a class='legal-back' href={home}>← {t.back}</a>
+		<h1>{t.title}</h1>
+		<p class='legal-intro'>{t.intro}</p>
+
+		<h2>{t.collect}</h2>
+		<p>{t.collectText}</p>
+
+		<h2>{t.purpose}</h2>
+		<p>{t.purposeText}</p>
+
+		<h2>{t.share}</h2>
+		<p>{t.shareText}</p>
+		<ul>{processors.map((line) => <li>{line}</li>)}</ul>
+
+		<h2>{t.retention}</h2>
+		<p>{t.retentionText}</p>
+
+		<h2>{t.cookies}</h2>
+		<p>{t.cookiesText}</p>
+
+		<h2>{t.rights}</h2>
+		<ul>{t.rightsList.map((line) => <li>{line}</li>)}</ul>
+		<p>{t.rightsHow}</p>
+
+		<h2>{t.contactTitle}</h2>
+		<address>
+			{legal.company && <div>{legal.company}</div>}
+			{legal.cnpj && <div>CNPJ {legal.cnpj}</div>}
+			{legal.lines.map((line) => <div>{line}</div>)}
+			{contact.email && (
+				<div>
+					<a href={`mailto:${contact.email}`}>{contact.email}</a>
+				</div>
+			)}
+			{contact.phone && <div>{contact.phone}</div>}
+		</address>
+
+		<p class='legal-updated'>{t.updated}</p>
+	</main>
+</Page>
+
+<style>
+	.legal {
+		max-width: 720px;
+		margin: 0 auto;
+		padding: 48px 20px 96px;
+	}
+	.legal-back {
+		display: inline-block;
+		margin-bottom: 32px;
+		font-size: 14px;
+		color: var(--ink-2);
+	}
+	.legal h1 {
+		font-size: var(--fs-h3);
+		letter-spacing: -0.02em;
+		line-height: 1.1;
+		margin-bottom: 16px;
+	}
+	.legal-intro {
+		font-size: var(--fs-lead);
+		color: var(--ink-2);
+		margin-bottom: 40px;
+	}
+	.legal h2 {
+		font-size: 20px;
+		letter-spacing: -0.01em;
+		margin: 36px 0 10px;
+	}
+	.legal p,
+	.legal li {
+		color: var(--ink-2);
+	}
+	.legal ul {
+		padding-left: 22px;
+		display: grid;
+		gap: 6px;
+		margin: 8px 0 12px;
+	}
+	.legal address {
+		font-style: normal;
+		display: grid;
+		gap: 4px;
+		padding: 16px 20px;
+		border: 1px solid var(--rule-2);
+		border-radius: var(--radius);
+		background: var(--bg-2);
+	}
+	.legal a {
+		color: var(--accent-text);
+		text-decoration: underline;
+		text-underline-offset: 2px;
+	}
+	.legal-updated {
+		margin-top: 40px;
+		font-family: var(--mono);
+		font-size: 12px;
+		color: var(--ink-3);
+	}
+</style>

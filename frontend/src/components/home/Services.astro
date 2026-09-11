@@ -1,0 +1,159 @@
+---
+/**
+ * #servicos — one card per SERVICES entry. Each "Pedir orçamento" link
+ * carries ?servico=<id> so the contact form can preselect the service.
+ */
+import { SERVICES } from '../../data/services';
+import { formatBRL } from '../../data/templates';
+import { localeOf, localePath, pick, useT } from '../../i18n';
+
+const locale = localeOf(Astro);
+const t = useT(locale);
+
+const home = localePath(locale, '/');
+const quoteHref = (id: string) => `${home}?servico=${encodeURIComponent(id)}#contato`;
+---
+
+<section class='section' id='servicos'>
+	<div class='sec-head reveal'>
+		<span class='eyebrow accent'>{t.services.eyebrow}</span>
+		<h2>
+			{t.services.head1}
+			<span class='hl'>{t.services.head2}</span>
+		</h2>
+		<p>{t.services.lead}</p>
+	</div>
+
+	<div class='svc-grid reveal d1'>
+		{
+			SERVICES.map((s) => (
+				<article class='svc' id={`servico-${s.id}`}>
+					<h3>{pick(s.name, locale)}</h3>
+					<dl class='svc-dl'>
+						<div>
+							<dt class='eyebrow'>{t.services.forWhom}</dt>
+							<dd>{pick(s.forWhom, locale)}</dd>
+						</div>
+						<div>
+							<dt class='eyebrow'>{t.services.outcome}</dt>
+							<dd>{pick(s.outcome, locale)}</dd>
+						</div>
+					</dl>
+					<dl class='svc-meta'>
+						<div>
+							<dt>{t.services.timeline}</dt>
+							<dd>{pick(s.timeline, locale)}</dd>
+						</div>
+						{s.priceFrom > 0 && (
+							<div>
+								<dt>{t.services.price}</dt>
+								<dd>
+									{t.common.from} {formatBRL(s.priceFrom)}
+								</dd>
+							</div>
+						)}
+					</dl>
+					<a class='btn-link svc-cta' href={quoteHref(s.id)}>
+						{t.common.ctaContact}
+					</a>
+				</article>
+			))
+		}
+	</div>
+</section>
+
+<style>
+	.svc-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 20px;
+	}
+	.svc {
+		display: flex;
+		flex-direction: column;
+		gap: 22px;
+		padding: 32px;
+		border: 1px solid var(--rule-2);
+		border-radius: 20px;
+		background: var(--bg-3);
+		transition:
+			border-color 0.25s,
+			transform 0.35s var(--ease-out-expo),
+			box-shadow 0.35s var(--ease-out-expo);
+	}
+	.svc:hover {
+		border-color: var(--ink-4);
+		box-shadow: 0 28px 56px -36px rgba(0, 0, 0, 0.28);
+		transform: translateY(-2px);
+	}
+	.svc h3 {
+		font-size: 26px;
+		font-weight: 800;
+		letter-spacing: -0.025em;
+		line-height: 1.1;
+	}
+	.svc-dl {
+		display: grid;
+		gap: 18px;
+	}
+	.svc-dl dt {
+		margin-bottom: 6px;
+	}
+	.svc-dl dd {
+		font-size: 15px;
+		line-height: 1.55;
+		color: var(--ink-2);
+	}
+	.svc-meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px 28px;
+		padding-top: 18px;
+		border-top: 1px solid var(--rule);
+		font-family: var(--mono);
+	}
+	.svc-meta dt {
+		font-size: 11px;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--ink-3);
+		margin-bottom: 4px;
+	}
+	.svc-meta dd {
+		font-size: 13px;
+		color: var(--ink);
+	}
+	.svc-cta {
+		display: inline-flex;
+		align-items: center;
+		align-self: flex-start;
+		min-height: 44px;
+		margin-top: auto;
+		font-size: 15px;
+	}
+
+	@media (min-width: 900px) {
+		.svc-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 24px;
+		}
+		/* Odd count → the last card goes full width and lays its copy side by side. */
+		.svc:last-child:nth-child(odd) {
+			grid-column: 1 / -1;
+		}
+		.svc:last-child:nth-child(odd) .svc-dl {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 28px;
+		}
+	}
+	@media (max-width: 600px) {
+		.svc {
+			padding: 24px 20px;
+			border-radius: 16px;
+		}
+		.svc h3 {
+			font-size: 22px;
+		}
+	}
+</style>

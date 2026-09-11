@@ -1,0 +1,116 @@
+---
+/** Footer: brand, link columns, legal lines (+ privacy link), socials. */
+import type { BravaConfig } from '../schema';
+
+interface Props {
+	config: BravaConfig;
+}
+const { config } = Astro.props;
+const { brand, topbar, footer, legal } = config;
+---
+
+<footer class='ft'>
+	<div class='ft-inner'>
+		<a href={topbar.brandHref} class='brand'>{brand.name}</a>
+		<div class='ft-cols'>
+			{
+				footer.columns.map((c) => (
+					<div>
+						<h4>{c.h}</h4>
+						{c.links.map((l) => (
+							<a href={l.href}>{l.label}</a>
+						))}
+					</div>
+				))
+			}
+		</div>
+	</div>
+	<div class='ft-bot'>
+		<span>
+			{legal.lines.join(' · ')}
+			{
+				legal.privacyUrl && (
+					<>
+						{' · '}
+						<a href={legal.privacyUrl}>{footer.privacyLabel}</a>
+					</>
+				)
+			}
+		</span>
+		{
+			footer.socials.length > 0 && (
+				<span>
+					{footer.socials.map((s, i) => (
+						<>
+							{i > 0 && ' · '}
+							<a href={s.href}>{s.label}</a>
+						</>
+					))}
+				</span>
+			)
+		}
+	</div>
+</footer>
+
+<style>
+	.ft {
+		margin-top: 80px;
+		padding: 60px 32px 24px;
+		border-top: 1px solid var(--rule);
+	}
+	.ft-inner {
+		max-width: 1240px;
+		margin: 0 auto;
+		display: grid;
+		grid-template-columns: 2fr 3fr;
+		gap: 56px;
+	}
+	.ft-cols {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 32px;
+	}
+	.ft h4 {
+		font-family: var(--mono);
+		font-size: 11px;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+		color: var(--ink-3);
+		margin-bottom: 14px;
+	}
+	.ft-cols a {
+		display: block;
+		font-size: 14px;
+		color: var(--ink);
+		padding: 4px 0;
+	}
+	.ft-cols a:hover {
+		color: var(--accent);
+	}
+	.ft-bot {
+		max-width: 1240px;
+		margin: 60px auto 0;
+		padding-top: 20px;
+		border-top: 1px solid var(--rule);
+		display: flex;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 14px;
+		font-family: var(--mono);
+		font-size: 11px;
+		color: var(--ink-3);
+	}
+	.ft-bot a:hover {
+		color: var(--accent);
+	}
+	@media (max-width: 780px) {
+		.ft-inner {
+			grid-template-columns: 1fr;
+			gap: 32px;
+		}
+		.ft-cols {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+</style>

@@ -1,0 +1,35 @@
+---
+/**
+ * Stratus — everything between <body> and </body>, minus the floating
+ * WhatsApp button / LGPD bar (core Page adds those). Used by StratusPage
+ * (client sites) and by the portfolio demo (inside DemoLayout).
+ */
+import './styles.css';
+import type { StratusConfig } from './schema';
+import Topbar from './sections/Topbar.astro';
+import Hero from './sections/Hero.astro';
+import Product from './sections/Product.astro';
+import Logos from './sections/Logos.astro';
+import Features from './sections/Features.astro';
+import Pricing from './sections/Pricing.astro';
+import Faq from './sections/Faq.astro';
+import FinalCta from './sections/FinalCta.astro';
+import Footer from './sections/Footer.astro';
+
+interface Props {
+	config: StratusConfig;
+}
+const { config } = Astro.props;
+---
+
+<div class='tpl tpl-stratus'>
+	<Topbar config={config} />
+	<Hero config={config} />
+	<Product config={config} />
+	<Logos config={config} />
+	<Features config={config} />
+	<Pricing config={config} />
+	<Faq config={config} />
+	<FinalCta config={config} />
+	<Footer config={config} />
+</div>

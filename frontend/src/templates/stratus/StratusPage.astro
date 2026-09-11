@@ -1,0 +1,21 @@
+---
+/**
+ * Full standalone Stratus page for a client site: core Page (head, theme
+ * tokens, WhatsApp FAB, LGPD bar) wrapping StratusBody.
+ */
+import Page from '../core/Page.astro';
+import StratusBody from './StratusBody.astro';
+import type { StratusConfig } from './schema';
+
+interface Props {
+	config: StratusConfig;
+	noindex?: boolean;
+}
+const { config, noindex = false } = Astro.props;
+---
+
+<Page site={config} class='page-stratus' noindex={noindex}>
+	<main id='main-content'>
+		<StratusBody config={config} />
+	</main>
+</Page>

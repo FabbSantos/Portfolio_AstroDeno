@@ -1,0 +1,14 @@
+---
+/**
+ * Atelier — portfolio demo. All copy/images live in templates/atelier/demo.config.ts.
+ */
+import DemoLayout from '../../../layouts/DemoLayout.astro';
+import ThemeVars from '../../../templates/core/ThemeVars.astro';
+import AtelierBody from '../../../templates/atelier/AtelierBody.astro';
+import demo from '../../../templates/atelier/demo.config';
+---
+
+<DemoLayout slug='atelier' title={demo.seo.title} description={demo.seo.description} locale='en' themeColor={demo.theme.bg}>
+	<ThemeVars theme={demo.theme} />
+	<AtelierBody config={demo} />
+</DemoLayout>

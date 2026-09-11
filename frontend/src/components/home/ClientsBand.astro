@@ -1,4 +1,11 @@
 ---
+/**
+ * Client-logo marquee. Used inside ProofBand — no heading of its own.
+ *
+ * All logos are normalised to grayscale + 75% opacity and get their colour
+ * back on hover. `silhouette: true` flattens pure-white-on-transparent logos
+ * to black (brightness(0)) so they show on the light bg; those stay black.
+ */
 import { Image } from 'astro:assets';
 import ancora from '../ClientsSection/assets/ancora.png';
 import conx from '../ClientsSection/assets/conx.png';
@@ -8,11 +15,11 @@ import afya from '../ClientsSection/assets/afya.png';
 import desco from '../ClientsSection/assets/desco.png';
 import bjConsulting from '../ClientsSection/assets/bj-consulting.png';
 import nexus from '../ClientsSection/assets/nexus.svg';
+import { localeOf, useT } from '../../i18n';
 
-/* `silhouette: true` flattens pure-white-on-transparent logos to a black
-   silhouette so they're visible on the light bg. Only the two actual white
-   logos need this (Âncora and Mkt4Edu). All other logos render in their
-   natural colours — applying any filter to coloured logos distorts them. */
+const locale = localeOf(Astro);
+const t = useT(locale);
+
 const clients = [
 	{ src: bjConsulting, alt: 'BJ Consulting' },
 	{ src: ancora, alt: 'Âncora', silhouette: true },
@@ -25,72 +32,30 @@ const clients = [
 ];
 ---
 
-<section class='clients-band' aria-label='Clients'>
-	<div class='clients-head reveal'>
-		<span class='eyebrow accent' data-i18n='clients.eyebrow'>Clients</span>
-		<h2>
-			<span data-i18n='clients.head1'>Brands I've</span>
-			<span class='hl' data-i18n='clients.head2'>built for.</span>
-		</h2>
+<div class='marquee' aria-label={t.clients.logosLabel}>
+	<div class='marquee-track'>
+		<ul class='marquee-row'>
+			{
+				clients.map((c) => (
+					<li class:list={[{ silhouette: !!c.silhouette }]}>
+						<Image src={c.src} alt={c.alt} height={48} loading='lazy' />
+					</li>
+				))
+			}
+		</ul>
+		<ul class='marquee-row' aria-hidden='true'>
+			{
+				clients.map((c) => (
+					<li class:list={[{ silhouette: !!c.silhouette }]}>
+						<Image src={c.src} alt='' height={48} loading='lazy' />
+					</li>
+				))
+			}
+		</ul>
 	</div>
-
-	<div class='marquee reveal d1'>
-		<div class='marquee-track'>
-			<ul class='marquee-row'>
-				{
-					clients.map((c) =>
-						typeof c.src === 'string' ? (
-							<li class:list={[{ silhouette: c.silhouette }]}>
-								<img src={c.src} alt={c.alt} height='48' loading='lazy' />
-							</li>
-						) : (
-							<li class:list={[{ silhouette: c.silhouette }]}>
-								<Image src={c.src} alt={c.alt} height={48} loading='lazy' />
-							</li>
-						)
-					)
-				}
-			</ul>
-			<ul class='marquee-row' aria-hidden='true'>
-				{
-					clients.map((c) =>
-						typeof c.src === 'string' ? (
-							<li class:list={[{ silhouette: c.silhouette }]}>
-								<img src={c.src} alt='' height='48' loading='lazy' />
-							</li>
-						) : (
-							<li class:list={[{ silhouette: c.silhouette }]}>
-								<Image src={c.src} alt='' height={48} loading='lazy' />
-							</li>
-						)
-					)
-				}
-			</ul>
-		</div>
-	</div>
-</section>
+</div>
 
 <style>
-	.clients-band {
-		max-width: var(--maxw);
-		margin: 0 auto;
-		padding: 80px 32px;
-	}
-	.clients-head {
-		text-align: center;
-		margin-bottom: 48px;
-	}
-	.clients-head .eyebrow {
-		display: block;
-		margin-bottom: 14px;
-	}
-	.clients-head h2 {
-		font-size: clamp(32px, 4.5vw, 56px);
-		font-weight: 800;
-		letter-spacing: -0.03em;
-		line-height: 1.02;
-	}
-
 	.marquee {
 		--gap: 4rem;
 		--duration: 28s;
@@ -135,24 +100,25 @@ const clients = [
 	.marquee-row li {
 		padding-block: 1rem;
 	}
-	/* Logos display in their natural colours, no filter. Subtle opacity for
-	   the marquee mood; hover brings them up to full. */
+	/* <Image> renders the <img> outside this component's scope → :global */
 	.marquee-row :global(img) {
 		width: auto;
 		height: 44px;
 		max-width: 160px;
 		object-fit: contain;
-		opacity: 0.6;
-		transition: opacity 0.4s var(--ease-out-expo);
-	}
-	/* Pure white-on-transparent logos flatten to a black silhouette so they
-	   show on the light bg. `brightness(0)` zeroes out the brightness channel
-	   without touching hue — safe for pure-white sources only. */
-	.marquee-row li.silhouette :global(img) {
-		filter: brightness(0);
+		filter: grayscale(1);
+		opacity: 0.75;
+		transition:
+			filter 0.4s var(--ease-out-expo),
+			opacity 0.4s var(--ease-out-expo);
 	}
 	.marquee-row li:hover :global(img) {
+		filter: none;
 		opacity: 1;
+	}
+	.marquee-row li.silhouette :global(img),
+	.marquee-row li.silhouette:hover :global(img) {
+		filter: brightness(0);
 	}
 
 	@keyframes marquee {
@@ -181,6 +147,9 @@ const clients = [
 			animation: none;
 		}
 		.marquee-track {
+			width: auto;
+		}
+		.marquee-row {
 			flex-wrap: wrap;
 			justify-content: center;
 			gap: 2.5rem;

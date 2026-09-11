@@ -1,0 +1,22 @@
+{
+	"trailingSlash": false,
+	"headers": [
+		{
+			"source": "/(.*)",
+			"headers": [
+				{ "key": "X-Content-Type-Options", "value": "nosniff" },
+				{ "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+				{ "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" },
+				{ "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+				{
+					"key": "Content-Security-Policy",
+					"value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net https://plausible.io; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: https:; connect-src 'self' https://formspree.io https://api.web3forms.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://plausible.io https://www.facebook.com; form-action 'self' https://formspree.io https://api.web3forms.com; frame-src 'self'; frame-ancestors 'self'; base-uri 'self'; object-src 'none'"
+				}
+			]
+		},
+		{
+			"source": "/_astro/(.*)",
+			"headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+		}
+	]
+}

@@ -1,0 +1,75 @@
+---
+/**
+ * Everything that goes inside <head> for a client site: meta, SEO, OG,
+ * favicon, fonts, base.css, JSON-LD and analytics. Used by Page.astro.
+ * (Portfolio demos use DemoLayout instead and never render this.)
+ */
+import '@fontsource-variable/inter';
+import '@fontsource-variable/jetbrains-mono';
+import './base.css';
+import { getImage } from 'astro:assets';
+import type { BaseSite } from './schema';
+import Analytics from './Analytics.astro';
+
+interface Props {
+	site: BaseSite;
+	noindex?: boolean;
+}
+const { site, noindex = false } = Astro.props;
+const { brand, seo, theme, contact, analytics } = site;
+
+const og = seo.ogImage ? await getImage({ src: seo.ogImage, width: 1200, format: 'jpg' }) : null;
+const ogUrl = og ? new URL(og.src, seo.canonical).href : null;
+const ogHeight = og?.attributes?.height ? String(og.attributes.height) : null;
+
+const icon = brand.logo ? await getImage({ src: brand.logo, width: 64 }) : null;
+const touchIcon = brand.logo ? await getImage({ src: brand.logo, width: 180 }) : null;
+
+const ogLocale = brand.locale === 'en' ? 'en_US' : 'pt_BR';
+
+const jsonLd = seo.jsonLd ?? {
+	'@context': 'https://schema.org',
+	'@type': 'Organization',
+	name: brand.name,
+	url: seo.canonical,
+	...(contact.phone ? { telephone: contact.phone } : {}),
+	...(contact.email ? { email: contact.email } : {}),
+};
+// `<` escaped so a config string can never close the script tag.
+const jsonLdText = JSON.stringify(jsonLd).replace(/</g, '\\u003c');
+---
+
+<meta charset='UTF-8' />
+<meta name='viewport' content='width=device-width,initial-scale=1' />
+<title>{seo.title}</title>
+<meta name='description' content={seo.description} />
+<link rel='canonical' href={seo.canonical} />
+{noindex && <meta name='robots' content='noindex,nofollow' />}
+<meta name='theme-color' content={theme.bg} />
+
+<meta property='og:type' content='website' />
+<meta property='og:site_name' content={brand.name} />
+<meta property='og:locale' content={ogLocale} />
+<meta property='og:title' content={seo.title} />
+<meta property='og:description' content={seo.description} />
+<meta property='og:url' content={seo.canonical} />
+{
+	ogUrl && (
+		<Fragment>
+			<meta property='og:image' content={ogUrl} />
+			<meta property='og:image:width' content='1200' />
+			{ogHeight && <meta property='og:image:height' content={ogHeight} />}
+		</Fragment>
+	)
+}
+<meta name='twitter:card' content={ogUrl ? 'summary_large_image' : 'summary'} />
+<meta name='twitter:title' content={seo.title} />
+<meta name='twitter:description' content={seo.description} />
+{ogUrl && <meta name='twitter:image' content={ogUrl} />}
+
+{icon ? <link rel='icon' href={icon.src} /> : <link rel='icon' type='image/svg+xml' href='/favicon.svg' />}
+{touchIcon && <link rel='apple-touch-icon' href={touchIcon.src} />}
+
+<script is:inline type='application/ld+json' set:html={jsonLdText} />
+
+<Analytics analytics={analytics} />

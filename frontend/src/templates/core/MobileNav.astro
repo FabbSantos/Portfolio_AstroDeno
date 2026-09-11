@@ -1,0 +1,201 @@
+---
+/**
+ * Sticky topbar: brand, desktop links, optional CTA and a 44px hamburger that
+ * toggles a mobile panel (inert + aria-expanded/aria-controls, Escape closes).
+ * Templates may render their own desktop topbar, but the mobile toggle must
+ * come from here.
+ */
+import type { BaseSite } from './schema';
+
+interface Props {
+	brand: string;
+	brandHref?: string;
+	nav: BaseSite['nav'];
+	cta?: { label: string; href: string };
+	class?: string;
+	/** Prefix for the panel id — only needed with more than one nav per page. */
+	id?: string;
+}
+const { brand, brandHref = '/', nav, cta, class: className, id = 'mnav' } = Astro.props;
+const panelId = `${id}-panel`;
+---
+
+<header class:list={['mnav', className]} data-mnav>
+	<div class='mnav-inner'>
+		<a class='mnav-brand' href={brandHref}>{brand}</a>
+		<nav class='mnav-links' aria-label='Menu'>
+			{nav.map((l) => <a href={l.href}>{l.label}</a>)}
+		</nav>
+		{
+			cta && (
+				<a class='mnav-cta' href={cta.href}>
+					{cta.label}
+				</a>
+			)
+		}
+		<button class='mnav-toggle' type='button' aria-expanded='false' aria-controls={panelId} aria-label='Menu' data-mnav-toggle>
+			<span class='mnav-bar'></span>
+			<span class='mnav-bar'></span>
+			<span class='mnav-bar'></span>
+		</button>
+	</div>
+	<div class='mnav-panel' id={panelId} inert data-mnav-panel>
+		{nav.map((l) => <a href={l.href}>{l.label}</a>)}
+		{
+			cta && (
+				<a class='mnav-cta' href={cta.href}>
+					{cta.label}
+				</a>
+			)
+		}
+	</div>
+</header>
+
+<script>
+	document.querySelectorAll<HTMLElement>('[data-mnav]').forEach((root) => {
+		const toggle = root.querySelector<HTMLButtonElement>('[data-mnav-toggle]');
+		const panel = root.querySelector<HTMLElement>('[data-mnav-panel]');
+		if (!toggle || !panel) return;
+
+		const isOpen = () => toggle.getAttribute('aria-expanded') === 'true';
+		const set = (open: boolean) => {
+			toggle.setAttribute('aria-expanded', String(open));
+			if (open) panel.removeAttribute('inert');
+			else panel.setAttribute('inert', '');
+			root.classList.toggle('is-open', open);
+		};
+
+		toggle.addEventListener('click', () => set(!isOpen()));
+		panel.addEventListener('click', (e) => {
+			if ((e.target as HTMLElement).closest('a')) set(false);
+		});
+		document.addEventListener('keydown', (e) => {
+			if (e.key === 'Escape' && isOpen()) {
+				set(false);
+				toggle.focus();
+			}
+		});
+		const mq = window.matchMedia('(min-width: 900px)');
+		mq.addEventListener('change', () => {
+			if (mq.matches) set(false);
+		});
+	});
+</script>
+
+<style>
+	.mnav {
+		position: sticky;
+		top: 0;
+		z-index: 800;
+		background: var(--topbar);
+		backdrop-filter: blur(14px);
+		-webkit-backdrop-filter: blur(14px);
+		border-bottom: 1px solid var(--rule);
+	}
+	.mnav-inner {
+		max-width: var(--maxw);
+		margin: 0 auto;
+		padding: 0 20px;
+		min-height: 64px;
+		display: flex;
+		align-items: center;
+		gap: 24px;
+	}
+	.mnav-brand {
+		font-weight: 700;
+		letter-spacing: -0.01em;
+		white-space: nowrap;
+	}
+	.mnav-links {
+		display: none;
+		margin-left: auto;
+		gap: 26px;
+		font-size: 15px;
+		color: var(--ink-2);
+	}
+	.mnav-links a:hover {
+		color: var(--ink);
+	}
+	.mnav-cta {
+		display: none;
+		min-height: 40px;
+		padding: 0 18px;
+		align-items: center;
+		border-radius: var(--radius);
+		background: var(--accent);
+		color: #fff;
+		font-size: 14px;
+		font-weight: 700;
+		white-space: nowrap;
+	}
+	.mnav-toggle {
+		margin-left: auto;
+		width: 44px;
+		height: 44px;
+		display: grid;
+		place-content: center;
+		gap: 5px;
+		border-radius: var(--radius);
+	}
+	.mnav-bar {
+		display: block;
+		width: 20px;
+		height: 2px;
+		background: var(--ink);
+		border-radius: 2px;
+		transition: transform 0.2s var(--ease-out-expo), opacity 0.15s;
+	}
+	.is-open .mnav-bar:nth-child(1) {
+		transform: translateY(7px) rotate(45deg);
+	}
+	.is-open .mnav-bar:nth-child(2) {
+		opacity: 0;
+	}
+	.is-open .mnav-bar:nth-child(3) {
+		transform: translateY(-7px) rotate(-45deg);
+	}
+	.mnav-panel {
+		display: grid;
+		gap: 2px;
+		padding: 8px 20px 20px;
+		background: var(--bg);
+		border-bottom: 1px solid var(--rule-2);
+	}
+	.mnav-panel[inert] {
+		display: none;
+	}
+	.mnav-panel a {
+		display: flex;
+		align-items: center;
+		min-height: 48px;
+		padding: 0 8px;
+		border-radius: var(--radius);
+		font-size: 17px;
+		font-weight: 500;
+	}
+	.mnav-panel a:hover {
+		background: var(--bg-2);
+	}
+	.mnav-panel .mnav-cta {
+		display: flex;
+		justify-content: center;
+		margin-top: 10px;
+		min-height: 48px;
+		font-size: 16px;
+	}
+	.mnav-panel .mnav-cta:hover {
+		background: var(--accent);
+	}
+	@media (min-width: 900px) {
+		.mnav-links {
+			display: flex;
+		}
+		.mnav-inner > .mnav-cta {
+			display: inline-flex;
+		}
+		.mnav-toggle,
+		.mnav-panel {
+			display: none;
+		}
+	}
+</style>

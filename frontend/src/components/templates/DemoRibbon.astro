@@ -1,0 +1,74 @@
+---
+/**
+ * Sticky bar on top of every template demo. Two links, both localized:
+ *  ← back to the sales page of this template
+ *  "I want this template →" straight to the prefilled contact form.
+ * Hidden automatically when the demo is rendered inside an iframe (DemoLayout).
+ */
+import { getTemplate } from '../../data/templates';
+import { localePath, type Locale } from '../../i18n';
+
+interface Props {
+	slug: string;
+	locale: Locale;
+}
+const { slug, locale } = Astro.props;
+const tpl = getTemplate(slug);
+const name = tpl ? `${tpl.name} ${tpl.accent}` : slug;
+const back = localePath(locale, `/templates/${slug}`);
+const want = localePath(locale, `/?template=${slug}#contato`);
+const copy =
+	locale === 'pt'
+		? { back: `← Sobre o template ${name}`, want: 'Quero esse template →', by: 'Demo · template por Fab Bahiense' }
+		: { back: `← About the ${name} template`, want: 'I want this template →', by: 'Demo · template by Fab Bahiense' };
+---
+
+<div class='demo-ribbon' role='region' aria-label={copy.by}>
+	<a class='r-back' href={back}>{copy.back}</a>
+	<span class='r-by'>{copy.by}</span>
+	<a class='r-want' href={want}>{copy.want}</a>
+</div>
+
+<style>
+	.demo-ribbon {
+		position: sticky;
+		top: 0;
+		z-index: 1000;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		padding: 8px 16px;
+		background: #1a1a1c;
+		color: #fff;
+		font-family: var(--mono);
+		font-size: 12px;
+		letter-spacing: 0.02em;
+	}
+	.demo-ribbon a {
+		color: #fff;
+		padding: 6px 10px;
+		border-radius: 999px;
+		white-space: nowrap;
+	}
+	.r-back:hover {
+		background: rgba(255, 255, 255, 0.1);
+	}
+	.r-by {
+		color: rgba(255, 255, 255, 0.55);
+		flex: 1;
+		text-align: center;
+	}
+	.r-want {
+		background: #ff5964;
+		font-weight: 600;
+	}
+	.r-want:hover {
+		background: #ff7079;
+	}
+	@media (max-width: 640px) {
+		.r-by {
+			display: none;
+		}
+	}
+</style>

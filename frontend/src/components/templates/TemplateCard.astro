@@ -1,64 +1,118 @@
 ---
-import type { TemplateMeta } from '../../data/templates';
-import { translations } from '../../i18n/translations';
+/**
+ * Template card — used by the home band, the /templates gallery and the
+ * "other templates" block on the sales page.
+ *
+ * - The whole card links to the SALES page (/templates/[slug]), never to the demo.
+ * - Preview: a build-time screenshot from `src/assets/templates/[slug].png` when
+ *   one exists; otherwise the live demo scaled down inside an inert iframe.
+ * - `data-card` lets the home scroller measure the step for prev/next buttons.
+ */
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+import { SITE } from '../../data/site';
+import { demoPath, formatBRL, type TemplateMeta } from '../../data/templates';
+import { fmt, localePath, pick, useT, type Locale } from '../../i18n';
 
 interface Props {
 	tpl: TemplateMeta;
+	locale: Locale;
+	/** Heading level: h2 in the gallery (directly under the page h1), h3 under a section h2. */
+	heading?: 'h2' | 'h3';
 	class?: string;
 }
-const { tpl, class: cls } = Astro.props;
-// SSR default text (English); swapped client-side via data-i18n.
-const cat = translations.en[tpl.catKey] ?? '';
-const desc = translations.en[tpl.descKey] ?? '';
+const { tpl, locale, heading = 'h3', class: cls } = Astro.props;
+const t = useT(locale);
+
+// Build-time screenshots (optional): src/assets/templates/[slug].png
+type Shot = { default: ImageMetadata };
+const shots = import.meta.glob('../../assets/templates/*.png', { eager: true }) as Record<string, Shot>;
+const shot = Object.entries(shots).find(([path]) => path.endsWith('/' + tpl.slug + '.png'))?.[1].default;
+
+const name = `${tpl.name} ${tpl.accent}`;
+const previewAlt = fmt(t.templates.card.previewAlt, { name });
+const includes = fmt(t.templates.card.includes, { months: SITE.promises.adjustmentsMonths });
 ---
 
-<a href={`/templates/${tpl.slug}`} class:list={['tpl-card', cls]}>
+<a href={localePath(locale, `/templates/${tpl.slug}`)} class:list={['tpl-card', cls]} data-card>
 	<div class='tpl-frame' style={`background:${tpl.grad}`}>
-		<iframe
-			src={`/templates/${tpl.slug}`}
-			title={`${tpl.name} ${tpl.accent} preview`}
-			loading='lazy'
-			tabindex='-1'
-			aria-hidden='true'></iframe>
-		<span class='tpl-open'>Abrir →</span>
+		{
+			shot ? (
+				<Image
+					src={shot}
+					widths={[420, 840]}
+					sizes='(max-width: 780px) 84vw, 420px'
+					format='webp'
+					alt={previewAlt}
+					loading='lazy'
+				/>
+			) : (
+				<iframe src={demoPath(tpl.slug)} title={previewAlt} loading='lazy' tabindex='-1' aria-hidden='true' />
+			)
+		}
+		<span class='tpl-open' aria-hidden='true'>{t.templates.card.open} →</span>
 	</div>
+
 	<div class='tpl-meta'>
-		<div class='top'>
-			<span class='cat' data-i18n={tpl.catKey}>{cat}</span>
-			<span>{tpl.days}d</span>
-		</div>
-		<h4>{tpl.name} <span class='hl'>{tpl.accent}</span></h4>
-		<p class='desc' data-i18n={tpl.descKey}>{desc}</p>
-		<div class='foot'>
-			<span class='price'>{tpl.price}</span>
-			<span class='pick' data-i18n='templates.pick'>Choose</span>
-		</div>
+		<p class='top'>
+			<span class='cat'>{pick(tpl.cat, locale)}</span>
+			<span class='days'>{tpl.days} {t.common.businessDays}</span>
+		</p>
+		{
+			heading === 'h2' ? (
+				<h2 class='name'>
+					{tpl.name} <span class='hl'>{tpl.accent}</span>
+				</h2>
+			) : (
+				<h3 class='name'>
+					{tpl.name} <span class='hl'>{tpl.accent}</span>
+				</h3>
+			)
+		}
+		<p class='desc'>{pick(tpl.desc, locale)}</p>
+		<p class='inc'>{includes}</p>
+		<p class='foot'>
+			<span class='price'><span class='from'>{t.common.from}</span> {formatBRL(tpl.priceFrom)}</span>
+			<span class='pick'>{t.templates.card.open}</span>
+		</p>
 	</div>
 </a>
 
 <style>
 	.tpl-card {
-		background: #fff;
+		display: flex;
+		flex-direction: column;
+		background: var(--bg-3);
 		border-radius: 18px;
 		overflow: hidden;
 		border: 1px solid var(--rule);
 		transition:
 			transform 0.35s var(--ease-out-expo),
 			box-shadow 0.35s;
-		display: flex;
-		flex-direction: column;
 	}
 	.tpl-card:hover {
 		transform: translateY(-6px);
 		box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.18);
 	}
+	.tpl-card:focus-visible {
+		outline-offset: 4px;
+		border-radius: 18px;
+	}
 
-	/* Live iframe preview (same approach as /templates gallery) */
+	/* Preview: screenshot or scaled live demo */
 	.tpl-frame {
 		position: relative;
 		aspect-ratio: 16 / 10;
 		overflow: hidden;
 		border-bottom: 1px solid var(--rule);
+	}
+	.tpl-frame img {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: top center;
 	}
 	.tpl-frame iframe {
 		position: absolute;
@@ -80,7 +134,8 @@ const desc = translations.en[tpl.descKey] ?? '';
 		transition: opacity 0.3s;
 		pointer-events: none;
 	}
-	.tpl-card:hover .tpl-frame::after {
+	.tpl-card:hover .tpl-frame::after,
+	.tpl-card:focus-visible .tpl-frame::after {
 		opacity: 1;
 	}
 	.tpl-open {
@@ -96,58 +151,84 @@ const desc = translations.en[tpl.descKey] ?? '';
 		padding: 8px 16px;
 		border-radius: 999px;
 		letter-spacing: 0.04em;
+		white-space: nowrap;
 		opacity: 0;
-		transition: all 0.3s var(--ease-out-expo);
+		transition:
+			opacity 0.3s var(--ease-out-expo),
+			transform 0.3s var(--ease-out-expo);
 	}
-	.tpl-card:hover .tpl-open {
+	.tpl-card:hover .tpl-open,
+	.tpl-card:focus-visible .tpl-open {
 		opacity: 1;
 		transform: translateX(-50%) translateY(0);
 	}
 
-	/* Meta */
+	/* Body */
 	.tpl-meta {
-		padding: 22px 24px;
 		display: flex;
 		flex-direction: column;
 		gap: 8px;
+		padding: 22px 24px 24px;
+		flex: 1;
 	}
 	.top {
 		display: flex;
 		justify-content: space-between;
+		gap: 12px;
 		font-family: var(--mono);
 		font-size: 12px;
 		color: var(--ink-3);
 	}
 	.top .cat {
-		color: var(--accent);
+		color: var(--accent-text);
 		font-weight: 600;
 	}
-	.tpl-meta h4 {
-		font-size: 21px;
+	.top .days {
+		white-space: nowrap;
+	}
+	.tpl-meta :global(.name) {
+		font-size: 22px;
 		font-weight: 700;
 		letter-spacing: -0.02em;
+		line-height: 1.15;
+	}
+	/* Heading is < 24px: use the AA-safe accent. */
+	.tpl-meta :global(.name .hl) {
+		color: var(--accent-text);
 	}
 	.desc {
-		font-size: 13px;
+		font-size: 14px;
 		color: var(--ink-2);
 		line-height: 1.5;
+	}
+	.inc {
+		font-size: 13px;
+		color: var(--ink-3);
+		line-height: 1.45;
 	}
 	.foot {
 		display: flex;
 		justify-content: space-between;
-		align-items: center;
-		margin-top: 8px;
+		align-items: baseline;
+		gap: 12px;
+		margin-top: auto;
 		padding-top: 14px;
 		border-top: 1px solid var(--rule);
-		font-size: 13px;
+		font-size: 14px;
 	}
 	.foot .price {
-		font-weight: 600;
+		font-weight: 700;
 		color: var(--ink);
 	}
-	.foot .pick {
-		color: var(--accent);
+	.foot .from {
 		font-weight: 500;
+		color: var(--ink-3);
+		font-size: 13px;
+	}
+	.foot .pick {
+		color: var(--accent-text);
+		font-weight: 600;
+		white-space: nowrap;
 	}
 	.foot .pick::after {
 		content: ' →';

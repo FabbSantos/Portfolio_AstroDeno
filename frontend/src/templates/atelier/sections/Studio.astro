@@ -1,0 +1,99 @@
+---
+import type { AtelierConfig } from '../schema';
+import { md } from './_md';
+
+interface Props {
+	config: AtelierConfig;
+}
+const { studio } = Astro.props.config;
+---
+
+<section class='studio' id='studio' aria-labelledby='studio-title'>
+	<div class='studio-grid'>
+		<div class='studio-copy'>
+			<span class='eyebrow'>{studio.eyebrow}</span>
+			<h2 id='studio-title' set:html={md(studio.title)} />
+			{studio.paragraphs.map((p) => <p>{p}</p>)}
+			{
+				studio.link && (
+					<a href={studio.link.href} class='link'>
+						{studio.link.label}
+					</a>
+				)
+			}
+		</div>
+		{
+			studio.stats.length > 0 && (
+				<dl class='studio-stats'>
+					{studio.stats.map((s) => (
+						<div>
+							<dt>{s.v}</dt>
+							<dd>{s.l}</dd>
+						</div>
+					))}
+				</dl>
+			)
+		}
+	</div>
+</section>
+
+<style>
+	.studio {
+		background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, var(--bg)), color-mix(in srgb, var(--accent) 16%, var(--bg)));
+		padding: 120px 32px;
+		border-radius: 32px;
+		max-width: 1240px;
+		margin: 0 auto 100px;
+	}
+	.studio-grid {
+		display: grid;
+		grid-template-columns: 1.2fr 1fr;
+		gap: 64px;
+		max-width: 1100px;
+		margin: 0 auto;
+		align-items: center;
+	}
+	.studio-copy h2 {
+		font-size: clamp(40px, 5.5vw, 72px);
+		font-weight: 800;
+		letter-spacing: -0.035em;
+		line-height: 1.02;
+		margin: 12px 0 24px;
+	}
+	.studio-copy p {
+		font-size: 17px;
+		color: var(--ink-2);
+		line-height: 1.7;
+		margin-bottom: 16px;
+	}
+	.studio-stats {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 28px 32px;
+	}
+	.studio-stats div {
+		padding-top: 14px;
+		border-top: 2px solid var(--accent);
+	}
+	.studio-stats dt {
+		font-size: 44px;
+		font-weight: 800;
+		letter-spacing: -0.04em;
+		line-height: 1;
+		color: var(--ink);
+	}
+	.studio-stats dd {
+		font-family: var(--mono);
+		font-size: 12px;
+		letter-spacing: 0.08em;
+		color: var(--ink-3);
+		margin-top: 8px;
+		text-transform: uppercase;
+	}
+	@media (max-width: 780px) {
+		.studio-grid {
+			grid-template-columns: 1fr;
+			gap: 40px;
+		}
+	}
+</style>

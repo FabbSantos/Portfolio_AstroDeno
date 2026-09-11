@@ -1,0 +1,237 @@
+/* ==========================================================================
+   site.css — portfolio design-system primitives (NOT loaded by template demos)
+   ========================================================================== */
+
+/* Skip link (a11y) */
+.skip-link {
+	position: absolute;
+	top: -100px;
+	left: 0;
+	background: var(--ink);
+	color: #fff;
+	padding: 0.75rem 1.5rem;
+	z-index: 9999;
+	font-weight: 600;
+	border-radius: 0 0 0.5rem 0;
+}
+.skip-link:focus {
+	top: 0;
+}
+
+/* Mono eyebrow / section label */
+.eyebrow {
+	font-family: var(--mono);
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--ink-3);
+}
+.eyebrow.accent {
+	color: var(--accent-text);
+}
+
+/* Emphasis word in display headings (≥ 24px bold — the bright accent passes AA-large) */
+.hl {
+	color: var(--accent);
+	font-weight: 800;
+}
+
+/* Buttons */
+.btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	min-height: 44px;
+	padding: 12px 24px;
+	border-radius: 999px;
+	font-size: 15px;
+	font-weight: 600;
+	transition:
+		background 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+		color 0.25s,
+		transform 0.25s;
+	border: 1px solid transparent;
+	white-space: nowrap;
+}
+.btn-primary {
+	background: var(--ink);
+	color: #fff;
+}
+.btn-primary:hover {
+	background: var(--accent);
+	transform: translateY(-1px);
+}
+.btn-ghost {
+	border-color: var(--rule-2);
+	color: var(--ink);
+	background: var(--bg-3);
+}
+.btn-ghost:hover {
+	background: var(--bg-2);
+}
+.btn-whatsapp {
+	background: #25d366;
+	color: #0b2b16;
+}
+.btn-whatsapp:hover {
+	background: #1fb85a;
+	transform: translateY(-1px);
+}
+.btn-link {
+	color: var(--accent-text);
+	font-weight: 600;
+}
+.btn-link::after {
+	content: ' →';
+	display: inline-block;
+	transition: transform 0.2s;
+}
+.btn-link:hover::after {
+	transform: translateX(4px);
+}
+
+/* Section wrapper + heading */
+.section {
+	padding: 120px 32px;
+	max-width: var(--maxw);
+	margin: 0 auto;
+}
+.sec-head {
+	margin-bottom: 60px;
+	max-width: 780px;
+}
+.sec-head h2 {
+	font-size: var(--fs-h2);
+	font-weight: 800;
+	letter-spacing: -0.035em;
+	line-height: 1.02;
+	text-wrap: balance;
+}
+.sec-head .eyebrow {
+	display: block;
+	margin-bottom: 14px;
+}
+.sec-head p {
+	margin-top: 18px;
+	font-size: 18px;
+	color: var(--ink-2);
+	line-height: 1.55;
+	max-width: 60ch;
+}
+
+/* Page hero (secondary pages) */
+.page-hero {
+	text-align: center;
+	padding: 72px 32px 40px;
+	max-width: 1100px;
+	margin: 0 auto;
+}
+.page-hero .eyebrow {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 16px;
+}
+.page-hero .eyebrow .dot {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: var(--accent);
+}
+.page-hero h1 {
+	font-size: var(--fs-h1);
+	font-weight: 800;
+	letter-spacing: -0.04em;
+	line-height: 0.98;
+	max-width: 16ch;
+	margin: 0 auto;
+	text-wrap: balance;
+}
+.page-hero .lead {
+	margin: 24px auto 0;
+	max-width: 60ch;
+	font-size: var(--fs-lead);
+	line-height: 1.5;
+	color: var(--ink-2);
+}
+
+/* CTA band (end of secondary pages) */
+.cta-band {
+	padding: 120px 32px;
+	text-align: center;
+}
+.cta-band h2 {
+	font-size: var(--fs-h2);
+	font-weight: 800;
+	letter-spacing: -0.035em;
+	line-height: 1.02;
+	max-width: 18ch;
+	margin: 0 auto;
+	text-wrap: balance;
+}
+.cta-band .sub {
+	margin: 20px auto 32px;
+	font-size: 18px;
+	color: var(--ink-2);
+	max-width: 50ch;
+	line-height: 1.5;
+}
+.cta-band .actions {
+	display: flex;
+	gap: 12px;
+	justify-content: center;
+	flex-wrap: wrap;
+}
+
+/* Status pills */
+.pill {
+	display: inline-block;
+	font-family: var(--mono);
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	padding: 3px 9px;
+	border-radius: 999px;
+	background: var(--bg-2);
+	color: var(--ink-2);
+	white-space: nowrap;
+}
+.pill.live {
+	background: rgba(22, 163, 74, 0.12);
+	color: #15803d;
+}
+.pill.beta {
+	background: rgba(124, 58, 237, 0.12);
+	color: #6d28d9;
+}
+.pill.archived,
+.pill.nda {
+	background: var(--bg-2);
+	color: var(--ink-3);
+}
+
+/* Scroll reveal — gated on `.js` so content is visible without JS. */
+.js .reveal {
+	opacity: 0;
+	transform: translateY(24px);
+	transition:
+		opacity 0.6s var(--ease-out-expo),
+		transform 0.6s var(--ease-out-expo);
+}
+.js .reveal.in {
+	opacity: 1;
+	transform: none;
+}
+.js .reveal.d1 { transition-delay: 0.05s; }
+.js .reveal.d2 { transition-delay: 0.1s; }
+.js .reveal.d3 { transition-delay: 0.15s; }
+
+@media (prefers-reduced-motion: reduce) {
+	.js .reveal {
+		opacity: 1;
+		transform: none;
+	}
+}

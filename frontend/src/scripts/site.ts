@@ -1,13 +1,11 @@
 /**
- * Shared, lightweight site interactions (light theme).
- * Ported from the handoff prototypes:
+ * Shared, lightweight site interactions:
  *  - sticky topbar blur on scroll
  *  - IntersectionObserver scroll reveal (.reveal -> .in)
- *  - draggable horizontal scroller (.scroller)
- *  - mobile nav toggle
- *  - language switch wiring (reuses i18n.ts)
+ *  - draggable horizontal scroller (.scroller) — mouse only; touch scrolls natively
+ *  - mobile nav toggle (with `inert` on the closed menu)
+ * Language switching is a plain link now (server-side i18n) — nothing to wire.
  */
-import { setLocale, getLocale } from '../i18n/i18n';
 
 function initStickyTopbar(): void {
 	const tb = document.getElementById('topbar');
@@ -20,6 +18,10 @@ function initStickyTopbar(): void {
 function initReveal(): void {
 	const els = document.querySelectorAll<HTMLElement>('.reveal');
 	if (!els.length) return;
+	if (!('IntersectionObserver' in window)) {
+		els.forEach((el) => el.classList.add('in'));
+		return;
+	}
 	const io = new IntersectionObserver(
 		(entries) =>
 			entries.forEach((e) => {
@@ -41,6 +43,7 @@ function initScrollers(): void {
 		let moved = 0;
 
 		sc.addEventListener('pointerdown', (e) => {
+			if (e.pointerType === 'touch') return; // native touch scrolling
 			down = true;
 			moved = 0;
 			startX = e.clientX;
@@ -62,7 +65,6 @@ function initScrollers(): void {
 		sc.addEventListener('pointerup', release);
 		sc.addEventListener('pointercancel', release);
 		sc.addEventListener('pointerleave', release);
-		// Prevent click only if actually dragged
 		sc.addEventListener(
 			'click',
 			(e) => {
@@ -73,6 +75,15 @@ function initScrollers(): void {
 			},
 			true
 		);
+
+		// prev/next buttons (optional): <button data-scroll="prev|next" data-for="#id">
+		document.querySelectorAll<HTMLButtonElement>(`[data-scroll][data-for="#${sc.id}"]`).forEach((btn) => {
+			btn.addEventListener('click', () => {
+				const card = sc.querySelector<HTMLElement>('[data-card]');
+				const step = card ? card.offsetWidth + 20 : sc.clientWidth * 0.8;
+				sc.scrollBy({ left: btn.dataset.scroll === 'prev' ? -step : step, behavior: 'smooth' });
+			});
+		});
 	});
 }
 
@@ -82,27 +93,19 @@ function initMobileNav(): void {
 	const nav = document.getElementById('nav-mini');
 	if (!tb || !toggle || !nav) return;
 
+	const mq = window.matchMedia('(max-width: 780px)');
 	const setOpen = (open: boolean) => {
 		tb.classList.toggle('nav-open', open);
 		toggle.setAttribute('aria-expanded', String(open));
+		if (mq.matches) nav.toggleAttribute('inert', !open);
+		else nav.removeAttribute('inert');
 	};
+	setOpen(false);
+	mq.addEventListener('change', () => setOpen(tb.classList.contains('nav-open')));
 	toggle.addEventListener('click', () => setOpen(!tb.classList.contains('nav-open')));
 	nav.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
-}
-
-function initLangSwitch(): void {
-	const langSwitch = document.getElementById('lang-switch');
-	if (!langSwitch) return;
-
-	const current = getLocale();
-	langSwitch.classList.toggle('pt', current === 'pt');
-	langSwitch.querySelectorAll<HTMLElement>('.lang-option').forEach((opt) => {
-		opt.classList.toggle('active', opt.dataset.lang === current);
-		opt.addEventListener('click', () => {
-			const lang = opt.dataset.lang as 'en' | 'pt';
-			if (!lang || lang === getLocale()) return;
-			setLocale(lang); // applyTranslations() updates the switch visual + all [data-i18n]
-		});
+	document.addEventListener('keydown', (e) => {
+		if (e.key === 'Escape' && tb.classList.contains('nav-open')) setOpen(false);
 	});
 }
 
@@ -111,5 +114,4 @@ export function initSite(): void {
 	initReveal();
 	initScrollers();
 	initMobileNav();
-	initLangSwitch();
 }

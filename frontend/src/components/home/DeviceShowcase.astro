@@ -1,47 +1,65 @@
 ---
+/**
+ * Browser-mock rotator over src/data/featured.ts. Scene 0 is the LCP image.
+ *
+ * a11y: inactive scenes are `inert` + aria-hidden (and visibility:hidden after
+ * the fade), autoplay pauses on hover/focus/hidden tab and has a visible
+ * pause/play control. Scene titles are <p> — the page already has its h1/h2s.
+ */
+import { Image } from 'astro:assets';
 import { featured } from '../../data/featured';
+import { fmt, localeOf, localePath, pick, useT } from '../../i18n';
 
-// Scenes are an editorial pick — see src/data/featured.ts to add/remove projects.
+const locale = localeOf(Astro);
+const t = useT(locale);
+
 const scenes = featured.slice(0, 6);
-const cycleTints = ['t0', 't1', 't2'] as const;
+const total = scenes.length;
+const first = scenes[0];
 ---
 
-<div class='stage'>
-	<div class='device' id='device'>
-		<div class='bar'>
+<div class='stage' id='showcase' role='region' aria-roledescription='carousel' aria-label={t.hero.showcase.label}>
+	<div class='device'>
+		<div class='bar' aria-hidden='true'>
 			<i></i><i></i><i></i>
-			<div class='url' id='device-url'>{scenes[0]?.url ?? ''}</div>
+			<div class='url' id='device-url'>{first ? pick(first.urlLabel, locale) : ''}</div>
 		</div>
 		<div class='screen'>
 			{
 				scenes.map((s, i) => {
-					const external = s.href?.startsWith('http');
+					const active = i === 0;
+					const external = !!s.href && /^https?:\/\//.test(s.href);
+					const href = s.href ? (external ? s.href : localePath(locale, s.href)) : undefined;
 					return (
 						<div
-							class:list={[
-								'scene',
-								s.tint ?? cycleTints[i % cycleTints.length],
-								{ 'has-image': !!s.image, dim: !!s.dim, 'is-active': i === 0 },
-							]}
-							data-url={s.url}
+							class:list={['scene', { dim: !!s.dim, 'is-active': active }]}
+							data-url={pick(s.urlLabel, locale)}
+							role='group'
+							aria-roledescription='slide'
+							aria-label={fmt(t.hero.showcase.slide, { n: i + 1, total })}
+							aria-hidden={active ? undefined : 'true'}
+							inert={!active}
 						>
-							{s.image && <img class='scene-img' src={s.image} alt={s.title} loading='lazy' />}
+							<Image
+								class='scene-img'
+								src={s.image}
+								alt={pick(s.alt, locale)}
+								widths={[640, 1100, 1600]}
+								sizes='(max-width: 1024px) 100vw, 60vw'
+								format='webp'
+								loading={active ? 'eager' : 'lazy'}
+								fetchpriority={active ? 'high' : 'auto'}
+							/>
 							<div class='scene-content'>
-								<span class='badge' data-i18n={`featured.${s.id}.badge`}>{s.badge}</span>
-								<h2>{s.title}</h2>
-								<p class='ds' data-i18n={`featured.${s.id}.desc`}>{s.desc}</p>
-								{s.href && (
-									<div class='pills'>
-										<a
-											class='p'
-											href={s.href}
-											target={external ? '_blank' : undefined}
-											rel={external ? 'noopener' : undefined}
-											data-i18n='works.viewProject'
-										>
-											View project
-										</a>
-									</div>
+								<span class='badge'>{pick(s.badge, locale)}</span>
+								<p class='scene-title'>{s.title}</p>
+								<p class='ds'>{pick(s.desc, locale)}</p>
+								{href && (
+									<a class='p' href={href} target={external ? '_blank' : undefined} rel={external ? 'noopener' : undefined}>
+										{t.common.viewProject}
+										{external && <span aria-hidden='true'>↗</span>}
+										{external && <span class='sr-only'>({t.common.openInNewTab})</span>}
+									</a>
 								)}
 							</div>
 						</div>
@@ -50,12 +68,50 @@ const cycleTints = ['t0', 't1', 't2'] as const;
 			}
 		</div>
 	</div>
+
 	{
-		scenes.length > 1 && (
-			<div class='stage-dots' id='device-dots'>
-				{scenes.map((_, i) => (
-					<button class:list={[{ 'is-active': i === 0 }]} data-i={i} aria-label={`Show project ${i + 1}`} />
-				))}
+		total > 1 && (
+			<div class='stage-controls'>
+				<button type='button' class='ctl' data-showcase='prev' aria-label={t.hero.showcase.prev}>
+					<svg width='20' height='20' viewBox='0 0 20 20' fill='none' aria-hidden='true' focusable='false'>
+						<path d='M12.5 4.5 7 10l5.5 5.5' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' />
+					</svg>
+				</button>
+				<div class='stage-dots'>
+					{scenes.map((s, i) => (
+						<button
+							type='button'
+							class:list={['dot', { 'is-active': i === 0 }]}
+							data-showcase-go={i}
+							aria-label={fmt(t.hero.showcase.goTo, { title: s.title })}
+							aria-current={i === 0 ? 'true' : undefined}
+						>
+							<span class='dot-bar' aria-hidden='true' />
+						</button>
+					))}
+				</div>
+				<button type='button' class='ctl' data-showcase='next' aria-label={t.hero.showcase.next}>
+					<svg width='20' height='20' viewBox='0 0 20 20' fill='none' aria-hidden='true' focusable='false'>
+						<path d='m7.5 4.5 5.5 5.5-5.5 5.5' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' />
+					</svg>
+				</button>
+				<button
+					type='button'
+					class='ctl ctl-toggle'
+					data-showcase='toggle'
+					data-label-pause={t.hero.showcase.pause}
+					data-label-play={t.hero.showcase.play}
+					aria-label={t.hero.showcase.pause}
+					aria-pressed='false'
+				>
+					<svg class='ic-pause' width='18' height='18' viewBox='0 0 18 18' aria-hidden='true' focusable='false'>
+						<rect x='4' y='3' width='3.5' height='12' rx='1' fill='currentColor' />
+						<rect x='10.5' y='3' width='3.5' height='12' rx='1' fill='currentColor' />
+					</svg>
+					<svg class='ic-play' width='18' height='18' viewBox='0 0 18 18' aria-hidden='true' focusable='false'>
+						<path d='M5 3.5v11l9-5.5z' fill='currentColor' />
+					</svg>
+				</button>
 			</div>
 		)
 	}
@@ -63,13 +119,12 @@ const cycleTints = ['t0', 't1', 't2'] as const;
 
 <style>
 	.stage {
-		margin: 60px auto 0;
-		max-width: 1100px;
-		padding: 0 32px;
+		position: relative;
+		width: 100%;
 	}
 	.device {
 		position: relative;
-		background: #fff;
+		background: var(--bg-3);
 		border-radius: 18px;
 		overflow: hidden;
 		box-shadow:
@@ -103,49 +158,45 @@ const cycleTints = ['t0', 't1', 't2'] as const;
 	.bar .url {
 		margin-left: 14px;
 		flex: 1;
+		min-width: 0;
 		padding: 5px 14px;
-		background: #fff;
+		background: var(--bg-3);
 		border-radius: 6px;
 		color: var(--ink-3);
 		font-family: var(--mono);
 		font-size: 12px;
 		text-align: center;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 	.screen {
 		position: relative;
-		height: 560px;
+		height: clamp(380px, 48vh, 520px);
+		background: var(--bg-2);
 	}
+
+	/* ---- scenes ---- */
 	.scene {
 		position: absolute;
 		inset: 0;
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		text-align: center;
-		padding: 60px 8%;
-		opacity: 0;
-		transition: opacity 0.6s ease;
+		justify-content: flex-end;
 		overflow: hidden;
+		opacity: 0;
+		visibility: hidden;
+		transition:
+			opacity 0.6s ease,
+			visibility 0s linear 0.6s;
 	}
 	.scene.is-active {
 		opacity: 1;
+		visibility: visible;
 		z-index: 1;
-	}
-	.scene-content {
-		position: relative;
-		z-index: 2;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-	}
-
-	/* ====== Image scenes ====== */
-	.scene.has-image {
-		justify-content: flex-end;
-		align-items: stretch;
-		text-align: left;
-		padding: 0;
+		transition:
+			opacity 0.6s ease,
+			visibility 0s;
 	}
 	.scene-img {
 		position: absolute;
@@ -153,143 +204,135 @@ const cycleTints = ['t0', 't1', 't2'] as const;
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
+		object-position: center;
 		z-index: 0;
 	}
-	.scene.has-image::after {
+	.scene::after {
 		content: '';
 		position: absolute;
 		inset: 0;
-		background: linear-gradient(180deg, rgba(0, 0, 0, 0) 35%, rgba(0, 0, 0, 0.75) 100%);
+		background: linear-gradient(180deg, rgba(0, 0, 0, 0) 35%, rgba(0, 0, 0, 0.78) 100%);
 		z-index: 1;
 	}
-	/* Stronger full-image overlay for sources that already carry headline text. */
-	.scene.has-image.dim::after {
-		background: linear-gradient(
-			180deg,
-			rgba(0, 0, 0, 0.45) 0%,
-			rgba(0, 0, 0, 0.6) 50%,
-			rgba(0, 0, 0, 0.88) 100%
-		);
+	/* Stronger overlay when the screenshot carries its own headline. */
+	.scene.dim::after {
+		background: linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.6) 50%, rgba(0, 0, 0, 0.88) 100%);
 	}
-	.scene.has-image .scene-content {
+	.scene-content {
+		position: relative;
+		z-index: 2;
+		display: flex;
+		flex-direction: column;
 		align-items: flex-start;
-		padding: 32px 40px 36px;
 		gap: 8px;
-	}
-	.scene.has-image .badge {
+		padding: 28px 32px 32px;
 		color: #fff;
-		background: rgba(255, 255, 255, 0.14);
-		border: 1px solid rgba(255, 255, 255, 0.25);
-		backdrop-filter: blur(8px);
-		padding: 5px 12px 5px 8px;
-		border-radius: 999px;
-		margin-bottom: 14px;
-	}
-	.scene.has-image .badge::before {
-		background: var(--accent);
-	}
-	.scene.has-image h2 {
-		color: #fff;
-		font-size: clamp(28px, 3.6vw, 48px);
-		max-width: 18ch;
-	}
-	.scene.has-image .ds {
-		color: rgba(255, 255, 255, 0.85);
-		max-width: 50ch;
-		margin-top: 10px;
-	}
-	.scene.has-image .pills {
-		margin-top: 20px;
-	}
-	.scene.has-image .p {
-		background: rgba(255, 255, 255, 0.16);
-		backdrop-filter: blur(8px);
-		color: #fff;
-		border: 1px solid rgba(255, 255, 255, 0.25);
-	}
-	.scene.has-image .p:hover {
-		background: var(--accent);
-		border-color: var(--accent);
 	}
 	.badge {
-		font-family: var(--mono);
-		font-size: 12px;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
-		margin-bottom: 18px;
 		display: inline-flex;
 		align-items: center;
 		gap: 8px;
+		margin-bottom: 8px;
+		padding: 5px 12px 5px 9px;
+		border-radius: 999px;
+		border: 1px solid rgba(255, 255, 255, 0.28);
+		background: rgba(255, 255, 255, 0.14);
+		backdrop-filter: blur(8px);
+		font-family: var(--mono);
+		font-size: 11px;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
 	}
 	.badge::before {
 		content: '';
 		width: 8px;
 		height: 8px;
 		border-radius: 50%;
-		background: currentColor;
-	}
-	.scene h2 {
-		font-size: clamp(36px, 5vw, 64px);
-		font-weight: 800;
-		letter-spacing: -0.03em;
-		line-height: 0.98;
-		color: var(--ink);
-		max-width: 16ch;
-	}
-	.scene .ds {
-		margin-top: 18px;
-		color: var(--ink-2);
-		font-size: 16px;
-		max-width: 46ch;
-		line-height: 1.5;
-	}
-	.scene .pills {
-		display: flex;
-		gap: 10px;
-		margin-top: 28px;
-	}
-	.scene .p {
-		padding: 10px 22px;
-		background: var(--ink);
-		color: #fff;
-		border-radius: 999px;
-		font-size: 13px;
-		font-weight: 500;
-		transition: background 0.2s;
-	}
-	.scene .p:hover {
 		background: var(--accent);
 	}
+	.scene-title {
+		font-size: var(--fs-h3);
+		font-weight: 800;
+		letter-spacing: -0.03em;
+		line-height: 1;
+		max-width: 18ch;
+	}
+	.ds {
+		font-size: 15px;
+		line-height: 1.5;
+		color: rgba(255, 255, 255, 0.85);
+		max-width: 48ch;
+	}
+	.p {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		min-height: 44px;
+		margin-top: 8px;
+		padding: 0 20px;
+		border-radius: 999px;
+		border: 1px solid rgba(255, 255, 255, 0.28);
+		background: rgba(255, 255, 255, 0.16);
+		backdrop-filter: blur(8px);
+		color: #fff;
+		font-size: 13px;
+		font-weight: 600;
+		transition:
+			background 0.2s,
+			border-color 0.2s;
+	}
+	.p:hover {
+		background: var(--accent);
+		border-color: var(--accent);
+	}
 
-	/* scene tints */
-	.t0 {
-		background: linear-gradient(160deg, #fff6f7 0%, #ffedee 100%);
+	/* ---- controls ---- */
+	.stage-controls {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 4px;
+		margin-top: 12px;
 	}
-	.t0 .badge {
-		color: var(--accent);
+	.ctl {
+		width: 44px;
+		height: 44px;
+		border-radius: 50%;
+		display: grid;
+		place-items: center;
+		color: var(--ink-2);
+		transition:
+			background 0.2s,
+			color 0.2s;
 	}
-	.t1 {
-		background: linear-gradient(160deg, #f3f0ff 0%, #e6ddfe 100%);
+	.ctl:hover {
+		background: var(--bg-2);
+		color: var(--ink);
 	}
-	.t1 .badge {
-		color: var(--accent-2);
+	.ctl-toggle {
+		margin-left: 8px;
 	}
-	.t2 {
-		background: linear-gradient(160deg, #fff8eb 0%, #ffe9c2 100%);
+	.ic-play {
+		display: none;
 	}
-	.t2 .badge {
-		color: #e07a1f;
+	.is-paused .ic-pause {
+		display: none;
 	}
-
+	.is-paused .ic-play {
+		display: block;
+	}
 	.stage-dots {
 		display: flex;
-		justify-content: center;
-		gap: 10px;
-		margin-top: 24px;
 	}
-	.stage-dots button {
-		width: 28px;
+	.dot {
+		width: 44px;
+		height: 44px;
+		display: grid;
+		place-items: center;
+	}
+	.dot-bar {
+		width: 22px;
 		height: 3px;
 		border-radius: 2px;
 		background: var(--ink-4);
@@ -297,17 +340,60 @@ const cycleTints = ['t0', 't1', 't2'] as const;
 			background 0.25s,
 			width 0.25s;
 	}
-	.stage-dots button.is-active {
-		background: var(--ink);
-		width: 40px;
-	}
-	.stage-dots button:hover {
+	.dot:hover .dot-bar {
 		background: var(--ink-2);
 	}
+	.dot.is-active .dot-bar {
+		width: 32px;
+		background: var(--ink);
+	}
 
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
+
+	@media (max-width: 1024px) {
+		.screen {
+			height: min(520px, 58vw);
+		}
+	}
 	@media (max-width: 600px) {
 		.screen {
-			height: 460px;
+			height: 300px;
+		}
+		.scene-img {
+			object-position: top center;
+		}
+		.scene-content {
+			padding: 18px 20px 20px;
+			gap: 6px;
+		}
+		.scene-title {
+			font-size: 24px;
+		}
+		.ds {
+			font-size: 14px;
+			display: -webkit-box;
+			-webkit-line-clamp: 2;
+			-webkit-box-orient: vertical;
+			overflow: hidden;
+		}
+		.dot {
+			width: 30px;
+		}
+		.dot-bar {
+			width: 16px;
+		}
+		.dot.is-active .dot-bar {
+			width: 24px;
 		}
 	}
 	@media (prefers-reduced-motion: reduce) {
@@ -320,38 +406,107 @@ const cycleTints = ['t0', 't1', 't2'] as const;
 </style>
 
 <script>
-	const device = document.getElementById('device');
-	if (device) {
-		const scenes = Array.from(device.querySelectorAll<HTMLElement>('.scene'));
-		const dots = Array.from(
-			document.querySelectorAll<HTMLButtonElement>('#device-dots button')
-		);
-		const url = document.getElementById('device-url');
+	const stage = document.getElementById('showcase');
+	if (stage) {
+		const scenes = Array.from(stage.querySelectorAll<HTMLElement>('.scene'));
+		const dots = Array.from(stage.querySelectorAll<HTMLButtonElement>('[data-showcase-go]'));
+		const url = stage.querySelector<HTMLElement>('#device-url');
+		const toggle = stage.querySelector<HTMLButtonElement>('[data-showcase="toggle"]');
+		const total = scenes.length;
+		const INTERVAL = 5000;
+
 		let idx = 0;
-
-		const go = (i: number) => {
-			scenes[idx]?.classList.remove('is-active');
-			dots[idx]?.classList.remove('is-active');
-			idx = i;
-			scenes[idx]?.classList.add('is-active');
-			dots[idx]?.classList.add('is-active');
-			if (url) url.textContent = scenes[idx]?.dataset.url || '';
-		};
-
-		const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 		let timer: ReturnType<typeof setInterval> | undefined;
-		const start = () => {
-			if (reduced || scenes.length < 2) return;
-			timer = setInterval(() => go((idx + 1) % scenes.length), 5000);
-		};
-		start();
+		let engaged = false; // hover / focus inside the stage
+		let paused = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+		const setActive = (i: number, on: boolean) => {
+			const scene = scenes[i];
+			const dot = dots[i];
+			if (scene) {
+				scene.classList.toggle('is-active', on);
+				scene.toggleAttribute('inert', !on);
+				if (on) scene.removeAttribute('aria-hidden');
+				else scene.setAttribute('aria-hidden', 'true');
+			}
+			if (dot) {
+				dot.classList.toggle('is-active', on);
+				if (on) dot.setAttribute('aria-current', 'true');
+				else dot.removeAttribute('aria-current');
+			}
+		};
+
+		const show = (i: number) => {
+			const next = ((i % total) + total) % total;
+			if (next === idx) return;
+			setActive(idx, false);
+			idx = next;
+			setActive(idx, true);
+			if (url) url.textContent = scenes[idx]?.dataset.url ?? '';
+		};
+
+		const stop = () => {
+			if (timer) clearInterval(timer);
+			timer = undefined;
+		};
+		const sync = () => {
+			stop();
+			if (total > 1 && !paused && !engaged && !document.hidden) {
+				timer = setInterval(() => show(idx + 1), INTERVAL);
+			}
+		};
+		const setPaused = (p: boolean) => {
+			paused = p;
+			stage.classList.toggle('is-paused', p);
+			if (toggle) {
+				toggle.setAttribute('aria-pressed', String(p));
+				toggle.setAttribute('aria-label', (p ? toggle.dataset.labelPlay : toggle.dataset.labelPause) ?? '');
+			}
+			sync();
+		};
+
+		stage.querySelector('[data-showcase="prev"]')?.addEventListener('click', () => {
+			show(idx - 1);
+			sync();
+		});
+		stage.querySelector('[data-showcase="next"]')?.addEventListener('click', () => {
+			show(idx + 1);
+			sync();
+		});
+		toggle?.addEventListener('click', () => setPaused(!paused));
 		dots.forEach((d, i) =>
 			d.addEventListener('click', () => {
-				if (timer) clearInterval(timer);
-				go(i);
-				start();
+				show(i);
+				sync();
 			})
 		);
+
+		stage.addEventListener('mouseenter', () => {
+			engaged = true;
+			sync();
+		});
+		stage.addEventListener('mouseleave', () => {
+			engaged = false;
+			sync();
+		});
+		stage.addEventListener('focusin', () => {
+			engaged = true;
+			sync();
+		});
+		stage.addEventListener('focusout', (e) => {
+			if (!stage.contains(e.relatedTarget as Node | null)) {
+				engaged = false;
+				sync();
+			}
+		});
+		stage.addEventListener('keydown', (e) => {
+			if (e.key === 'ArrowLeft') show(idx - 1);
+			else if (e.key === 'ArrowRight') show(idx + 1);
+			else return;
+			sync();
+		});
+		document.addEventListener('visibilitychange', sync);
+
+		setPaused(paused);
 	}
 </script>

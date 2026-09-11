@@ -1,26 +1,30 @@
 ---
-// Short about band — real copy, no serif-italic. Emphasis via weight/colour.
+/**
+ * #sobre — one human paragraph + availability + link to /about.
+ * The long story (career, hobbies) lives in /about, not here.
+ */
+import { SITE } from '../../data/site';
+import { localeOf, localePath, pick, useT } from '../../i18n';
+
+const locale = localeOf(Astro);
+const t = useT(locale);
 ---
 
-<section class='about-band' id='sobre'>
+<section class='about-band' id='sobre' aria-labelledby='about-short-title'>
 	<div class='about-inner'>
-		<blockquote class='about-quote reveal' data-i18n='aboutShort.quote'>
-			Code is half the job. The other half is understanding the problem before writing the first line.
-		</blockquote>
+		<div class='about-quote-col reveal'>
+			<h2 class='eyebrow accent' id='about-short-title'>{t.aboutShort.eyebrow}</h2>
+			<blockquote class='about-quote'>
+				<p>{t.aboutShort.quote}</p>
+			</blockquote>
+		</div>
 		<div class='about-text reveal d2'>
-			<p data-i18n='aboutShort.p1'>
-				I'm Fabrício Bahiense, a Senior Software Engineer based in Rio de Janeiro, Brazil.
+			<p>{t.aboutShort.p1}</p>
+			<p class='about-avail'>
+				<span class='dot' aria-hidden='true'></span>
+				{pick(SITE.availability, locale)}
 			</p>
-			<p data-i18n='aboutShort.p2'>
-				Father, husband, problem-solver — multiple layers, like an onion. I love football, music,
-				games, beer, science, astronomy (I love watching the sky) and, of course, technology.
-			</p>
-			<p data-i18n='aboutShort.p3'>
-				I care about digital experiences that actually make a difference: a fast web app, a
-				scalable cloud architecture, a mobile flow that feels right, your landing page that
-				converts.
-			</p>
-			<a href='/about' class='btn-link' data-i18n='aboutShort.more'>Get to know me</a>
+			<a href={localePath(locale, '/about')} class='btn-link'>{t.aboutShort.more}</a>
 		</div>
 	</div>
 </section>
@@ -34,22 +38,27 @@
 		max-width: var(--maxw);
 		margin: 0 auto;
 		display: grid;
-		grid-template-columns: 1fr 1fr;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 80px;
 		align-items: center;
 	}
+	.about-quote-col h2 {
+		display: block;
+		margin-bottom: 20px;
+	}
 	.about-quote {
-		font-size: clamp(28px, 3.5vw, 42px);
+		font-size: var(--fs-h3);
 		font-weight: 500;
 		line-height: 1.25;
 		letter-spacing: -0.015em;
 		color: var(--ink);
+		text-wrap: balance;
 	}
 	.about-quote::before {
 		content: '\201C';
+		display: block;
 		color: var(--accent);
 		font-size: 1.6em;
-		display: block;
 		line-height: 0.6;
 		margin-bottom: 8px;
 	}
@@ -59,15 +68,40 @@
 		color: var(--ink-2);
 		margin-bottom: 18px;
 	}
+	.about-avail {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		font-family: var(--mono);
+		font-size: 13px;
+		letter-spacing: 0.02em;
+		color: var(--ink-3);
+	}
+	.about-avail .dot {
+		width: 7px;
+		height: 7px;
+		border-radius: 50%;
+		background: var(--accent);
+	}
 	.about-text .btn-link {
-		margin-top: 8px;
-		font-size: 14px;
+		display: inline-flex;
+		align-items: center;
+		min-height: 44px;
+		font-size: 15px;
 	}
 
 	@media (max-width: 900px) {
+		.about-band {
+			padding: 88px 24px;
+		}
 		.about-inner {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
 			gap: 40px;
+		}
+	}
+	@media (max-width: 600px) {
+		.about-band {
+			padding: 72px 20px;
 		}
 	}
 </style>

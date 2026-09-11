@@ -2,6 +2,9 @@
 node_modules/
 
 # build output
+frontend/dist/
+frontend/.vercel/
+frontend/.astro/
 dist/
 .vercel/
 .astro/
@@ -16,10 +19,10 @@ dist/
 # tooling state
 .claude/
 
-# handoff bundle (não vai pro repo)
-/Fabs Site-handoff/
-/FabsSite-handoff/
-
 # env
 .env
 .env.local
+.env*.local
+
+# client sites scaffolded by scripts/new-client.mjs (each is its own repo)
+clients/

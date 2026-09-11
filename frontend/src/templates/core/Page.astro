@@ -1,0 +1,34 @@
+---
+/**
+ * Full standalone document for a client site (used by the scaffolded
+ * project's pages — NOT by the portfolio demos, which use DemoLayout).
+ */
+import type { BaseSite } from './schema';
+import Head from './Head.astro';
+import ThemeVars from './ThemeVars.astro';
+import WhatsAppFab from './WhatsAppFab.astro';
+import LgpdNotice from './LgpdNotice.astro';
+
+interface Props {
+	site: BaseSite;
+	class?: string;
+	noindex?: boolean;
+}
+const { site, class: className, noindex = false } = Astro.props;
+
+// Plausible is cookieless; only GA4 / Meta Pixel need consent.
+const needsConsent = Boolean(site.analytics.ga4 || site.analytics.metaPixel);
+---
+
+<!doctype html>
+<html lang={site.brand.locale}>
+	<head>
+		<Head site={site} noindex={noindex} />
+		<ThemeVars theme={site.theme} />
+	</head>
+	<body class={className}>
+		<slot />
+		<WhatsAppFab site={site} />
+		<LgpdNotice legal={site.legal} locale={site.brand.locale} needsConsent={needsConsent} />
+	</body>
+</html>

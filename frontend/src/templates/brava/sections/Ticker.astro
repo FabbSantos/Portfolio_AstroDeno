@@ -1,0 +1,55 @@
+---
+/** Announcement strip: messages joined with ' ★ ', looping. */
+import type { BravaConfig } from '../schema';
+
+interface Props {
+	config: BravaConfig;
+}
+const { config } = Astro.props;
+const { messages } = config.ticker;
+
+// Repeat short lists so the loop never shows a gap on wide screens.
+let items = messages;
+while (items.length < 8) items = [...items, ...messages];
+const text = `★ ${items.join(' ★ ')} ★`;
+---
+
+<div class='ticker'>
+	<div class='ticker-track'>
+		{
+			[0, 1].map((i) => (
+				<div class='ticker-row' aria-hidden={i === 1 ? 'true' : undefined}>
+					<span>{text}</span>
+				</div>
+			))
+		}
+	</div>
+</div>
+
+<style>
+	.ticker {
+		background: var(--accent);
+		color: #fff;
+		padding: 9px 0;
+		overflow: hidden;
+		font-family: var(--mono);
+		font-size: 12px;
+		font-weight: 600;
+		letter-spacing: 0.05em;
+	}
+	.ticker-track {
+		display: flex;
+		gap: 0;
+		width: max-content;
+		animation: tick 28s linear infinite;
+	}
+	.ticker-row {
+		white-space: nowrap;
+		padding-right: 40px;
+	}
+	@keyframes tick {
+		to {
+			transform: translateX(-50%);
+		}
+	}
+</style>

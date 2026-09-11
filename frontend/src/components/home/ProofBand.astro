@@ -1,0 +1,95 @@
+---
+/**
+ * #prova — one line of numbers (SITE.stats + response time) over the
+ * client-logo marquee. Sits right under the hero as social proof.
+ */
+import ClientsBand from './ClientsBand.astro';
+import { SITE } from '../../data/site';
+import { localeOf, pick, useT } from '../../i18n';
+
+const locale = localeOf(Astro);
+const t = useT(locale);
+
+const stats = [
+	{ n: SITE.stats.years, label: t.clients.stats.years },
+	{ n: SITE.stats.products, label: t.clients.stats.products },
+	{ n: SITE.stats.clients, label: t.clients.stats.clients },
+	{ n: pick(SITE.responseTime, locale), label: t.clients.stats.reply },
+];
+---
+
+<section class='proof' id='prova' aria-label={t.clients.label}>
+	<ul class='stats reveal'>
+		{
+			stats.map((s) => (
+				<li>
+					<span class='n'>{s.n}</span>
+					<span class='l'>{s.label}</span>
+				</li>
+			))
+		}
+	</ul>
+	<div class='reveal d1'>
+		<ClientsBand />
+	</div>
+</section>
+
+<style>
+	.proof {
+		max-width: var(--maxw);
+		margin: 0 auto;
+		padding: 32px 32px 80px;
+	}
+	.stats {
+		list-style: none;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 16px 48px;
+		padding-top: 32px;
+		margin-bottom: 40px;
+		border-top: 1px solid var(--rule);
+	}
+	.stats li {
+		display: flex;
+		align-items: baseline;
+		gap: 10px;
+	}
+	.n {
+		font-size: 28px;
+		font-weight: 800;
+		letter-spacing: -0.03em;
+		line-height: 1;
+		color: var(--ink);
+		white-space: nowrap;
+	}
+	.l {
+		font-family: var(--mono);
+		font-size: 12px;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--ink-3);
+	}
+
+	@media (max-width: 600px) {
+		.proof {
+			padding: 24px 20px 64px;
+		}
+		.stats {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 20px 16px;
+		}
+		.stats li {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 4px;
+		}
+		.n {
+			font-size: 24px;
+		}
+		.l {
+			font-size: 11px;
+		}
+	}
+</style>

@@ -1,0 +1,36 @@
+---
+/**
+ * Turns `site.theme` into the CSS tokens every template consumes.
+ * Emitted as a raw <style> so it wins over any earlier :root definition
+ * (portfolio demos render it after the portfolio's own base.css).
+ */
+import type { BaseSite } from './schema';
+
+interface Props {
+	theme: BaseSite['theme'];
+}
+const { theme } = Astro.props;
+
+// Values are schema-validated (#rrggbb / number) — safe to interpolate.
+const lines = [
+	`--accent: ${theme.accent}`,
+	`--accent-2: ${theme.accent2 ?? theme.accent}`,
+	`--accent-soft: color-mix(in srgb, var(--accent) 12%, transparent)`,
+	`--accent-glow: color-mix(in srgb, var(--accent) 40%, transparent)`,
+	`--accent-text: color-mix(in srgb, var(--accent) 82%, var(--ink))`,
+	`--bg: ${theme.bg}`,
+	`--bg-2: ${theme.bg2 ?? 'color-mix(in srgb, var(--bg) 94%, var(--ink))'}`,
+	`--bg-3: #fff`,
+	`--ink: ${theme.ink}`,
+	`--ink-2: color-mix(in srgb, var(--ink) 72%, var(--bg))`,
+	`--ink-3: color-mix(in srgb, var(--ink) 55%, var(--bg))`,
+	`--ink-4: color-mix(in srgb, var(--ink) 25%, var(--bg))`,
+	`--rule: color-mix(in srgb, var(--ink) 8%, transparent)`,
+	`--rule-2: color-mix(in srgb, var(--ink) 15%, transparent)`,
+	`--topbar: color-mix(in srgb, var(--bg) 90%, transparent)`,
+	`--radius: ${theme.radius}px`,
+];
+const css = `<style>:root{${lines.join(';')}}</style>`;
+---
+
+<Fragment set:html={css} />

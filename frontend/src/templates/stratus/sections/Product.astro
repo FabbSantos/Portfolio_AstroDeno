@@ -1,0 +1,305 @@
+---
+/**
+ * Product shot. With `product.image`: the screenshot inside a browser frame
+ * (eager, high priority — it sits right under the hero). Without: a CSS
+ * dashboard mock whose KPI tiles come from `product.kpis`.
+ */
+import { Image } from 'astro:assets';
+import type { StratusConfig } from '../schema';
+
+interface Props {
+	config: StratusConfig;
+}
+const product = Astro.props.config.product;
+const shot = product?.image ?? null;
+const kpis = product?.kpis ?? [];
+const widths = shot ? [...[640, 960, 1280, 1600].filter((w) => w < shot.width), shot.width] : [];
+---
+
+{
+	product && (
+		<div class='product'>
+			{shot ? (
+				<figure class='dash dash--shot'>
+					<div class='shot-bar' aria-hidden='true'>
+						<span class='shot-dot' />
+						<span class='shot-dot' />
+						<span class='shot-dot' />
+						<span class='shot-url' />
+					</div>
+					<Image
+						class='shot-img'
+						src={shot}
+						alt={product.alt ?? ''}
+						widths={widths}
+						sizes='(max-width: 1240px) calc(100vw - 64px), 1176px'
+						format='webp'
+						loading='eager'
+						fetchpriority='high'
+						decoding='async'
+					/>
+				</figure>
+			) : (
+				<div class='dash' aria-hidden='true'>
+					<div class='dash-side'>
+						<div class='ds-logo' />
+						<div class='ds-item is-on' />
+						<div class='ds-item' />
+						<div class='ds-item' />
+						<div class='ds-item' />
+						<div class='ds-item' />
+						<div class='ds-spacer' />
+						<div class='ds-item' />
+					</div>
+					<div class='dash-main'>
+						<div class='dm-bar'>
+							<div class='dm-title' />
+							<div class='dm-search' />
+							<div class='dm-avatar' />
+						</div>
+						{kpis.length > 0 && (
+							<div class='dm-stats'>
+								{kpis.map((k) => (
+									<div class='dm-stat'>
+										<span class='ds-v'>{k.value}</span>
+										{k.label ? <span class='ds-t'>{k.label}</span> : <span class='ds-l' />}
+									</div>
+								))}
+							</div>
+						)}
+						<div class='dm-chart'>
+							<svg viewBox='0 0 600 200' preserveAspectRatio='none' aria-hidden='true'>
+								<defs>
+									<linearGradient id='stratus-chart-fill' x1='0' x2='0' y1='0' y2='1'>
+										<stop offset='0' stop-color='var(--accent)' stop-opacity='0.35' />
+										<stop offset='1' stop-color='var(--accent)' stop-opacity='0' />
+									</linearGradient>
+								</defs>
+								<path
+									d='M0,160 L40,140 L80,150 L120,120 L160,128 L200,90 L240,110 L280,70 L320,80 L360,50 L400,60 L440,30 L480,55 L520,40 L560,25 L600,35 L600,200 L0,200 Z'
+									fill='url(#stratus-chart-fill)'
+								/>
+								<path
+									d='M0,160 L40,140 L80,150 L120,120 L160,128 L200,90 L240,110 L280,70 L320,80 L360,50 L400,60 L440,30 L480,55 L520,40 L560,25 L600,35'
+									fill='none'
+									stroke='var(--accent)'
+									stroke-width='2.5'
+								/>
+							</svg>
+						</div>
+						<div class='dm-table'>
+							{Array.from({ length: 4 }).map(() => (
+								<div class='dm-row'>
+									<span class='dm-cell w20' />
+									<span class='dm-cell w30' />
+									<span class='dm-cell w15' />
+									<span class='dm-cell w15' />
+									<span class='dm-cell w20' />
+								</div>
+							))}
+						</div>
+					</div>
+				</div>
+			)}
+		</div>
+	)
+}
+
+<style>
+	.product {
+		max-width: 1240px;
+		margin: 0 auto;
+		padding: 0 32px 80px;
+	}
+	.dash {
+		background: var(--bg-3);
+		border-radius: var(--r-card);
+		box-shadow:
+			0 50px 120px -30px color-mix(in srgb, #000 22%, transparent),
+			0 0 0 1px var(--rule);
+		display: grid;
+		grid-template-columns: 200px 1fr;
+		overflow: hidden;
+		min-height: 480px;
+	}
+
+	/* Real screenshot in a browser frame */
+	.dash--shot {
+		grid-template-columns: 1fr;
+		grid-template-rows: auto 1fr;
+		min-height: 0;
+	}
+	.shot-bar {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 12px 16px;
+		background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 7%, var(--bg-3)), var(--bg-3));
+		border-bottom: 1px solid var(--rule);
+	}
+	.shot-dot {
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		background: color-mix(in srgb, var(--ink) 12%, transparent);
+	}
+	.shot-dot:first-child {
+		background: var(--accent);
+	}
+	.shot-url {
+		flex: 1;
+		max-width: 320px;
+		height: 22px;
+		margin-left: 12px;
+		border-radius: 6px;
+		background: color-mix(in srgb, var(--ink) 6%, transparent);
+	}
+	.shot-img {
+		width: 100%;
+		height: auto;
+		display: block;
+	}
+
+	/* CSS dashboard mock */
+	.dash-side {
+		background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 7%, var(--bg-3)), var(--bg-3));
+		padding: 20px 14px;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		border-right: 1px solid var(--rule);
+	}
+	.ds-logo {
+		width: 28px;
+		height: 28px;
+		border-radius: 8px;
+		background: var(--ink);
+		margin-bottom: 16px;
+	}
+	.ds-item {
+		height: 32px;
+		border-radius: 8px;
+		background: color-mix(in srgb, var(--ink) 5%, transparent);
+	}
+	.ds-item.is-on {
+		background: var(--accent-soft);
+		box-shadow: inset 3px 0 0 var(--accent);
+	}
+	.ds-spacer {
+		flex: 1;
+	}
+	.dash-main {
+		padding: 24px 28px;
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+	}
+	.dm-bar {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		padding-bottom: 16px;
+		border-bottom: 1px solid var(--rule);
+	}
+	.dm-title {
+		width: 180px;
+		height: 18px;
+		background: var(--ink);
+		border-radius: 4px;
+	}
+	.dm-search {
+		flex: 1;
+		max-width: 240px;
+		height: 30px;
+		background: color-mix(in srgb, var(--ink) 6%, transparent);
+		border-radius: 8px;
+		margin-left: auto;
+	}
+	.dm-avatar {
+		width: 30px;
+		height: 30px;
+		border-radius: 50%;
+		background: var(--accent);
+	}
+	.dm-stats {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 12px;
+	}
+	.dm-stat {
+		padding: 14px 16px;
+		background: color-mix(in srgb, var(--ink) 4%, transparent);
+		border-radius: 12px;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+	.ds-v {
+		font-family: var(--mono);
+		font-size: 20px;
+		font-weight: 700;
+		color: var(--ink);
+	}
+	.ds-l {
+		display: block;
+		height: 6px;
+		width: 60%;
+		background: color-mix(in srgb, var(--ink) 12%, transparent);
+		border-radius: 3px;
+	}
+	.ds-t {
+		font-family: var(--mono);
+		font-size: 11px;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--ink-3);
+	}
+	.dm-chart {
+		background: color-mix(in srgb, var(--ink) 2%, transparent);
+		border: 1px solid var(--rule);
+		border-radius: 12px;
+		padding: 14px;
+		min-height: 200px;
+	}
+	.dm-chart svg {
+		width: 100%;
+		height: 200px;
+		display: block;
+	}
+	.dm-table {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+	.dm-row {
+		display: flex;
+		gap: 14px;
+		padding: 10px 0;
+		border-bottom: 1px solid var(--rule);
+	}
+	.dm-cell {
+		height: 10px;
+		background: color-mix(in srgb, var(--ink) 10%, transparent);
+		border-radius: 3px;
+	}
+	.dm-cell.w15 {
+		width: 15%;
+	}
+	.dm-cell.w20 {
+		width: 20%;
+	}
+	.dm-cell.w30 {
+		width: 30%;
+	}
+	@media (max-width: 780px) {
+		.dash {
+			grid-template-columns: 1fr;
+		}
+		.dash-side {
+			display: none;
+		}
+		.dm-stats {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+</style>

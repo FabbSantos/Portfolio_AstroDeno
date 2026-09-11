@@ -1,0 +1,79 @@
+---
+import type { AtelierConfig } from '../schema';
+
+interface Props {
+	config: AtelierConfig;
+}
+const { brand, topbar, footer, legal } = Astro.props.config;
+const privacyLabel = brand.locale === 'en' ? 'Privacy' : 'Privacidade';
+---
+
+<footer class='ft'>
+	<div class='ft-inner'>
+		<a href={topbar.brandHref} class='brand'>
+			{brand.name}
+			{topbar.mark && <span class='dot' aria-hidden='true'>{topbar.mark}</span>}
+		</a>
+		<div class='ft-lines'>
+			<p>{footer.line}</p>
+			{legal.lines.map((l) => <p>{l}</p>)}
+			{
+				legal.privacyUrl && (
+					<p>
+						<a href={legal.privacyUrl}>{privacyLabel}</a>
+					</p>
+				)
+			}
+		</div>
+	</div>
+</footer>
+
+<style>
+	.ft {
+		padding: 32px;
+		border-top: 1px solid var(--rule);
+	}
+	.ft-inner {
+		max-width: 1240px;
+		margin: 0 auto;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 14px;
+	}
+	.brand {
+		font-weight: 700;
+		font-size: 18px;
+		letter-spacing: -0.02em;
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		color: var(--ink);
+	}
+	.brand .dot {
+		color: var(--accent);
+		font-size: 14px;
+	}
+	.ft-lines {
+		display: grid;
+		gap: 4px;
+		text-align: right;
+	}
+	.ft p {
+		font-size: 12px;
+		font-family: var(--mono);
+		color: var(--ink-3);
+	}
+	.ft a:not(.brand) {
+		border-bottom: 1px solid currentColor;
+	}
+	.ft a:not(.brand):hover {
+		color: var(--accent);
+	}
+	@media (max-width: 600px) {
+		.ft-lines {
+			text-align: left;
+		}
+	}
+</style>

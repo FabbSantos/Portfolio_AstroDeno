@@ -1,0 +1,72 @@
+/* ==========================================================================
+   Atelier — rules shared by more than one section. Everything else lives in
+   sections/*.astro. Colours come only from the core ThemeVars tokens.
+   ========================================================================== */
+.tpl-atelier {
+	background: var(--bg);
+	color: var(--ink);
+	font-family: var(--sans);
+	min-height: 100vh;
+}
+
+/* md(): **text** */
+.tpl-atelier .hl {
+	color: var(--accent);
+	font-weight: inherit;
+}
+/* md(): ==text== */
+.tpl-atelier .em {
+	font-style: normal;
+	font-weight: 800;
+	background: linear-gradient(120deg, transparent 0 60%, var(--accent-soft) 60% 100%);
+	padding: 0 4px;
+}
+
+.tpl-atelier .eyebrow {
+	font-family: var(--mono);
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	color: var(--accent);
+	text-transform: uppercase;
+	display: block;
+	margin-bottom: 24px;
+}
+
+/* Section heads (Work, Process) */
+.tpl-atelier .sec-h {
+	max-width: 760px;
+	margin: 0 auto 64px;
+	text-align: center;
+}
+.tpl-atelier .sec-h.left {
+	margin-left: 0;
+	text-align: left;
+}
+.tpl-atelier .sec-h h2 {
+	font-size: clamp(36px, 5vw, 64px);
+	font-weight: 800;
+	letter-spacing: -0.035em;
+	line-height: 1.05;
+}
+.tpl-atelier .sec-h .eyebrow {
+	display: block;
+	margin-bottom: 18px;
+}
+.tpl-atelier .sec-l {
+	margin-top: 16px;
+	font-size: 17px;
+	color: var(--ink-2);
+	line-height: 1.55;
+	max-width: 60ch;
+}
+
+/* Mono underlined link (archive, manifesto) */
+.tpl-atelier .link {
+	font-family: var(--mono);
+	font-size: 14px;
+	color: var(--accent);
+	font-weight: 600;
+	border-bottom: 1px solid var(--accent);
+	padding-bottom: 2px;
+}

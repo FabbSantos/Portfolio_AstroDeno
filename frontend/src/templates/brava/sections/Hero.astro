@@ -1,0 +1,239 @@
+---
+/** Hero: eyebrow, 3-line display h1, sub, countdown to `drop.endsAt`, CTA, 3 image tiles. */
+import { Image } from 'astro:assets';
+import type { BravaConfig } from '../schema';
+import { md } from './_md';
+
+interface Props {
+	config: BravaConfig;
+}
+const { config } = Astro.props;
+const { hero, drop } = config;
+
+// Server-side initial state so the numbers are right even before JS runs.
+const diff = Math.max(0, Date.parse(drop.endsAt) - Date.now());
+const ended = diff <= 0;
+const pad = (n: number) => String(n).padStart(2, '0');
+const initial = {
+	d: pad(Math.floor(diff / 86400000)),
+	h: pad(Math.floor((diff % 86400000) / 3600000)),
+	m: pad(Math.floor((diff % 3600000) / 60000)),
+	s: pad(Math.floor((diff % 60000) / 1000)),
+};
+const cells = [
+	['d', drop.units.days],
+	['h', drop.units.hours],
+	['m', drop.units.minutes],
+	['s', drop.units.seconds],
+] as const;
+---
+
+<section class='hero' aria-labelledby='hero-title'>
+	<div class='hero-grid'>
+		<div class='hero-l'>
+			<p class='eyebrow'>{hero.eyebrow}</p>
+			<h1 id='hero-title'>
+				{
+					hero.lines.map((line, i) => (
+						<>
+							{i > 0 && <br />}
+							<Fragment set:html={md(line)} />
+						</>
+					))
+				}
+			</h1>
+			<p class='hero-sub'>{hero.sub}</p>
+			<div class:list={['countdown', { 'is-ended': ended }]} data-countdown data-ends-at={drop.endsAt}>
+				<div class='counter' id='counter' aria-label={drop.countdownLabel} hidden={ended}>
+					{
+						cells.map(([k, label]) => (
+							<div>
+								<span class='c-v' data-cd={k}>
+									{initial[k]}
+								</span>
+								<span class='c-l'>{label}</span>
+							</div>
+						))
+					}
+				</div>
+				<p class='c-ended' data-countdown-ended hidden={!ended}>{drop.ended}</p>
+			</div>
+			<a href={hero.cta.href} class='btn-acc'>{hero.cta.label}</a>
+		</div>
+		<div class='hero-r'>
+			{
+				hero.tiles.map((t, i) => (
+					<div class={`hero-img i-${i + 1}`} style={t.tint ? `--tint:${t.tint}` : undefined}>
+						<Image
+							src={t.image}
+							alt={t.alt}
+							widths={[320, 640, 960]}
+							sizes='(max-width: 900px) 50vw, 20vw'
+							format='webp'
+							loading={i === 0 ? 'eager' : 'lazy'}
+							fetchpriority={i === 0 ? 'high' : undefined}
+							decoding='async'
+						/>
+					</div>
+				))
+			}
+		</div>
+	</div>
+</section>
+
+<script>
+	document.querySelectorAll<HTMLElement>('[data-countdown]').forEach((box) => {
+		const target = Date.parse(box.dataset.endsAt ?? '');
+		if (Number.isNaN(target)) return;
+		const counter = box.querySelector<HTMLElement>('[aria-label]');
+		const endedEl = box.querySelector<HTMLElement>('[data-countdown-ended]');
+		const cell = (k: string) => box.querySelector<HTMLElement>(`[data-cd='${k}']`);
+		const cells = { d: cell('d'), h: cell('h'), m: cell('m'), s: cell('s') };
+		const pad = (n: number) => String(n).padStart(2, '0');
+		let timer = 0;
+
+		const tick = () => {
+			const diff = Math.max(0, target - Date.now());
+			if (cells.d) cells.d.textContent = pad(Math.floor(diff / 86400000));
+			if (cells.h) cells.h.textContent = pad(Math.floor((diff % 86400000) / 3600000));
+			if (cells.m) cells.m.textContent = pad(Math.floor((diff % 3600000) / 60000));
+			if (cells.s) cells.s.textContent = pad(Math.floor((diff % 60000) / 1000));
+			if (diff <= 0) {
+				window.clearInterval(timer);
+				if (counter) counter.hidden = true;
+				if (endedEl) endedEl.hidden = false;
+				box.classList.add('is-ended');
+			}
+		};
+		tick();
+		timer = window.setInterval(tick, 1000);
+	});
+</script>
+
+<style>
+	.hero {
+		max-width: 1240px;
+		margin: 0 auto;
+		padding: 80px 32px 60px;
+	}
+	.hero-grid {
+		display: grid;
+		grid-template-columns: 1.2fr 1fr;
+		gap: 56px;
+		align-items: center;
+	}
+	.hero-l h1 {
+		font-size: clamp(56px, 8.5vw, 132px);
+		font-weight: 900;
+		letter-spacing: -0.045em;
+		line-height: 0.92;
+	}
+	.hero-sub {
+		margin-top: 28px;
+		font-size: 18px;
+		color: var(--ink-2);
+		line-height: 1.55;
+		max-width: 44ch;
+	}
+	.counter {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 12px;
+		margin-top: 32px;
+		max-width: 420px;
+		padding: 18px;
+		background: #fff;
+		border: 2px solid var(--ink);
+		border-radius: var(--radius);
+	}
+	.counter[hidden] {
+		display: none;
+	}
+	.counter div {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+	.c-v {
+		font-family: var(--mono);
+		font-size: 28px;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		line-height: 1;
+	}
+	.c-l {
+		font-family: var(--mono);
+		font-size: 10px;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		color: var(--ink-3);
+		margin-top: 4px;
+	}
+	.c-ended {
+		margin-top: 32px;
+		max-width: 420px;
+		padding: 18px;
+		background: #fff;
+		border: 2px solid var(--ink);
+		border-radius: var(--radius);
+		font-family: var(--mono);
+		font-size: 13px;
+		font-weight: 600;
+		line-height: 1.5;
+	}
+	.c-ended[hidden] {
+		display: none;
+	}
+	.btn-acc {
+		display: inline-flex;
+		padding: 14px 28px;
+		margin-top: 28px;
+		background: var(--ink);
+		color: #fff;
+		border-radius: 0;
+		font-family: var(--mono);
+		font-size: 13px;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		border: 2px solid var(--ink);
+		transition: all 0.2s;
+	}
+	.btn-acc:hover {
+		background: var(--accent);
+		border-color: var(--accent);
+		transform: translate(-3px, -3px);
+		box-shadow: 3px 3px 0 0 var(--ink);
+	}
+
+	.hero-r {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		grid-template-rows: 1fr 1fr;
+		gap: 12px;
+		aspect-ratio: 1;
+	}
+	.hero-img {
+		background: linear-gradient(
+			135deg,
+			color-mix(in srgb, var(--tint, var(--accent)) 15%, #fff),
+			color-mix(in srgb, var(--tint, var(--accent)) 35%, #fff)
+		);
+		border-radius: 8px;
+		overflow: hidden;
+	}
+	.hero-img.i-1 {
+		grid-row: 1 / 3;
+		background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 85%, #000));
+	}
+	.hero-img :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+	@media (max-width: 900px) {
+		.hero-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

@@ -1,0 +1,133 @@
+---
+/**
+ * Footer: brand + address, info columns, then the legal strip —
+ * `legal.lines` (CRECI, memorial de incorporação, disclaimer…) with the
+ * CNPJ after the first line, and the copyright / privacy link on the right.
+ */
+import { Image } from 'astro:assets';
+import type { MiranteConfig } from '../schema';
+import { md } from './_md';
+
+interface Props {
+	config: MiranteConfig;
+}
+const { brand, topbar, footer, legal } = Astro.props.config;
+
+const [first, ...rest] = legal.lines;
+const legalLine = [first, legal.cnpj ? `CNPJ ${legal.cnpj}` : undefined, ...rest].filter(Boolean).join(' · ');
+const copyright = footer.copyright ?? `© ${new Date().getFullYear()}`;
+const privacyLabel = brand.locale === 'en' ? 'Privacy' : 'Privacidade';
+---
+
+<footer class='ft'>
+	<div class='ft-inner'>
+		<div class='ft-brand'>
+			<a href={topbar.brandHref} class='brand'>
+				{
+					brand.logo ? (
+						<Image class='brand-logo' src={brand.logo} alt={brand.name} height={28} densities={[1, 2]} format='webp' loading='lazy' decoding='async' />
+					) : (
+						brand.name
+					)
+				}
+				<span class='dot' aria-hidden='true'>●</span>
+			</a>
+			<p>{footer.address}</p>
+			{footer.hours && <p>{footer.hours}</p>}
+		</div>
+		{
+			footer.columns.length > 0 && (
+				<div class='ft-info' style={`--cols:${footer.columns.length}`}>
+					{footer.columns.map((c) => (
+						<div>
+							<h4>{c.h}</h4>
+							<p set:html={md(c.p)} />
+						</div>
+					))}
+				</div>
+			)
+		}
+	</div>
+	<div class='ft-bot'>
+		{legalLine && <span>{legalLine}</span>}
+		<span class='ft-r'>
+			{copyright}
+			{
+				legal.privacyUrl && (
+					<>
+						{' · '}
+						<a href={legal.privacyUrl}>{privacyLabel}</a>
+					</>
+				)
+			}
+		</span>
+	</div>
+</footer>
+
+<style>
+	.ft {
+		padding: 60px 32px 28px;
+		background: var(--bg-2);
+		border-top: 1px solid var(--rule);
+	}
+	.ft-inner {
+		max-width: 1240px;
+		margin: 0 auto;
+		display: grid;
+		grid-template-columns: 1.4fr 2fr;
+		gap: 48px;
+	}
+	.ft-brand p {
+		margin-top: 10px;
+		font-family: var(--mono);
+		font-size: 13px;
+		color: var(--ink-2);
+	}
+	.ft-brand p + p {
+		margin-top: 4px;
+	}
+	.ft-info {
+		display: grid;
+		grid-template-columns: repeat(var(--cols, 3), 1fr);
+		gap: 28px;
+	}
+	.ft-info h4 {
+		font-family: var(--mono);
+		font-size: 11px;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+		color: var(--accent);
+		margin-bottom: 10px;
+	}
+	.ft-info p {
+		font-size: 14px;
+		color: var(--ink-2);
+		line-height: 1.6;
+	}
+	.ft-bot {
+		max-width: 1240px;
+		margin: 40px auto 0;
+		padding-top: 22px;
+		border-top: 1px solid var(--rule);
+		display: flex;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 14px;
+		font-family: var(--mono);
+		font-size: 11px;
+		color: var(--ink-3);
+	}
+	.ft-bot a:hover {
+		color: var(--accent);
+	}
+	@media (max-width: 900px) {
+		.ft-inner {
+			grid-template-columns: 1fr;
+			gap: 32px;
+		}
+		.ft-info {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+</style>

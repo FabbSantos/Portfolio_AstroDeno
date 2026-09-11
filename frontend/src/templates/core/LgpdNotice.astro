@@ -1,0 +1,116 @@
+---
+/**
+ * LGPD consent bar. Renders only when there is a privacy page to link to AND
+ * the site sets cookies (GA4 / Meta Pixel — Page.astro passes `needsConsent`).
+ * Dismissal is remembered in localStorage.
+ */
+import type { BaseSite } from './schema';
+
+interface Props {
+	legal: BaseSite['legal'];
+	locale: BaseSite['brand']['locale'];
+	needsConsent: boolean;
+}
+const { legal, locale, needsConsent } = Astro.props;
+const show = Boolean(legal.privacyUrl) && needsConsent;
+
+const t =
+	locale === 'en'
+		? {
+				label: 'Cookie notice',
+				text: 'We use cookies to measure visits and improve this site. See our',
+				link: 'privacy policy',
+				ok: 'Got it',
+			}
+		: {
+				label: 'Aviso de cookies',
+				text: 'Usamos cookies para medir visitas e melhorar o site. Veja nossa',
+				link: 'política de privacidade',
+				ok: 'Entendi',
+			};
+---
+
+{
+	show && (
+		<div class='lgpd' role='region' aria-label={t.label} data-lgpd hidden>
+			<p>
+				{t.text} <a href={legal.privacyUrl}>{t.link}</a>.
+			</p>
+			<button type='button' data-lgpd-ok>
+				{t.ok}
+			</button>
+		</div>
+	)
+}
+
+<script>
+	const bar = document.querySelector<HTMLElement>('[data-lgpd]');
+	if (bar) {
+		const KEY = 'lgpd-consent';
+		let seen = false;
+		try {
+			seen = localStorage.getItem(KEY) === '1';
+		} catch {
+			/* storage blocked — show every visit */
+		}
+		if (!seen) bar.hidden = false;
+		bar.querySelector('[data-lgpd-ok]')?.addEventListener('click', () => {
+			bar.hidden = true;
+			try {
+				localStorage.setItem(KEY, '1');
+			} catch {
+				/* ignore */
+			}
+		});
+	}
+</script>
+
+<style>
+	.lgpd {
+		position: fixed;
+		left: 16px;
+		right: 16px;
+		bottom: 16px;
+		z-index: 950;
+		max-width: 640px;
+		margin: 0 auto;
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		padding: 14px 18px;
+		border: 1px solid var(--rule-2);
+		border-radius: var(--radius);
+		background: var(--bg-3);
+		color: var(--ink);
+		box-shadow: 0 18px 40px -20px #000;
+		font-size: 14px;
+	}
+	.lgpd[hidden] {
+		display: none;
+	}
+	.lgpd p {
+		flex: 1;
+		color: var(--ink-2);
+	}
+	.lgpd a {
+		color: var(--accent-text);
+		text-decoration: underline;
+		text-underline-offset: 2px;
+	}
+	.lgpd button {
+		flex: none;
+		min-height: 44px;
+		padding: 0 18px;
+		border-radius: var(--radius);
+		background: var(--ink);
+		color: var(--bg);
+		font-weight: 600;
+	}
+	@media (max-width: 520px) {
+		.lgpd {
+			flex-direction: column;
+			align-items: stretch;
+			text-align: center;
+		}
+	}
+</style>

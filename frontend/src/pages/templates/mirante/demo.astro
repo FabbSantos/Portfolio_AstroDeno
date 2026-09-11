@@ -1,0 +1,15 @@
+---
+/**
+ * Mirante — portfolio demo. All copy/images live in templates/mirante/demo.config.ts;
+ * the page is DemoLayout (ribbon + fonts) + theme tokens + the template body.
+ */
+import DemoLayout from '../../../layouts/DemoLayout.astro';
+import ThemeVars from '../../../templates/core/ThemeVars.astro';
+import MiranteBody from '../../../templates/mirante/MiranteBody.astro';
+import demo from '../../../templates/mirante/demo.config';
+---
+
+<DemoLayout slug='mirante' title={demo.seo.title} description={demo.seo.description} locale='pt' themeColor={demo.theme.bg}>
+	<ThemeVars theme={demo.theme} />
+	<MiranteBody config={demo} />
+</DemoLayout>

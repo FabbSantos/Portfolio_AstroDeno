@@ -1,0 +1,87 @@
+---
+/** "O empreendimento": editorial copy on the left, amenities checklist on the right. */
+import type { MiranteConfig } from '../schema';
+import { md } from './_md';
+
+interface Props {
+	config: MiranteConfig;
+}
+const { project } = Astro.props.config;
+---
+
+<section class='projeto' id='projeto' aria-labelledby='projeto-title'>
+	<div class='p-grid'>
+		<div class='p-l'>
+			{project.eyebrow && <p class='eyebrow'>{project.eyebrow}</p>}
+			<h2 id='projeto-title' set:html={md(project.title)} />
+			{project.paragraphs.map((p) => <p class='p-text' set:html={md(p)} />)}
+		</div>
+		<div class='p-r'>
+			{project.amenitiesTitle && <p class='eyebrow'>{project.amenitiesTitle}</p>}
+			<ul class='amen'>
+				{project.amenities.map((a) => <li>{a}</li>)}
+			</ul>
+		</div>
+	</div>
+</section>
+
+<style>
+	.projeto {
+		max-width: 1240px;
+		margin: 0 auto;
+		padding: 100px 32px;
+	}
+	.p-grid {
+		display: grid;
+		grid-template-columns: 1.4fr 1fr;
+		gap: 64px;
+	}
+	.p-l .eyebrow {
+		display: block;
+		margin-bottom: 18px;
+	}
+	.p-l h2 {
+		font-size: clamp(36px, 5vw, 60px);
+		font-weight: 800;
+		letter-spacing: -0.035em;
+		line-height: 1.04;
+		margin-bottom: 28px;
+	}
+	.p-text {
+		font-size: 17px;
+		color: var(--ink-2);
+		line-height: 1.7;
+		margin-bottom: 16px;
+	}
+	.p-text :global(strong) {
+		color: var(--ink);
+		font-weight: 700;
+	}
+	.p-r .eyebrow {
+		display: block;
+		margin-bottom: 18px;
+	}
+	.amen {
+		list-style: none;
+		display: flex;
+		flex-direction: column;
+	}
+	.amen li {
+		padding: 12px 0;
+		font-size: 15px;
+		color: var(--ink-2);
+		border-bottom: 1px solid var(--rule);
+	}
+	.amen li::before {
+		content: '✓';
+		color: var(--accent);
+		font-weight: 700;
+		margin-right: 10px;
+	}
+	@media (max-width: 900px) {
+		.p-grid {
+			grid-template-columns: 1fr;
+			gap: 40px;
+		}
+	}
+</style>

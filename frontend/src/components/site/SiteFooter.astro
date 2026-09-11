@@ -1,46 +1,222 @@
 ---
+/**
+ * Site footer (every portfolio page). Three columns ≥ 780px: pitch + CTA,
+ * navigation, contacts. Bottom row: copyright · stack · language switch.
+ */
+import { SITE, whatsappUrl } from '../../data/site';
+import { LANG_TAG, altLocale, fmt, localeOf, localePath, stripLocale, switchPath, useT } from '../../i18n';
+
+const locale = localeOf(Astro);
+const t = useT(locale);
+const wa = whatsappUrl(locale);
 const year = new Date().getFullYear();
+const alt = altLocale(locale);
+
+const PRIVACY_PATH = { pt: '/privacidade', en: '/privacy' };
+const privacyHref = localePath(locale, PRIVACY_PATH[locale]);
+
+// The privacy page has a different slug per locale, so the generic
+// switchPath() would 404 there.
+const current = stripLocale(Astro.url.pathname);
+const isPrivacy = current === PRIVACY_PATH.pt || current === PRIVACY_PATH.en;
+const switchHref = isPrivacy ? localePath(alt, PRIVACY_PATH[alt]) : switchPath(locale, Astro.url.pathname);
+
+const nav = [
+	{ href: localePath(locale, '/#servicos'), label: t.nav.services },
+	{ href: localePath(locale, '/work'), label: t.nav.work },
+	{ href: localePath(locale, '/templates'), label: t.nav.templates },
+	{ href: localePath(locale, '/about'), label: t.nav.about },
+	{ href: privacyHref, label: t.nav.privacy },
+];
 ---
 
 <footer class='site-footer'>
-	<div>
-		© {year} · <b>Fabrício Bahiense</b> · <span data-i18n='footer.location'>Rio de Janeiro, BR</span>
-	</div>
-	<div class='links'>
-		<a href='/about' data-i18n='nav.about'>About</a>
-		<a href='/work' data-i18n='nav.work'>Work</a>
-		<a href='/templates' data-i18n='nav.templates'>Templates</a>
-		<a href='mailto:contato@fabbahiense.dev'>Email</a>
+	<div class='inner'>
+		<div class='cols'>
+			<div class='col pitch'>
+				<p class='who'>
+					<b>{SITE.name}</b> · {t.footer.location}
+				</p>
+				<p class='tagline'>{t.footer.tagline}</p>
+				<a class='btn btn-primary' href={localePath(locale, '/#contato')}>{t.common.ctaContact}</a>
+			</div>
+
+			<nav class='col' aria-label={t.footer.navTitle}>
+				<span class='eyebrow'>{t.footer.navTitle}</span>
+				<ul>
+					{nav.map((item) => (
+						<li>
+							<a href={item.href}>{item.label}</a>
+						</li>
+					))}
+				</ul>
+			</nav>
+
+			<div class='col'>
+				<span class='eyebrow'>{t.footer.contactTitle}</span>
+				<ul>
+					<li>
+						<a href={`mailto:${SITE.email}`}>
+							<svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'>
+								<rect x='3' y='5' width='18' height='14' rx='2' />
+								<path d='m3 7 9 6 9-6' />
+							</svg>
+							{SITE.email}
+						</a>
+					</li>
+					{wa && (
+						<li>
+							<a href={wa} target='_blank' rel='noopener'>
+								<svg width='16' height='16' viewBox='0 0 24 24' fill='currentColor' aria-hidden='true'>
+									<path d='M17.5 14.4c-.3-.1-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.4-.5c.2-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.3-.6-.4zM12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2z' />
+								</svg>
+								{t.footer.whatsapp}
+							</a>
+						</li>
+					)}
+					<li>
+						<a href={SITE.social.linkedin} target='_blank' rel='noopener'>
+							<svg width='16' height='16' viewBox='0 0 24 24' fill='currentColor' aria-hidden='true'>
+								<path d='M20.4 2H3.6A1.6 1.6 0 0 0 2 3.6v16.8A1.6 1.6 0 0 0 3.6 22h16.8a1.6 1.6 0 0 0 1.6-1.6V3.6A1.6 1.6 0 0 0 20.4 2zM8 19H5V9h3v10zM6.5 7.7a1.7 1.7 0 1 1 0-3.4 1.7 1.7 0 0 1 0 3.4zM19 19h-3v-4.9c0-1.2 0-2.7-1.6-2.7s-1.9 1.3-1.9 2.6V19h-3V9h2.9v1.4h.1c.4-.8 1.4-1.6 2.8-1.6 3 0 3.6 2 3.6 4.6V19z' />
+							</svg>
+							LinkedIn
+						</a>
+					</li>
+					<li>
+						<a href={SITE.social.github} target='_blank' rel='noopener'>
+							<svg width='16' height='16' viewBox='0 0 24 24' fill='currentColor' aria-hidden='true'>
+								<path d='M12 .6a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .6z' />
+							</svg>
+							GitHub
+						</a>
+					</li>
+					<li>
+						<a href={SITE.social.instagram} target='_blank' rel='noopener'>
+							<svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'>
+								<rect x='3' y='3' width='18' height='18' rx='5' />
+								<circle cx='12' cy='12' r='4' />
+								<circle cx='17.5' cy='6.5' r='1' fill='currentColor' stroke='none' />
+							</svg>
+							Instagram
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<div class='bottom'>
+			<span>{fmt(t.footer.copyright, { year })}</span>
+			<span>{t.footer.madeWith}</span>
+			<a class='lang' href={switchHref} hreflang={LANG_TAG[alt]} lang={LANG_TAG[alt]} rel='alternate'>
+				{t.common.switchTo}
+			</a>
+		</div>
 	</div>
 </footer>
 
 <style>
 	.site-footer {
+		border-top: 1px solid var(--rule);
+		font-size: 14px;
+		color: var(--ink-2);
+		line-height: 1.5;
+	}
+	.inner {
 		max-width: var(--maxw);
 		margin: 0 auto;
-		padding: 32px;
-		border-top: 1px solid var(--rule);
+		padding: 56px 32px 28px;
+	}
+	.cols {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 40px;
+	}
+	@media (min-width: 780px) {
+		.cols {
+			grid-template-columns: 1.6fr 1fr 1.2fr;
+			gap: 48px;
+		}
+	}
+	.col .eyebrow {
+		display: block;
+		margin-bottom: 14px;
+	}
+	.col ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
 		display: flex;
-		justify-content: space-between;
-		flex-wrap: wrap;
-		gap: 14px;
-		font-size: 13px;
-		color: var(--ink-3);
+		flex-direction: column;
+		gap: 2px;
 	}
-	.site-footer b {
-		color: var(--ink);
-		font-weight: 600;
-	}
-	.site-footer a {
+	.col li a {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		min-height: 36px;
+		padding: 4px 0;
 		color: var(--ink-2);
 		transition: color 0.2s;
 	}
-	.site-footer a:hover {
-		color: var(--accent);
+	.col li a svg {
+		flex: none;
+		color: var(--ink-3);
 	}
-	.links {
+	.col li a:hover {
+		color: var(--ink);
+	}
+	.col li a:hover svg {
+		color: var(--accent-text);
+	}
+
+	.pitch .who {
+		font-size: 15px;
+		margin: 0 0 8px;
+	}
+	.pitch .who b {
+		color: var(--ink);
+		font-weight: 700;
+	}
+	.pitch .tagline {
+		margin: 0 0 20px;
+		max-width: 36ch;
+	}
+	.pitch .btn {
+		font-size: 14px;
+		padding: 10px 20px;
+	}
+
+	.bottom {
+		margin-top: 48px;
+		padding-top: 20px;
+		border-top: 1px solid var(--rule);
 		display: flex;
-		gap: 24px;
 		flex-wrap: wrap;
+		gap: 8px 24px;
+		align-items: center;
+		justify-content: space-between;
+		color: var(--ink-3);
+	}
+	.bottom .lang {
+		color: var(--ink-2);
+		font-weight: 600;
+		min-height: 44px;
+		display: inline-flex;
+		align-items: center;
+		transition: color 0.2s;
+	}
+	.bottom .lang:hover {
+		color: var(--accent-text);
+	}
+
+	@media (max-width: 600px) {
+		.inner {
+			padding: 44px 24px 24px;
+		}
+		.bottom {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 4px;
+		}
 	}
 </style>

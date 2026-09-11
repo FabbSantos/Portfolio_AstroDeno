@@ -1,0 +1,55 @@
+---
+/** Story: eyebrow, title, paragraphs, optional link. */
+import type { BravaConfig } from '../schema';
+import { md } from './_md';
+
+interface Props {
+	config: BravaConfig;
+}
+const { config } = Astro.props;
+const { story } = config;
+---
+
+<section class='story' id='story' aria-labelledby='story-title'>
+	<div class='story-inner'>
+		<span class='eyebrow'>{story.eyebrow}</span>
+		<h2 id='story-title' set:html={md(story.title)} />
+		{story.paragraphs.map((p) => <p>{p}</p>)}
+		{
+			story.link && (
+				<a href={story.link.href} class='link'>
+					{story.link.label}
+				</a>
+			)
+		}
+	</div>
+</section>
+
+<style>
+	.story {
+		max-width: 720px;
+		margin: 100px auto 0;
+		padding: 0 32px;
+	}
+	.story-inner h2 {
+		font-size: clamp(36px, 5.5vw, 64px);
+		font-weight: 900;
+		letter-spacing: -0.035em;
+		line-height: 1.05;
+		margin-bottom: 24px;
+	}
+	.story-inner p {
+		font-size: 19px;
+		color: var(--ink-2);
+		line-height: 1.65;
+		margin-bottom: 18px;
+	}
+	.link {
+		font-family: var(--mono);
+		font-size: 13px;
+		color: var(--accent);
+		font-weight: 700;
+		border-bottom: 2px solid var(--accent);
+		padding-bottom: 2px;
+	}
+</style>

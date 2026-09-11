@@ -1,0 +1,66 @@
+---
+/**
+ * Generic 404 page. noindex.
+ */
+import type { BaseSite } from '../schema';
+import Page from '../Page.astro';
+
+interface Props {
+	site: BaseSite;
+}
+const { site } = Astro.props;
+const en = site.brand.locale === 'en';
+const home = new URL(site.seo.canonical).origin;
+
+const t = en
+	? { title: 'Page not found', text: 'The address may be wrong or the page has moved.', back: 'Back to home' }
+	: { title: 'Página não encontrada', text: 'O endereço pode estar errado ou a página mudou de lugar.', back: 'Voltar ao início' };
+---
+
+<Page site={site} class='core-page' noindex>
+	<main class='nf'>
+		<p class='nf-code'>404</p>
+		<h1>{t.title}</h1>
+		<p class='nf-text'>{t.text}</p>
+		<a class='nf-btn' href={home}>{t.back}</a>
+	</main>
+</Page>
+
+<style>
+	.nf {
+		min-height: 100svh;
+		display: grid;
+		align-content: center;
+		justify-items: center;
+		text-align: center;
+		gap: 12px;
+		padding: 48px 20px;
+	}
+	.nf-code {
+		font-family: var(--mono);
+		font-size: 14px;
+		letter-spacing: 0.1em;
+		color: var(--accent-text);
+	}
+	.nf h1 {
+		font-size: var(--fs-h2);
+		letter-spacing: -0.03em;
+		line-height: 1;
+	}
+	.nf-text {
+		max-width: 440px;
+		font-size: var(--fs-lead);
+		color: var(--ink-2);
+	}
+	.nf-btn {
+		display: inline-flex;
+		align-items: center;
+		min-height: 48px;
+		margin-top: 20px;
+		padding: 0 26px;
+		border-radius: var(--radius);
+		background: var(--accent);
+		color: #fff;
+		font-weight: 700;
+	}
+</style>

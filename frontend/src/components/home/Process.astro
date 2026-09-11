@@ -1,0 +1,158 @@
+---
+/**
+ * #processo — "Como eu trabalho": four numbered steps (a real sequence, so
+ * numbering is right) plus the "Você recebe" checklist.
+ */
+import { localeOf, localePath, useT } from '../../i18n';
+
+const locale = localeOf(Astro);
+const t = useT(locale);
+const contactHref = `${localePath(locale, '/')}#contato`;
+---
+
+<section class='section' id='processo'>
+	<div class='sec-head reveal'>
+		<span class='eyebrow accent'>{t.process.eyebrow}</span>
+		<h2>
+			{t.process.head1}
+			<span class='hl'>{t.process.head2}</span>
+		</h2>
+		<p>{t.process.lead}</p>
+	</div>
+
+	<div class='process-grid'>
+		<ol class='steps reveal d1'>
+			{
+				t.process.steps.map((s, i) => (
+					<li class='step'>
+						<span class='step-num' aria-hidden='true'>
+							{String(i + 1).padStart(2, '0')}
+						</span>
+						<h3>{s.title}</h3>
+						<p>{s.desc}</p>
+					</li>
+				))
+			}
+		</ol>
+
+		<div class='deliver'>
+			<h3 class='eyebrow accent'>{t.process.deliverTitle}</h3>
+			<ul class='deliver-list'>
+				{t.process.deliverables.map((d) => <li>{d}</li>)}
+			</ul>
+			<a href={contactHref} class='btn btn-primary'>{t.common.ctaContact}</a>
+		</div>
+	</div>
+</section>
+
+<style>
+	.process-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 340px;
+		gap: 64px;
+		align-items: start;
+	}
+	.steps {
+		list-style: none;
+		border-top: 1px solid var(--rule);
+	}
+	.step {
+		display: grid;
+		grid-template-columns: 64px minmax(0, 1fr);
+		column-gap: 24px;
+		padding: 28px 0;
+		border-bottom: 1px solid var(--rule);
+	}
+	.step-num {
+		grid-row: 1 / 3;
+		padding-top: 6px;
+		font-family: var(--mono);
+		font-size: 13px;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		color: var(--accent-text);
+	}
+	.step h3 {
+		font-size: 24px;
+		font-weight: 800;
+		letter-spacing: -0.02em;
+		line-height: 1.1;
+	}
+	.step p {
+		grid-column: 2;
+		margin-top: 8px;
+		font-size: 16px;
+		line-height: 1.55;
+		color: var(--ink-2);
+		max-width: 58ch;
+	}
+
+	.deliver {
+		position: sticky;
+		top: 96px;
+		padding: 28px;
+		border-radius: 20px;
+		background: var(--bg-2);
+	}
+	.deliver h3 {
+		display: block;
+		margin-bottom: 16px;
+	}
+	.deliver-list {
+		list-style: none;
+		display: grid;
+		gap: 10px;
+		margin-bottom: 24px;
+	}
+	.deliver-list li {
+		display: flex;
+		align-items: flex-start;
+		gap: 10px;
+		font-size: 15px;
+		font-weight: 500;
+		line-height: 1.45;
+	}
+	.deliver-list li::before {
+		content: '✓';
+		flex-shrink: 0;
+		font-family: var(--mono);
+		font-weight: 700;
+		color: var(--accent-text);
+	}
+	.deliver .btn {
+		width: 100%;
+	}
+
+	@media (max-width: 1024px) {
+		.process-grid {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 40px;
+		}
+		.deliver {
+			position: static;
+		}
+		.deliver .btn {
+			width: auto;
+		}
+	}
+	@media (max-width: 600px) {
+		.step {
+			grid-template-columns: 44px minmax(0, 1fr);
+			column-gap: 14px;
+			padding: 22px 0;
+		}
+		.step h3 {
+			font-size: 21px;
+		}
+		.step p {
+			font-size: 15px;
+		}
+		.deliver {
+			padding: 22px 20px;
+			border-radius: 16px;
+		}
+		.deliver .btn {
+			width: 100%;
+		}
+	}
+</style>

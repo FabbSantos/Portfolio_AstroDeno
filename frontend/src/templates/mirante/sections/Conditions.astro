@@ -1,0 +1,139 @@
+---
+/** Payment conditions ("Condições") — one card per option, featured one highlighted. */
+import type { MiranteConfig } from '../schema';
+import { md } from './_md';
+
+interface Props {
+	config: MiranteConfig;
+}
+const { conditions } = Astro.props.config;
+---
+
+<section class='valores' id='valores' aria-labelledby='valores-title'>
+	<div class='sec-h'>
+		{conditions.eyebrow && <p class='eyebrow'>{conditions.eyebrow}</p>}
+		<h2 id='valores-title' set:html={md(conditions.title)} />
+	</div>
+	<div class='val-grid'>
+		{
+			conditions.items.map((c) => (
+				<article class:list={['val', { 'is-mid': c.featured }]}>
+					{c.badge && <span class='v-badge'>{c.badge}</span>}
+					<span class='v-tag'>{c.tag}</span>
+					<p class='v-h' set:html={md(c.headline)} />
+					<p class='v-d'>{c.desc}</p>
+					{c.bullets.length > 0 && (
+						<ul>
+							{c.bullets.map((b) => (
+								<li>{b}</li>
+							))}
+						</ul>
+					)}
+				</article>
+			))
+		}
+	</div>
+	{conditions.foot && <p class='val-foot'>{conditions.foot}</p>}
+</section>
+
+<style>
+	.valores {
+		background: var(--bg-2);
+		padding: 100px 0;
+	}
+	.val-grid {
+		max-width: 1240px;
+		margin: 0 auto;
+		padding: 0 32px;
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 16px;
+	}
+	.val {
+		background: #fff;
+		border: 1px solid var(--rule);
+		border-radius: var(--r-card);
+		padding: 32px 28px;
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+		position: relative;
+	}
+	.val.is-mid {
+		border-color: var(--accent);
+		box-shadow: 0 30px 80px -30px color-mix(in srgb, var(--accent) 45%, transparent);
+	}
+	.v-badge {
+		position: absolute;
+		top: -12px;
+		left: 50%;
+		transform: translateX(-50%);
+		background: var(--accent);
+		color: #fff;
+		font-family: var(--mono);
+		font-size: 10px;
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		padding: 5px 12px;
+		text-transform: uppercase;
+		border-radius: var(--r-tag);
+		white-space: nowrap;
+	}
+	.v-tag {
+		font-family: var(--mono);
+		font-size: 12px;
+		color: var(--ink-3);
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+	.v-h {
+		font-size: 26px;
+		font-weight: 800;
+		letter-spacing: -0.025em;
+		line-height: 1.1;
+		color: var(--ink);
+	}
+	.v-h :global(strong) {
+		color: var(--accent);
+		font-weight: inherit;
+	}
+	.v-d {
+		font-size: 14px;
+		color: var(--ink-2);
+		line-height: 1.5;
+	}
+	.val ul {
+		list-style: none;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		margin-top: 4px;
+		padding-top: 14px;
+		border-top: 1px solid var(--rule);
+	}
+	.val li {
+		font-size: 13px;
+		color: var(--ink-2);
+	}
+	.val li::before {
+		content: '–';
+		margin-right: 8px;
+		color: var(--accent);
+		font-weight: 700;
+	}
+	.val-foot {
+		max-width: 1240px;
+		margin: 28px auto 0;
+		padding: 0 32px;
+		font-family: var(--mono);
+		font-size: 11px;
+		color: var(--ink-3);
+		text-align: center;
+	}
+	@media (max-width: 900px) {
+		.val-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

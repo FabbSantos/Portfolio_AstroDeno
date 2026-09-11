@@ -1,0 +1,382 @@
+---
+/**
+ * Lead form wired to `site.contact.form.provider`:
+ *   none      → demo: submit is intercepted and a note is shown
+ *   whatsapp  → opens wa.me with the fields as "Label: value" lines
+ *   formspree → POST multipart to `endpoint` (https://formspree.io/f/xxxx)
+ *   web3forms → POST multipart to api.web3forms.com with access_key=`endpoint`
+ *   resend    → POST JSON to /api/lead (the starter's endpoint, Resend e-mail)
+ *   webhook   → POST JSON to /api/lead (forwarded to LEAD_WEBHOOK_URL)
+ *
+ * Labels visible, 44px controls, honeypot `hp`, hidden `source`, aria-live status.
+ */
+import type { BaseSite, LeadField } from './schema';
+
+interface Props {
+	site: BaseSite;
+	id: string;
+	variant: 'mini' | 'full';
+	fields: LeadField[];
+	cta: string;
+	foot?: string;
+	class?: string;
+	source?: string;
+}
+const { site, id, variant, fields, cta, foot, class: className, source = id } = Astro.props;
+const { form, whatsapp } = site.contact;
+const locale = site.brand.locale;
+const provider = form.provider;
+
+// Progressive enhancement: providers that accept a plain POST keep it as `action`.
+const action =
+	provider === 'formspree'
+		? form.endpoint
+		: provider === 'web3forms'
+			? 'https://api.web3forms.com/submit'
+			: provider === 'resend' || provider === 'webhook'
+				? '/api/lead'
+				: undefined;
+
+const hpLabel = locale === 'en' ? 'Leave this field blank' : 'Deixe este campo em branco';
+
+function autocompleteFor(f: LeadField): string | undefined {
+	if (f.autocomplete) return f.autocomplete;
+	if (f.type === 'tel') return 'tel';
+	if (f.type === 'email') return 'email';
+	if (f.name === 'name') return 'name';
+	return undefined;
+}
+---
+
+<form
+	class:list={['lead-form', `lead-form--${variant}`, className]}
+	id={id}
+	method='post'
+	action={action}
+	data-lead-form
+	data-provider={provider}
+	data-endpoint={form.endpoint ?? ''}
+	data-success-url={form.successUrl ?? ''}
+	data-success-message={form.successMessage}
+	data-whatsapp={whatsapp?.number ?? ''}
+	data-locale={locale}
+>
+	<div class='lf-body'>
+		{
+			fields.map((f) => {
+				const fid = `${id}-${f.name}`;
+				return (
+					<div class:list={['lf-field', `lf-field--${f.type}`]}>
+						<label for={fid}>
+							{f.label}
+							{f.required && (
+								<span class='lf-req' aria-hidden='true'>
+									{' '}
+									*
+								</span>
+							)}
+						</label>
+						{f.type === 'textarea' ? (
+							<textarea
+								id={fid}
+								name={f.name}
+								rows='4'
+								required={f.required}
+								placeholder={f.placeholder}
+								autocomplete={autocompleteFor(f)}
+								data-label={f.label}
+							/>
+						) : f.type === 'select' ? (
+							<select id={fid} name={f.name} required={f.required} autocomplete={autocompleteFor(f)} data-label={f.label}>
+								{f.placeholder && (
+									<option value='' disabled selected>
+										{f.placeholder}
+									</option>
+								)}
+								{(f.options ?? []).map((o) => <option value={o}>{o}</option>)}
+							</select>
+						) : (
+							<input
+								id={fid}
+								type={f.type}
+								name={f.name}
+								required={f.required}
+								placeholder={f.placeholder}
+								autocomplete={autocompleteFor(f)}
+								inputmode={f.type === 'tel' ? 'tel' : undefined}
+								data-label={f.label}
+							/>
+						)}
+					</div>
+				);
+			})
+		}
+		<button class='lf-submit' type='submit' data-label={cta}>
+			{cta}
+		</button>
+	</div>
+
+	<div class='lf-hp' aria-hidden='true'>
+		<label for={`${id}-hp`}>{hpLabel}</label>
+		<input id={`${id}-hp`} type='text' name='hp' tabindex='-1' autocomplete='off' />
+	</div>
+	<input type='hidden' name='source' value={source} />
+	{provider === 'web3forms' && form.endpoint && <input type='hidden' name='access_key' value={form.endpoint} />}
+
+	<p class='lf-status' role='status' aria-live='polite' data-status></p>
+	{foot && <p class='lf-foot'>{foot}</p>}
+</form>
+
+<script>
+	type Provider = 'none' | 'whatsapp' | 'formspree' | 'web3forms' | 'resend' | 'webhook';
+	type Kind = 'ok' | 'error' | 'info';
+
+	const COPY = {
+		'pt-BR': {
+			demo: 'Demo — o formulário real é ligado no seu deploy.',
+			sending: 'Enviando…',
+			error: 'Não foi possível enviar. Tente de novo ou fale pelo WhatsApp.',
+		},
+		en: {
+			demo: 'Demo — the real form is wired on your deploy.',
+			sending: 'Sending…',
+			error: 'Could not send. Please try again.',
+		},
+	} as const;
+
+	const WEB3FORMS = 'https://api.web3forms.com/submit';
+
+	document.querySelectorAll<HTMLFormElement>('form[data-lead-form]').forEach((form) => {
+		const d = form.dataset;
+		const provider = (d.provider ?? 'none') as Provider;
+		const t = COPY[d.locale === 'en' ? 'en' : 'pt-BR'];
+		const status = form.querySelector<HTMLElement>('[data-status]');
+		const button = form.querySelector<HTMLButtonElement>('button[type=submit]');
+		const idle = button?.dataset.label ?? button?.textContent ?? '';
+
+		const say = (text: string, kind: Kind) => {
+			if (!status) return;
+			status.textContent = text;
+			status.dataset.kind = kind;
+		};
+		const busy = (on: boolean) => {
+			if (!button) return;
+			button.disabled = on;
+			button.textContent = on ? t.sending : idle;
+		};
+		const finish = () => {
+			if (d.successUrl) {
+				window.location.assign(d.successUrl);
+				return;
+			}
+			form.reset();
+			say(d.successMessage ?? '', 'ok');
+		};
+		/** [label, value] for every labelled field with a value. */
+		const entries = (): Array<[string, string]> => {
+			const out: Array<[string, string]> = [];
+			form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('[data-label]').forEach((el) => {
+				const v = el.value.trim();
+				if (v && el.dataset.label) out.push([el.dataset.label, v]);
+			});
+			return out;
+		};
+		const payload = (): Record<string, string> => {
+			const obj: Record<string, string> = {};
+			new FormData(form).forEach((v, k) => {
+				if (typeof v === 'string') obj[k] = v;
+			});
+			return obj;
+		};
+
+		form.addEventListener('submit', async (ev) => {
+			ev.preventDefault();
+
+			if (provider === 'none') {
+				say(t.demo, 'info');
+				return;
+			}
+			if (!form.checkValidity()) {
+				form.reportValidity();
+				return;
+			}
+			// Honeypot filled → bot. Pretend it worked, send nothing.
+			const hp = form.elements.namedItem('hp') as HTMLInputElement | null;
+			if (hp?.value) {
+				finish();
+				return;
+			}
+
+			if (provider === 'whatsapp') {
+				const number = d.whatsapp ?? '';
+				const text = entries()
+					.map(([k, v]) => `${k}: ${v}`)
+					.join('\n');
+				window.open(`https://wa.me/${number}?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
+				finish();
+				return;
+			}
+
+			busy(true);
+			say('', 'info');
+			try {
+				let ok = false;
+				if (provider === 'formspree' || provider === 'web3forms') {
+					const endpoint = provider === 'web3forms' ? WEB3FORMS : (d.endpoint ?? '');
+					if (!endpoint) throw new Error('missing endpoint');
+					const fd = new FormData(form);
+					if (provider === 'web3forms') fd.set('access_key', d.endpoint ?? '');
+					const res = await fetch(endpoint, { method: 'POST', body: fd, headers: { accept: 'application/json' } });
+					ok = res.ok;
+				} else {
+					const res = await fetch('/api/lead', {
+						method: 'POST',
+						headers: { 'content-type': 'application/json', accept: 'application/json' },
+						body: JSON.stringify(payload()),
+					});
+					const data = (await res.json().catch(() => ({}))) as { ok?: boolean };
+					ok = res.ok && data.ok === true;
+				}
+				if (!ok) throw new Error('send failed');
+				finish();
+			} catch {
+				// Values are kept so the visitor can retry.
+				say(t.error, 'error');
+			} finally {
+				busy(false);
+			}
+		});
+	});
+</script>
+
+<style>
+	.lead-form {
+		display: block;
+		font-family: var(--sans);
+		color: var(--ink);
+	}
+	.lf-body {
+		display: grid;
+		gap: 14px;
+	}
+	.lf-field {
+		display: grid;
+		gap: 6px;
+		min-width: 0;
+	}
+	.lf-field label {
+		font-size: 13px;
+		font-weight: 600;
+		letter-spacing: 0.01em;
+		color: var(--ink-2);
+	}
+	.lf-req {
+		color: var(--accent-text);
+	}
+	.lf-field input,
+	.lf-field select,
+	.lf-field textarea {
+		width: 100%;
+		min-height: 44px;
+		padding: 10px 14px;
+		font: inherit;
+		font-size: 16px; /* prevents iOS zoom on focus */
+		color: var(--ink);
+		background: var(--bg-3);
+		border: 1px solid var(--rule-2);
+		border-radius: var(--radius);
+		transition: border-color 0.15s;
+	}
+	.lf-field textarea {
+		resize: vertical;
+		min-height: 120px;
+	}
+	.lf-field input::placeholder,
+	.lf-field textarea::placeholder {
+		color: var(--ink-3);
+	}
+	.lf-field input:focus,
+	.lf-field select:focus,
+	.lf-field textarea:focus {
+		border-color: var(--accent);
+		outline: 2px solid var(--accent-soft);
+		outline-offset: 0;
+	}
+	.lf-submit {
+		min-height: 48px;
+		padding: 0 24px;
+		border-radius: var(--radius);
+		background: var(--accent);
+		color: #fff;
+		font-weight: 700;
+		letter-spacing: 0.01em;
+		transition:
+			transform 0.2s var(--ease-out-expo),
+			opacity 0.15s;
+	}
+	.lf-submit:hover {
+		transform: translateY(-1px);
+	}
+	.lf-submit:disabled {
+		opacity: 0.6;
+		cursor: wait;
+		transform: none;
+	}
+	.lf-hp {
+		position: absolute;
+		left: -10000px;
+		top: auto;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+	}
+	.lf-status {
+		min-height: 1.4em;
+		margin-top: 12px;
+		font-size: 14px;
+		color: var(--ink-2);
+	}
+	.lf-status:empty {
+		margin-top: 0;
+		min-height: 0;
+	}
+	.lf-status[data-kind='ok'] {
+		color: var(--accent-text);
+		font-weight: 600;
+	}
+	.lf-status[data-kind='error'] {
+		color: var(--ink);
+		font-weight: 600;
+	}
+	.lf-foot {
+		margin-top: 10px;
+		font-size: 12.5px;
+		color: var(--ink-3);
+	}
+
+	/* full — 2-column grid, long fields span both */
+	@media (min-width: 640px) {
+		.lead-form--full .lf-body {
+			grid-template-columns: 1fr 1fr;
+			gap: 16px;
+		}
+		.lead-form--full .lf-field--textarea,
+		.lead-form--full .lf-submit {
+			grid-column: 1 / -1;
+		}
+		.lead-form--full .lf-submit {
+			justify-self: start;
+		}
+	}
+
+	/* mini — one inline row */
+	@media (min-width: 640px) {
+		.lead-form--mini .lf-body {
+			grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+			align-items: end;
+		}
+		.lead-form--mini .lf-submit {
+			min-height: 44px;
+		}
+	}
+</style>

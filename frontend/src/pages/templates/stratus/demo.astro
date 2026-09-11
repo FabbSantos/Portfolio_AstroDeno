@@ -1,0 +1,15 @@
+---
+/**
+ * Stratus — portfolio demo. All copy/images live in templates/stratus/demo.config.ts;
+ * the page is DemoLayout (ribbon + fonts) + theme tokens + the template body.
+ */
+import DemoLayout from '../../../layouts/DemoLayout.astro';
+import ThemeVars from '../../../templates/core/ThemeVars.astro';
+import StratusBody from '../../../templates/stratus/StratusBody.astro';
+import demo from '../../../templates/stratus/demo.config';
+---
+
+<DemoLayout slug='stratus' title={demo.seo.title} description={demo.seo.description} locale='en' themeColor={demo.theme.bg}>
+	<ThemeVars theme={demo.theme} />
+	<StratusBody config={demo} />
+</DemoLayout>

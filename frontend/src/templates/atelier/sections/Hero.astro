@@ -1,0 +1,63 @@
+---
+import type { AtelierConfig } from '../schema';
+import { md } from './_md';
+
+interface Props {
+	config: AtelierConfig;
+}
+const { hero } = Astro.props.config;
+---
+
+<section class='hero' aria-labelledby='hero-title'>
+	<p class='eyebrow'>{hero.eyebrow}</p>
+	<h1 id='hero-title' set:html={md(hero.title)} />
+	{
+		hero.meta.length > 0 && (
+			<div class='hero-meta'>
+				{hero.meta.map((m) => (
+					<div>
+						<span class='eyebrow'>{m.label}</span>
+						<p>{m.value}</p>
+					</div>
+				))}
+			</div>
+		)
+	}
+</section>
+
+<style>
+	.hero {
+		max-width: 1240px;
+		margin: 0 auto;
+		padding: 120px 32px 100px;
+	}
+	.hero h1 {
+		font-size: clamp(48px, 8vw, 124px);
+		font-weight: 800;
+		letter-spacing: -0.04em;
+		line-height: 0.96;
+		max-width: 14ch;
+	}
+	.hero-meta {
+		margin-top: 80px;
+		padding-top: 28px;
+		border-top: 1px solid var(--rule);
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+		gap: 40px;
+	}
+	.hero-meta div .eyebrow {
+		color: var(--ink-3);
+		margin-bottom: 8px;
+	}
+	.hero-meta div p {
+		font-size: 15px;
+		color: var(--ink-2);
+	}
+	@media (max-width: 780px) {
+		.hero-meta {
+			grid-template-columns: 1fr;
+			gap: 24px;
+		}
+	}
+</style>

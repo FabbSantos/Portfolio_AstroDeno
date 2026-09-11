@@ -1,0 +1,90 @@
+---
+import type { AtelierConfig } from '../schema';
+import { md } from './_md';
+
+interface Props {
+	config: AtelierConfig;
+}
+const { process } = Astro.props.config;
+---
+
+<section class='process' id='process' aria-labelledby='process-title'>
+	<div class='sec-h left'>
+		<span class='eyebrow'>{process.eyebrow}</span>
+		<h2 id='process-title' set:html={md(process.title)} />
+		{process.lead && <p class='sec-l'>{process.lead}</p>}
+	</div>
+	<div class='steps'>
+		{
+			process.steps.map((s) => (
+				<article class='step'>
+					<span class='s-n' aria-hidden='true'>
+						{s.n}
+					</span>
+					<div class='s-body'>
+						<h3>{s.t}</h3>
+						<p>{s.d}</p>
+					</div>
+				</article>
+			))
+		}
+	</div>
+</section>
+
+<style>
+	.process {
+		max-width: 1240px;
+		margin: 0 auto;
+		padding: 100px 32px;
+	}
+	.steps {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 8px;
+	}
+	.step {
+		padding: 36px 32px;
+		display: flex;
+		gap: 24px;
+		align-items: flex-start;
+		border-top: 1px solid var(--rule);
+	}
+	.step:nth-child(1),
+	.step:nth-child(2) {
+		border-top: none;
+	}
+	.s-n {
+		font-family: var(--mono);
+		font-size: 56px;
+		font-weight: 300;
+		line-height: 1;
+		color: var(--accent);
+		opacity: 0.8;
+	}
+	.s-body h3 {
+		font-size: 24px;
+		font-weight: 700;
+		letter-spacing: -0.015em;
+		margin-bottom: 8px;
+	}
+	.s-body p {
+		font-size: 15px;
+		color: var(--ink-2);
+		line-height: 1.6;
+	}
+	@media (max-width: 780px) {
+		.steps {
+			grid-template-columns: 1fr;
+		}
+		.step {
+			border-top: 1px solid var(--rule);
+			padding: 28px 0;
+		}
+		.step:nth-child(1) {
+			border-top: none;
+		}
+		.step:nth-child(2) {
+			border-top: 1px solid var(--rule);
+		}
+	}
+</style>
