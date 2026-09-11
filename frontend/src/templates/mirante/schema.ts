@@ -20,9 +20,9 @@ export const miranteSchema = baseSiteSchema.extend({
 	topbar: z
 		.object({
 			brandHref: z.string().min(1).default('#'),
-			cta: link.default({ label: 'Falar com consultor →', href: '#lead' }),
+			cta: link.prefault({ label: 'Falar com consultor →', href: '#lead' }),
 		})
-		.default({}),
+		.prefault({}),
 
 	hero: z.object({
 		/** Shown after the pulsing "live" dot, e.g. 'Lançamento · Pinheiros, SP · Pré-vendas abertas'. */
@@ -46,7 +46,7 @@ export const miranteSchema = baseSiteSchema.extend({
 					nome: z.string().min(1).default('Nome'),
 					telefone: z.string().min(1).default('Telefone'),
 				})
-				.default({}),
+				.prefault({}),
 		}),
 	}),
 
@@ -83,7 +83,7 @@ export const miranteSchema = baseSiteSchema.extend({
 			)
 			.min(1),
 		/** Link at the bottom of every card. */
-		link: link.default({ label: 'Ver disponibilidade →', href: '#lead' }),
+		link: link.prefault({ label: 'Ver disponibilidade →', href: '#lead' }),
 		/** Room labels of the wireframe fallback, in order: sala, varanda, dormitório, suíte, cozinha, banho. */
 		rooms: z.array(z.string().min(1)).length(6).default(['Sala', 'Varanda', 'Dorm', 'Suíte', 'Cozi', 'Banho']),
 	}),
@@ -96,7 +96,7 @@ export const miranteSchema = baseSiteSchema.extend({
 			/** Client's own map (1300×1000, 13:10) — draw the pins on it. */
 			z.object({ kind: z.literal('image'), image, alt: z.string().optional() }),
 			/** Google Maps → Share → Embed a map → the `src` of the iframe. */
-			z.object({ kind: z.literal('gmaps'), embedUrl: z.string().url() }),
+			z.object({ kind: z.literal('gmaps'), embedUrl: z.url() }),
 			/** CSS placeholder with the brand marker and numbered pins for the first 6 POIs. */
 			z.object({ kind: z.literal('wireframe') }),
 		]),
@@ -149,7 +149,7 @@ export const miranteSchema = baseSiteSchema.extend({
 				mensagem: z.string().min(1).default('Mensagem (opcional)'),
 				qualquer: z.string().min(1).default('Não tenho preferência'),
 			})
-			.default({}),
+			.prefault({}),
 	}),
 
 	footer: z.object({

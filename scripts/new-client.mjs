@@ -90,7 +90,7 @@ const FORM_HOOKS = {
 	},
 };
 
-const VERCEL_ADAPTER_VERSION = '^8.2.11';
+const VERCEL_ADAPTER_VERSION = '^11.0.10';
 const ADAPTER_MARKER = '// __ADAPTER__ ';
 
 /** Files copied verbatim (no placeholder replacement). Everything else is text. */

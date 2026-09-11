@@ -79,7 +79,7 @@ export const atelierSchema = baseSiteSchema.extend({
 	}),
 	/** Core `contact` (whatsapp / phone / form) + the closing section's copy. E-mail is required: the template is e-mail first. */
 	contact: baseSiteSchema.shape.contact.extend({
-		email: z.string().email(),
+		email: z.email(),
 		eyebrow: z.string().min(1),
 		/** md */
 		title: z.string().min(1),
