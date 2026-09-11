@@ -19,7 +19,7 @@ export const SITE = {
 	/** TODO(fab): número no formato internacional, só dígitos (ex.: '5521999998888').
 	 *  Vazio = todos os botões de WhatsApp ficam escondidos automaticamente. */
 	whatsapp: {
-		number: '',
+		number: '+5521968240663',
 		message: {
 			pt: 'Oi Fabrício! Vi seu site e quero conversar sobre um projeto.',
 			en: "Hi Fabrício! I saw your site and I'd like to talk about a project.",
@@ -34,14 +34,14 @@ export const SITE = {
 	/** TODO(fab): uma frase honesta de capacidade (formato/horas). Substitui
 	 *  "Aberto a projetos selecionados" e "aceito quantos clientes vierem". */
 	availability: {
-		pt: 'Agenda aberta para novos projetos · set/2026',
-		en: 'Booking new projects · Sep 2026',
+		pt: 'Pode me chamar que a gente resolve!',
+		en: "Send a message, I'll solve your problem!",
 	} as Bi,
 
 	stats: {
 		years: '8+',
 		products: '20+',
-		clients: '10',
+		clients: '10+',
 	},
 
 	social: {
@@ -59,7 +59,9 @@ export const SITE = {
 
 /** wa.me deep link, or null when no number is configured. */
 export function whatsappUrl(locale: 'pt' | 'en', text?: string): string | null {
-	if (!SITE.whatsapp.number) return null;
+	// wa.me wants digits only (no '+', spaces or dashes) — tolerate any formatting in SITE.
+	const digits = SITE.whatsapp.number.replace(/\D/g, '');
+	if (!digits) return null;
 	const msg = text ?? SITE.whatsapp.message[locale];
-	return `https://wa.me/${SITE.whatsapp.number}?text=${encodeURIComponent(msg)}`;
+	return `https://wa.me/${digits}?text=${encodeURIComponent(msg)}`;
 }
