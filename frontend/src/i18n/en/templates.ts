@@ -27,6 +27,29 @@ export const templates: Shape<typeof ptShape> = {
 		open: 'View template',
 		includes: 'Includes domain, SSL, SEO and {months} months of adjustments',
 		previewAlt: '{name} template preview',
+		hoverHint: 'hover to scroll',
+		demo: 'View demo',
+		solves: 'Solves:',
+	},
+
+	solves: {
+		mirante: 'a real-estate launch that needs leads',
+		stratus: 'a B2B SaaS that needs trials',
+		atelier: 'a studio or agency that needs a portfolio',
+		brava: 'an e-commerce drop with a countdown',
+	},
+
+	compare: {
+		eyebrow: 'Which one is mine?',
+		title: 'Compare in ten seconds',
+		sub: 'Audience, timeline and price side by side.',
+		criterion: 'Criterion',
+		rows: {
+			who: 'for whom',
+			days: 'timeline',
+			price: 'from',
+			sections: 'sections',
+		},
 	},
 
 	detail: {

@@ -206,6 +206,12 @@ const first = scenes[0];
 		object-fit: cover;
 		object-position: center;
 		z-index: 0;
+		/* Incoming scene settles from 1.02 → 1 while it fades in. */
+		transform: scale(1.02);
+		transition: transform 1.1s var(--ease-out-expo);
+	}
+	.scene.is-active .scene-img {
+		transform: scale(1);
 	}
 	.scene::after {
 		content: '';
@@ -227,6 +233,12 @@ const first = scenes[0];
 		gap: 8px;
 		padding: 28px 32px 32px;
 		color: #fff;
+		/* Caption rises with the incoming scene. */
+		transform: translateY(10px);
+		transition: transform 0.8s var(--ease-out-expo) 0.1s;
+	}
+	.scene.is-active .scene-content {
+		transform: none;
 	}
 	.badge {
 		display: inline-flex;
@@ -280,11 +292,20 @@ const first = scenes[0];
 		font-weight: 600;
 		transition:
 			background 0.2s,
-			border-color 0.2s;
+			border-color 0.2s,
+			transform 0.35s var(--ease-out-expo);
 	}
 	.p:hover {
 		background: var(--accent);
 		border-color: var(--accent);
+		transform: translateY(-2px);
+	}
+	.p > span[aria-hidden] {
+		display: inline-block;
+		transition: transform 0.35s var(--ease-out-expo);
+	}
+	.p:hover > span[aria-hidden] {
+		transform: translate(2px, -2px);
 	}
 
 	/* ---- controls ---- */
@@ -304,14 +325,32 @@ const first = scenes[0];
 		color: var(--ink-2);
 		transition:
 			background 0.2s,
-			color 0.2s;
+			color 0.2s,
+			transform 0.35s var(--ease-out-expo);
+	}
+	.ctl svg {
+		transition: transform 0.35s var(--ease-out-expo);
 	}
 	.ctl:hover {
 		background: var(--bg-2);
 		color: var(--ink);
+		transform: scale(1.08);
+	}
+	.ctl:active {
+		transform: scale(0.94);
+		transition-duration: 0.1s;
+	}
+	.ctl[data-showcase='prev']:hover svg {
+		transform: translateX(-2px);
+	}
+	.ctl[data-showcase='next']:hover svg {
+		transform: translateX(2px);
 	}
 	.ctl-toggle {
 		margin-left: 8px;
+	}
+	.ctl-toggle:hover {
+		color: var(--accent-text);
 	}
 	.ic-play {
 		display: none;
@@ -331,21 +370,25 @@ const first = scenes[0];
 		display: grid;
 		place-items: center;
 	}
+	/* Bars are laid out at their active width and scaled down when idle —
+	   width never animates (no layout), only transform + colour. */
 	.dot-bar {
-		width: 22px;
+		width: 32px;
 		height: 3px;
 		border-radius: 2px;
 		background: var(--ink-4);
+		transform: scaleX(0.68);
 		transition:
-			background 0.25s,
-			width 0.25s;
+			background 0.3s,
+			transform 0.45s var(--ease-out-expo);
 	}
 	.dot:hover .dot-bar {
 		background: var(--ink-2);
+		transform: scaleX(0.82);
 	}
 	.dot.is-active .dot-bar {
-		width: 32px;
-		background: var(--ink);
+		transform: scaleX(1);
+		background: linear-gradient(90deg, var(--accent), var(--accent-2));
 	}
 
 	.sr-only {
@@ -390,9 +433,6 @@ const first = scenes[0];
 			width: 30px;
 		}
 		.dot-bar {
-			width: 16px;
-		}
-		.dot.is-active .dot-bar {
 			width: 24px;
 		}
 	}
@@ -401,6 +441,15 @@ const first = scenes[0];
 			opacity: 1;
 			transform: none;
 			animation: none;
+		}
+		.scene-img,
+		.scene-content {
+			transform: none;
+			transition: none;
+		}
+		.ctl:hover,
+		.p:hover {
+			transform: none;
 		}
 	}
 </style>

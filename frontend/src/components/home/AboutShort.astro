@@ -24,7 +24,9 @@ const t = useT(locale);
 				<span class='dot' aria-hidden='true'></span>
 				{pick(SITE.availability, locale)}
 			</p>
-			<a href={localePath(locale, '/about')} class='btn-link'>{t.aboutShort.more}</a>
+			<a href={localePath(locale, '/about')} class='btn-link'>
+				<span class='link-underline'>{t.aboutShort.more}</span>
+			</a>
 		</div>
 	</div>
 </section>
@@ -61,6 +63,16 @@ const t = useT(locale);
 		font-size: 1.6em;
 		line-height: 0.6;
 		margin-bottom: 8px;
+		animation: quoteFloat 5s ease-in-out infinite;
+	}
+	@keyframes quoteFloat {
+		0%,
+		100% {
+			transform: translateY(0) rotate(0deg);
+		}
+		50% {
+			transform: translateY(-6px) rotate(-4deg);
+		}
 	}
 	.about-text p {
 		font-size: 17px;
@@ -82,12 +94,25 @@ const t = useT(locale);
 		height: 7px;
 		border-radius: 50%;
 		background: var(--accent);
+		animation: availPulse 2s infinite;
+	}
+	@keyframes availPulse {
+		50% {
+			opacity: 0.4;
+		}
 	}
 	.about-text .btn-link {
 		display: inline-flex;
 		align-items: center;
 		min-height: 44px;
 		font-size: 15px;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.about-quote::before,
+		.about-avail .dot {
+			animation: none;
+		}
 	}
 
 	@media (max-width: 900px) {

@@ -128,10 +128,30 @@ const CODE: Record<typeof locale, string> = { pt: 'PT', en: 'EN' };
 		white-space: nowrap;
 	}
 	.brand .dot {
+		display: inline-block;
 		color: var(--accent);
+		transition: transform 0.4s var(--ease-out-expo);
+		/* one pop on load; `backwards` (not `both`) so hover can transform it afterwards */
+		animation: dotPop 0.9s var(--ease-out-expo) 0.3s backwards;
+	}
+	.brand:hover .dot {
+		transform: scale(1.3);
+	}
+	@keyframes dotPop {
+		0% {
+			opacity: 0;
+			transform: scale(0.2);
+		}
+		55% {
+			opacity: 1;
+			transform: scale(1.45);
+		}
+		100% {
+			transform: scale(1);
+		}
 	}
 
-	/* Links */
+	/* Links — gradient underline grows from the left; stays on aria-current. */
 	.nav-mini {
 		display: flex;
 		align-items: center;
@@ -140,13 +160,33 @@ const CODE: Record<typeof locale, string> = { pt: 'PT', en: 'EN' };
 		color: var(--ink-2);
 	}
 	.nav-mini a {
+		position: relative;
 		display: inline-flex;
 		align-items: center;
 		padding: 6px 0;
 		transition: color 0.2s;
 	}
-	.nav-mini a:hover {
+	.nav-mini a::after {
+		content: '';
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 1px;
+		height: 2px;
+		border-radius: 2px;
+		background: linear-gradient(90deg, var(--accent), var(--accent-2));
+		transform: scaleX(0);
+		transform-origin: left;
+		transition: transform 0.35s var(--ease-out-expo);
+	}
+	.nav-mini a:hover,
+	.nav-mini a:focus-visible {
 		color: var(--ink);
+	}
+	.nav-mini a:hover::after,
+	.nav-mini a:focus-visible::after,
+	.nav-mini a[aria-current='page']::after {
+		transform: scaleX(1);
 	}
 	.nav-mini a[aria-current='page'] {
 		color: var(--ink);
@@ -165,6 +205,13 @@ const CODE: Record<typeof locale, string> = { pt: 'PT', en: 'EN' };
 		border: 1px solid var(--rule-2);
 		border-radius: 999px;
 		padding: 2px;
+		transition:
+			border-color 0.25s,
+			box-shadow 0.3s var(--ease-out-expo);
+	}
+	.lang:hover {
+		border-color: var(--ink-4);
+		box-shadow: 0 6px 16px -10px rgba(26, 26, 28, 0.45);
 	}
 	.lang-option {
 		display: inline-flex;
@@ -201,6 +248,12 @@ const CODE: Record<typeof locale, string> = { pt: 'PT', en: 'EN' };
 		justify-content: center;
 		gap: 5px;
 		border-radius: 999px;
+	}
+	.nav-toggle {
+		transition: background 0.2s;
+	}
+	.nav-toggle:hover {
+		background: var(--bg-2);
 	}
 	.nav-toggle span {
 		width: 22px;
@@ -263,9 +316,22 @@ const CODE: Record<typeof locale, string> = { pt: 'PT', en: 'EN' };
 			min-height: 48px;
 			padding: 12px 0;
 			border-bottom: 1px solid var(--rule);
+			transition:
+				color 0.2s,
+				transform 0.3s var(--ease-out-expo);
 		}
 		.nav-mini a:last-child {
 			border-bottom: 0;
+		}
+		/* Stacked menu: nudge instead of underline (a full-width bar reads as a border). */
+		.nav-mini a::after {
+			display: none;
+		}
+		.nav-mini a:hover {
+			transform: translateX(4px);
+		}
+		.nav-mini a[aria-current='page'] {
+			color: var(--accent-text);
 		}
 		.topbar.nav-open .nav-mini {
 			transform: translateY(0);
@@ -276,6 +342,16 @@ const CODE: Record<typeof locale, string> = { pt: 'PT', en: 'EN' };
 				opacity 0.25s,
 				transform 0.25s var(--ease-out-expo),
 				visibility 0s;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.brand .dot {
+			animation: none;
+		}
+		.brand:hover .dot,
+		.nav-mini a:hover {
+			transform: none;
 		}
 	}
 </style>

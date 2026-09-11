@@ -5,6 +5,11 @@
  * page-level :global overrides are needed.
  *
  * The h1 is the sales headline (not the name); the name lives in the sub.
+ *
+ * Motion: a soft coral/violet colour field drifts behind the copy (hidden on
+ * reduced motion); copy enters in a stagger (eyebrow → headline → .hl → sub …);
+ * buttons use the global .btn primitives (lift + shine) and the WhatsApp CTA
+ * carries a slow pulsing ring. Everything animates transform/opacity only.
  */
 import DeviceShowcase from './DeviceShowcase.astro';
 import { SITE, whatsappUrl } from '../../data/site';
@@ -29,6 +34,12 @@ const proof = fmt(t.hero.proof, {
 ---
 
 <section class='hero-stage' aria-labelledby='hero-title'>
+	<!-- Ambient colour field: two radial blobs (accent + accent-2) drifting slowly. -->
+	<div class='hero-field' aria-hidden='true'>
+		<span class='blob blob-a'></span>
+		<span class='blob blob-b'></span>
+	</div>
+
 	<!-- Easter egg: the Astro rocket from the 2024 hero, still hovering. -->
 	<svg class='astro-rocket' viewBox='0 0 495 623' fill='none' xmlns='http://www.w3.org/2000/svg' aria-hidden='true' focusable='false'>
 		<path
@@ -51,7 +62,7 @@ const proof = fmt(t.hero.proof, {
 		</p>
 		<h1 class='hero-title' id='hero-title'>
 			{t.hero.headline}
-			<span class='hl'>{t.hero.headlineAccent}</span>
+			<span class='hl hl-anim'>{t.hero.headlineAccent}</span>
 		</h1>
 		<p class='hero-sub'>{t.hero.sub}</p>
 		<p class='hero-cred'>{credential}</p>
@@ -86,14 +97,58 @@ const proof = fmt(t.hero.proof, {
 		align-items: center;
 	}
 	.hero-copy {
+		position: relative;
+		z-index: 1;
 		min-width: 0;
 		text-align: left;
 	}
 	.hero-showcase {
+		position: relative;
+		z-index: 1;
 		min-width: 0;
 	}
 
-	/* ---- copy ---- */
+	/* ---- colour field ---- */
+	.hero-field {
+		position: absolute;
+		inset: -80px -120px -40px;
+		z-index: 0;
+		overflow: hidden;
+		pointer-events: none;
+	}
+	.blob {
+		position: absolute;
+		width: clamp(360px, 46vw, 640px);
+		aspect-ratio: 1;
+		border-radius: 50%;
+		will-change: transform;
+	}
+	.blob-a {
+		top: -6%;
+		left: -4%;
+		background: radial-gradient(closest-side, rgba(255, 89, 100, 0.16), rgba(255, 89, 100, 0.06) 55%, transparent 100%);
+		animation: blobDriftA 18s ease-in-out infinite alternate;
+	}
+	.blob-b {
+		right: -2%;
+		bottom: -10%;
+		width: clamp(320px, 40vw, 560px);
+		background: radial-gradient(closest-side, rgba(124, 58, 237, 0.14), rgba(124, 58, 237, 0.05) 55%, transparent 100%);
+		animation: blobDriftB 18s ease-in-out infinite alternate;
+		animation-delay: -6s;
+	}
+	@keyframes blobDriftA {
+		to {
+			transform: translate(18%, 22%) scale(1.12);
+		}
+	}
+	@keyframes blobDriftB {
+		to {
+			transform: translate(-22%, -18%) scale(0.92);
+		}
+	}
+
+	/* ---- copy (stagger: eyebrow → headline → .hl → sub → cred → actions → proof) ---- */
 	.hero-eyebrow {
 		display: inline-flex;
 		align-items: center;
@@ -123,15 +178,25 @@ const proof = fmt(t.hero.proof, {
 		transform: translateY(30px);
 		animation: enter 1s var(--ease-out-expo) 0.2s both;
 	}
+	/* inline-block so the phrase stays together, can transform, and the
+	   gradient (.hl-anim) spans the phrase — it enters last in the stagger. */
+	.hero-title .hl {
+		display: inline-block;
+		opacity: 0;
+		transform: translateY(14px);
+		animation:
+			enter 0.9s var(--ease-out-expo) 0.45s both,
+			hlShift 6s ease-in-out 1.4s infinite;
+	}
 	.hero-sub {
 		margin-top: 24px;
-		max-width: 54ch;
+		max-width: 46ch;
 		font-size: var(--fs-lead);
 		line-height: 1.55;
 		color: var(--ink-2);
 		opacity: 0;
 		transform: translateY(20px);
-		animation: enter 0.9s var(--ease-out-expo) 0.35s both;
+		animation: enter 0.9s var(--ease-out-expo) 0.55s both;
 	}
 	.hero-cred {
 		margin-top: 20px;
@@ -141,7 +206,7 @@ const proof = fmt(t.hero.proof, {
 		color: var(--ink-3);
 		opacity: 0;
 		transform: translateY(20px);
-		animation: enter 0.9s var(--ease-out-expo) 0.45s both;
+		animation: enter 0.9s var(--ease-out-expo) 0.65s both;
 	}
 	.hero-actions {
 		display: flex;
@@ -151,7 +216,25 @@ const proof = fmt(t.hero.proof, {
 		margin-top: 28px;
 		opacity: 0;
 		transform: translateY(20px);
-		animation: enter 0.9s var(--ease-out-expo) 0.55s both;
+		animation: enter 0.9s var(--ease-out-expo) 0.75s both;
+	}
+	/* WhatsApp: slow pulsing ring (box-shadow only — no layout). */
+	.hero-actions .btn-whatsapp {
+		animation: waRing 2.4s ease-out 1.6s infinite;
+	}
+	.hero-actions .btn-whatsapp:hover {
+		animation: none;
+	}
+	@keyframes waRing {
+		0% {
+			box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.55);
+		}
+		70% {
+			box-shadow: 0 0 0 12px rgba(37, 211, 102, 0);
+		}
+		100% {
+			box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+		}
 	}
 	.hero-proof {
 		margin-top: 18px;
@@ -161,7 +244,7 @@ const proof = fmt(t.hero.proof, {
 		color: var(--ink-3);
 		opacity: 0;
 		transform: translateY(20px);
-		animation: enter 0.9s var(--ease-out-expo) 0.65s both;
+		animation: enter 0.9s var(--ease-out-expo) 0.85s both;
 	}
 
 	/* ---- rocket ---- */
@@ -197,6 +280,13 @@ const proof = fmt(t.hero.proof, {
 			transform: translateY(-12px) rotate(2deg);
 		}
 	}
+	/* Same keyframes as .hl-anim in site.css, redeclared here so the hero's
+	   own `animation` shorthand (enter + shift) doesn't depend on load order. */
+	@keyframes hlShift {
+		50% {
+			background-position: 100% 50%;
+		}
+	}
 
 	@media (min-width: 1025px) {
 		.hero-title {
@@ -227,6 +317,10 @@ const proof = fmt(t.hero.proof, {
 		.astro-rocket {
 			display: none;
 		}
+		.hero-field {
+			/* no horizontal bleed on small screens — the blobs are clipped by the field itself */
+			inset: -60px 0 -20px;
+		}
 	}
 	@media (max-width: 600px) {
 		.hero-stage {
@@ -241,6 +335,7 @@ const proof = fmt(t.hero.proof, {
 	@media (prefers-reduced-motion: reduce) {
 		.hero-eyebrow,
 		.hero-title,
+		.hero-title .hl,
 		.hero-sub,
 		.hero-cred,
 		.hero-actions,
@@ -250,8 +345,12 @@ const proof = fmt(t.hero.proof, {
 			animation: none;
 		}
 		.hero-eyebrow .dot,
-		.astro-rocket {
+		.astro-rocket,
+		.hero-actions .btn-whatsapp {
 			animation: none;
+		}
+		.hero-field {
+			display: none;
 		}
 	}
 </style>
