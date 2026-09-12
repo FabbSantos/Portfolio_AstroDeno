@@ -359,6 +359,9 @@ const wa = whatsappUrl(locale, fmt(t.templates.cta.whatsappDetail, { name }));
 	}
 	.stage {
 		perspective: 1200px;
+		/* desktop frame a touch narrower than the page so it doesn't dominate large screens */
+		max-width: 1040px;
+		margin: 0 auto;
 	}
 	/* only the active device is in the layout */
 	.demo[data-device='mobile'] [data-frame='desktop'],

@@ -1,7 +1,7 @@
 /** Home hero + the featured-projects rotator (DeviceShowcase). */
 export const hero = {
 	/** The h1 is the headline; `headlineAccent` is the trailing phrase rendered with `.hl`. */
-	headline: 'Precisa de site, sistema ou integração com IA?',
+	headline: 'Precisa de um site, um sistema ou uma IA no seu produto?',
 	headlineAccent: 'Eu faço.',
 	/** Two lines max. The proof line and the credential carry the rest. */
 	sub: 'Sou o Fabrício, engenheiro de software desde 2018. Já entreguei produto pra construtora, edtech e startup. Aqui você fala comigo do orçamento ao deploy: escopo fechado, prazo combinado e o código fica com você.',
