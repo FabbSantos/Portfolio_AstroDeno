@@ -42,7 +42,8 @@ const { src, title, eager = false, class: cls } = Astro.props;
 <style>
 	.phone {
 		--bezel: 12px;
-		width: min(100%, calc(390px + var(--bezel) * 2));
+		/* never taller than ~62% of the viewport: on a 1080p monitor the phone is ~670px tall, not the whole screen */
+		width: min(100%, calc(390px + var(--bezel) * 2), calc(62vh * 390 / 844 + var(--bezel) * 2));
 		margin: 0 auto;
 		animation: phoneFloat 6s ease-in-out infinite;
 	}
