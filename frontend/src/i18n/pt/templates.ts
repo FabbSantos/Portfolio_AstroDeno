@@ -69,7 +69,7 @@ export const templates = {
 		want: 'Quero esse template',
 		fullDemo: 'Abrir demo em tela cheia',
 		demoTitle: 'Demo do template {name}',
-		demoNote: 'Demo ao vivo — role e clique à vontade. Marca, textos e imagens são fictícios; no seu, entram os seus.',
+		demoNote: 'Demo ao vivo: role e clique à vontade. Marca, textos e imagens são fictícios; no seu, entram os seus.',
 		sectionsTitle: 'O que vem no template',
 		related: 'Outros templates',
 	},
@@ -77,7 +77,7 @@ export const templates = {
 	included: {
 		title: 'O que vem junto',
 		items: [
-			'Publicado no seu domínio (domínio por sua conta — eu configuro DNS e SSL)',
+			'Publicado no seu domínio (o domínio é por sua conta; eu configuro DNS e SSL)',
 			'SEO técnico, Lighthouse > 95',
 			'Personalização de logo, cores, copy e imagens',
 			'{months} meses de ajustes',
@@ -94,7 +94,7 @@ export const templates = {
 			},
 			{
 				title: 'Eu personalizo',
-				desc: 'Marca, cores, copy e imagens — você manda o material, eu adapto.',
+				desc: 'Marca, cores, copy e imagens. Você manda o material, eu adapto.',
 			},
 			{
 				title: 'Vai pro ar',
@@ -113,5 +113,5 @@ export const templates = {
 	},
 
 	/** Shown by demo pages when someone submits one of the fake forms. */
-	demoFormNote: 'Demo — o formulário real é ligado no seu deploy',
+	demoFormNote: 'Demo: o formulário real é ligado no seu deploy',
 } as const;

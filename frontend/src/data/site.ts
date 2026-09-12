@@ -52,7 +52,7 @@ export const SITE = {
 
 	/** Delivery promises shared by templates + custom work. Keep them true. */
 	promises: {
-		templateDays: '3–5',
+		templateDays: '3 a 5',
 		adjustmentsMonths: 3,
 	},
 } as const;

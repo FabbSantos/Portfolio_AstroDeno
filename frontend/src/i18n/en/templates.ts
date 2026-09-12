@@ -58,7 +58,7 @@ export const templates: Shape<typeof ptShape> = {
 		want: 'I want this template',
 		fullDemo: 'Open demo full screen',
 		demoTitle: '{name} template demo',
-		demoNote: 'Live demo — scroll and click around. Brand, copy and images are placeholders; yours go in.',
+		demoNote: 'Live demo: scroll and click around. Brand, copy and images are placeholders; yours go in.',
 		sectionsTitle: "What's in the template",
 		related: 'Other templates',
 	},
@@ -66,7 +66,7 @@ export const templates: Shape<typeof ptShape> = {
 	included: {
 		title: "What's included",
 		items: [
-			'Published on your domain (you own the domain — I set up DNS and SSL)',
+			'Published on your domain (you own the domain; I set up DNS and SSL)',
 			'Technical SEO, Lighthouse > 95',
 			'Logo, colours, copy and image customization',
 			'{months} months of adjustments',
@@ -83,7 +83,7 @@ export const templates: Shape<typeof ptShape> = {
 			},
 			{
 				title: 'I customize it',
-				desc: 'Brand, colours, copy and images — you send the material, I adapt it.',
+				desc: 'Brand, colours, copy and images. You send the material, I adapt it.',
 			},
 			{
 				title: 'It goes live',
@@ -101,5 +101,5 @@ export const templates: Shape<typeof ptShape> = {
 		whatsappDetail: "Hi Fabrício! I'd like to know more about the {name} template.",
 	},
 
-	demoFormNote: 'Demo — the real form is wired up on your deploy',
+	demoFormNote: 'Demo: the real form is wired up on your deploy',
 };

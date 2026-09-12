@@ -35,7 +35,7 @@ export default defineBrava({
 		radius: 12,
 	},
 	seo: {
-		title: 'Brava Drop — template demo',
+		title: 'Brava Drop: template demo',
 		description: 'Demo of the Brava template: limited-drop e-commerce landing by Fab Bahiense. Placeholder data.',
 		canonical: 'https://www.fabbahiense.dev/templates/brava/demo',
 		ogImage: hero1,
@@ -84,7 +84,7 @@ export default defineBrava({
 	hero: {
 		eyebrow: '// Drop 03 / Verão · 250 pieces · live now',
 		lines: ['The summer', '**that ends**', '==too fast.=='],
-		sub: "Six pieces, made in Brazil, shipped worldwide. When they're gone, they're gone — we don't restock.",
+		sub: "Six pieces, made in Brazil, shipped worldwide. When they're gone, they're gone. We don't restock.",
 		cta: { label: 'Shop the drop →', href: '#shop' },
 		tiles: [
 			{ image: hero1, alt: 'Model wearing the Vento Tee on the beach at Búzios' },
@@ -124,14 +124,14 @@ export default defineBrava({
 		title: 'Small batches. ==Made on purpose.==',
 		paragraphs: [
 			'Brava is a Brazilian label run by two friends. We design, sample and stitch each piece in Rio, then ship from a single warehouse in São Paulo.',
-			"We release four drops a year, 200–300 pieces each. No restocks, no seasons, no Black Friday. When a piece sells out it's gone — and we move on to the next thing.",
+			"We release four drops a year, 200 to 300 pieces each. No restocks, no seasons, no Black Friday. When a piece sells out it's gone, and we move on to the next thing.",
 		],
 		link: { label: 'Read more →', href: '#' },
 	},
 
 	newsletter: {
 		title: 'Be first ==next drop.==',
-		sub: 'One email per drop. Never marketing — just the link, the date, and a thank you.',
+		sub: 'One email per drop. Never marketing, just the link, the date, and a thank you.',
 		email: { label: 'Your email', placeholder: 'you@email.com' },
 		cta: 'Notify me',
 	},

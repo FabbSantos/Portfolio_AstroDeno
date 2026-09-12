@@ -24,7 +24,7 @@ const spots = [
 	{ top: '20%', left: '78%' },
 	{ top: '80%', left: '70%' },
 ];
-const mapTitle = brand.locale === 'en' ? `Map — ${brand.name}` : `Mapa — ${brand.name}`;
+const mapTitle = brand.locale === 'en' ? `Map · ${brand.name}` : `Mapa · ${brand.name}`;
 /** srcset widths, capped at the source width. */
 const widths = (w: number) => [...[640, 960, 1300].filter((x) => x < w), w];
 ---

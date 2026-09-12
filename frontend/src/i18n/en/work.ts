@@ -7,7 +7,7 @@ export const work: Shape<typeof ptShape> = {
 		eyebrow: '{from} → {to} · years in production',
 		head1: 'Real',
 		head2: 'work.',
-		lead: 'These are the projects I can show openly. There is more — some under NDA, some I chose not to publish. Want to hear about them? Write me.',
+		lead: 'These are the projects I can show openly. There is more: some under NDA, some I chose not to publish. Want to hear about them? Write me.',
 	},
 
 	flagships: {
@@ -21,7 +21,7 @@ export const work: Shape<typeof ptShape> = {
 		eyebrow: 'Cases',
 		head1: 'Delivered for',
 		head2: 'companies.',
-		lead: 'Sites and systems that went to production for real clients — and what I did on each one.',
+		lead: 'Sites and systems that went to production for real clients, and what I did on each one.',
 	},
 
 	lab: {

@@ -2,9 +2,9 @@ import type { Shape } from '../types';
 import type { hero as ptShape } from '../pt/hero';
 
 export const hero: Shape<typeof ptShape> = {
-	headline: 'Websites, web systems and AI integrations — built by a senior engineer,',
-	headlineAccent: 'no agency in between.',
-	sub: "Since 2018 I've shipped to production for real-estate developers, edtechs and startups. You talk directly to me, from quote to deploy — fixed scope, a date, and code that's yours.",
+	headline: 'Need a website, a web system or an AI integration?',
+	headlineAccent: 'I build it.',
+	sub: "I'm Fabrício, a software engineer since 2018. I've shipped for real-estate developers, edtechs and startups. You talk to me from quote to deploy: fixed scope, an agreed date, and the code stays yours.",
 	credential: '{role} · {location} · since {since}',
 	proof: '{years} years · {products} products in production · I reply within {time}',
 	showcase: {

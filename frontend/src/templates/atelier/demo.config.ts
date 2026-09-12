@@ -15,7 +15,7 @@ export default defineAtelier({
 	brand: { name: 'Atelier', tagline: 'Independent design studio', locale: 'en' },
 	theme: { accent: '#7c3aed', bg: '#fbfafd', ink: '#1a1525', radius: 12 },
 	seo: {
-		title: 'Atelier Studio — template demo',
+		title: 'Atelier Studio: template demo',
 		description: 'Demo of the Atelier template: studio / agency portfolio by Fab Bahiense. Placeholder data.',
 		canonical: 'https://www.fabbahiense.dev/templates/atelier/demo',
 	},
@@ -38,14 +38,14 @@ export default defineAtelier({
 		eyebrow: '// Independent design studio · est. 2019',
 		title: 'We make **quiet brands**\nthat get ==louder== over time.',
 		meta: [
-			{ label: 'Available', value: 'Q2 / 2026 — 1 spot' },
+			{ label: 'Available', value: 'Q2 / 2026 · 1 spot' },
 			{ label: 'Based', value: 'Rio de Janeiro / remote' },
 			{ label: 'For', value: 'Founders, agencies, in‑house teams' },
 		],
 	},
 
 	work: {
-		eyebrow: '// Selected work · 2024 — 2026',
+		eyebrow: '// Selected work · 2024 to 2026',
 		title: 'Six projects, **one principle:** design that ships.',
 		cases: [
 			{ n: '01', client: 'Forma Health', tag: 'Brand + product', year: '2026', image: case1 },
@@ -63,7 +63,7 @@ export default defineAtelier({
 		title: 'A simple **four-step** process.',
 		lead: 'No agency theater. No 80-page decks. Just enough structure to keep momentum and protect quality.',
 		steps: [
-			{ n: '01', t: 'Discovery', d: 'Two weeks of conversation, audit and listening. We end with one page of strategy — not fifty.' },
+			{ n: '01', t: 'Discovery', d: 'Two weeks of conversation, audit and listening. We end with one page of strategy. Not fifty.' },
 			{ n: '02', t: 'Design', d: 'Direction first, then refinement. You see three real options, never six abstract concepts.' },
 			{ n: '03', t: 'Build', d: 'Production-grade engineering from week one. No "handoff" gap, no design that breaks at scale.' },
 			{ n: '04', t: 'Ship & Hold', d: 'Launch is the start, not the end. Three months of free iterations included on every project.' },
@@ -91,7 +91,7 @@ export default defineAtelier({
 		form: { provider: 'none' },
 		eyebrow: '// Let\'s begin',
 		title: 'Have something **worth making?**\nTell us about it.',
-		sub: 'We answer every email within two business days — usually with a calendar link or a polite no.',
+		sub: 'We answer every email within two business days, usually with a calendar link or a polite no.',
 		socialsLead: 'or follow along',
 		socials: [
 			{ label: 'Instagram', href: 'https://www.instagram.com/' },

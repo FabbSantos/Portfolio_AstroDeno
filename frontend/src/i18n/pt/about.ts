@@ -19,11 +19,11 @@ export const about = {
 
 	story: {
 		quote: 'Código é só metade do trabalho. A outra metade é entender o problema antes de escrever a primeira linha.',
-		by: '— Fab',
-		p1: 'Comecei a estudar desenvolvimento ainda na escola e peguei o primeiro estágio como full stack — o combo padrão da época: PHP, jQuery, MySQL.',
+		by: 'Fabrício',
+		p1: 'Comecei a estudar desenvolvimento ainda na escola e peguei o primeiro estágio como full stack. O combo padrão da época: PHP, jQuery, MySQL.',
 		p2: 'De lá passei por agências e consultorias como engenheiro frontend e full stack, trabalhando com React, Vue, Next e Node, até chegar à liderança técnica.',
-		p3: 'Hoje atuo como engenheiro de software sênior em plataformas web de alto impacto — e continuo pegando projetos por conta própria, porque é onde eu mais aprendo.',
-		human: 'Pai, marido, resolvedor de problemas — várias camadas, como uma cebola. Amo futebol, música, games, cerveja, ciência, astronomia e, claro, tecnologia.',
+		p3: 'Hoje atuo como engenheiro de software sênior em plataformas web de alto impacto, e continuo pegando projetos por conta própria, porque é onde eu mais aprendo.',
+		human: 'Pai, marido, resolvedor de problemas. Várias camadas, como uma cebola. Amo futebol, música, games, cerveja, ciência, astronomia e, claro, tecnologia.',
 	},
 
 	career: {
@@ -36,43 +36,43 @@ export const about = {
 		/** Chronological. The last row is the current one. */
 		rows: [
 			{
-				period: '2016 — 19',
+				period: '2016 a 2019',
 				role: 'Médio técnico · CEFET/RJ',
 				desc: 'Ensino médio + técnico em informática. Comecei a programar por curiosidade.',
 				tags: ['HTML', 'JS', 'PHP'],
 			},
 			{
-				period: '2018 — 19',
+				period: '2018 a 2019',
 				role: 'Estágio full stack',
-				desc: 'Primeiro emprego — sites institucionais, formulários, integrações simples.',
+				desc: 'Primeiro emprego: sites institucionais, formulários, integrações simples.',
 				tags: ['PHP', 'jQuery', 'MySQL'],
 			},
 			{
-				period: '2020 — 22',
+				period: '2020 a 2022',
 				role: 'Frontend · MKT4Edu',
 				desc: 'Landing pages e campanhas de marketing em volume. HubSpot + React.',
 				tags: ['HubSpot', 'React', 'HTML'],
 			},
 			{
-				period: '2022 — 24',
+				period: '2022 a 2024',
 				role: 'Frontend / Full stack · BJ Consulting',
 				desc: 'Clientes diversos. Astro na maior parte; Qwik quando fez sentido.',
 				tags: ['Astro', 'Qwik', 'TypeScript'],
 			},
 			{
-				period: 'ago/24 — jan/25',
+				period: 'ago/24 a jan/25',
 				role: 'Líder de produto · LocalApp / Lumina Lab',
-				desc: 'Startup de produtos com IA. Liderei a Eleodora — agente com personalidade, feita pra soar como o cliente que ia contratá-la.',
+				desc: 'Startup de produtos com IA. Liderei a Eleodora, agente com personalidade, feita pra soar como o cliente que ia contratá-la.',
 				tags: ['IA', 'LLM', 'React'],
 			},
 			{
-				period: 'jan/25 — mai/25',
+				period: 'jan/25 a mai/25',
 				role: 'Tech Lead · Nexus Comunicação',
 				desc: 'Plataforma multicanal (SMS, WhatsApp, RCS): painel do cliente, API em Node, filas com Redis, infra AWS/Lightsail. Vue + Nuxt + Astro + Next.',
 				tags: ['Vue', 'Nuxt', 'Node', 'AWS'],
 			},
 			{
-				period: 'mai/25 — hoje',
+				period: 'mai/25 até hoje',
 				role: 'Especialista Sênior · NTT Data',
 				desc: 'Full stack sênior no maior banco da América Latina.',
 				tags: ['C#', 'AWS', 'DevOps'],
@@ -84,7 +84,7 @@ export const about = {
 		eyebrow: 'Como eu trabalho',
 		head1: 'Sem surpresa',
 		head2: 'no meio do caminho.',
-		lead: 'Quatro regras que valem pra todo projeto — do template de uma semana ao sistema de seis meses.',
+		lead: 'Quatro regras que valem pra todo projeto, do template de uma semana ao sistema de seis meses.',
 		principles: [
 			{
 				title: 'Escopo fechado por fase',
