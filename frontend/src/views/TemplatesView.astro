@@ -1,13 +1,15 @@
 ---
 /**
  * /templates (and /en/templates) — the gallery.
- * Hero → compare strip ("qual é o meu?") → grid of cards (each links to its
- * sales page) → how it works + what's included → CTA band.
+ * Hero → pricing table ("qual é o meu?": delivery toggle, one card per
+ * template, feature matrix, one CTA) → grid of cards (each links to its
+ * sales page) → how it works + what's included → testimonials → CTA band.
  */
 import Layout from '../layouts/Layout.astro';
 import TopBar from '../components/site/TopBar.astro';
 import SiteFooter from '../components/site/SiteFooter.astro';
 import TemplateCard from '../components/templates/TemplateCard.astro';
+import Testimonials from '../components/home/Testimonials.astro';
 import { hueVars } from '../components/templates/hues';
 import { SITE, whatsappUrl } from '../data/site';
 import { formatBRL, templates } from '../data/templates';
@@ -25,16 +27,55 @@ const lead = fmt(t.templates.gallery.lead, { N: NWord, n: nWord, months });
 const included = t.templates.included.items.map((s) => fmt(s, { months }));
 const steps = t.templates.steps.items.map((s) => ({ title: s.title, desc: fmt(s.desc, { months }) }));
 
-// Compare strip rows — everything comes from data/templates.ts + templates.solves.
-const solves = t.templates.solves as Record<string, string | undefined>;
+/* ---- Pricing table ----
+ * Toggle standard/express (hidden when the express multiplier is 0), one
+ * selectable card per template, a feature matrix and one CTA that follows
+ * the selected template. Everything here comes from data/templates.ts,
+ * SITE.promises and templates.compare; the client script only swaps state.
+ */
 const cmp = t.templates.compare;
-const cols = templates.map((tpl) => ({
+const solves = t.templates.solves as Record<string, string | undefined>;
+const express = SITE.promises.express;
+const expressMultiplier = express?.multiplier ?? 0;
+const expressHours = express?.hours ?? 0;
+const hasExpress = expressMultiplier > 0;
+const expressPrice = (price: number) => Math.round((price * expressMultiplier) / 100) * 100;
+// "3 a 5" reads fine in PT; EN gets "3 to 5".
+const daysRange = pick(SITE.promises.templateDays, locale);
+
+const DEFAULT_SLUG = 'mirante';
+const selected = templates.find((tpl) => tpl.slug === DEFAULT_SLUG) ?? templates[0];
+
+const plans = templates.map((tpl) => ({
 	tpl,
+	name: `${tpl.name} ${tpl.accent}`,
 	href: localePath(locale, `/templates/${tpl.slug}`),
 	style: hueVars(tpl.kind),
 	who: solves[tpl.slug] ?? pick(tpl.desc, locale),
-	sections: pick(tpl.sections, locale).length,
+	standard: tpl.priceFrom,
+	express: expressPrice(tpl.priceFrom),
+	selected: tpl.slug === selected.slug,
 }));
+
+type FeatureKey = keyof typeof cmp.features;
+const ALL = templates.map((tpl) => tpl.slug);
+const matrix: readonly { key: FeatureKey; has: readonly string[] }[] = [
+	{ key: 'lead', has: ALL },
+	{ key: 'gallery', has: ['mirante', 'atelier', 'brava'] },
+	{ key: 'plans', has: ['mirante'] },
+	{ key: 'pricing', has: ['stratus'] },
+	{ key: 'countdown', has: ['brava'] },
+	{ key: 'cases', has: ['atelier'] },
+	{ key: 'newsletter', has: ['brava', 'stratus'] },
+	{ key: 'legal', has: ALL },
+	{ key: 'seo', has: ALL },
+	{ key: 'adjustments', has: ALL },
+];
+const featureLabel = (key: FeatureKey) => fmt(cmp.features[key], { months });
+
+// CTA reads "Quero o {name}"; the script only swaps the name span.
+const [ctaBefore, ctaAfter = ''] = cmp.cta.split('{name}');
+const ctaHref = (slug: string) => localePath(locale, `/?template=${slug}#contato`);
 
 // TODO(fab): the contact form should read `?assunto=template` and preselect the subject.
 const wantHref = localePath(locale, '/?assunto=template#contato');
@@ -51,78 +92,137 @@ const wa = whatsappUrl(locale, t.templates.cta.whatsappGallery);
 			<p class='lead'>{lead}</p>
 		</section>
 
-		<section class='compare reveal' aria-labelledby='compare-title'>
-			<div class='cmp-head'>
-				<p class='eyebrow accent'>{cmp.eyebrow}</p>
-				<h2 id='compare-title'>{cmp.title}</h2>
-				<p class='cmp-sub'>{cmp.sub}</p>
+		<section
+			class='compare'
+			id='compare'
+			aria-labelledby='compare-title'
+			data-mode='standard'
+			data-selected={selected.slug}
+			style={hueVars(selected.kind)}
+		>
+			<div class='cmp-head reveal'>
+				<div>
+					<p class='eyebrow accent'>{cmp.eyebrow}</p>
+					<h2 id='compare-title'>{cmp.title}</h2>
+					<p class='cmp-sub'>{cmp.sub}</p>
+				</div>
+				{
+					hasExpress && (
+						<div class='seg' role='group' aria-label={cmp.toggle.label} data-toggle>
+							<span class='seg-knob' aria-hidden='true' />
+							<button type='button' data-mode='standard' aria-pressed='true'>
+								{fmt(cmp.toggle.standard, { days: daysRange })}
+							</button>
+							<button type='button' data-mode='express' aria-pressed='false'>
+								{fmt(cmp.toggle.express, { hours: expressHours })}
+							</button>
+						</div>
+					)
+				}
 			</div>
-			<div class='cmp-scroll'>
-				<table class='cmp'>
+
+			<ul class='plans' role='list' aria-label={cmp.plansLabel}>
+				{
+					plans.map((p, i) => (
+						<li
+							class:list={['plan reveal', p.selected && 'is-sel', i > 0 && `d${Math.min(i, 3)}`]}
+							style={p.style}
+							data-plan={p.tpl.slug}
+						>
+							<button
+								type='button'
+								class='plan-btn'
+								aria-pressed={p.selected ? 'true' : 'false'}
+								data-select={p.tpl.slug}
+								data-name={p.name}
+							>
+								<span class='plan-top'>
+									<i class='dot' aria-hidden='true' />
+									<span class='plan-name'>
+										{p.tpl.name} <span class='hl'>{p.tpl.accent}</span>
+									</span>
+									<span class='plan-sel'>{cmp.selectedLabel}</span>
+								</span>
+								<span class='plan-who'>{p.who}</span>
+								<span class='plan-price'>
+									<span class='from'>{t.common.from}</span>
+									<span class='amount' data-price data-standard={p.standard} data-express={p.express}>
+										{formatBRL(p.standard)}
+									</span>
+								</span>
+								<span class='plan-chip'>
+									<span class='std'>
+										{p.tpl.days} {t.common.businessDays}
+									</span>
+									{hasExpress && <span class='exp'>{fmt(cmp.deliveryExpress, { hours: expressHours })}</span>}
+								</span>
+							</button>
+							<a class='plan-go' href={p.href}>
+								{t.templates.card.open} <span aria-hidden='true'>→</span>
+							</a>
+						</li>
+					))
+				}
+			</ul>
+
+			<div class='matrix-scroll reveal d2'>
+				<table class='matrix'>
+					<caption class='sr-only'>{cmp.matrixCaption}</caption>
 					<thead>
 						<tr>
-							<th scope='col' class='lbl'><span class='sr-only'>{cmp.criterion}</span></th>
+							<th scope='col' class='lbl'>
+								<span class='sr-only'>{cmp.criterion}</span>
+							</th>
 							{
-								cols.map((c) => (
-									<th scope='col' style={c.style}>
-										<a href={c.href}>
-											<i class='dot' aria-hidden='true' />
-											{c.tpl.name} <span class='hl'>{c.tpl.accent}</span>
-										</a>
+								plans.map((p) => (
+									<th scope='col' class:list={[p.selected && 'is-sel']} style={p.style} data-col={p.tpl.slug}>
+										<i class='dot' aria-hidden='true' />
+										{p.tpl.name} <span class='hl'>{p.tpl.accent}</span>
 									</th>
 								))
 							}
 						</tr>
 					</thead>
 					<tbody>
-						<tr>
-							<th scope='row'>{cmp.rows.who}</th>
-							{cols.map((c) => <td style={c.style}>{c.who}</td>)}
-						</tr>
-						<tr>
-							<th scope='row'>{cmp.rows.days}</th>
-							{
-								cols.map((c) => (
-									<td style={c.style}>
-										<strong>{c.tpl.days}</strong> {t.common.businessDays}
-									</td>
-								))
-							}
-						</tr>
-						<tr>
-							<th scope='row'>{cmp.rows.price}</th>
-							{
-								cols.map((c) => (
-									<td style={c.style}>
-										<strong>{formatBRL(c.tpl.priceFrom)}</strong>
-									</td>
-								))
-							}
-						</tr>
-						<tr>
-							<th scope='row'>{cmp.rows.sections}</th>
-							{
-								cols.map((c) => (
-									<td style={c.style}>
-										<strong>{c.sections}</strong>
-									</td>
-								))
-							}
-						</tr>
-						<tr class='go'>
-							<th scope='row'><span class='sr-only'>{t.templates.card.open}</span></th>
-							{
-								cols.map((c) => (
-									<td style={c.style}>
-										<a class='cmp-go' href={c.href}>
-											{t.templates.card.open}
-										</a>
-									</td>
-								))
-							}
-						</tr>
+						{
+							matrix.map((row) => (
+								<tr class:list={[row.has.includes(selected.slug) && 'is-on']} data-has={row.has.join(' ')}>
+									<th scope='row'>{featureLabel(row.key)}</th>
+									{plans.map((p) => {
+										const has = row.has.includes(p.tpl.slug);
+										return (
+											<td class:list={[p.selected && 'is-sel']} style={p.style} data-col={p.tpl.slug}>
+												{has ? (
+													<svg class='check' viewBox='0 0 16 16' width='16' height='16' aria-hidden='true'>
+														<path
+															d='M3 8.5l3 3 7-7'
+															fill='none'
+															stroke='currentColor'
+															stroke-width='2'
+															stroke-linecap='round'
+															stroke-linejoin='round'
+														/>
+													</svg>
+												) : (
+													<span class='no' aria-hidden='true'>
+														·
+													</span>
+												)}
+												<span class='sr-only'>{has ? cmp.included : cmp.notIncluded}</span>
+											</td>
+										);
+									})}
+								</tr>
+							))
+						}
 					</tbody>
 				</table>
+			</div>
+
+			<div class='cmp-cta reveal d3'>
+				<a class='btn btn-primary' href={ctaHref(selected.slug)} data-cta>
+					{ctaBefore}<span data-cta-name>{selected.name} {selected.accent}</span>{ctaAfter}
+				</a>
 			</div>
 		</section>
 
@@ -165,6 +265,8 @@ const wa = whatsappUrl(locale, t.templates.cta.whatsappGallery);
 			</div>
 		</section>
 
+		<Testimonials />
+
 		<section class='cta-band'>
 			<h2>{t.templates.cta.head} <span class='hl'>{t.templates.cta.headAccent}</span></h2>
 			<p class='sub'>{t.templates.cta.sub}</p>
@@ -185,17 +287,84 @@ const wa = whatsappUrl(locale, t.templates.cta.whatsappGallery);
 </Layout>
 
 <script>
-	// Compare strip: highlight the whole column under the pointer (CSS can't select a column).
-	document.querySelectorAll<HTMLTableElement>('table.cmp').forEach((table) => {
-		const set = (i: number | null) => {
-			if (i == null) delete table.dataset.hot;
-			else table.dataset.hot = String(i);
+	/**
+	 * Pricing table state (no framework): delivery mode + selected template.
+	 * - Toggle: swaps every [data-price] between data-standard / data-express,
+	 *   tweening the number over 400ms (ease-out) unless reduced motion.
+	 * - Select: aria-pressed on the cards, .is-sel on the matrix column,
+	 *   .is-on on the rows the template includes, hue vars on the section,
+	 *   and the CTA label/href follow the selection.
+	 */
+	const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
+	const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	const DURATION = 400;
+
+	document.querySelectorAll<HTMLElement>('.compare').forEach((root) => {
+		const prices = Array.from(root.querySelectorAll<HTMLElement>('[data-price]'));
+		const cards = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-select]'));
+		const cols = Array.from(root.querySelectorAll<HTMLElement>('[data-col]'));
+		const rows = Array.from(root.querySelectorAll<HTMLElement>('tr[data-has]'));
+		const cta = root.querySelector<HTMLAnchorElement>('[data-cta]');
+		const ctaName = root.querySelector<HTMLElement>('[data-cta-name]');
+		const current = new WeakMap<HTMLElement, number>();
+		const raf = new WeakMap<HTMLElement, number>();
+
+		const tween = (el: HTMLElement, to: number) => {
+			const from = current.get(el) ?? Number(el.dataset.standard);
+			current.set(el, to);
+			const pending = raf.get(el);
+			if (pending) cancelAnimationFrame(pending);
+			if (reduced || !Number.isFinite(from) || from === to) {
+				el.textContent = brl.format(to);
+				return;
+			}
+			el.style.minWidth = `${el.getBoundingClientRect().width}px`;
+			const start = performance.now();
+			const tick = (now: number) => {
+				const p = Math.min(1, (now - start) / DURATION);
+				const eased = 1 - Math.pow(1 - p, 3);
+				el.textContent = brl.format(Math.round(from + (to - from) * eased));
+				if (p < 1) raf.set(el, requestAnimationFrame(tick));
+				else el.style.minWidth = '';
+			};
+			raf.set(el, requestAnimationFrame(tick));
 		};
-		table.addEventListener('pointerover', (e) => {
-			const cell = (e.target as HTMLElement).closest<HTMLTableCellElement>('td, th');
-			set(cell && cell.cellIndex > 0 ? cell.cellIndex : null);
+
+		// ---- delivery toggle ----
+		const toggle = root.querySelector<HTMLElement>('[data-toggle]');
+		const setMode = (mode: 'standard' | 'express') => {
+			root.dataset.mode = mode;
+			toggle?.querySelectorAll<HTMLButtonElement>('[data-mode]').forEach((b) => {
+				b.setAttribute('aria-pressed', String(b.dataset.mode === mode));
+			});
+			prices.forEach((el) => tween(el, Number(el.dataset[mode])));
+		};
+		toggle?.addEventListener('click', (e) => {
+			const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-mode]');
+			if (btn && (btn.dataset.mode === 'standard' || btn.dataset.mode === 'express')) setMode(btn.dataset.mode);
 		});
-		table.addEventListener('pointerleave', () => set(null));
+
+		// ---- plan selection ----
+		const select = (slug: string) => {
+			const card = cards.find((c) => c.dataset.select === slug);
+			if (!card) return;
+			root.dataset.selected = slug;
+			cards.forEach((c) => {
+				c.setAttribute('aria-pressed', String(c === card));
+				c.closest('[data-plan]')?.classList.toggle('is-sel', c === card);
+			});
+			cols.forEach((c) => c.classList.toggle('is-sel', c.dataset.col === slug));
+			rows.forEach((r) => r.classList.toggle('is-on', (r.dataset.has ?? '').split(' ').includes(slug)));
+			// hue of the selected template drives the row tint + CTA accent
+			const plan = card.closest<HTMLElement>('[data-plan]');
+			['--hue', '--hue-text', '--hue-soft'].forEach((v) => {
+				const val = plan?.style.getPropertyValue(v);
+				if (val) root.style.setProperty(v, val);
+			});
+			if (ctaName) ctaName.textContent = card.dataset.name ?? slug;
+			if (cta) cta.href = cta.href.replace(/template=[^#&]*/, `template=${slug}`);
+		};
+		cards.forEach((c) => c.addEventListener('click', () => select(c.dataset.select ?? '')));
 	});
 </script>
 
@@ -209,21 +378,28 @@ const wa = whatsappUrl(locale, t.templates.cta.whatsappGallery);
 		white-space: nowrap;
 	}
 
-	/* ---- Compare strip ---- */
+	/* ---- Pricing table ---- */
 	.compare {
+		/* selected template's hue (script updates --hue* on the section);
+		   frozen into --sel* here so cells with their own --hue* still read it */
+		--sel: var(--hue);
+		--sel-text: var(--hue-text);
+		--sel-soft: var(--hue-soft);
 		max-width: var(--maxw);
 		margin: 0 auto;
 		padding: 16px 32px 0;
 	}
 	.cmp-head {
 		display: flex;
-		align-items: baseline;
+		align-items: flex-end;
+		justify-content: space-between;
 		flex-wrap: wrap;
-		gap: 6px 18px;
-		margin-bottom: 18px;
+		gap: 20px 32px;
+		margin-bottom: 24px;
 	}
 	.cmp-head .eyebrow {
-		flex-basis: 100%;
+		display: block;
+		margin-bottom: 10px;
 	}
 	.cmp-head h2 {
 		font-size: 24px;
@@ -232,76 +408,108 @@ const wa = whatsappUrl(locale, t.templates.cta.whatsappGallery);
 		line-height: 1.1;
 	}
 	.cmp-sub {
+		margin-top: 6px;
 		font-size: 15px;
 		color: var(--ink-3);
 	}
-	.cmp-scroll {
-		overflow-x: auto;
-		border: 1px solid var(--rule);
-		border-radius: 16px;
-		background: var(--bg-3);
-		scrollbar-width: thin;
-	}
-	.cmp {
-		width: 100%;
-		min-width: 760px;
-		border-collapse: separate;
-		border-spacing: 0;
-		font-size: 14px;
-		line-height: 1.4;
-	}
-	.cmp th,
-	.cmp td {
-		text-align: left;
-		vertical-align: top;
-		padding: 12px 16px;
-		border-bottom: 1px solid var(--rule);
-		transition:
-			background 0.25s,
-			color 0.25s;
-	}
-	.cmp tr:last-child th,
-	.cmp tr:last-child td {
-		border-bottom: 0;
-	}
-	/* first column: mono criteria, sticky when the strip scrolls */
-	.cmp th[scope='row'],
-	.cmp th.lbl {
-		position: sticky;
-		left: 0;
-		z-index: 1;
-		width: 132px;
+
+	/* Segmented control: the knob slides on transform */
+	.seg {
+		position: relative;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		padding: 4px;
+		border: 1px solid var(--rule-2);
+		border-radius: 999px;
+		background: var(--bg-2);
 		font-family: var(--mono);
-		font-size: 11px;
+		font-size: 12px;
 		font-weight: 600;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		color: var(--ink-3);
+		letter-spacing: 0.02em;
+	}
+	.seg-knob {
+		position: absolute;
+		top: 4px;
+		bottom: 4px;
+		left: 4px;
+		width: calc(50% - 4px);
+		border-radius: 999px;
 		background: var(--bg-3);
-		padding-top: 15px;
+		box-shadow:
+			0 1px 2px rgba(26, 26, 28, 0.12),
+			0 6px 16px -8px rgba(26, 26, 28, 0.3);
+		transition: transform 0.4s var(--ease-out-expo);
+	}
+	.compare[data-mode='express'] .seg-knob {
+		transform: translateX(100%);
+	}
+	.seg button {
+		position: relative;
+		z-index: 1;
+		min-height: 44px;
+		padding: 0 18px;
+		border-radius: 999px;
+		color: var(--ink-3);
 		white-space: nowrap;
+		transition: color 0.25s;
 	}
-	/* header: template names with their hue dot */
-	.cmp thead th {
-		font-size: 16px;
-		font-weight: 700;
-		letter-spacing: -0.02em;
-		background: var(--bg-2);
-		border-bottom-color: var(--rule-2);
+	.seg button[aria-pressed='true'],
+	.seg button:hover {
+		color: var(--ink);
 	}
-	.cmp thead th.lbl {
-		background: var(--bg-2);
+
+	/* Plan cards */
+	.plans {
+		list-style: none;
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 16px;
 	}
-	.cmp thead th a {
-		display: inline-flex;
+	.plan {
+		display: flex;
+		flex-direction: column;
+		border: 1px solid var(--rule);
+		border-radius: 18px;
+		background: var(--bg-3);
+		overflow: hidden;
+		transition:
+			border-color 0.3s,
+			box-shadow 0.4s var(--ease-out-expo),
+			transform 0.4s var(--ease-out-expo);
+	}
+	.plan:hover {
+		border-color: var(--rule-2);
+		transform: translateY(-2px);
+	}
+	/* selected: 2px ring in the template hue, animates in via box-shadow */
+	.plan.is-sel {
+		border-color: transparent;
+		box-shadow:
+			0 0 0 2px var(--hue),
+			0 20px 40px -24px var(--hue);
+	}
+	.plan-btn {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 10px;
+		flex: 1;
+		width: 100%;
+		padding: 20px 20px 16px;
+		text-align: left;
+		border-radius: 18px 18px 0 0;
+	}
+	.plan-btn:focus-visible {
+		outline-offset: -3px;
+	}
+	.plan-top {
+		display: flex;
 		align-items: center;
 		gap: 8px;
-		border-radius: 6px;
+		width: 100%;
 	}
-	.cmp thead th a .hl {
-		color: var(--accent-text);
-	}
-	.cmp thead th .dot {
+	.plan .dot {
+		flex: none;
 		width: 8px;
 		height: 8px;
 		border-radius: 50%;
@@ -309,61 +517,272 @@ const wa = whatsappUrl(locale, t.templates.cta.whatsappGallery);
 		box-shadow: 0 0 0 0 var(--hue-soft);
 		transition: box-shadow 0.35s var(--ease-out-expo);
 	}
-	.cmp td {
-		color: var(--ink-2);
+	.plan-btn[aria-pressed='true'] .dot {
+		box-shadow: 0 0 0 4px var(--hue-soft);
 	}
-	.cmp td strong {
-		color: var(--ink);
+	.plan-name {
+		font-size: 17px;
 		font-weight: 700;
+		letter-spacing: -0.02em;
+		line-height: 1.2;
 	}
-	.cmp .go td {
-		padding-top: 10px;
-		padding-bottom: 14px;
+	.plan-name .hl {
+		color: var(--hue-text);
 	}
-	.cmp-go {
+	.plan-sel {
+		margin-left: auto;
+		font-family: var(--mono);
+		font-size: 10px;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--hue-text);
+		background: var(--hue-soft);
+		padding: 3px 8px;
+		border-radius: 999px;
+		opacity: 0;
+		transform: scale(0.85);
+		transition:
+			opacity 0.3s,
+			transform 0.4s var(--ease-out-expo);
+	}
+	.plan-btn[aria-pressed='true'] .plan-sel {
+		opacity: 1;
+		transform: none;
+	}
+	.plan-who {
+		font-size: 14px;
+		line-height: 1.45;
+		color: var(--ink-2);
+		min-height: 2.9em;
+	}
+	.plan-price {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		margin-top: auto;
+		padding-top: 6px;
+	}
+	.plan-price .from {
+		font-family: var(--mono);
+		font-size: 11px;
+		font-weight: 600;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--ink-3);
+	}
+	.plan-price .amount {
+		display: inline-block;
+		font-size: 26px;
+		font-weight: 800;
+		letter-spacing: -0.03em;
+		line-height: 1.1;
+		font-variant-numeric: tabular-nums;
+		color: var(--ink);
+	}
+	.plan-chip {
+		display: inline-flex;
+		align-items: center;
+		min-height: 24px;
+		padding: 0 10px;
+		border-radius: 999px;
+		background: var(--bg-2);
+		font-family: var(--mono);
+		font-size: 11px;
+		font-weight: 600;
+		letter-spacing: 0.04em;
+		color: var(--ink-2);
+		transition:
+			background 0.25s,
+			color 0.25s;
+	}
+	.plan-chip .exp {
+		display: none;
+	}
+	.compare[data-mode='express'] .plan-chip .std {
+		display: none;
+	}
+	.compare[data-mode='express'] .plan-chip .exp {
+		display: inline;
+	}
+	.compare[data-mode='express'] .plan-chip {
+		background: var(--hue-soft);
+		color: var(--hue-text);
+	}
+	.plan-go {
 		display: inline-flex;
 		align-items: center;
 		gap: 6px;
+		min-height: 44px;
+		padding: 0 20px;
+		border-top: 1px solid var(--rule);
 		font-size: 13px;
 		font-weight: 600;
-		color: var(--accent-text);
-		border-radius: 6px;
+		color: var(--hue-text);
+		border-radius: 0 0 18px 18px;
 	}
-	.cmp-go::after {
-		content: '→';
+	.plan-go span {
 		display: inline-block;
 		transition: transform 0.3s var(--ease-out-expo);
 	}
-	.cmp-go:hover::after {
+	.plan-go:hover span {
 		transform: translateX(5px);
 	}
-	/* column highlight (JS sets data-hot = cellIndex); a plain cell hover as fallback */
-	.cmp td:hover {
+
+	/* Feature matrix */
+	.matrix-scroll {
+		margin-top: 20px;
+		border: 1px solid var(--rule);
+		border-radius: 16px;
+		background: var(--bg-3);
+		scrollbar-width: thin;
+	}
+	.matrix {
+		width: 100%;
+		border-collapse: separate;
+		border-spacing: 0;
+		font-size: 14px;
+		line-height: 1.4;
+	}
+	.matrix th,
+	.matrix td {
+		text-align: left;
+		vertical-align: middle;
+		padding: 11px 16px;
+		border-bottom: 1px solid var(--rule);
+		transition:
+			background 0.25s,
+			color 0.25s;
+	}
+	.matrix tr:last-child th,
+	.matrix tr:last-child td {
+		border-bottom: 0;
+	}
+	/* header row sticks under the topbar while the table scrolls by */
+	.matrix thead th {
+		position: sticky;
+		top: 72px;
+		z-index: 2;
+		font-size: 14px;
+		font-weight: 700;
+		letter-spacing: -0.01em;
 		background: var(--bg-2);
+		border-bottom-color: var(--rule-2);
+		white-space: nowrap;
 	}
-	.cmp[data-hot='1'] :is(th, td):nth-child(2),
-	.cmp[data-hot='2'] :is(th, td):nth-child(3),
-	.cmp[data-hot='3'] :is(th, td):nth-child(4),
-	.cmp[data-hot='4'] :is(th, td):nth-child(5),
-	.cmp[data-hot='5'] :is(th, td):nth-child(6),
-	.cmp[data-hot='6'] :is(th, td):nth-child(7) {
-		background: var(--hue-soft);
+	.matrix thead th:first-child {
+		border-top-left-radius: 16px;
 	}
-	.cmp[data-hot='1'] thead th:nth-child(2),
-	.cmp[data-hot='2'] thead th:nth-child(3),
-	.cmp[data-hot='3'] thead th:nth-child(4),
-	.cmp[data-hot='4'] thead th:nth-child(5),
-	.cmp[data-hot='5'] thead th:nth-child(6),
-	.cmp[data-hot='6'] thead th:nth-child(7) {
+	.matrix thead th:last-child {
+		border-top-right-radius: 16px;
+	}
+	.matrix thead th .hl {
 		color: var(--hue-text);
 	}
-	.cmp[data-hot='1'] thead th:nth-child(2) .dot,
-	.cmp[data-hot='2'] thead th:nth-child(3) .dot,
-	.cmp[data-hot='3'] thead th:nth-child(4) .dot,
-	.cmp[data-hot='4'] thead th:nth-child(5) .dot,
-	.cmp[data-hot='5'] thead th:nth-child(6) .dot,
-	.cmp[data-hot='6'] thead th:nth-child(7) .dot {
-		box-shadow: 0 0 0 4px var(--hue-soft);
+	.matrix thead th .dot {
+		display: inline-block;
+		width: 8px;
+		height: 8px;
+		margin-right: 8px;
+		border-radius: 50%;
+		background: var(--hue);
+		vertical-align: 1px;
+	}
+	/* first column: the feature name, sticky when the table scrolls sideways */
+	.matrix th[scope='row'],
+	.matrix th.lbl {
+		position: sticky;
+		left: 0;
+		z-index: 1;
+		min-width: 200px;
+		font-weight: 500;
+		color: var(--ink-2);
+		background: var(--bg-3);
+	}
+	.matrix thead th.lbl {
+		z-index: 3;
+		background: var(--bg-2);
+	}
+	.matrix td {
+		width: 15%;
+		color: var(--ink-4);
+	}
+	.matrix td .check {
+		color: var(--hue-text);
+	}
+	.matrix td .no {
+		font-size: 18px;
+		line-height: 16px;
+	}
+	/* selected column: soft tint in its own hue */
+	.matrix .is-sel {
+		background: var(--hue-soft);
+	}
+	.matrix thead th.is-sel {
+		color: var(--hue-text);
+	}
+	/* rows the selected template includes: 12% tint in the selected hue
+	   (the row inherits the section's --hue-soft; cells carry their own) */
+	.matrix tbody tr.is-on th[scope='row'] {
+		background: var(--sel-soft);
+		color: var(--ink);
+		font-weight: 600;
+	}
+	.matrix tbody tr.is-on td {
+		background: var(--sel-soft);
+	}
+	.matrix tbody tr.is-on td.is-sel {
+		box-shadow: inset 0 0 0 100px var(--hue-soft);
+	}
+
+	/* CTA follows the selected template */
+	.cmp-cta {
+		display: flex;
+		justify-content: center;
+		margin-top: 24px;
+	}
+	.cmp-cta .btn {
+		min-width: min(100%, 320px);
+	}
+	.cmp-cta .btn:hover {
+		background: var(--sel);
+		box-shadow: 0 12px 28px -12px var(--sel);
+	}
+
+	@media (max-width: 1080px) {
+		.plans {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+	@media (max-width: 780px) {
+		.cmp-head .seg {
+			width: 100%;
+		}
+		.matrix-scroll {
+			overflow-x: auto;
+		}
+		.matrix {
+			min-width: 640px;
+		}
+		.matrix thead th {
+			position: static;
+		}
+		.matrix thead th.lbl,
+		.matrix th[scope='row'] {
+			position: sticky;
+			min-width: 168px;
+		}
+	}
+	@media (max-width: 480px) {
+		.plans {
+			grid-template-columns: 1fr;
+		}
+		.seg button {
+			padding: 0 10px;
+			font-size: 11px;
+			white-space: normal;
+			line-height: 1.2;
+		}
 	}
 
 	/* ---- Gallery grid ---- */

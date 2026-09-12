@@ -7,7 +7,7 @@
  */
 import { SITE } from '../../data/site';
 import { formatBRL, templates } from '../../data/templates';
-import { fmt, localeOf, localePath, useT } from '../../i18n';
+import { fmt, localeOf, localePath, pick, useT } from '../../i18n';
 import TemplateCard from '../templates/TemplateCard.astro';
 
 const locale = localeOf(Astro);
@@ -20,7 +20,7 @@ const prices = templates.map((tpl) => tpl.priceFrom);
 const lead = fmt(t.templates.band.lead, {
 	N: NWord,
 	n: nWord,
-	days: SITE.promises.templateDays,
+	days: pick(SITE.promises.templateDays, locale),
 	min: formatBRL(Math.min(...prices)),
 	max: formatBRL(Math.max(...prices)),
 });

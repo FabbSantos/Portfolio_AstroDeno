@@ -7,7 +7,7 @@ export const services = {
 	eyebrow: 'Serviços',
 	head1: 'O que eu faço',
 	head2: 'por você.',
-	lead: 'Passa o mouse: cada serviço tem um template ou produto pronto que resolve o problema.',
+	lead: 'Passa o mouse ou toca em cada serviço: tem um template ou produto pronto que resolve o problema.',
 	forWhom: 'Pra quem',
 	outcome: 'Você recebe',
 	timeline: 'Prazo',

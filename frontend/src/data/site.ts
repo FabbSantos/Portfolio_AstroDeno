@@ -52,8 +52,11 @@ export const SITE = {
 
 	/** Delivery promises shared by templates + custom work. Keep them true. */
 	promises: {
-		templateDays: '3 a 5',
+		templateDays: { pt: '3 a 5', en: '3 to 5' } as Bi,
 		adjustmentsMonths: 3,
+		/** Express delivery for templates: price × multiplier, rounded to the nearest R$ 100.
+		 *  TODO(fab): confirmar acréscimo do express (0 esconde o toggle) */
+		express: { multiplier: 1.3, hours: 48 },
 	},
 } as const;
 

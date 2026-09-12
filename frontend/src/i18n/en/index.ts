@@ -13,6 +13,7 @@ import { footer } from './footer';
 import { about } from './about';
 import { work } from './work';
 import { process } from './process';
+import { testimonials } from './testimonials';
 import { notFound } from './notFound';
 import { privacy } from './privacy';
 
@@ -31,6 +32,7 @@ export const en = {
 	about,
 	work,
 	process,
+	testimonials,
 	notFound,
 	privacy,
 } as const;
