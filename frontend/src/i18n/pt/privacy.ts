@@ -9,7 +9,7 @@ export const privacy = {
 		{
 			h: 'Quais dados eu coleto',
 			p: [
-				'Só o que você preenche no formulário: nome, e-mail, mensagem e — se você informar — WhatsApp, empresa e prazo.',
+				'Só o que você preenche no formulário: nome, e-mail, mensagem e, se você informar, WhatsApp, empresa e prazo.',
 				'Junto com a mensagem, o e-mail de notificação que chega pra mim inclui a página de origem, o referrer e os parâmetros UTM (se existirem), além do endereço IP e do navegador usados no envio. Isso serve pra entender de onde o contato veio e pra barrar spam.',
 			],
 		},
@@ -23,16 +23,16 @@ export const privacy = {
 		{
 			h: 'Quem processa',
 			p: [
-				'Resend — envio do e-mail de notificação (servidores nos EUA).',
-				'Google — caixa de entrada onde a mensagem chega.',
-				'Vercel — hospedagem do site e analytics agregados, sem cookies e sem identificar pessoas.',
+				'Resend: envio do e-mail de notificação (servidores nos EUA).',
+				'Google: caixa de entrada onde a mensagem chega.',
+				'Vercel: hospedagem do site e analytics agregados, sem cookies e sem identificar pessoas.',
 			],
 		},
 		{
 			h: 'Por quanto tempo',
 			p: [
 				'Enquanto durar a conversa. Depois disso, a mensagem fica só na minha caixa de entrada, como qualquer e-mail.',
-				'Você pode pedir a exclusão a qualquer momento — respondo confirmando.',
+				'Você pode pedir a exclusão a qualquer momento. Respondo confirmando.',
 			],
 		},
 		{
@@ -46,7 +46,7 @@ export const privacy = {
 			h: 'Cookies',
 			p: [
 				'O site não usa cookies de rastreamento nem pixels de anúncio.',
-				'O Vercel Web Analytics é agregado e não usa cookies. O único dado que fica no seu navegador é a origem da visita (UTM) durante a sessão, pra preencher o formulário — e some quando você fecha a aba.',
+				'O Vercel Web Analytics é agregado e não usa cookies. O único dado que fica no seu navegador é a origem da visita (UTM) durante a sessão, pra preencher o formulário, e some quando você fecha a aba.',
 			],
 		},
 	],

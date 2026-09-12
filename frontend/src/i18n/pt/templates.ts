@@ -49,11 +49,15 @@ export const templates = {
 		brava: 'drop de e-commerce com countdown',
 	},
 
-	/** Gallery: compact comparison strip above the grid. */
+	/**
+	 * Gallery: pricing table above the grid (delivery toggle, one card per
+	 * template, feature matrix, one CTA). {days} = SITE.promises.templateDays,
+	 * {hours} = express hours, {months} = adjustments, {name} = "Mirante Lançamento".
+	 */
 	compare: {
 		eyebrow: 'Qual é o meu?',
 		title: 'Compare em dez segundos',
-		sub: 'Público, prazo e preço lado a lado.',
+		sub: 'Público, prazo e preço lado a lado. Toca no card pra selecionar.',
 		criterion: 'Critério',
 		rows: {
 			who: 'pra quem',
@@ -61,6 +65,31 @@ export const templates = {
 			price: 'a partir de',
 			sections: 'seções',
 		},
+		toggle: {
+			label: 'Prazo de entrega',
+			standard: 'Entrega padrão · {days} dias úteis',
+			express: 'Entrega express · {hours}h',
+		},
+		plansLabel: 'Escolha um template',
+		selectedLabel: 'Selecionado',
+		/** Delivery chip while express is on (standard uses common.businessDays). */
+		deliveryExpress: '{hours}h',
+		matrixCaption: 'O que vem em cada template',
+		included: 'Incluso',
+		notIncluded: 'Não incluso',
+		features: {
+			lead: 'Formulário de lead + WhatsApp',
+			gallery: 'Galeria de fotos',
+			plans: 'Plantas e mapa',
+			pricing: 'Pricing e FAQ',
+			countdown: 'Countdown e vitrine',
+			cases: 'Grid de cases',
+			newsletter: 'Newsletter',
+			legal: 'Página de privacidade e 404',
+			seo: 'SEO técnico e analytics',
+			adjustments: '{months} meses de ajustes',
+		},
+		cta: 'Quero o {name}',
 	},
 
 	detail: {
@@ -69,15 +98,21 @@ export const templates = {
 		want: 'Quero esse template',
 		fullDemo: 'Abrir demo em tela cheia',
 		demoTitle: 'Demo do template {name}',
-		demoNote: 'Demo ao vivo — role e clique à vontade. Marca, textos e imagens são fictícios; no seu, entram os seus.',
+		demoNote: 'Demo ao vivo: role e clique à vontade. Marca, textos e imagens são fictícios; no seu, entram os seus.',
 		sectionsTitle: 'O que vem no template',
 		related: 'Outros templates',
+		/** Desktop / phone switch above the demo frame. */
+		device: {
+			label: 'Ver como',
+			desktop: 'Desktop',
+			mobile: 'Celular',
+		},
 	},
 
 	included: {
 		title: 'O que vem junto',
 		items: [
-			'Publicado no seu domínio (domínio por sua conta — eu configuro DNS e SSL)',
+			'Publicado no seu domínio (o domínio é por sua conta; eu configuro DNS e SSL)',
 			'SEO técnico, Lighthouse > 95',
 			'Personalização de logo, cores, copy e imagens',
 			'{months} meses de ajustes',
@@ -94,7 +129,7 @@ export const templates = {
 			},
 			{
 				title: 'Eu personalizo',
-				desc: 'Marca, cores, copy e imagens — você manda o material, eu adapto.',
+				desc: 'Marca, cores, copy e imagens. Você manda o material, eu adapto.',
 			},
 			{
 				title: 'Vai pro ar',
@@ -113,5 +148,5 @@ export const templates = {
 	},
 
 	/** Shown by demo pages when someone submits one of the fake forms. */
-	demoFormNote: 'Demo — o formulário real é ligado no seu deploy',
+	demoFormNote: 'Demo: o formulário real é ligado no seu deploy',
 } as const;

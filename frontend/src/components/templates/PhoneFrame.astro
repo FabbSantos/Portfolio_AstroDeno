@@ -1,0 +1,123 @@
+---
+/**
+ * Phone chassis around a live demo. The screen is a real 390×844 viewport
+ * (iframe) scaled down with `transform` to fit its container, so the demo
+ * renders exactly as it would on a phone instead of in a narrow desktop layout.
+ *
+ * - `src` is kept in `data-src`; the parent sets `src` when it activates the
+ *   phone (so a page never loads two demos at once). Pass `eager` to set it now.
+ * - A tiny script computes `--scale` (container width / 390) on resize.
+ * - Gentle float animation; off under prefers-reduced-motion (global rule).
+ */
+interface Props {
+	src: string;
+	title: string;
+	/** Set the iframe src at render time instead of waiting for activation. */
+	eager?: boolean;
+	class?: string;
+}
+const { src, title, eager = false, class: cls } = Astro.props;
+---
+
+<div class:list={['phone', cls]} data-phone>
+	<div class='phone-body'>
+		<span class='island' aria-hidden='true'></span>
+		<div class='phone-screen' data-phone-screen>
+			<iframe data-src={src} src={eager ? src : undefined} title={title} loading='lazy' width='390' height='844'></iframe>
+		</div>
+	</div>
+</div>
+
+<script>
+	// scale = available width / 390 so the 390×844 viewport fits the chassis.
+	const W = 390;
+	document.querySelectorAll<HTMLElement>('[data-phone-screen]').forEach((screen) => {
+		const set = () => screen.style.setProperty('--scale', String(screen.clientWidth / W));
+		if (typeof ResizeObserver !== 'undefined') new ResizeObserver(set).observe(screen);
+		else window.addEventListener('resize', set, { passive: true });
+		set();
+	});
+</script>
+
+<style>
+	.phone {
+		--bezel: 12px;
+		/* never taller than ~82% of the viewport, not the whole screen */
+		width: min(100%, calc(390px + var(--bezel) * 2), calc(82vh * 390 / 844 + var(--bezel) * 2));
+		margin: 0 auto;
+		animation: phoneFloat 6s ease-in-out infinite;
+	}
+	@keyframes phoneFloat {
+		50% {
+			transform: translateY(-6px);
+		}
+	}
+	.phone-body {
+		position: relative;
+		padding: var(--bezel);
+		border-radius: calc(2.6rem + var(--bezel));
+		background: var(--ink);
+		/* subtle inner highlight on the bezel + soft drop shadow */
+		box-shadow:
+			inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+			inset 0 1px 0 rgba(255, 255, 255, 0.18),
+			0 30px 60px -24px rgba(0, 0, 0, 0.45),
+			0 10px 20px -12px rgba(0, 0, 0, 0.3);
+	}
+	/* side buttons: volume (left, two via box-shadow) and power (right) */
+	.phone-body::before,
+	.phone-body::after {
+		content: '';
+		position: absolute;
+		width: 3px;
+		border-radius: 2px;
+		background: var(--ink);
+	}
+	.phone-body::before {
+		left: -3px;
+		top: 130px;
+		height: 36px;
+		box-shadow:
+			0 -56px 0 var(--ink),
+			0 52px 0 var(--ink);
+	}
+	.phone-body::after {
+		right: -3px;
+		top: 180px;
+		height: 68px;
+	}
+	.island {
+		position: absolute;
+		top: calc(var(--bezel) + 11px);
+		left: 50%;
+		width: 96px;
+		height: 28px;
+		border-radius: 999px;
+		background: var(--ink);
+		transform: translateX(-50%);
+		z-index: 2;
+	}
+	.phone-screen {
+		--scale: 1;
+		position: relative;
+		width: 100%;
+		aspect-ratio: 390 / 844;
+		overflow: hidden;
+		border-radius: 2.6rem;
+		background: var(--bg-3);
+	}
+	.phone-screen iframe {
+		display: block;
+		width: 390px;
+		height: 844px;
+		border: 0;
+		background: var(--bg-3);
+		transform: scale(var(--scale));
+		transform-origin: top left;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.phone {
+			animation: none;
+		}
+	}
+</style>

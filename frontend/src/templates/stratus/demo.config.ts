@@ -12,7 +12,7 @@ export default defineStratus({
 	},
 	theme: { accent: '#ff5c3d', bg: '#fffaf7', ink: '#1a1a1c', radius: 10 },
 	seo: {
-		title: 'Stratus SaaS — template demo',
+		title: 'Stratus SaaS: template demo',
 		description: 'Demo of the Stratus template: B2B SaaS landing by Fab Bahiense. Placeholder data.',
 		canonical: 'https://www.fabbahiense.dev/templates/stratus/demo',
 	},
@@ -35,7 +35,7 @@ export default defineStratus({
 	},
 
 	hero: {
-		pill: { tag: 'NEW', text: 'Stratus 3.0 is here — anomaly detection out of the box', href: '#' },
+		pill: { tag: 'NEW', text: 'Stratus 3.0 is here: anomaly detection out of the box', href: '#' },
 		title: 'Analytics,\n**without the friction.**',
 		lead: 'The first analytics platform that configures itself. Plug your stack in 60 seconds. 14‑day trial, no credit card, no sales call.',
 		primary: { label: 'Start free for 14 days', href: '#cta' },
@@ -117,7 +117,7 @@ export default defineStratus({
 			},
 			{
 				q: 'Can I export everything if I leave?',
-				a: 'Yes — full historical data as Parquet or CSV, anytime. No lock-in, no hostage data.',
+				a: 'Yes: full historical data as Parquet or CSV, anytime. No lock-in, no hostage data.',
 			},
 		],
 	},

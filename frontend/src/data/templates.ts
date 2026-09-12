@@ -41,8 +41,8 @@ export const templates: TemplateMeta[] = [
 			en: 'Real-estate launch landing: lead form in the hero, floor plans, location and the proper sales feel.',
 		},
 		lead: {
-			pt: 'Landing de lançamento imobiliário no padrão BR — faixa de números, galeria, plantas, mapa e formulário de alta intenção. Feita pra converter visita em call com corretor.',
-			en: 'Brazilian-style real-estate launch landing — numbers band, gallery, floor plans, location map and a high-intent lead form. Built to convert visits into scheduled tours.',
+			pt: 'Landing de lançamento imobiliário no padrão BR. Faixa de números, galeria, plantas, mapa e formulário de alta intenção. Feita pra converter visita em call com corretor.',
+			en: 'Brazilian-style real-estate launch landing. Numbers band, gallery, floor plans, location map and a high-intent lead form. Built to convert visits into scheduled tours.',
 		},
 		sections: {
 			pt: ['Hero com formulário', 'Faixa de números', 'O empreendimento + lazer', 'Plantas', 'Localização', 'Condições', 'Formulário completo', 'Rodapé com CRECI/RI'],

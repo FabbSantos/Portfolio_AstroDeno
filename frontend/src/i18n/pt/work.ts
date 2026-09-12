@@ -5,7 +5,7 @@ export const work = {
 		eyebrow: '{from} → {to} · anos em produção',
 		head1: 'Trabalho',
 		head2: 'de verdade.',
-		lead: 'Estes são os projetos que posso mostrar abertamente. Há mais — alguns sob NDA, outros que preferi não publicar. Quer saber sobre eles? Me escreve.',
+		lead: 'Estes são os projetos que posso mostrar abertamente. Há mais: alguns sob NDA, outros que preferi não publicar. Quer saber sobre eles? Me escreve.',
 	},
 
 	flagships: {
@@ -19,7 +19,7 @@ export const work = {
 		eyebrow: 'Cases',
 		head1: 'Entregue pra',
 		head2: 'empresas.',
-		lead: 'Sites e sistemas que entraram em produção pra clientes de verdade — e o que eu fiz em cada um.',
+		lead: 'Sites e sistemas que entraram em produção pra clientes de verdade, e o que eu fiz em cada um.',
 	},
 
 	lab: {

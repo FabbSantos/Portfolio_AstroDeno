@@ -3,7 +3,7 @@ import type { footer as ptShape } from '../pt/footer';
 
 export const footer: Shape<typeof ptShape> = {
 	location: 'Rio de Janeiro',
-	tagline: 'Senior software engineer. Sites, systems and AI — no agency in between.',
+	tagline: 'Senior software engineer. Websites, systems and AI, and you talk to the person who builds it.',
 	navTitle: 'Navigation',
 	contactTitle: 'Contact',
 	email: 'Email',

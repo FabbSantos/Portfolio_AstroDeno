@@ -36,8 +36,8 @@ export const featured: FeaturedProject[] = [
 		badge: { pt: 'Produto · Observabilidade', en: 'Product · Observability' },
 		title: 'Pulsar',
 		desc: {
-			pt: 'Observabilidade pra Node — logs, métricas e alertas com um npm que encaixa em pino ou console.log.',
-			en: 'Observability for Node — logs, metrics and alerts from an npm that plugs into pino or console.log.',
+			pt: 'Observabilidade pra Node: logs, métricas e alertas com um npm que encaixa em pino ou console.log.',
+			en: 'Observability for Node: logs, metrics and alerts from an npm that plugs into pino or console.log.',
 		},
 		urlLabel: { pt: 'pulsar · produto próprio', en: 'pulsar · own product' },
 		// TODO(fab): href pública do Pulsar
@@ -62,8 +62,8 @@ export const featured: FeaturedProject[] = [
 		badge: { pt: 'Tech Lead · Plataforma multicanal', en: 'Tech Lead · Multichannel platform' },
 		title: 'Nexus Comunicação',
 		desc: {
-			pt: 'SMS, WhatsApp e RCS num painel só — painel, API, filas e infra AWS, liderados ponta a ponta.',
-			en: 'SMS, WhatsApp and RCS in one dashboard — dashboard, API, queues and AWS infra, led end to end.',
+			pt: 'SMS, WhatsApp e RCS num painel só. Painel, API, filas e infra AWS, liderados ponta a ponta.',
+			en: 'SMS, WhatsApp and RCS in one dashboard. Dashboard, API, queues and AWS infra, led end to end.',
 		},
 		urlLabel: { pt: 'app.nexuscomunicacao.com.br', en: 'app.nexuscomunicacao.com.br' },
 		href: 'https://app.nexuscomunicacao.com.br',
@@ -103,8 +103,8 @@ export const featured: FeaturedProject[] = [
 		badge: { pt: 'Template · Imobiliário', en: 'Template · Real estate' },
 		title: 'Mirante',
 		desc: {
-			pt: 'Landing de lançamento imobiliário no padrão BR — feita pra converter visita em call com corretor.',
-			en: 'Brazilian-style real-estate launch landing — built to convert visits into scheduled tours.',
+			pt: 'Landing de lançamento imobiliário no padrão BR. Feita pra converter visita em call com corretor.',
+			en: 'Brazilian-style real-estate launch landing. Built to convert visits into scheduled tours.',
 		},
 		urlLabel: { pt: 'template · demo', en: 'template · demo' },
 		href: '/templates/mirante',

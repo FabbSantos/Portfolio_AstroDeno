@@ -1,10 +1,10 @@
 /** Home hero + the featured-projects rotator (DeviceShowcase). */
 export const hero = {
 	/** The h1 is the headline; `headlineAccent` is the trailing phrase rendered with `.hl`. */
-	headline: 'Site, sistema ou integração — feito por um engenheiro sênior,',
-	headlineAccent: 'sem agência no meio.',
-	/** Two lines max — the proof line + credential carry the rest. */
-	sub: 'Desde 2018 coloco produto em produção pra construtoras, edtechs e startups. Você fala direto comigo, do orçamento ao deploy — escopo fechado, data e código seu.',
+	headline: 'Precisa de um site, um sistema ou uma IA no seu produto?',
+	headlineAccent: 'Eu faço.',
+	/** Two lines max. The proof line and the credential carry the rest. */
+	sub: 'Sou o Fabrício, engenheiro de software desde 2018. Já entreguei produto pra construtora, edtech e startup. Aqui você fala comigo do orçamento ao deploy: escopo fechado, prazo combinado e o código fica com você.',
 	credential: '{role} · {location} · desde {since}',
 	proof: '{years} anos · {products} produtos em produção · respondo em {time}',
 	showcase: {

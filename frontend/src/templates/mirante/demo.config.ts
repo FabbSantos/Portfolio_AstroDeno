@@ -18,7 +18,7 @@ export default defineMirante({
 	brand: { name: 'Mirante', tagline: 'Pinheiros', locale: 'pt-BR' },
 	theme: { accent: '#a77b43', bg: '#faf6ee', bg2: '#f3ecdc', ink: '#1f2937', radius: 8 },
 	seo: {
-		title: 'Mirante Lançamento — demo do template',
+		title: 'Mirante Lançamento: demo do template',
 		description: 'Demo do template Mirante: landing de lançamento imobiliário por Fab Bahiense. Dados fictícios.',
 		canonical: 'https://www.fabbahiense.dev/templates/mirante/demo',
 	},
@@ -63,9 +63,9 @@ export default defineMirante({
 
 	stats: [
 		{ v: '76', l: 'unidades' },
-		{ v: '2–3', l: 'dormitórios' },
-		{ v: '84–132m²', l: 'área privativa' },
-		{ v: '1–2', l: 'vagas' },
+		{ v: '2 a 3', l: 'dormitórios' },
+		{ v: '84 a 132m²', l: 'área privativa' },
+		{ v: '1 a 2', l: 'vagas' },
 		{ v: '18', l: 'itens de lazer' },
 		{ v: '320m', l: 'do metrô' },
 	],
@@ -74,8 +74,8 @@ export default defineMirante({
 		eyebrow: '// O empreendimento',
 		title: 'Pensado para **Pinheiros**,\npor quem mora aqui.',
 		paragraphs: [
-			'O Mirante é um lançamento residencial assinado pela Helios + Coastal, na esquina da Cardeal Arcoverde com a Sumidouro — coração de Pinheiros, com toda a movimentação do bairro a pé.',
-			'Apartamentos de 84m² a 132m², com 2 ou 3 dormitórios — sendo 1 ou 2 suítes —, vaga coberta na garagem e área privativa pensada para receber em casa. Lazer completo no térreo e na cobertura.',
+			'O Mirante é um lançamento residencial assinado pela Helios + Coastal, na esquina da Cardeal Arcoverde com a Sumidouro. Coração de Pinheiros, com toda a movimentação do bairro a pé.',
+			'Apartamentos de 84m² a 132m², com 2 ou 3 dormitórios (1 ou 2 suítes), vaga coberta na garagem e área privativa pensada para receber em casa. Lazer completo no térreo e na cobertura.',
 			'Pré-vendas abertas com condições de lançamento. Decorado disponível para visita com hora marcada.',
 		],
 		amenitiesTitle: '// Lazer + serviços',
@@ -148,7 +148,7 @@ export default defineMirante({
 	lead: {
 		eyebrow: '// Quero conhecer',
 		title: 'Vamos marcar **sua visita?**',
-		sub: 'Preencha aqui e um consultor entra em contato em até 24h úteis. Sem compromisso — visita ao decorado dura cerca de 45 minutos.',
+		sub: 'Preencha aqui e um consultor entra em contato em até 24h úteis. Sem compromisso. Visita ao decorado dura cerca de 45 minutos.',
 		bullets: ['Tour completo pelo decorado', 'Tabela de unidades disponíveis', 'Simulação de financiamento', 'Sem cobrança · sem compromisso'],
 		times: ['Manhã', 'Tarde', 'Noite', 'Sábado'],
 		cta: 'Quero ser contatado →',

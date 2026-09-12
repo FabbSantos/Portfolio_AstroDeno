@@ -53,4 +53,15 @@ const { slug, title, description, locale, themeColor = '#ffffff' } = Astro.props
 	.is-framed .demo-ribbon {
 		display: none;
 	}
+	/* Inside the portfolio previews (cards, browser frame, phone) the page scrolls
+	   but must not paint a scrollbar over the layout. */
+	.is-framed,
+	.is-framed body {
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+	}
+	.is-framed::-webkit-scrollbar,
+	.is-framed body::-webkit-scrollbar {
+		display: none;
+	}
 </style>

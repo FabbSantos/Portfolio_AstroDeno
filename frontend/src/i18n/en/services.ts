@@ -5,7 +5,7 @@ export const services: Shape<typeof ptShape> = {
 	eyebrow: 'Services',
 	head1: 'What I do',
 	head2: 'for you.',
-	lead: 'Hover a card: every service has a ready-made template or product that solves the problem.',
+	lead: 'Hover or tap a card: every service has a ready-made template or product that solves the problem.',
 	forWhom: 'Who it’s for',
 	outcome: 'You get',
 	timeline: 'Timeline',

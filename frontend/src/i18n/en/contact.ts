@@ -5,7 +5,7 @@ export const contact: Shape<typeof ptShape> = {
 	eyebrow: 'Contact',
 	head1: 'Tell me the problem.',
 	head2: "Within 24 business hours I'll tell you if it's doable, what it costs and when it's ready.",
-	sub: "You talk to me directly — not to a sales rep. Send a short summary (or just a link to what exists today) and I'll come back with questions or a proposal.",
+	sub: "You talk to me directly, not to a sales rep. Send a short summary (or just a link to what exists today) and I'll come back with questions or a proposal.",
 
 	form: {
 		name: 'Name',
@@ -18,7 +18,7 @@ export const contact: Shape<typeof ptShape> = {
 		needGroupTemplates: 'Templates',
 		needGroupOther: 'Other',
 		needTemplate: 'Template: {name}',
-		needTemplateAny: 'A template — still deciding which',
+		needTemplateAny: 'A template (still deciding which)',
 		needPulsar: 'Access to Pulsar',
 		needQuasar: 'Access to Quasar',
 		needOther: 'Something else',
@@ -26,7 +26,7 @@ export const contact: Shape<typeof ptShape> = {
 		deadlineAny: 'Not sure yet',
 		deadlineWeek: 'This week',
 		deadlineMonth: 'Within 30 days',
-		deadlineQuarter: '1–3 months',
+		deadlineQuarter: '1 to 3 months',
 		deadlineFlexible: 'No rush',
 		message: 'Message',
 		messagePlaceholder: 'What you need, what exists today and a link, if you have one.',
@@ -43,7 +43,7 @@ export const contact: Shape<typeof ptShape> = {
 
 	success: {
 		title: 'Got it, {name}!',
-		body: "I reply within 24 business hours — if it's urgent, WhatsApp.",
+		body: "I reply within 24 business hours. If it's urgent, WhatsApp.",
 		bodyNoWhatsapp: 'I reply within 24 business hours.',
 		linkedin: 'Find me on LinkedIn',
 	},
@@ -53,9 +53,9 @@ export const contact: Shape<typeof ptShape> = {
 		RATE_LIMITED: 'Too many attempts in a short time. Wait a few minutes or send an email.',
 		SEND_FAILED: "The email service didn't respond. Try again in a moment or email me directly.",
 		NOT_CONFIGURED: 'The form is temporarily down. Send an email and I will reply just the same.',
-		generic: "Couldn't send. Check the fields and try again — or send an email.",
+		generic: "Couldn't send. Check the fields and try again, or send an email.",
 		mailto: 'Send by email',
-		mailSubject: 'Contact from the site — {need}',
+		mailSubject: 'Contact from the site. {need}',
 	},
 
 	faq: {
@@ -63,7 +63,7 @@ export const contact: Shape<typeof ptShape> = {
 		items: [
 			{
 				q: 'How long does it take?',
-				a: 'Template: 3–5 business days after the briefing. Custom: from 2 weeks, with a preview every week.',
+				a: 'Template: 3 to 5 business days after the briefing. Custom: from 2 weeks, with a preview every week.',
 			},
 			{
 				q: 'How does payment work?',
@@ -71,11 +71,11 @@ export const contact: Shape<typeof ptShape> = {
 			},
 			{
 				q: 'Who does the work?',
-				a: "Me. No subcontracting, no hidden junior — the person you talk to is the person writing the code.",
+				a: "Me. No subcontracting, no hidden junior: the person you talk to is the person writing the code.",
 			},
 			{
 				q: 'And after the deploy?',
-				a: '3 months of adjustments included. After that, optional monthly maintenance — or the repo is yours and you continue with whoever you like.',
+				a: '3 months of adjustments included. After that, optional monthly maintenance, or the repo is yours and you continue with whoever you like.',
 			},
 		],
 	},

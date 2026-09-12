@@ -1,13 +1,15 @@
 ---
 /**
  * /templates/<slug> (and /en/templates/<slug>) — the sales page of one template.
- * Hero (meta, name, price, CTAs) → the real demo in a browser frame →
- * what's in it / what's included / how it works → other templates → CTA band.
+ * Hero (meta, name, price, CTAs) → the real demo in a browser frame or a
+ * phone chassis (Desktop / Celular toggle) → what's in it / what's included /
+ * how it works → other templates → CTA band.
  */
 import Layout from '../layouts/Layout.astro';
 import TopBar from '../components/site/TopBar.astro';
 import SiteFooter from '../components/site/SiteFooter.astro';
 import TemplateCard from '../components/templates/TemplateCard.astro';
+import PhoneFrame from '../components/templates/PhoneFrame.astro';
 import { SITE, whatsappUrl } from '../data/site';
 import { demoPath, formatBRL, templates, type TemplateMeta } from '../data/templates';
 import { fmt, localeOf, localePath, pick, useT } from '../i18n';
@@ -38,6 +40,7 @@ const steps = t.templates.steps.items.map((s) => ({ title: s.title, desc: fmt(s.
 
 const demo = demoPath(tpl.slug);
 const demoTitle = fmt(t.templates.detail.demoTitle, { name });
+const device = t.templates.detail.device;
 const demoUrlLabel = `${new URL(SITE.url).host}${demo}`;
 const wantHref = localePath(locale, `/?template=${tpl.slug}#contato`);
 const wa = whatsappUrl(locale, fmt(t.templates.cta.whatsappDetail, { name }));
@@ -65,14 +68,28 @@ const wa = whatsappUrl(locale, fmt(t.templates.cta.whatsappDetail, { name }));
 			</div>
 		</section>
 
-		<section class='demo'>
+		<section class='demo' data-device='desktop'>
+			<div class='device-row'>
+				<div class='seg' role='group' aria-label={device.label} data-device-toggle>
+					<span class='seg-knob' aria-hidden='true'></span>
+					<button type='button' data-device='desktop' aria-pressed='true'>{device.desktop}</button>
+					<button type='button' data-device='mobile' aria-pressed='false'>{device.mobile}</button>
+				</div>
+			</div>
 			<div class='stage'>
-				<div class='browser'>
+				{/* Only the active device loads its demo: src lives in data-src until first activation. */}
+				<div class='browser' data-frame='desktop'>
 					<div class='chrome' aria-hidden='true'>
 						<span class='dots'><i></i><i></i><i></i></span>
 						<span class='url'>{demoUrlLabel}</span>
 					</div>
-					<iframe src={demo} title={demoTitle} loading='lazy'></iframe>
+					<iframe data-src={demo} title={demoTitle} loading='lazy'></iframe>
+					<noscript>
+						<iframe src={demo} title={demoTitle} loading='lazy'></iframe>
+					</noscript>
+				</div>
+				<div class='phone-stage' data-frame='mobile'>
+					<PhoneFrame src={demo} title={demoTitle} />
 				</div>
 			</div>
 			<p class='demo-note'>{t.templates.detail.demoNote}</p>
@@ -144,6 +161,32 @@ const wa = whatsappUrl(locale, fmt(t.templates.cta.whatsappDetail, { name }));
 
 	<SiteFooter />
 </Layout>
+
+<script>
+	/**
+	 * Desktop / phone switch. The demo iframe src lives in data-src and is set
+	 * the first time a device is shown, so only one demo loads. Under 780px the
+	 * phone is the default.
+	 */
+	document.querySelectorAll<HTMLElement>('.demo[data-device]').forEach((demo) => {
+		const toggle = demo.querySelector<HTMLElement>('[data-device-toggle]');
+		const frames = Array.from(demo.querySelectorAll<HTMLElement>('[data-frame]'));
+		const set = (dev: string) => {
+			demo.dataset.device = dev;
+			toggle?.querySelectorAll<HTMLButtonElement>('[data-device]').forEach((b) => {
+				b.setAttribute('aria-pressed', String(b.dataset.device === dev));
+			});
+			const frame = frames.find((f) => f.dataset.frame === dev);
+			const iframe = frame?.querySelector<HTMLIFrameElement>('iframe[data-src]');
+			if (iframe && !iframe.getAttribute('src')) iframe.src = iframe.dataset.src ?? '';
+		};
+		toggle?.addEventListener('click', (e) => {
+			const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-device]');
+			if (btn?.dataset.device) set(btn.dataset.device);
+		});
+		set(window.matchMedia('(max-width: 780px)').matches ? 'mobile' : 'desktop');
+	});
+</script>
 
 <style>
 	.sr-only {
@@ -258,14 +301,75 @@ const wa = whatsappUrl(locale, fmt(t.templates.cta.whatsappDetail, { name }));
 		transform: translate(2px, -2px);
 	}
 
-	/* Demo in a browser frame — subtle 3D tilt on hover */
+	/* Demo: device toggle + browser frame (subtle 3D tilt on hover) or phone */
 	.demo {
 		max-width: var(--maxw);
 		margin: 0 auto;
 		padding: 0 32px;
 	}
+	.device-row {
+		display: flex;
+		justify-content: center;
+		margin-bottom: 20px;
+	}
+	/* Segmented control: the knob slides on transform */
+	.seg {
+		position: relative;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		padding: 4px;
+		border: 1px solid var(--rule-2);
+		border-radius: 999px;
+		background: var(--bg-2);
+		font-family: var(--mono);
+		font-size: 12px;
+		font-weight: 600;
+		letter-spacing: 0.02em;
+	}
+	.seg-knob {
+		position: absolute;
+		top: 4px;
+		bottom: 4px;
+		left: 4px;
+		width: calc(50% - 4px);
+		border-radius: 999px;
+		background: var(--bg-3);
+		box-shadow:
+			0 1px 2px rgba(26, 26, 28, 0.12),
+			0 6px 16px -8px rgba(26, 26, 28, 0.3);
+		transition: transform 0.4s var(--ease-out-expo);
+	}
+	.demo[data-device='mobile'] .seg-knob {
+		transform: translateX(100%);
+	}
+	.seg button {
+		position: relative;
+		z-index: 1;
+		min-height: 44px;
+		min-width: 120px;
+		padding: 0 18px;
+		border-radius: 999px;
+		color: var(--ink-3);
+		white-space: nowrap;
+		transition: color 0.25s;
+	}
+	.seg button[aria-pressed='true'],
+	.seg button:hover {
+		color: var(--ink);
+	}
 	.stage {
 		perspective: 1200px;
+		/* desktop frame a touch narrower than the page so it doesn't dominate large screens */
+		max-width: 1040px;
+		margin: 0 auto;
+	}
+	/* only the active device is in the layout */
+	.demo[data-device='mobile'] [data-frame='desktop'],
+	.demo[data-device='desktop'] [data-frame='mobile'] {
+		display: none;
+	}
+	.phone-stage {
+		padding: 12px 8px 24px;
 	}
 	.browser {
 		border: 1px solid var(--rule-2);

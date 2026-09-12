@@ -1,0 +1,304 @@
+---
+/**
+ * #depoimentos: quote cards in a marquee (21st.dev "Testimonials Marquee"
+ * adapted to plain Astro + CSS). Renders NOTHING while src/data/testimonials.ts
+ * is empty, so the home never shows a placeholder.
+ *
+ * 4+ items → two rows moving in opposite directions (row B reversed);
+ * fewer → one row. Each row is duplicated (aria-hidden) for the seamless
+ * loop; site.ts (initMarquees) slows [data-marquee-row] on hover.
+ * Reduced motion: no animation, rows wrap to a grid, duplicate hidden.
+ */
+import { Image } from 'astro:assets';
+import { TESTIMONIALS, type Testimonial } from '../../data/testimonials';
+import { localeOf, pick, useT } from '../../i18n';
+
+const locale = localeOf(Astro);
+const t = useT(locale);
+
+const HUES = ['coral', 'violet', 'sky', 'amber', 'green'] as const;
+const hueOf = (i: number) => HUES[i % HUES.length];
+const initials = (name: string) =>
+	name
+		.trim()
+		.split(/\s+/)
+		.filter(Boolean)
+		.slice(0, 2)
+		.map((w) => w[0]?.toUpperCase() ?? '')
+		.join('');
+
+const items = TESTIMONIALS.map((it, i) => ({ ...it, hue: hueOf(i), initials: initials(it.name) }));
+const twoRows = items.length >= 4;
+const rows: { items: typeof items; reverse: boolean }[] = twoRows
+	? [
+			{ items, reverse: false },
+			{ items: [...items].reverse(), reverse: true },
+		]
+	: [{ items, reverse: false }];
+
+const domain = (href: string) => {
+	try {
+		return new URL(href).hostname.replace(/^www\./, '');
+	} catch {
+		return href;
+	}
+};
+
+type Card = Testimonial & { hue: (typeof HUES)[number]; initials: string };
+---
+
+{
+	items.length > 0 && (
+		<section class='section' id='depoimentos'>
+			<div class='sec-head reveal'>
+				<span class='eyebrow accent'>{t.testimonials.eyebrow}</span>
+				<h2>
+					{t.testimonials.head1} <span class='hl'>{t.testimonials.head2}</span>
+				</h2>
+				<p>{t.testimonials.lead}</p>
+			</div>
+
+			<div class='marquee reveal d2' data-marquee data-marquee-hover-rate='0.25' aria-label={t.testimonials.listLabel}>
+				{rows.map((row) => (
+					<div class:list={['track', { reverse: row.reverse }]}>
+						{[false, true].map((dup) => (
+							<ul class='row' data-marquee-row aria-hidden={dup ? 'true' : undefined}>
+								{row.items.map((c: Card) => (
+									<li class='card' style={`--tint:var(--hue-${c.hue}-soft);--tint-text:var(--hue-${c.hue}-text)`}>
+										<figure>
+											<span class='q' aria-hidden='true'>
+												“
+											</span>
+											<blockquote>
+												<p>{pick(c.quote, locale)}</p>
+											</blockquote>
+											<figcaption>
+												{c.avatar ? (
+													<Image class='avatar' src={c.avatar} alt='' width={88} height={88} loading='lazy' />
+												) : (
+													<span class='tile' aria-hidden='true'>
+														{c.initials}
+													</span>
+												)}
+												<span class='who'>
+													<span class='name'>{c.name}</span>
+													<span class='meta'>
+														{pick(c.role, locale)} · {c.company}
+													</span>
+													{c.href && !dup && (
+														<a class='link' href={c.href} target='_blank' rel='noopener noreferrer'>
+															{domain(c.href)}
+														</a>
+													)}
+												</span>
+												{c.logo && <Image class='logo' src={c.logo} alt='' height={22} loading='lazy' />}
+											</figcaption>
+										</figure>
+									</li>
+								))}
+							</ul>
+						))}
+					</div>
+				))}
+			</div>
+		</section>
+	)
+}
+
+<style>
+	.marquee {
+		--gap: 20px;
+		--duration: 40s;
+		--fade: 96px;
+		display: grid;
+		gap: var(--gap);
+		overflow: hidden;
+		user-select: none;
+		-webkit-mask-image: linear-gradient(to right, transparent, #000 var(--fade), #000 calc(100% - var(--fade)), transparent);
+		mask-image: linear-gradient(to right, transparent, #000 var(--fade), #000 calc(100% - var(--fade)), transparent);
+	}
+	.track {
+		display: flex;
+		gap: var(--gap);
+		width: max-content;
+	}
+	.row {
+		list-style: none;
+		flex-shrink: 0;
+		display: flex;
+		align-items: stretch;
+		gap: var(--gap);
+		padding-block: 8px;
+		animation: slide var(--duration) linear infinite;
+	}
+	.track.reverse .row {
+		animation-direction: reverse;
+	}
+	/* Without JS, site.ts can't slow the rows → plain pause on hover. */
+	:global(html:not(.js)) .marquee:hover .row {
+		animation-play-state: paused;
+	}
+	@keyframes slide {
+		to {
+			transform: translateX(calc(-100% - var(--gap)));
+		}
+	}
+
+	.card {
+		--tint: var(--accent-soft);
+		--tint-text: var(--accent-text);
+		width: clamp(320px, 28vw, 380px);
+		display: flex;
+	}
+	.card figure {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+		padding: 28px 26px 22px;
+		border: 1px solid var(--rule);
+		border-radius: 18px;
+		background: var(--bg-3);
+		transition:
+			transform 0.4s var(--ease-out-expo),
+			box-shadow 0.4s var(--ease-out-expo),
+			border-color 0.3s;
+	}
+	.card figure:hover,
+	.card figure:focus-within {
+		transform: translateY(-4px);
+		border-color: var(--rule-2);
+		box-shadow: 0 20px 44px -22px rgba(26, 26, 28, 0.3);
+	}
+	.q {
+		display: block;
+		height: 30px;
+		font-family: var(--sans);
+		font-size: 56px;
+		font-weight: 800;
+		line-height: 0.85;
+		color: var(--ink-4);
+		margin-bottom: 12px;
+		transition: color 0.3s;
+	}
+	.card figure:hover .q {
+		color: var(--accent);
+	}
+	blockquote {
+		flex: 1;
+		margin: 0;
+	}
+	blockquote p {
+		font-size: 16px;
+		line-height: 1.55;
+		color: var(--ink);
+		text-wrap: pretty;
+	}
+	figcaption {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		margin-top: 22px;
+		padding-top: 18px;
+		border-top: 1px solid var(--rule);
+	}
+	.tile,
+	figcaption :global(.avatar) {
+		flex-shrink: 0;
+		width: 44px;
+		height: 44px;
+		border-radius: 50%;
+	}
+	figcaption :global(.avatar) {
+		object-fit: cover;
+	}
+	.tile {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		font-family: var(--mono);
+		font-size: 14px;
+		font-weight: 600;
+		letter-spacing: 0.04em;
+		background: var(--tint);
+		color: var(--tint-text);
+	}
+	.who {
+		display: flex;
+		flex-direction: column;
+		gap: 3px;
+		min-width: 0;
+	}
+	.name {
+		font-weight: 600;
+		font-size: 15px;
+		letter-spacing: -0.01em;
+		color: var(--ink);
+	}
+	.meta,
+	.link {
+		font-family: var(--mono);
+		font-size: 12px;
+		color: var(--ink-3);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.link {
+		width: fit-content;
+		max-width: 100%;
+		text-decoration: underline;
+		text-decoration-color: var(--rule-2);
+		text-underline-offset: 3px;
+		transition: color 0.3s, text-decoration-color 0.3s;
+	}
+	.link:hover {
+		color: var(--accent-text);
+		text-decoration-color: currentColor;
+	}
+	figcaption :global(.logo) {
+		margin-left: auto;
+		height: 22px;
+		width: auto;
+		max-width: 80px;
+		object-fit: contain;
+		filter: grayscale(1);
+		opacity: 0.7;
+	}
+
+	@media (max-width: 768px) {
+		.marquee {
+			--gap: 14px;
+			--duration: 32s;
+			--fade: 40px;
+		}
+		.card {
+			width: 300px;
+		}
+		.card figure {
+			padding: 22px 20px 18px;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.marquee {
+			-webkit-mask-image: none;
+			mask-image: none;
+		}
+		.track {
+			width: auto;
+		}
+		.track .row {
+			animation: none;
+			flex-wrap: wrap;
+			justify-content: center;
+		}
+		.row[aria-hidden='true'] {
+			display: none;
+		}
+		.card figure:hover,
+		.card figure:focus-within {
+			transform: none;
+		}
+	}
+</style>
