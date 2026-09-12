@@ -33,6 +33,34 @@ export const templates = {
 		open: 'Ver template',
 		includes: 'Inclui domínio, SSL, SEO e {months} meses de ajustes',
 		previewAlt: 'Prévia do template {name}',
+		/** Mono label over the preview; fades out when the page starts panning. */
+		hoverHint: 'passe o mouse pra rolar',
+		/** Small overlay link to the live demo (always visible on touch). */
+		demo: 'Ver demo',
+		/** Label before templates.solves.<slug>. */
+		solves: 'Resolve:',
+	},
+
+	/** One short phrase per template: the problem it solves. Key = slug. */
+	solves: {
+		mirante: 'lançamento imobiliário que precisa de lead',
+		stratus: 'SaaS B2B que precisa de trial',
+		atelier: 'estúdio/agência que precisa de portfólio',
+		brava: 'drop de e-commerce com countdown',
+	},
+
+	/** Gallery: compact comparison strip above the grid. */
+	compare: {
+		eyebrow: 'Qual é o meu?',
+		title: 'Compare em dez segundos',
+		sub: 'Público, prazo e preço lado a lado.',
+		criterion: 'Critério',
+		rows: {
+			who: 'pra quem',
+			days: 'prazo',
+			price: 'a partir de',
+			sections: 'seções',
+		},
 	},
 
 	detail: {

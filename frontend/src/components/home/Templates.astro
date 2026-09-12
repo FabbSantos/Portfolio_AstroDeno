@@ -3,6 +3,7 @@
  * Home band — "Templates · sites prontos em dias".
  * One list of cards: a 2×2 grid from 900px up, a snap scroller below that
  * (touch scrolls natively, mouse can drag, prev/next buttons for everyone).
+ * Cards reveal with a stagger (.reveal .d1–.d3 from site.css).
  */
 import { SITE } from '../../data/site';
 import { formatBRL, templates } from '../../data/templates';
@@ -28,7 +29,7 @@ const lead = fmt(t.templates.band.lead, {
 <section class='tpl-band' id='templates' aria-labelledby='templates-title'>
 	<div class='inner'>
 		<div class='sec-head reveal'>
-			<span class='eyebrow accent'>{t.templates.band.eyebrow}</span>
+			<span class='eyebrow accent'><i class='live-dot' aria-hidden='true'></i>{t.templates.band.eyebrow}</span>
 			<h2 id='templates-title'>
 				{t.templates.band.head} <span class='hl'>{t.templates.band.headAccent}</span>
 			</h2>
@@ -37,22 +38,22 @@ const lead = fmt(t.templates.band.lead, {
 
 		<ul class='scroller' id='tpl-scroller' role='list' aria-label={t.templates.band.listLabel}>
 			{
-				templates.map((tpl) => (
-					<li class='tpl-item'>
+				templates.map((tpl, i) => (
+					<li class:list={['tpl-item', 'reveal', i > 0 && `d${Math.min(i, 3)}`]}>
 						<TemplateCard tpl={tpl} locale={locale} heading='h3' />
 					</li>
 				))
 			}
 		</ul>
 
-		<div class='band-foot'>
+		<div class='band-foot reveal d1'>
 			<a href={localePath(locale, '/templates')} class='btn-link'>{t.templates.band.viewAll}</a>
 			<div class='scroller-nav'>
 				<button type='button' data-scroll='prev' data-for='#tpl-scroller' aria-label={t.templates.band.scrollPrev}>
-					←
+					<span aria-hidden='true'>←</span>
 				</button>
 				<button type='button' data-scroll='next' data-for='#tpl-scroller' aria-label={t.templates.band.scrollNext}>
-					→
+					<span aria-hidden='true'>→</span>
 				</button>
 			</div>
 		</div>
@@ -62,6 +63,8 @@ const lead = fmt(t.templates.band.lead, {
 <style>
 	.tpl-band {
 		padding: 120px 0;
+		/* very light band tint so the row reads as its own stage */
+		background: linear-gradient(180deg, var(--bg-2) 0%, var(--bg) 60%);
 	}
 	.inner {
 		max-width: var(--maxw);
@@ -71,12 +74,43 @@ const lead = fmt(t.templates.band.lead, {
 		padding: 0 32px;
 	}
 
+	/* Live dot in the eyebrow */
+	.live-dot {
+		position: relative;
+		display: inline-block;
+		width: 7px;
+		height: 7px;
+		margin-right: 9px;
+		border-radius: 50%;
+		background: var(--accent);
+		vertical-align: 1px;
+	}
+	.live-dot::after {
+		content: '';
+		position: absolute;
+		inset: -3px;
+		border-radius: 50%;
+		border: 1.5px solid var(--accent);
+		opacity: 0;
+		animation: live-ping 2.2s var(--ease-out-expo) infinite;
+	}
+	@keyframes live-ping {
+		0% {
+			transform: scale(0.4);
+			opacity: 0.9;
+		}
+		100% {
+			transform: scale(1.8);
+			opacity: 0;
+		}
+	}
+
 	/* Mobile / tablet: snap scroller */
 	.scroller {
 		list-style: none;
 		display: flex;
 		gap: 20px;
-		padding: 8px 32px 24px;
+		padding: 12px 32px 32px;
 		overflow-x: auto;
 		overflow-y: hidden;
 		scroll-snap-type: x mandatory;
@@ -123,16 +157,32 @@ const lead = fmt(t.templates.band.lead, {
 		color: var(--ink);
 		font-size: 18px;
 		line-height: 1;
+		display: grid;
+		place-items: center;
 		transition:
 			background 0.25s,
 			border-color 0.25s,
-			transform 0.25s;
+			color 0.25s,
+			transform 0.3s var(--ease-out-expo);
+	}
+	.scroller-nav button span {
+		display: inline-block;
+		transition: transform 0.3s var(--ease-out-expo);
 	}
 	.scroller-nav button:hover {
-		background: var(--ink);
-		border-color: var(--ink);
+		background: var(--accent);
+		border-color: var(--accent);
 		color: #fff;
-		transform: translateY(-1px);
+		transform: translateY(-2px);
+	}
+	.scroller-nav button:hover[data-scroll='prev'] span {
+		transform: translateX(-3px);
+	}
+	.scroller-nav button:hover[data-scroll='next'] span {
+		transform: translateX(3px);
+	}
+	.scroller-nav button:active {
+		transform: translateY(0) scale(0.96);
 	}
 
 	/* Desktop: 2×2 grid, no scrolling */
@@ -140,7 +190,7 @@ const lead = fmt(t.templates.band.lead, {
 		.scroller {
 			display: grid;
 			grid-template-columns: repeat(2, minmax(0, 1fr));
-			gap: 24px;
+			gap: 28px;
 			padding: 8px 32px 0;
 			overflow: visible;
 			scroll-snap-type: none;
@@ -154,7 +204,7 @@ const lead = fmt(t.templates.band.lead, {
 			display: none;
 		}
 		.band-foot {
-			padding-top: 36px;
+			padding-top: 40px;
 		}
 	}
 

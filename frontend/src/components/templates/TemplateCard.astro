@@ -3,9 +3,12 @@
  * Template card — used by the home band, the /templates gallery and the
  * "other templates" block on the sales page.
  *
- * - The whole card links to the SALES page (/templates/[slug]), never to the demo.
- * - Preview: a build-time screenshot from `src/assets/templates/[slug].png` when
- *   one exists; otherwise the live demo scaled down inside an inert iframe.
+ * - Preview and body both link to the SALES page (/templates/[slug]). A small
+ *   sibling link opens the live demo (visible on hover; always on touch).
+ * - Preview: a build-time FULL-PAGE screenshot from `src/assets/templates/[slug].jpg`
+ *   (`node scripts/shots.mjs templates`). On hover the page pans down to its end
+ *   and eases back on leave — pure CSS, see `--frame-pct`. Without a screenshot
+ *   the live demo is scaled down inside an inert iframe.
  * - `data-card` lets the home scroller measure the step for prev/next buttons.
  */
 import type { ImageMetadata } from 'astro';
@@ -13,6 +16,7 @@ import { Image } from 'astro:assets';
 import { SITE } from '../../data/site';
 import { demoPath, formatBRL, type TemplateMeta } from '../../data/templates';
 import { fmt, localePath, pick, useT, type Locale } from '../../i18n';
+import { hueVars } from './hues';
 
 interface Props {
 	tpl: TemplateMeta;
@@ -24,38 +28,66 @@ interface Props {
 const { tpl, locale, heading = 'h3', class: cls } = Astro.props;
 const t = useT(locale);
 
-// Build-time screenshots (optional): src/assets/templates/[slug].png
+// Build-time full-page screenshots (optional): src/assets/templates/[slug].jpg
 type Shot = { default: ImageMetadata };
-const shots = import.meta.glob('../../assets/templates/*.png', { eager: true }) as Record<string, Shot>;
-const shot = Object.entries(shots).find(([path]) => path.endsWith('/' + tpl.slug + '.png'))?.[1].default;
+const shots = import.meta.glob('../../assets/templates/*.jpg', { eager: true }) as Record<string, Shot>;
+const shot = Object.entries(shots).find(([path]) => path.endsWith('/' + tpl.slug + '.jpg'))?.[1].default;
+
+/*
+ * Pan geometry, CSS only. The pan wrapper is exactly as tall as the image, so
+ * `translateY(-100% + frame-height)` lands on the bottom of the page. The frame
+ * is 16/11, hence frame-height as a % of image height = (11/16) / (imgH/imgW).
+ * Duration scales with the distance so every template scrolls at the same speed.
+ */
+const FRAME_RATIO = 11 / 16;
+const ratio = shot ? shot.height / shot.width : FRAME_RATIO;
+const framePct = `${((FRAME_RATIO / ratio) * 100).toFixed(3)}%`;
+const panDur = `${Math.max(2, Math.round((ratio - FRAME_RATIO) * 19) / 10)}s`;
 
 const name = `${tpl.name} ${tpl.accent}`;
 const previewAlt = fmt(t.templates.card.previewAlt, { name });
 const includes = fmt(t.templates.card.includes, { months: SITE.promises.adjustmentsMonths });
+const solves = (t.templates.solves as Record<string, string | undefined>)[tpl.slug];
+const sales = localePath(locale, `/templates/${tpl.slug}`);
+const demo = demoPath(tpl.slug);
+const style = `${hueVars(tpl.kind)};--frame-pct:${framePct};--pan-dur:${panDur}`;
 ---
 
-<a href={localePath(locale, `/templates/${tpl.slug}`)} class:list={['tpl-card', cls]} data-card>
+<article class:list={['tpl-card', cls]} data-card data-kind={tpl.kind} style={style}>
+	<span class='tpl-ring' aria-hidden='true'></span>
+
 	<div class='tpl-frame' style={`background:${tpl.grad}`}>
-		{
-			shot ? (
-				<Image
-					src={shot}
-					widths={[420, 840]}
-					sizes='(max-width: 780px) 84vw, 420px'
-					format='webp'
-					alt={previewAlt}
-					loading='lazy'
-				/>
-			) : (
-				<iframe src={demoPath(tpl.slug)} title={previewAlt} loading='lazy' tabindex='-1' aria-hidden='true' />
-			)
-		}
-		<span class='tpl-open' aria-hidden='true'>{t.templates.card.open} →</span>
+		<a href={sales} class='tpl-cover'>
+			{
+				shot ? (
+					<div class='tpl-pan'>
+						<Image
+							src={shot}
+							widths={[500, 1000]}
+							sizes='(max-width: 780px) 84vw, (max-width: 1100px) 46vw, 620px'
+							format='webp'
+							alt={previewAlt}
+							loading='lazy'
+							decoding='async'
+						/>
+					</div>
+				) : (
+					<iframe src={demo} title={previewAlt} loading='lazy' tabindex='-1' aria-hidden='true' />
+				)
+			}
+		</a>
+		{shot && <span class='tpl-hint' aria-hidden='true'>{t.templates.card.hoverHint}</span>}
+		<a href={demo} class='tpl-demo' target='_blank' rel='noopener'>
+			{t.templates.card.demo} ↗<span class='sr-only'> ({t.common.openInNewTab})</span>
+		</a>
 	</div>
 
-	<div class='tpl-meta'>
+	<a href={sales} class='tpl-link'>
 		<p class='top'>
-			<span class='cat'>{pick(tpl.cat, locale)}</span>
+			<span class='cat'>
+				<i class='cat-dot' aria-hidden='true'></i>
+				{pick(tpl.cat, locale)}
+			</span>
 			<span class='days'>{tpl.days} {t.common.businessDays}</span>
 		</p>
 		{
@@ -69,50 +101,150 @@ const includes = fmt(t.templates.card.includes, { months: SITE.promises.adjustme
 				</h3>
 			)
 		}
+		{
+			solves && (
+				<p class='solves'>
+					<span class='k'>{t.templates.card.solves}</span>
+					{solves}
+				</p>
+			)
+		}
 		<p class='desc'>{pick(tpl.desc, locale)}</p>
 		<p class='inc'>{includes}</p>
 		<p class='foot'>
-			<span class='price'><span class='from'>{t.common.from}</span> {formatBRL(tpl.priceFrom)}</span>
+			<span class='price'>
+				<span class='from'>{t.common.from}</span>
+				{formatBRL(tpl.priceFrom)}
+			</span>
 			<span class='pick'>{t.templates.card.open}</span>
 		</p>
-	</div>
-</a>
+	</a>
+</article>
 
 <style>
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+		white-space: nowrap;
+	}
+
+	/* ---- Card shell: lift + shadow + rotating 1px gradient ring on hover ---- */
 	.tpl-card {
+		position: relative;
 		display: flex;
 		flex-direction: column;
 		background: var(--bg-3);
 		border-radius: 18px;
-		overflow: hidden;
 		border: 1px solid var(--rule);
 		transition:
-			transform 0.35s var(--ease-out-expo),
-			box-shadow 0.35s;
+			transform 0.45s var(--ease-out-expo),
+			box-shadow 0.45s var(--ease-out-expo),
+			border-color 0.3s;
 	}
 	.tpl-card:hover {
 		transform: translateY(-6px);
-		box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.18);
+		border-color: transparent;
+		box-shadow:
+			0 30px 60px -22px rgba(26, 26, 28, 0.28),
+			0 12px 24px -16px var(--hue-soft);
 	}
-	.tpl-card:focus-visible {
-		outline-offset: 4px;
-		border-radius: 18px;
+	/* keyboard: same lift (separate rule so engines without :has() keep the hover one) */
+	.tpl-card:has(:focus-visible) {
+		transform: translateY(-6px);
+		border-color: transparent;
+		box-shadow:
+			0 30px 60px -22px rgba(26, 26, 28, 0.28),
+			0 12px 24px -16px var(--hue-soft);
 	}
 
-	/* Preview: screenshot or scaled live demo */
+	/* 1px conic ring: a rotating gradient masked to the border area (padding-box XOR). */
+	.tpl-ring {
+		position: absolute;
+		inset: -1px;
+		z-index: 3;
+		border-radius: 19px;
+		padding: 1px;
+		overflow: hidden;
+		pointer-events: none;
+		opacity: 0;
+		transition: opacity 0.4s;
+		-webkit-mask:
+			linear-gradient(#000 0 0) content-box,
+			linear-gradient(#000 0 0);
+		-webkit-mask-composite: xor;
+		mask:
+			linear-gradient(#000 0 0) content-box,
+			linear-gradient(#000 0 0);
+		mask-composite: exclude;
+	}
+	.tpl-ring::before {
+		content: '';
+		position: absolute;
+		inset: -100%;
+		background: conic-gradient(
+			from 0deg,
+			var(--accent) 0%,
+			var(--accent-2) 20%,
+			transparent 38%,
+			transparent 60%,
+			var(--hue) 78%,
+			var(--accent) 100%
+		);
+	}
+	.tpl-card:hover .tpl-ring {
+		opacity: 1;
+	}
+	.tpl-card:has(:focus-visible) .tpl-ring {
+		opacity: 1;
+	}
+	.tpl-card:hover .tpl-ring::before {
+		animation: tpl-spin 5s linear infinite;
+	}
+	@keyframes tpl-spin {
+		to {
+			transform: rotate(1turn);
+		}
+	}
+
+	/* ---- Preview: full-page screenshot that pans on hover ---- */
 	.tpl-frame {
 		position: relative;
-		aspect-ratio: 16 / 10;
+		aspect-ratio: 16 / 11;
 		overflow: hidden;
+		border-radius: 17px 17px 0 0;
 		border-bottom: 1px solid var(--rule);
+		isolation: isolate;
 	}
-	.tpl-frame img {
+	.tpl-cover {
 		position: absolute;
 		inset: 0;
+		display: block;
+	}
+	.tpl-cover:focus-visible {
+		outline-offset: -4px;
+		border-radius: 14px;
+	}
+	.tpl-pan {
+		position: absolute;
+		top: 0;
+		left: 0;
 		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		object-position: top center;
+		will-change: transform;
+		/* leave: ease back up to the top of the page */
+		transition: transform 0.8s ease-out;
+	}
+	.tpl-pan img {
+		display: block;
+		width: 100%;
+		height: auto;
+	}
+	/* hover: slow linear scroll down to the end of the page */
+	.tpl-card:hover .tpl-pan {
+		transform: translateY(calc(-100% + var(--frame-pct)));
+		transition: transform var(--pan-dur, 6s) linear;
 	}
 	.tpl-frame iframe {
 		position: absolute;
@@ -125,76 +257,165 @@ const includes = fmt(t.templates.card.includes, { months: SITE.promises.adjustme
 		pointer-events: none;
 		background: #fff;
 	}
+	/* Soft bottom fade so the labels read; lifts on hover to show the page clean. */
 	.tpl-frame::after {
 		content: '';
 		position: absolute;
 		inset: 0;
-		background: linear-gradient(180deg, transparent 60%, rgba(26, 26, 28, 0.18));
-		opacity: 0;
-		transition: opacity 0.3s;
+		background: linear-gradient(180deg, transparent 70%, rgba(26, 26, 28, 0.18));
 		pointer-events: none;
+		transition: opacity 0.4s;
 	}
-	.tpl-card:hover .tpl-frame::after,
-	.tpl-card:focus-visible .tpl-frame::after {
-		opacity: 1;
-	}
-	.tpl-open {
-		position: absolute;
-		bottom: 16px;
-		left: 50%;
-		transform: translateX(-50%) translateY(8px);
-		background: var(--ink);
-		color: #fff;
-		font-family: var(--mono);
-		font-size: 12px;
-		font-weight: 600;
-		padding: 8px 16px;
-		border-radius: 999px;
-		letter-spacing: 0.04em;
-		white-space: nowrap;
+	.tpl-card:hover .tpl-frame::after {
 		opacity: 0;
-		transition:
-			opacity 0.3s var(--ease-out-expo),
-			transform 0.3s var(--ease-out-expo);
-	}
-	.tpl-card:hover .tpl-open,
-	.tpl-card:focus-visible .tpl-open {
-		opacity: 1;
-		transform: translateX(-50%) translateY(0);
 	}
 
-	/* Body */
-	.tpl-meta {
+	/* "hover to scroll" — bottom-left, fades out once the pan starts */
+	.tpl-hint {
+		position: absolute;
+		left: 14px;
+		bottom: 12px;
+		z-index: 2;
+		display: inline-flex;
+		align-items: center;
+		gap: 7px;
+		font-family: var(--mono);
+		font-size: 11px;
+		letter-spacing: 0.04em;
+		color: #fff;
+		background: rgba(26, 26, 28, 0.72);
+		padding: 5px 11px 5px 9px;
+		border-radius: 999px;
+		backdrop-filter: blur(6px);
+		pointer-events: none;
+		transition:
+			opacity 0.3s,
+			transform 0.3s var(--ease-out-expo);
+	}
+	.tpl-hint::before {
+		content: '↓';
+		display: inline-block;
+		font-weight: 600;
+		animation: tpl-bob 1.6s ease-in-out infinite;
+	}
+	@keyframes tpl-bob {
+		0%,
+		100% {
+			transform: translateY(-1px);
+		}
+		50% {
+			transform: translateY(2px);
+		}
+	}
+	.tpl-card:hover .tpl-hint {
+		opacity: 0;
+		transform: translateY(6px);
+	}
+
+	/* "View demo ↗" — bottom-right; in on hover, always on touch */
+	.tpl-demo {
+		position: absolute;
+		right: 12px;
+		bottom: 12px;
+		z-index: 2;
+		font-family: var(--mono);
+		font-size: 11px;
+		font-weight: 600;
+		letter-spacing: 0.04em;
+		color: #fff;
+		background: var(--ink);
+		padding: 6px 11px;
+		border-radius: 999px;
+		white-space: nowrap;
+		opacity: 0;
+		transform: translateY(6px);
+		transition:
+			opacity 0.3s,
+			transform 0.3s var(--ease-out-expo),
+			background 0.2s;
+	}
+	.tpl-card:hover .tpl-demo,
+	.tpl-demo:focus-visible {
+		opacity: 1;
+		transform: none;
+	}
+	.tpl-demo:hover {
+		background: var(--accent);
+	}
+
+	/* ---- Body ---- */
+	.tpl-link {
 		display: flex;
 		flex-direction: column;
 		gap: 8px;
-		padding: 22px 24px 24px;
+		padding: 20px 24px 22px;
 		flex: 1;
+	}
+	.tpl-link:focus-visible {
+		outline-offset: -4px;
+		border-radius: 0 0 14px 14px;
 	}
 	.top {
 		display: flex;
 		justify-content: space-between;
-		gap: 12px;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 8px 12px;
 		font-family: var(--mono);
 		font-size: 12px;
 		color: var(--ink-3);
 	}
+	/* Category chip in the template's own hue */
 	.top .cat {
-		color: var(--accent-text);
+		display: inline-flex;
+		align-items: center;
+		gap: 7px;
+		color: var(--hue-text);
+		background: var(--hue-soft);
 		font-weight: 600;
+		letter-spacing: 0.02em;
+		padding: 4px 10px 4px 9px;
+		border-radius: 999px;
+		white-space: nowrap;
+		transition: background 0.3s;
+	}
+	.cat-dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: var(--hue);
+		box-shadow: 0 0 0 0 var(--hue-soft);
+		transition: box-shadow 0.35s var(--ease-out-expo);
+	}
+	.tpl-card:hover .cat-dot {
+		box-shadow: 0 0 0 4px var(--hue-soft);
 	}
 	.top .days {
 		white-space: nowrap;
 	}
-	.tpl-meta :global(.name) {
+	.tpl-link :global(.name) {
 		font-size: 22px;
 		font-weight: 700;
 		letter-spacing: -0.02em;
 		line-height: 1.15;
 	}
 	/* Heading is < 24px: use the AA-safe accent. */
-	.tpl-meta :global(.name .hl) {
+	.tpl-link :global(.name .hl) {
 		color: var(--accent-text);
+	}
+	.solves {
+		font-size: 14px;
+		color: var(--ink);
+		line-height: 1.45;
+	}
+	.solves .k {
+		font-family: var(--mono);
+		font-size: 11px;
+		font-weight: 600;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--hue-text);
+		margin-right: 4px;
 	}
 	.desc {
 		font-size: 14px;
@@ -209,33 +430,97 @@ const includes = fmt(t.templates.card.includes, { months: SITE.promises.adjustme
 	.foot {
 		display: flex;
 		justify-content: space-between;
-		align-items: baseline;
+		align-items: center;
 		gap: 12px;
 		margin-top: auto;
 		padding-top: 14px;
 		border-top: 1px solid var(--rule);
 		font-size: 14px;
 	}
+	/* Price chip pops on hover */
 	.foot .price {
+		display: inline-flex;
+		align-items: baseline;
+		gap: 5px;
 		font-weight: 700;
 		color: var(--ink);
+		background: var(--bg-2);
+		padding: 6px 12px;
+		border-radius: 999px;
+		transform-origin: left center;
+		transition:
+			transform 0.35s var(--ease-out-expo),
+			background 0.3s,
+			color 0.3s;
 	}
 	.foot .from {
 		font-weight: 500;
 		color: var(--ink-3);
-		font-size: 13px;
+		font-size: 12px;
+		transition: color 0.3s;
 	}
+	.tpl-card:hover .foot .price {
+		transform: scale(1.05);
+		background: var(--accent-soft);
+		color: var(--accent-text);
+	}
+	.tpl-card:hover .foot .from {
+		color: var(--accent-text);
+	}
+	/* "View template →" arrow slides */
 	.foot .pick {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
 		color: var(--accent-text);
 		font-weight: 600;
 		white-space: nowrap;
 	}
 	.foot .pick::after {
-		content: ' →';
+		content: '→';
 		display: inline-block;
-		transition: transform 0.2s;
+		transition: transform 0.3s var(--ease-out-expo);
 	}
 	.tpl-card:hover .foot .pick::after {
-		transform: translateX(4px);
+		transform: translateX(5px);
+	}
+
+	/* ---- Touch: no pan, no sticky hover lift, demo link always visible ---- */
+	@media (hover: none), (pointer: coarse) {
+		.tpl-hint {
+			display: none;
+		}
+		.tpl-demo {
+			opacity: 1;
+			transform: none;
+		}
+		.tpl-card:hover {
+			transform: none;
+			border-color: var(--rule);
+			box-shadow: none;
+		}
+		.tpl-card:hover .tpl-pan {
+			transform: none;
+		}
+		.tpl-card:hover .tpl-ring {
+			opacity: 0;
+		}
+		.tpl-card:hover .tpl-frame::after {
+			opacity: 1;
+		}
+	}
+
+	/* ---- Reduced motion: static preview (top of the page), no spin/bob ---- */
+	@media (prefers-reduced-motion: reduce) {
+		.tpl-hint {
+			display: none;
+		}
+		.tpl-card:hover .tpl-pan {
+			transform: none;
+		}
+		.tpl-ring::before,
+		.tpl-hint::before {
+			animation: none !important;
+		}
 	}
 </style>

@@ -34,14 +34,14 @@ export const bravaSchema = baseSiteSchema.extend({
 					href: z.string().default('/cart'),
 					count: z.number().int().nonnegative().optional(),
 				})
-				.default({}),
+				.prefault({}),
 		})
-		.default({}),
+		.prefault({}),
 
 	/** The drop itself — the countdown reads `endsAt`. */
 	drop: z.object({
 		/** ISO 8601 with offset, e.g. '2026-09-30T23:59:59-03:00'. */
-		endsAt: z.string().datetime({ offset: true }),
+		endsAt: z.iso.datetime({ offset: true }),
 		countdownLabel: z.string().default('Tempo até o fim do drop'),
 		units: z
 			.object({
@@ -50,7 +50,7 @@ export const bravaSchema = baseSiteSchema.extend({
 				minutes: z.string().default('min'),
 				seconds: z.string().default('seg'),
 			})
-			.default({}),
+			.prefault({}),
 		/** Shown in place of the numbers once `endsAt` has passed. */
 		ended: z.string().default('Este drop acabou. Inscreva-se para saber do próximo.'),
 	}),
@@ -133,7 +133,7 @@ export const bravaSchema = baseSiteSchema.extend({
 			socials: z.array(link).default([]),
 			privacyLabel: z.string().default('Privacidade'),
 		})
-		.default({}),
+		.prefault({}),
 });
 
 export type BravaConfig = z.infer<typeof bravaSchema>;

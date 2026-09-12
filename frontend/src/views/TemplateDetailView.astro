@@ -57,21 +57,23 @@ const wa = whatsappUrl(locale, fmt(t.templates.cta.whatsappDetail, { name }));
 				<strong>{formatBRL(tpl.priceFrom)}</strong>
 			</p>
 			<div class='actions'>
-				<a href={wantHref} class='btn btn-primary'>{t.templates.detail.want}</a>
-				<a href={demo} class='btn btn-ghost' target='_blank' rel='noopener'>
-					{t.templates.detail.fullDemo}
+				<a href={wantHref} class='btn btn-primary shine'>{t.templates.detail.want}</a>
+				<a href={demo} class='btn btn-ghost shine' target='_blank' rel='noopener'>
+					{t.templates.detail.fullDemo} <span class='arrow' aria-hidden='true'>↗</span>
 					<span class='sr-only'>({t.common.openInNewTab})</span>
 				</a>
 			</div>
 		</section>
 
 		<section class='demo'>
-			<div class='browser'>
-				<div class='chrome' aria-hidden='true'>
-					<span class='dots'><i></i><i></i><i></i></span>
-					<span class='url'>{demoUrlLabel}</span>
+			<div class='stage'>
+				<div class='browser'>
+					<div class='chrome' aria-hidden='true'>
+						<span class='dots'><i></i><i></i><i></i></span>
+						<span class='url'>{demoUrlLabel}</span>
+					</div>
+					<iframe src={demo} title={demoTitle} loading='lazy'></iframe>
 				</div>
-				<iframe src={demo} title={demoTitle} loading='lazy'></iframe>
 			</div>
 			<p class='demo-note'>{t.templates.detail.demoNote}</p>
 		</section>
@@ -115,8 +117,8 @@ const wa = whatsappUrl(locale, fmt(t.templates.cta.whatsappDetail, { name }));
 			</div>
 			<ul class='related-grid' role='list'>
 				{
-					others.map((o) => (
-						<li>
+					others.map((o, i) => (
+						<li class:list={['reveal', i > 0 && `d${Math.min(i, 3)}`]}>
 							<TemplateCard tpl={o} locale={locale} heading='h3' />
 						</li>
 					))
@@ -215,12 +217,55 @@ const wa = whatsappUrl(locale, fmt(t.templates.cta.whatsappDetail, { name }));
 		flex-wrap: wrap;
 		margin-top: 28px;
 	}
+	/* Shine sweep across the CTAs on hover */
+	.shine {
+		position: relative;
+		overflow: hidden;
+	}
+	.shine::after {
+		content: '';
+		position: absolute;
+		top: -20%;
+		left: -60%;
+		width: 45%;
+		height: 140%;
+		background: linear-gradient(115deg, transparent 0%, rgba(255, 255, 255, 0.55) 50%, transparent 100%);
+		transform: skewX(-20deg);
+		opacity: 0;
+		pointer-events: none;
+	}
+	.shine.btn-ghost::after {
+		background: linear-gradient(115deg, transparent 0%, rgba(255, 89, 100, 0.28) 50%, transparent 100%);
+	}
+	.shine:hover::after {
+		animation: shine 0.9s var(--ease-out-expo) forwards;
+	}
+	@keyframes shine {
+		0% {
+			left: -60%;
+			opacity: 1;
+		}
+		100% {
+			left: 130%;
+			opacity: 0;
+		}
+	}
+	.btn .arrow {
+		display: inline-block;
+		transition: transform 0.3s var(--ease-out-expo);
+	}
+	.btn:hover .arrow {
+		transform: translate(2px, -2px);
+	}
 
-	/* Demo in a browser frame */
+	/* Demo in a browser frame — subtle 3D tilt on hover */
 	.demo {
 		max-width: var(--maxw);
 		margin: 0 auto;
 		padding: 0 32px;
+	}
+	.stage {
+		perspective: 1200px;
 	}
 	.browser {
 		border: 1px solid var(--rule-2);
@@ -228,6 +273,23 @@ const wa = whatsappUrl(locale, fmt(t.templates.cta.whatsappDetail, { name }));
 		overflow: hidden;
 		background: var(--bg-3);
 		box-shadow: 0 40px 80px -40px rgba(0, 0, 0, 0.25);
+		transform-origin: 50% 100%;
+		transition:
+			transform 0.7s var(--ease-out-expo),
+			box-shadow 0.7s var(--ease-out-expo),
+			border-color 0.4s;
+	}
+	.browser:hover {
+		transform: rotateX(2deg) translateY(-4px);
+		border-color: rgba(255, 89, 100, 0.35);
+		box-shadow:
+			0 60px 100px -40px rgba(0, 0, 0, 0.32),
+			0 24px 48px -32px rgba(255, 89, 100, 0.25);
+	}
+	@media (hover: none) {
+		.browser:hover {
+			transform: none;
+		}
 	}
 	.chrome {
 		display: flex;

@@ -72,7 +72,7 @@ export const stratusSchema = baseSiteSchema.extend({
 			title: z.string().optional(),
 			items: z.array(z.object({ name: z.string().min(1), image: image.nullable().default(null) })).default([]),
 		})
-		.default({}),
+		.prefault({}),
 
 	features: z.object({
 		eyebrow: z.string().optional(),
@@ -148,7 +148,7 @@ export const stratusSchema = baseSiteSchema.extend({
 			/** Defaults to '© <year> <legal.company ?? brand.name>'. */
 			copyright: z.string().optional(),
 		})
-		.default({}),
+		.prefault({}),
 });
 
 export type StratusConfig = z.infer<typeof stratusSchema>;

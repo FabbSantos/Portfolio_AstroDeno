@@ -36,9 +36,9 @@ export const baseSiteSchema = z.object({
 	seo: z.object({
 		title: z.string().min(1).max(70),
 		description: z.string().min(1).max(170),
-		canonical: z.string().url(),
+		canonical: z.url(),
 		ogImage: image.nullable().default(null),
-		jsonLd: z.record(z.unknown()).optional(),
+		jsonLd: z.record(z.string(), z.unknown()).optional(),
 	}),
 	contact: z.object({
 		whatsapp: z
@@ -48,7 +48,7 @@ export const baseSiteSchema = z.object({
 			})
 			.optional(),
 		phone: z.string().optional(),
-		email: z.string().email().optional(),
+		email: z.email().optional(),
 		form: z
 			.object({
 				provider: z.enum(['none', 'whatsapp', 'formspree', 'web3forms', 'resend', 'webhook']).default('none'),
@@ -56,7 +56,7 @@ export const baseSiteSchema = z.object({
 				successUrl: z.string().optional(),
 				successMessage: z.string().default('Recebemos! Retornamos em até 1 dia útil.'),
 			})
-			.default({}),
+			.prefault({}),
 	}),
 	analytics: z
 		.object({
@@ -64,7 +64,7 @@ export const baseSiteSchema = z.object({
 			metaPixel: z.string().optional(),
 			plausibleDomain: z.string().optional(),
 		})
-		.default({}),
+		.prefault({}),
 	legal: z
 		.object({
 			privacyUrl: z.string().optional(),
@@ -72,7 +72,7 @@ export const baseSiteSchema = z.object({
 			cnpj: z.string().optional(),
 			lines: z.array(z.string()).default([]),
 		})
-		.default({}),
+		.prefault({}),
 	nav: z.array(z.object({ label: z.string(), href: z.string() })).default([]),
 });
 
@@ -113,7 +113,7 @@ function findTodos(value: unknown, path: string, out: string[], seen: Set<object
  * `path.to.field: message` (one per line) so the build output reads as a
  * checklist. Also rejects any `TODO_…` string left by the scaffold.
  */
-export function defineSite<T extends z.ZodTypeAny>(schema: T, config: unknown): z.infer<T> {
+export function defineSite<T extends z.ZodType>(schema: T, config: unknown): z.infer<T> {
 	const problems: string[] = [];
 	findTodos(config, '', problems, new Set());
 

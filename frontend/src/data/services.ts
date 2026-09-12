@@ -2,25 +2,56 @@
  * Productized services shown on the home page (and referenced by the contact
  * form's "what do you need" select).
  *
+ * Home cards are compact: `title` + `short` + chips. The long `forWhom` /
+ * `outcome` / `timeline` copy shows up in the hover preview panel, where
+ * `preview` points at the template or product that solves the service.
+ *
  * TODO(fab): every `priceFrom` here is a proposal from the audit, not a
  * confirmed number. Adjust or set to 0 to hide the price on that card.
  */
 import type { Bi } from './site';
 
+/** Inline icon ids — drawn by Services.astro (lucide-style outlines, no icon library). */
+export type ServiceIcon = 'rocket' | 'layout' | 'server' | 'sparkles' | 'shield-check';
+
+/** Screenshot ids: templates come from src/assets/templates, products from src/assets/featured. */
+export type PreviewImage = 'mirante' | 'stratus' | 'atelier' | 'brava' | 'pulsar' | 'quasar' | 'nexus';
+
+export interface ServicePreview {
+	image: PreviewImage;
+	/** Rendered as "Resolve com: <label>". */
+	label: Bi;
+	/** Site path ('/templates/<slug>' or '/work'); the component runs it through localePath. */
+	href: string;
+}
+
 export interface Service {
 	id: string;
+	/** Full name — contact select + e-mail subject. */
 	name: Bi;
+	/** Card heading (~2 words). */
+	title: Bi;
+	/** One line under the heading (≤ 70 chars): who it's for / what it is. */
+	short: Bi;
 	forWhom: Bi;
 	outcome: Bi;
 	/** BRL. 0 = don't show a price. */
 	priceFrom: number;
 	timeline: Bi;
+	/** Chip-sized version of `timeline` (≤ 22 chars). */
+	timelineShort: Bi;
+	/** Card colour (hex). Tile tint, active border/glow, chips and sweep line — never body text. */
+	hue: string;
+	icon: ServiceIcon;
+	preview: ServicePreview;
 }
 
 export const SERVICES: Service[] = [
 	{
 		id: 'landing',
 		name: { pt: 'Landing page que gera lead', en: 'Landing page that generates leads' },
+		title: { pt: 'Landing page', en: 'Landing page' },
+		short: { pt: 'Campanha, lançamento ou produto no ar essa semana.', en: 'Campaign, launch or product live this week.' },
 		forWhom: {
 			pt: 'Lançamento imobiliário, campanha, produto novo, evento. Quem tem mídia rodando e precisa da página no ar essa semana.',
 			en: 'Real-estate launch, campaign, new product, event. Anyone with ads running who needs the page live this week.',
@@ -31,10 +62,20 @@ export const SERVICES: Service[] = [
 		},
 		priceFrom: 3500,
 		timeline: { pt: 'template em 3–5 dias úteis · sob medida em 2–3 semanas', en: 'template in 3–5 business days · custom in 2–3 weeks' },
+		timelineShort: { pt: '3–5 dias úteis', en: '3–5 business days' },
+		hue: '#ff5964',
+		icon: 'rocket',
+		preview: {
+			image: 'mirante',
+			label: { pt: 'Mirante Lançamento', en: 'Mirante Lançamento' },
+			href: '/templates/mirante',
+		},
 	},
 	{
 		id: 'site',
 		name: { pt: 'Site institucional ou portal', en: 'Institutional site or portal' },
+		title: { pt: 'Site institucional', en: 'Company website' },
+		short: { pt: 'Pra quem ainda manda cliente pro Instagram.', en: 'For companies still sending clients to Instagram.' },
 		forWhom: {
 			pt: 'Construtoras, clínicas, consultorias e empresas que ainda mandam cliente pro Instagram porque o site não convence.',
 			en: 'Developers, clinics, consultancies and companies still sending clients to Instagram because the site doesn’t convince.',
@@ -45,10 +86,20 @@ export const SERVICES: Service[] = [
 		},
 		priceFrom: 9000,
 		timeline: { pt: '3–5 semanas', en: '3–5 weeks' },
+		timelineShort: { pt: '3–5 semanas', en: '3–5 weeks' },
+		hue: '#7c3aed',
+		icon: 'layout',
+		preview: {
+			image: 'atelier',
+			label: { pt: 'Atelier Studio', en: 'Atelier Studio' },
+			href: '/templates/atelier',
+		},
 	},
 	{
 		id: 'system',
 		name: { pt: 'Sistema web ou MVP', en: 'Web system or MVP' },
+		title: { pt: 'Sistema ou MVP', en: 'System or MVP' },
+		short: { pt: 'Dashboard, ferramenta interna ou SaaS sem contratar time.', en: 'Dashboard, internal tool or SaaS without hiring a team.' },
 		forWhom: {
 			pt: 'Founder com produto na cabeça e processo na planilha; empresa que precisa de dashboard, ferramenta interna ou SaaS sem contratar time.',
 			en: 'Founders with a product in their head and a process in a spreadsheet; companies that need a dashboard, internal tool or SaaS without hiring a team.',
@@ -59,10 +110,20 @@ export const SERVICES: Service[] = [
 		},
 		priceFrom: 25000,
 		timeline: { pt: 'primeira fase em 4–8 semanas', en: 'first phase in 4–8 weeks' },
+		timelineShort: { pt: 'fase 1 em 4–8 semanas', en: 'phase 1 in 4–8 weeks' },
+		hue: '#0ea5e9',
+		icon: 'server',
+		preview: {
+			image: 'nexus',
+			label: { pt: 'Nexus Comunicação', en: 'Nexus Comunicação' },
+			href: '/work',
+		},
 	},
 	{
 		id: 'ai',
 		name: { pt: 'IA dentro do seu produto', en: 'AI inside your product' },
+		title: { pt: 'IA no produto', en: 'AI in your product' },
+		short: { pt: 'Agente de verdade no WhatsApp, e-mail ou documentos.', en: 'A real agent on WhatsApp, email or documents.' },
 		forWhom: {
 			pt: 'SaaS, atendimento ou marketing que quer agente/automação de verdade (WhatsApp, e-mail, documentos) — não um chatbot de FAQ.',
 			en: 'SaaS, support or marketing teams that want real agents/automation (WhatsApp, email, documents) — not a FAQ chatbot.',
@@ -73,10 +134,20 @@ export const SERVICES: Service[] = [
 		},
 		priceFrom: 12000,
 		timeline: { pt: 'piloto em 2–4 semanas', en: 'pilot in 2–4 weeks' },
+		timelineShort: { pt: 'piloto em 2–4 semanas', en: 'pilot in 2–4 weeks' },
+		hue: '#f59e0b',
+		icon: 'sparkles',
+		preview: {
+			image: 'quasar',
+			label: { pt: 'Quasar', en: 'Quasar' },
+			href: '/work',
+		},
 	},
 	{
 		id: 'senior',
 		name: { pt: 'Sênior sob demanda', en: 'Senior on demand' },
+		title: { pt: 'Sênior sob demanda', en: 'Senior on demand' },
+		short: { pt: 'Reforço pro seu time: legado, AWS, custo de infra, arquitetura.', en: 'Backup for your team: legacy, AWS, infra cost, architecture.' },
 		forWhom: {
 			pt: 'CTO ou time que precisa de reforço sênior: resgatar legado, migrar pra AWS/GCP, derrubar custo de infra, revisar arquitetura antes de crescer.',
 			en: 'CTOs or teams that need senior reinforcement: rescue legacy code, migrate to AWS/GCP, cut infra cost, review architecture before scaling.',
@@ -87,5 +158,13 @@ export const SERVICES: Service[] = [
 		},
 		priceFrom: 0,
 		timeline: { pt: 'auditoria em 1 semana · pacote mensal', en: 'audit in 1 week · monthly package' },
+		timelineShort: { pt: 'auditoria em 1 semana', en: 'audit in 1 week' },
+		hue: '#16a34a',
+		icon: 'shield-check',
+		preview: {
+			image: 'pulsar',
+			label: { pt: 'Pulsar', en: 'Pulsar' },
+			href: '/work',
+		},
 	},
 ];

@@ -2,6 +2,9 @@
 /**
  * #prova — one line of numbers (SITE.stats + response time) over the
  * client-logo marquee. Sits right under the hero as social proof.
+ *
+ * Numbers count up on reveal (site.ts → [data-count]). The SSR text is the
+ * final value, so no-JS / reduced-motion simply show it.
  */
 import ClientsBand from './ClientsBand.astro';
 import { SITE } from '../../data/site';
@@ -10,26 +13,32 @@ import { localeOf, pick, useT } from '../../i18n';
 const locale = localeOf(Astro);
 const t = useT(locale);
 
+/** '20+' → { n: 20, suffix: '+' }; '24h úteis' → { n: 24, suffix: 'h úteis' }. */
+const parseStat = (v: string) => {
+	const m = /^(\d+)(.*)$/.exec(v);
+	return m ? { n: Number(m[1]), suffix: m[2] } : null;
+};
+
 const stats = [
-	{ n: SITE.stats.years, label: t.clients.stats.years },
-	{ n: SITE.stats.products, label: t.clients.stats.products },
-	{ n: SITE.stats.clients, label: t.clients.stats.clients },
-	{ n: pick(SITE.responseTime, locale), label: t.clients.stats.reply },
-];
+	{ v: SITE.stats.years, label: t.clients.stats.years },
+	{ v: SITE.stats.products, label: t.clients.stats.products },
+	{ v: SITE.stats.clients, label: t.clients.stats.clients },
+	{ v: pick(SITE.responseTime, locale), label: t.clients.stats.reply },
+].map((s) => ({ ...s, count: parseStat(s.v) }));
 ---
 
 <section class='proof' id='prova' aria-label={t.clients.label}>
-	<ul class='stats reveal'>
+	<ul class='stats'>
 		{
-			stats.map((s) => (
-				<li>
-					<span class='n'>{s.n}</span>
+			stats.map((s, i) => (
+				<li class={`reveal d${i + 1}`}>
+					<span class='n count' data-count={s.count?.n} data-suffix={s.count?.suffix}>{s.v}</span>
 					<span class='l'>{s.label}</span>
 				</li>
 			))
 		}
 	</ul>
-	<div class='reveal d1'>
+	<div class='reveal d3'>
 		<ClientsBand />
 	</div>
 </section>
@@ -62,6 +71,10 @@ const stats = [
 		line-height: 1;
 		color: var(--ink);
 		white-space: nowrap;
+		transition: color 0.3s;
+	}
+	.stats li:hover .n {
+		color: var(--accent-text);
 	}
 	.l {
 		font-family: var(--mono);

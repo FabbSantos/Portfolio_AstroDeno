@@ -71,8 +71,10 @@ const accessHref = (id: string) => `${home}?assunto=${encodeURIComponent(`acesso
 		}
 	</ol>
 
-	<div class='works-all'>
-		<a href={localePath(locale, '/work')} class='btn-link'>{t.works.all}</a>
+	<div class='works-all reveal'>
+		<a href={localePath(locale, '/work')} class='btn-link'>
+			<span class='link-underline'>{t.works.all}</span>
+		</a>
 	</div>
 </section>
 
@@ -82,6 +84,8 @@ const accessHref = (id: string) => `${home}?assunto=${encodeURIComponent(`acesso
 		border-top: 1px solid var(--rule);
 	}
 	.work-row {
+		position: relative;
+		isolation: isolate;
 		display: grid;
 		grid-template-columns: 40px 72px minmax(0, 1fr) auto auto;
 		grid-template-areas:
@@ -93,19 +97,36 @@ const accessHref = (id: string) => `${home}?assunto=${encodeURIComponent(`acesso
 		align-items: center;
 		padding: 28px 0;
 		border-bottom: 1px solid var(--rule);
-		transition:
-			padding-left 0.4s cubic-bezier(0.7, 0, 0.3, 1),
-			background 0.25s;
 	}
-	.work-row:hover {
-		padding-left: 16px;
+	/* Hover tint: a bleeding rounded panel behind the row (opacity/transform
+	   only — the old padding-left slide caused layout work on every hover). */
+	.work-row::before {
+		content: '';
+		position: absolute;
+		inset: 0 -16px;
+		z-index: -1;
+		border-radius: 14px;
 		background: var(--bg-2);
+		opacity: 0;
+		transform: scale(0.985);
+		transition:
+			opacity 0.3s,
+			transform 0.45s var(--ease-out-expo);
+	}
+	.work-row:hover::before,
+	.work-row:focus-visible::before {
+		opacity: 1;
+		transform: none;
 	}
 	.work-num {
 		grid-area: num;
 		font-family: var(--mono);
 		font-size: 13px;
 		color: var(--ink-3);
+		transition: color 0.25s;
+	}
+	.work-row:hover .work-num {
+		color: var(--accent-text);
 	}
 	.work-thumb {
 		grid-area: thumb;
@@ -116,12 +137,25 @@ const accessHref = (id: string) => `${home}?assunto=${encodeURIComponent(`acesso
 		overflow: hidden;
 		background: var(--bg-2);
 		box-shadow: 0 0 0 1px var(--rule-2);
+		/* keeps the rounded clip while the child scales (Safari) */
+		will-change: transform;
+		transition: box-shadow 0.3s;
+	}
+	.work-row:hover .work-thumb {
+		box-shadow:
+			0 0 0 1px var(--rule-2),
+			0 10px 22px -12px rgba(26, 26, 28, 0.35);
 	}
 	.work-thumb-img {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
 		object-position: top center;
+		transition: transform 0.6s var(--ease-out-expo);
+	}
+	.work-row:hover .work-thumb-img,
+	.work-row:focus-visible .work-thumb-img {
+		transform: scale(1.04);
 	}
 	.work-thumb-ph {
 		display: block;
@@ -136,6 +170,11 @@ const accessHref = (id: string) => `${home}?assunto=${encodeURIComponent(`acesso
 		letter-spacing: -0.025em;
 		line-height: 1.02;
 		color: var(--ink);
+		transition: transform 0.45s var(--ease-out-expo);
+	}
+	.work-row:hover .work-title,
+	.work-row:focus-visible .work-title {
+		transform: translateX(4px);
 	}
 	.work-desc {
 		grid-area: desc;
@@ -155,6 +194,31 @@ const accessHref = (id: string) => `${home}?assunto=${encodeURIComponent(`acesso
 		grid-area: status;
 		justify-self: start;
 	}
+	/* Live: tiny pulsing green dot in front of the label. */
+	.work-status.live {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+	}
+	.work-status.live::before {
+		content: '';
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: var(--hue-green);
+		animation: liveDot 2s ease-in-out infinite;
+	}
+	@keyframes liveDot {
+		0% {
+			box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.5);
+		}
+		70% {
+			box-shadow: 0 0 0 5px rgba(22, 163, 74, 0);
+		}
+		100% {
+			box-shadow: 0 0 0 0 rgba(22, 163, 74, 0);
+		}
+	}
 	.work-action {
 		grid-area: action;
 		justify-self: end;
@@ -165,10 +229,11 @@ const accessHref = (id: string) => `${home}?assunto=${encodeURIComponent(`acesso
 	}
 	.work-action .arr {
 		display: inline-block;
-		transition: transform 0.3s var(--ease-out-expo);
+		transition: transform 0.35s var(--ease-out-expo);
 	}
-	.work-row:hover .work-action .arr {
-		transform: translate(3px, -2px);
+	.work-row:hover .work-action .arr,
+	.work-row:focus-visible .work-action .arr {
+		transform: translate(2px, -2px);
 	}
 	.works-all {
 		margin-top: 48px;
@@ -204,9 +269,8 @@ const accessHref = (id: string) => `${home}?assunto=${encodeURIComponent(`acesso
 			row-gap: 10px;
 			padding: 22px 0;
 		}
-		.work-row:hover {
-			padding-left: 0;
-			background: transparent;
+		.work-row::before {
+			inset: 0 -12px;
 		}
 		.work-desc {
 			max-width: none;
@@ -221,6 +285,16 @@ const accessHref = (id: string) => `${home}?assunto=${encodeURIComponent(`acesso
 		}
 		.work-desc {
 			font-size: 14px;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.work-row:hover .work-title,
+		.work-row:hover .work-thumb-img,
+		.work-row:hover .work-action .arr {
+			transform: none;
+		}
+		.work-status.live::before {
+			animation: none;
 		}
 	}
 </style>

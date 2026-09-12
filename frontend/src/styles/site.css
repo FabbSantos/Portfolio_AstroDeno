@@ -36,9 +36,29 @@
 	color: var(--accent);
 	font-weight: 800;
 }
+/* Animated coral→violet text. Opt-in (hero only) — gradient text is loud. */
+.hl-anim {
+	background: linear-gradient(100deg, var(--accent) 0%, var(--accent-2) 45%, var(--accent) 100%);
+	background-size: 220% 100%;
+	background-position: 0% 50%;
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+	-webkit-text-fill-color: transparent;
+	animation: hlShift 6s ease-in-out infinite;
+}
+@keyframes hlShift {
+	50% {
+		background-position: 100% 50%;
+	}
+}
 
-/* Buttons */
+/* ==========================================================================
+   Buttons — hover = lift (transform) + tinted shadow; primary gets a shine
+   sweep. Only transform/opacity/box-shadow animate → no layout shift.
+   ========================================================================== */
 .btn {
+	position: relative;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -51,9 +71,16 @@
 	transition:
 		background 0.25s cubic-bezier(0.4, 0, 0.2, 1),
 		color 0.25s,
-		transform 0.25s;
+		border-color 0.25s,
+		box-shadow 0.35s var(--ease-out-expo),
+		transform 0.35s var(--ease-out-expo);
 	border: 1px solid transparent;
 	white-space: nowrap;
+	overflow: hidden;
+}
+.btn:active {
+	transform: translateY(0) scale(0.98);
+	transition-duration: 0.1s;
 }
 .btn-primary {
 	background: var(--ink);
@@ -61,7 +88,8 @@
 }
 .btn-primary:hover {
 	background: var(--accent);
-	transform: translateY(-1px);
+	transform: translateY(-2px);
+	box-shadow: 0 12px 28px -12px rgba(255, 89, 100, 0.65);
 }
 .btn-ghost {
 	border-color: var(--rule-2);
@@ -70,6 +98,9 @@
 }
 .btn-ghost:hover {
 	background: var(--bg-2);
+	border-color: var(--ink-4);
+	transform: translateY(-2px) scale(1.02);
+	box-shadow: 0 10px 24px -14px rgba(26, 26, 28, 0.35);
 }
 .btn-whatsapp {
 	background: #25d366;
@@ -77,19 +108,101 @@
 }
 .btn-whatsapp:hover {
 	background: #1fb85a;
-	transform: translateY(-1px);
+	transform: translateY(-2px);
+	box-shadow: 0 12px 28px -12px rgba(37, 211, 102, 0.7);
 }
 .btn-link {
 	color: var(--accent-text);
 	font-weight: 600;
 }
 .btn-link::after {
-	content: ' →';
+	content: '→';
 	display: inline-block;
-	transition: transform 0.2s;
+	margin-left: 0.4em;
+	transition: transform 0.3s var(--ease-out-expo);
 }
-.btn-link:hover::after {
-	transform: translateX(4px);
+.btn-link:hover::after,
+.btn-link:focus-visible::after {
+	transform: translateX(5px);
+}
+
+/* ==========================================================================
+   Micro-interaction utilities (plain CSS, opt-in by class)
+   ========================================================================== */
+
+/* Shine sweep — a light band crosses the element once on hover.
+   .btn-primary gets it for free; add `.shine` to any other overflow-hidden box. */
+.shine {
+	position: relative;
+	overflow: hidden;
+}
+.shine::after,
+.btn-primary::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.28) 50%, transparent 65%);
+	transform: translateX(-120%);
+	opacity: 0;
+}
+.shine:hover::after,
+.shine:focus-visible::after,
+.btn-primary:hover::after,
+.btn-primary:focus-visible::after {
+	animation: shineSweep 0.8s ease forwards;
+}
+@keyframes shineSweep {
+	0% {
+		transform: translateX(-120%);
+		opacity: 0;
+	}
+	15% {
+		opacity: 1;
+	}
+	100% {
+		transform: translateX(120%);
+		opacity: 0;
+	}
+}
+
+/* Underline reveal — grows from the left. Fires on its own hover, or when
+   the parent link/button is hovered (`<a><span class="link-underline">`). */
+.link-underline {
+	background-image: linear-gradient(currentColor, currentColor);
+	background-size: 0% 1.5px;
+	background-position: 0 100%;
+	background-repeat: no-repeat;
+	transition: background-size 0.35s var(--ease-out-expo);
+}
+.link-underline:hover,
+.link-underline:focus-visible,
+:hover > .link-underline,
+:focus-visible > .link-underline,
+[aria-current] > .link-underline,
+.link-underline[aria-current] {
+	background-size: 100% 1.5px;
+}
+
+/* Card lift */
+.card-lift {
+	transition:
+		transform 0.4s var(--ease-out-expo),
+		box-shadow 0.4s var(--ease-out-expo),
+		border-color 0.3s;
+}
+.card-lift:hover,
+.card-lift:focus-within {
+	transform: translateY(-4px);
+	box-shadow: 0 20px 44px -22px rgba(26, 26, 28, 0.3);
+}
+
+/* Count-up hook — site.ts animates `[data-count]` 0→N on reveal.
+   Markup: <span class="count" data-count="8" data-suffix="+">8+</span>
+   (SSR text is the final value, so no-JS / reduced motion show it as is). */
+.count {
+	display: inline-block;
+	font-variant-numeric: tabular-nums;
 }
 
 /* Section wrapper + heading */
@@ -228,10 +341,24 @@
 .js .reveal.d1 { transition-delay: 0.05s; }
 .js .reveal.d2 { transition-delay: 0.1s; }
 .js .reveal.d3 { transition-delay: 0.15s; }
+.js .reveal.d4 { transition-delay: 0.2s; }
+.js .reveal.d5 { transition-delay: 0.25s; }
+.js .reveal.d6 { transition-delay: 0.3s; }
 
 @media (prefers-reduced-motion: reduce) {
 	.js .reveal {
 		opacity: 1;
 		transform: none;
+		transition-delay: 0s;
+	}
+	.btn:hover,
+	.btn-ghost:hover,
+	.card-lift:hover,
+	.card-lift:focus-within {
+		transform: none;
+	}
+	.btn-primary::after,
+	.shine::after {
+		display: none;
 	}
 }

@@ -2,10 +2,14 @@
  * Shared, lightweight site interactions:
  *  - sticky topbar blur on scroll
  *  - IntersectionObserver scroll reveal (.reveal -> .in)
+ *  - count-up numbers ([data-count]) when they scroll into view
+ *  - marquee slow-down on hover (playbackRate — no jump, unlike changing duration)
  *  - draggable horizontal scroller (.scroller) — mouse only; touch scrolls natively
  *  - mobile nav toggle (with `inert` on the closed menu)
  * Language switching is a plain link now (server-side i18n) — nothing to wire.
  */
+
+const reducedMotion = (): boolean => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function initStickyTopbar(): void {
 	const tb = document.getElementById('topbar');
@@ -33,6 +37,64 @@ function initReveal(): void {
 		{ threshold: 0.12, rootMargin: '0px 0px -60px 0px' }
 	);
 	els.forEach((el) => io.observe(el));
+}
+
+/**
+ * Count-up: `<span data-count="20" data-suffix="+">20+</span>` animates 0→20
+ * over ~900ms (ease-out cubic) the first time it enters the viewport. The SSR
+ * text is already the final value, so no-JS and reduced-motion just keep it.
+ * Width is locked to the final text before counting → no layout shift.
+ */
+function initCountUp(): void {
+	const els = document.querySelectorAll<HTMLElement>('[data-count]');
+	if (!els.length || reducedMotion() || !('IntersectionObserver' in window)) return;
+
+	const DURATION = 900;
+	const run = (el: HTMLElement) => {
+		const target = Number(el.dataset.count);
+		if (!Number.isFinite(target)) return;
+		const suffix = el.dataset.suffix ?? '';
+		const prefix = el.dataset.prefix ?? '';
+		const finalText = (el.textContent ?? '').trim() || `${prefix}${target}${suffix}`;
+		el.style.minWidth = `${el.getBoundingClientRect().width}px`;
+		const start = performance.now();
+		const tick = (now: number) => {
+			const t = Math.min(1, (now - start) / DURATION);
+			const eased = 1 - Math.pow(1 - t, 3);
+			el.textContent = `${prefix}${Math.round(target * eased)}${suffix}`;
+			if (t < 1) requestAnimationFrame(tick);
+			else el.textContent = finalText;
+		};
+		el.textContent = `${prefix}0${suffix}`;
+		requestAnimationFrame(tick);
+	};
+
+	const io = new IntersectionObserver(
+		(entries) =>
+			entries.forEach((e) => {
+				if (e.isIntersecting) {
+					run(e.target as HTMLElement);
+					io.unobserve(e.target);
+				}
+			}),
+		{ threshold: 0.4 }
+	);
+	els.forEach((el) => io.observe(el));
+}
+
+/**
+ * Marquee: slow the CSS animation to ~1/3 speed while hovered instead of
+ * pausing. Uses the Web Animations playbackRate so the current position is
+ * kept (changing animation-duration would make the track jump).
+ */
+function initMarquees(): void {
+	document.querySelectorAll<HTMLElement>('[data-marquee]').forEach((m) => {
+		const rate = Number(m.dataset.marqueeHoverRate) || 0.35;
+		const rows = () => Array.from(m.querySelectorAll<HTMLElement>('[data-marquee-row]')).flatMap((r) => r.getAnimations());
+		const set = (r: number) => rows().forEach((a) => (a.playbackRate = r));
+		m.addEventListener('mouseenter', () => set(rate));
+		m.addEventListener('mouseleave', () => set(1));
+	});
 }
 
 function initScrollers(): void {
@@ -112,6 +174,8 @@ function initMobileNav(): void {
 export function initSite(): void {
 	initStickyTopbar();
 	initReveal();
+	initCountUp();
+	initMarquees();
 	initScrollers();
 	initMobileNav();
 }

@@ -18,6 +18,26 @@
 	--accent-text: #d63d49;
 	--accent-2: #7c3aed;
 	--accent-soft: rgba(255, 89, 100, 0.1);
+	--accent-2-soft: rgba(124, 58, 237, 0.1);
+
+	/* Derived hue palette — tokens only. Cards/badges pick one; text on the
+	   solid hue must be ≥ 24px bold or use the matching -text variant. */
+	--hue-coral: #ff5964;
+	--hue-violet: #7c3aed;
+	--hue-sky: #0ea5e9;
+	--hue-amber: #f59e0b;
+	--hue-green: #16a34a;
+	--hue-coral-soft: rgba(255, 89, 100, 0.12);
+	--hue-violet-soft: rgba(124, 58, 237, 0.12);
+	--hue-sky-soft: rgba(14, 165, 233, 0.12);
+	--hue-amber-soft: rgba(245, 158, 11, 0.14);
+	--hue-green-soft: rgba(22, 163, 74, 0.12);
+	/* AA text variants (≥ 4.5:1 on --bg) */
+	--hue-coral-text: #d63d49;
+	--hue-violet-text: #6d28d9;
+	--hue-sky-text: #0369a1;
+	--hue-amber-text: #b45309;
+	--hue-green-text: #15803d;
 	--rule: rgba(26, 26, 28, 0.07);
 	--rule-2: rgba(26, 26, 28, 0.14);
 	--sans: 'Inter Variable', 'Inter', -apple-system, system-ui, sans-serif;

@@ -32,9 +32,9 @@ const clients = [
 ];
 ---
 
-<div class='marquee' aria-label={t.clients.logosLabel}>
+<div class='marquee' aria-label={t.clients.logosLabel} data-marquee data-marquee-hover-rate='0.3'>
 	<div class='marquee-track'>
-		<ul class='marquee-row'>
+		<ul class='marquee-row' data-marquee-row>
 			{
 				clients.map((c) => (
 					<li class:list={[{ silhouette: !!c.silhouette }]}>
@@ -43,7 +43,7 @@ const clients = [
 				))
 			}
 		</ul>
-		<ul class='marquee-row' aria-hidden='true'>
+		<ul class='marquee-row' aria-hidden='true' data-marquee-row>
 			{
 				clients.map((c) => (
 					<li class:list={[{ silhouette: !!c.silhouette }]}>
@@ -59,27 +59,13 @@ const clients = [
 	.marquee {
 		--gap: 4rem;
 		--duration: 28s;
+		--fade: 96px;
 		position: relative;
 		overflow: hidden;
 		user-select: none;
-	}
-	.marquee::before,
-	.marquee::after {
-		content: '';
-		position: absolute;
-		top: 0;
-		bottom: 0;
-		width: 90px;
-		z-index: 2;
-		pointer-events: none;
-	}
-	.marquee::before {
-		left: 0;
-		background: linear-gradient(to right, var(--bg), transparent);
-	}
-	.marquee::after {
-		right: 0;
-		background: linear-gradient(to left, var(--bg), transparent);
+		/* Edge fade — works over any background (no --bg-coloured overlays). */
+		-webkit-mask-image: linear-gradient(to right, transparent, #000 var(--fade), #000 calc(100% - var(--fade)), transparent);
+		mask-image: linear-gradient(to right, transparent, #000 var(--fade), #000 calc(100% - var(--fade)), transparent);
 	}
 	.marquee-track {
 		display: flex;
@@ -94,7 +80,9 @@ const clients = [
 		gap: var(--gap);
 		animation: marquee var(--duration) linear infinite;
 	}
-	.marquee:hover .marquee-row {
+	/* With JS, site.ts slows the animation on hover (playbackRate — smooth).
+	   Without JS, fall back to a plain pause. */
+	:global(html:not(.js)) .marquee:hover .marquee-row {
 		animation-play-state: paused;
 	}
 	.marquee-row li {
@@ -110,11 +98,13 @@ const clients = [
 		opacity: 0.75;
 		transition:
 			filter 0.4s var(--ease-out-expo),
-			opacity 0.4s var(--ease-out-expo);
+			opacity 0.4s var(--ease-out-expo),
+			transform 0.5s var(--ease-out-expo);
 	}
 	.marquee-row li:hover :global(img) {
 		filter: none;
 		opacity: 1;
+		transform: translateY(-2px) scale(1.04);
 	}
 	.marquee-row li.silhouette :global(img),
 	.marquee-row li.silhouette:hover :global(img) {
@@ -131,10 +121,7 @@ const clients = [
 		.marquee {
 			--gap: 2.5rem;
 			--duration: 22s;
-		}
-		.marquee::before,
-		.marquee::after {
-			width: 48px;
+			--fade: 48px;
 		}
 		.marquee-row :global(img) {
 			height: 36px;
@@ -143,6 +130,10 @@ const clients = [
 	}
 
 	@media (prefers-reduced-motion: reduce) {
+		.marquee {
+			-webkit-mask-image: none;
+			mask-image: none;
+		}
 		.marquee-row {
 			animation: none;
 		}
