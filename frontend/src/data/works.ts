@@ -48,6 +48,8 @@ export interface Work {
 	year?: string;
 	tags: string[];
 	image?: ImageMetadata;
+	/** Public packages anyone can install. Listed as links on /work, above the main action. */
+	packages?: { registry: 'npm' | 'nuget'; name: string; href: string }[];
 }
 
 export const WORKS: Work[] = [
@@ -65,6 +67,12 @@ export const WORKS: Work[] = [
 		role: { pt: 'Produto próprio · design, backend e frontend', en: 'Own product · design, backend and frontend' },
 		tags: ['node', 'npm', 'typescript', 'observability'],
 		image: imgPulsar,
+		// TODO(fab): pacote C# (NuGet) quando sair
+		packages: [
+			{ registry: 'npm', name: '@fabbahiense/pulsar-node', href: 'https://www.npmjs.com/package/@fabbahiense/pulsar-node' },
+			{ registry: 'npm', name: '@fabbahiense/pulsar-next', href: 'https://www.npmjs.com/package/@fabbahiense/pulsar-next' },
+			{ registry: 'npm', name: '@fabbahiense/pulsar-pino-transport', href: 'https://www.npmjs.com/package/@fabbahiense/pulsar-pino-transport' },
+		],
 	},
 	{
 		id: 'quasar',

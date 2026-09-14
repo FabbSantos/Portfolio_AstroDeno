@@ -174,9 +174,9 @@ const proof = fmt(t.hero.proof, {
 		line-height: 1.02;
 		color: var(--ink);
 		text-wrap: balance;
-		opacity: 0;
-		transform: translateY(30px);
-		animation: enter 1s var(--ease-out-expo) 0.2s both;
+		/* LCP on mobile. Chrome skips opacity:0 text as an LCP candidate, so the
+		   headline and the sub are visible from the first paint and only rise. */
+		animation: rise 1s var(--ease-out-expo) both;
 	}
 	/* inline-block so the phrase stays together, can transform, and the
 	   gradient (.hl-anim) spans the phrase — it enters last in the stagger. */
@@ -194,9 +194,7 @@ const proof = fmt(t.hero.proof, {
 		font-size: var(--fs-lead);
 		line-height: 1.55;
 		color: var(--ink-2);
-		opacity: 0;
-		transform: translateY(20px);
-		animation: enter 0.9s var(--ease-out-expo) 0.55s both;
+		animation: rise 0.9s var(--ease-out-expo) 0.1s both;
 	}
 	.hero-cred {
 		margin-top: 20px;
@@ -264,6 +262,11 @@ const proof = fmt(t.hero.proof, {
 		to {
 			opacity: 1;
 			transform: none;
+		}
+	}
+	@keyframes rise {
+		from {
+			transform: translateY(16px);
 		}
 	}
 	@keyframes pulse {

@@ -36,6 +36,7 @@ export const work = {
 		role: 'Meu papel:',
 		outcome: 'Resultado',
 		thumbAlt: '{title}',
+		packages: 'Pacotes',
 	},
 
 	cta: {
