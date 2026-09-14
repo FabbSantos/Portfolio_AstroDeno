@@ -3,7 +3,13 @@
  * Sálvia — everything between <main> and </main>. Used by the portfolio demo
  * (DemoLayout + ThemeVars + this, with `demo`) and by SalviaPage (core Page + this).
  * Optional sections (team, insurance, space, faq) render only when configured.
+ *
+ * Fonts are the template's own (Newsreader for titles, Hanken Grotesk for text);
+ * the scaffold adds both packages to the client's package.json.
  */
+// Weight axis only (57 KB): the optical-size build is 129 KB and cost ~6 mobile Lighthouse points.
+import '@fontsource-variable/newsreader';
+import '@fontsource-variable/hanken-grotesk';
 import './styles.css';
 import type { SalviaConfig } from './schema';
 import Topbar from './sections/Topbar.astro';
@@ -31,7 +37,7 @@ const { config, demo = false } = Astro.props;
 	<Services config={config} />
 	<Booking config={config} demo={demo} />
 	{config.team && <Team team={config.team} />}
-	{config.insurance && <Insurance insurance={config.insurance} />}
+	{config.insurance && <Insurance insurance={config.insurance} locale={config.brand.locale} />}
 	{config.space && <Space space={config.space} />}
 	{config.faq && <Faq faq={config.faq} />}
 	<Location config={config} />
@@ -63,11 +69,11 @@ const { config, demo = false } = Astro.props;
 		}
 	});
 
-	// Highlight today's row in the hours table.
-	document.querySelectorAll<HTMLTableElement>('table[data-hours-tz]').forEach((table) => {
+	// Mark today's row in the weekly hours.
+	document.querySelectorAll<HTMLElement>('[data-hours-tz]').forEach((week) => {
 		try {
-			const day = new Intl.DateTimeFormat('en-US', { timeZone: table.dataset.hoursTz, weekday: 'short' }).format(new Date()).slice(0, 3).toLowerCase();
-			table.querySelector(`tr[data-day="${day}"]`)?.classList.add('is-today');
+			const day = new Intl.DateTimeFormat('en-US', { timeZone: week.dataset.hoursTz, weekday: 'short' }).format(new Date()).slice(0, 3).toLowerCase();
+			week.querySelector(`[data-day="${day}"]`)?.classList.add('is-today');
 		} catch {
 			/* unknown time zone */
 		}

@@ -58,7 +58,7 @@ describe('defineSalvia', () => {
 		theme: { accent: '#3b7457', bg: '#f5f6f1', ink: '#18231c' },
 		seo: { title: 'Clínica Teste', description: 'Teste', canonical: 'https://clinica.example' },
 		contact: { phone: '(21) 3000-0000' },
-		hero: { eyebrow: 'Clínica', title: 'Título', sub: 'Sub' },
+		hero: { tagline: 'Clínica', title: 'Título', sub: 'Sub' },
 		services: { items: [{ name: 'Clínica geral', desc: 'Consulta' }] },
 		location: { address: { street: 'Rua A, 1', city: 'Rio de Janeiro', state: 'RJ' }, hours: HOURS.map((h) => ({ ...h, days: [...h.days] })) },
 		footer: { line: '© 2026' },
@@ -66,7 +66,8 @@ describe('defineSalvia', () => {
 
 	it('fills section defaults so the client config can be mostly data', () => {
 		expect(site.booking.periods).toEqual(['Manhã', 'Tarde']);
-		expect(site.services.title).toContain('mesmo endereço');
+		expect(site.services.title).toBe('Especialidades');
+		expect(site.services.items[0]?.photo).toBeNull();
 		expect(site.team).toBeUndefined();
 	});
 	it('describes the clinic as a schema.org MedicalClinic', () => {

@@ -1,8 +1,8 @@
 ---
 /**
- * Location (#onde): address, directions and contact buttons on one side;
- * the week's hours on the other, with today's row and the open/closed status
- * filled in by the script in SalviaBody.
+ * Location (#onde): the address set large in serif with directions and links on
+ * the left; the week's hours on the right as a menu-style list with dotted
+ * leaders. Today's row and the open/closed line are filled in by SalviaBody.
  */
 import type { SalviaConfig } from '../schema';
 import { hoursTable, OPEN_STRINGS } from '../hours';
@@ -22,22 +22,20 @@ const waHref = contact.whatsapp ? `https://wa.me/${contact.whatsapp.number}?text
 const en = locale === 'en';
 ---
 
-<section class='sec' id='onde' aria-labelledby='salvia-location-title'>
+<section class='sec location' id='onde' aria-labelledby='salvia-location-title'>
 	<div class='wrap'>
-		<div class='sec-h'>
-			<p class='eyebrow'>{location.eyebrow}</p>
+		<header class='sec-head'>
 			<h2 id='salvia-location-title' set:html={md(location.title)} />
 			{location.lead && <p class='lead'>{location.lead}</p>}
-		</div>
+		</header>
 
 		<div class='grid'>
 			<div class='place'>
-				<address>
-					<strong>{brand.name}</strong>
-					<span>{a.street}</span>
-					<span>{[a.district, `${a.city} · ${a.state}`].filter(Boolean).join(', ')}</span>
-					{a.zip && <span class='zip'>{en ? 'ZIP' : 'CEP'} {a.zip}</span>}
+				<address class='serif'>
+					{a.street}<br />
+					{[a.district, a.city].filter(Boolean).join(', ')} · {a.state}
 				</address>
+				{a.zip && <p class='zip'>{en ? 'ZIP' : 'CEP'} {a.zip}</p>}
 
 				{
 					location.directions.length > 0 && (
@@ -49,25 +47,25 @@ const en = locale === 'en';
 					)
 				}
 
-				<div class='buttons'>
+				<div class='links'>
 					{
 						location.mapsUrl && (
-							<a class='btn btn-primary' href={location.mapsUrl} target='_blank' rel='noopener'>
-								{location.mapsLabel}
+							<a class='link' href={location.mapsUrl} target='_blank' rel='noopener'>
+								{location.mapsLabel} ↗
 							</a>
 						)
 					}
 					{
 						phoneHref && (
-							<a class='btn btn-ghost' href={phoneHref}>
+							<a class='link' href={phoneHref}>
 								{contact.phone}
 							</a>
 						)
 					}
 					{
 						waHref && (
-							<a class='btn btn-ghost' href={waHref} target='_blank' rel='noopener'>
-								WhatsApp
+							<a class='link' href={waHref} target='_blank' rel='noopener'>
+								WhatsApp ↗
 							</a>
 						)
 					}
@@ -75,26 +73,22 @@ const en = locale === 'en';
 			</div>
 
 			<div class='hours'>
-				<div class='hours-head'>
-					<h3>{location.hoursTitle}</h3>
-					<p class='status' data-open-status={status}>
-						<span class='status-dot' aria-hidden='true'></span>
-						<span data-open-text></span>
-					</p>
-				</div>
-				<table data-hours-tz={location.timezone}>
-					<caption class='visually-hidden'>{location.hoursTitle}</caption>
-					<tbody>
-						{
-							rows.map((r) => (
-								<tr data-day={r.day} class:list={{ closed: r.closed }}>
-									<th scope='row'>{r.label}</th>
-									<td>{r.value}</td>
-								</tr>
-							))
-						}
-					</tbody>
-				</table>
+				<h3>{location.hoursTitle}</h3>
+				<p class='status' data-open-status={status}>
+					<span class='status-dot' aria-hidden='true'></span>
+					<span data-open-text></span>
+				</p>
+				<ul class='week' data-hours-tz={location.timezone}>
+					{
+						rows.map((r) => (
+							<li data-day={r.day} class:list={{ closed: r.closed }}>
+								<span class='d'>{r.label}</span>
+								<span class='dots' aria-hidden='true' />
+								<span class='t'>{r.value}</span>
+							</li>
+						))
+					}
+				</ul>
 				{location.hoursNote && <p class='note'>{location.hoursNote}</p>}
 			</div>
 		</div>
@@ -102,142 +96,110 @@ const en = locale === 'en';
 </section>
 
 <style>
+	.location {
+		border-top: 1px solid var(--line);
+	}
 	.grid {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-		gap: 16px;
-		align-items: stretch;
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		column-gap: 24px;
+		row-gap: 56px;
+		align-items: start;
 	}
-	.place,
-	.hours {
-		padding: clamp(24px, 3.5vw, 40px);
-		border-radius: var(--r-lg);
-		background: var(--bg-3);
-		box-shadow: 0 0 0 1px var(--rule);
+	.place {
+		grid-column: 1 / span 6;
 	}
 	address {
-		display: grid;
-		gap: 4px;
 		font-style: normal;
-		font-size: 18px;
-		line-height: 1.5;
-	}
-	address strong {
-		margin-bottom: 6px;
-		font-size: 22px;
-		font-weight: 700;
-		letter-spacing: -0.02em;
-	}
-	address span {
-		color: var(--ink-2);
+		font-size: clamp(30px, 3.4vw, 46px);
+		line-height: 1.15;
+		letter-spacing: -0.015em;
 	}
 	.zip {
-		font-family: var(--mono);
+		margin-top: 12px;
 		font-size: 14px;
+		font-variant-numeric: tabular-nums;
+		color: var(--ink-2);
 	}
 	.directions {
 		list-style: none;
-		display: grid;
-		gap: 10px;
-		margin-top: 24px;
-		padding-top: 22px;
-		border-top: 1px solid var(--rule);
-		font-size: 15.5px;
-		color: var(--ink-2);
+		margin-top: 32px;
+		border-top: 1px solid var(--line);
 	}
 	.directions li {
-		display: flex;
-		gap: 12px;
+		padding-block: 12px;
+		border-bottom: 1px solid var(--line);
+		font-size: 16px;
+		color: var(--ink-2);
 	}
-	.directions li::before {
-		content: '';
-		flex: none;
-		width: 8px;
-		height: 8px;
+	.links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px 28px;
+		margin-top: 24px;
+	}
+
+	.hours {
+		grid-column: 8 / span 5;
+	}
+	h3 {
+		font-size: 15px;
+		font-weight: 600;
+	}
+	.hours .status {
 		margin-top: 8px;
+		min-height: 24px;
+	}
+	/* Nothing to say until the script knows whether the clinic is open. */
+	.hours .status:not(:global(.is-known)) {
+		visibility: hidden;
+	}
+	.week {
+		list-style: none;
+		margin-top: 20px;
+		font-variant-numeric: tabular-nums;
+	}
+	.week li {
+		display: flex;
+		align-items: baseline;
+		gap: 10px;
+		padding-block: 9px;
+		font-size: 17px;
+	}
+	.dots {
+		flex: 1;
+		min-width: 24px;
+		border-bottom: 1px dotted var(--ink-2);
+		transform: translateY(-4px);
+		opacity: 0.6;
+	}
+	.week .closed .t {
+		color: var(--ink-2);
+	}
+	.week li:global(.is-today) {
+		font-weight: 600;
+	}
+	.week li:global(.is-today) .d::before {
+		content: '';
+		display: inline-block;
+		width: 6px;
+		height: 6px;
+		margin: 0 10px 2px -16px;
 		border-radius: 50%;
 		background: var(--accent);
 	}
-	.buttons {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 10px;
-		margin-top: 28px;
-	}
-
-	.hours-head {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		justify-content: space-between;
-		gap: 10px 16px;
-		margin-bottom: 14px;
-	}
-	/* No status until the script knows whether the clinic is open. */
-	.hours-head .status:not(:global(.is-known)) {
-		display: none;
-	}
-	.hours-head .status:not(:global(.is-open)) .status-dot {
-		background: var(--ink-2);
-	}
-	h3 {
-		font-size: 20px;
-		font-weight: 650;
-		letter-spacing: -0.015em;
-	}
-	table {
-		width: 100%;
-		border-collapse: collapse;
-		font-variant-numeric: tabular-nums;
-	}
-	th,
-	td {
-		padding: 11px 12px;
-		text-align: left;
-		font-size: 16px;
-		border-bottom: 1px solid var(--rule);
-	}
-	th {
-		font-weight: 500;
-		color: var(--ink-2);
-	}
-	td {
-		text-align: right;
-		font-weight: 600;
-	}
-	tr.closed td {
-		font-weight: 500;
-		color: var(--ink-2);
-	}
-	tr:global(.is-today) th,
-	tr:global(.is-today) td {
-		background: var(--accent-soft);
-		color: var(--ink);
-	}
-	tr:global(.is-today) th {
-		font-weight: 700;
-		border-radius: var(--r-md) 0 0 var(--r-md);
-	}
-	tr:global(.is-today) td {
-		border-radius: 0 var(--r-md) var(--r-md) 0;
-	}
 	.note {
-		margin-top: 16px;
+		margin-top: 18px;
 		font-size: 14.5px;
-		line-height: 1.5;
 		color: var(--ink-2);
-	}
-	.visually-hidden {
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		overflow: hidden;
-		clip: rect(0 0 0 0);
-		white-space: nowrap;
 	}
 	@media (max-width: 900px) {
-		.grid {
-			grid-template-columns: minmax(0, 1fr);
+		.place,
+		.hours {
+			grid-column: 1 / -1;
+		}
+		.week li:global(.is-today) .d::before {
+			margin-left: 0;
 		}
 	}
 </style>

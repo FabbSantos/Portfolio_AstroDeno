@@ -45,8 +45,8 @@ export const templates: TemplateMeta[] = [
 			en: 'A lean landing for clinics and practices. Patients pick a specialty and a time of day and the WhatsApp message is ready to send. Team with registries, insurance, live opening hours and local SEO built in.',
 		},
 		sections: {
-			pt: ['Hero com horário ao vivo', 'Especialidades', 'Agendamento pelo WhatsApp', 'Equipe com registro', 'Convênios', 'O espaço', 'Dúvidas frequentes', 'Localização e horários', 'Rodapé com responsável técnico'],
-			en: ['Hero with live hours', 'Specialties', 'WhatsApp booking', 'Team with registries', 'Insurance plans', 'The space', 'FAQ', 'Location and hours', 'Footer with medical director'],
+			pt: ['Hero editorial com horário ao vivo', 'Especialidades com foto no hover', 'Agendamento pelo WhatsApp', 'Equipe com registro', 'Convênios', 'O espaço', 'Perguntas frequentes', 'Como chegar e horários', 'Rodapé com responsável técnico'],
+			en: ['Editorial hero with live hours', 'Specialties with hover photos', 'WhatsApp booking', 'Team with registries', 'Insurance plans', 'The space', 'FAQ', 'Directions and hours', 'Footer with medical director'],
 		},
 		priceFrom: 1000,
 		days: 3,

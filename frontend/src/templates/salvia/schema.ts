@@ -1,9 +1,9 @@
 /**
- * Sálvia — clinic landing (medical, dental, aesthetics, physio).
+ * Sálvia — clinic landing (medical, dental, aesthetics, physio), editorial.
  *
  * Lean on purpose: hero, services, booking and location are required; team,
- * insurance, space and faq render only when present. Section heads have pt-BR
- * defaults, so a client config can be mostly data (services, hours, address).
+ * insurance, space and faq render only when present. Section titles have
+ * pt-BR defaults, so a client config can be mostly data (services, hours, address).
  *
  * Strings marked "md" accept the mini-markdown of `sections/_md.ts`:
  *   **text** → accent colour · ==text== → highlighter · newline → <br>
@@ -14,12 +14,8 @@ import { clinicJsonLd, DAYS } from './hours';
 
 const hhmm = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'expected 24h time like 08:00');
 
-/** Line icons available for services (see sections/icons.ts). */
-export const ICONS = ['stethoscope', 'pulse', 'tooth', 'heart', 'drop', 'sparkle', 'bone', 'leaf', 'apple', 'person', 'eye', 'brain'] as const;
-
-/** eyebrow + title (md) + optional lead, with defaults so the client can omit them. */
-const head = (eyebrow: string, title: string) => ({
-	eyebrow: z.string().min(1).default(eyebrow),
+/** Section title (md) + optional lead, with a default title so the client can omit both. */
+const head = (title: string) => ({
 	/** md */
 	title: z.string().min(1).default(title),
 	lead: z.string().optional(),
@@ -33,45 +29,46 @@ export const salviaSchema = baseSiteSchema.extend({
 		.prefault({}),
 
 	hero: z.object({
-		/** Short line above the title: kind of clinic + neighbourhood. */
-		eyebrow: z.string().min(1),
+		/** Short line on the left: kind of clinic + neighbourhood. */
+		tagline: z.string().min(1),
 		/** md */
 		title: z.string().min(1),
 		sub: z.string().min(1),
-		/** Portrait photo (1200×1500) shown in an arch. `null` → soft tinted arch. */
+		/** Wide photo under the copy (2000×900). `null` → no media band. */
 		photo: image.nullable().default(null),
 		photoAlt: z.string().default(''),
-		/** Up to 4 short facts under the buttons ("Convênios e particular"). */
+		/** Up to 4 short facts, printed as one line ("Particular e convênios · Estacionamento"). */
 		highlights: z.array(z.string().min(1)).max(4).default([]),
 		cta: z.string().min(1).default('Agendar pelo WhatsApp'),
 		secondaryCta: z.string().min(1).default('Ver especialidades'),
 	}),
 
 	services: z.object({
-		...head('Especialidades', 'Cuidado completo, **no mesmo endereço**.'),
+		...head('Especialidades'),
 		items: z
 			.array(
 				z.object({
 					name: z.string().min(1),
 					desc: z.string().min(1),
-					icon: z.enum(ICONS).default('stethoscope'),
+					/** Portrait photo (800×1000) that follows the cursor on hover. `null` → tinted card with the name. */
+					photo: image.nullable().default(null),
 				})
 			)
 			.min(1)
 			.max(12),
-		/** Link on each card that preselects the service in the booking widget. */
+		/** Row action and the label of the circle that follows the cursor. */
 		bookLabel: z.string().min(1).default('Agendar'),
 	}),
 
 	booking: z
 		.object({
-			...head('Agendamento', 'Agende em **dois toques**.'),
+			...head('Agende em dois toques.'),
 			lead: z.string().default('Escolha a especialidade e o melhor período. A mensagem sai pronta no WhatsApp da clínica.'),
 			serviceLabel: z.string().default('Especialidade'),
 			periodLabel: z.string().default('Período'),
 			periods: z.array(z.string().min(1)).min(1).default(['Manhã', 'Tarde']),
 			nameLabel: z.string().default('Seu nome (opcional)'),
-			previewLabel: z.string().default('Sua mensagem'),
+			previewLabel: z.string().default('Mensagem para'),
 			cta: z.string().min(1).default('Abrir no WhatsApp'),
 			/** {servico}, {periodo} and {nome} are filled in; the name sentence is dropped when empty. */
 			message: z.string().default('Olá! Gostaria de agendar {servico} no período da {periodo}.'),
@@ -82,15 +79,15 @@ export const salviaSchema = baseSiteSchema.extend({
 
 	team: z
 		.object({
-			...head('Equipe', 'Quem vai **cuidar de você**.'),
+			...head('Quem atende'),
 			people: z
 				.array(
 					z.object({
 						name: z.string().min(1),
 						role: z.string().min(1),
-						/** Council registry shown as a chip ("CRM-RJ 52.123.456"). */
+						/** Council registry ("CRM-RJ 52.123.456"). */
 						registry: z.string().optional(),
-						/** Square photo. `null` → initials. */
+						/** Square photo. `null` → no photo column for that row. */
 						photo: image.nullable().default(null),
 						bio: z.string().optional(),
 					})
@@ -102,7 +99,7 @@ export const salviaSchema = baseSiteSchema.extend({
 
 	insurance: z
 		.object({
-			...head('Convênios', 'Atendemos **particular e convênios**.'),
+			...head('Convênios'),
 			plans: z.array(z.string().min(1)).min(1),
 			note: z.string().optional(),
 		})
@@ -110,20 +107,20 @@ export const salviaSchema = baseSiteSchema.extend({
 
 	space: z
 		.object({
-			...head('O espaço', 'Um lugar pensado pra **você ficar à vontade**.'),
-			photos: z.array(z.object({ image, alt: z.string().min(1) })).min(1).max(3),
+			...head('O espaço'),
+			photos: z.array(z.object({ image, alt: z.string().min(1), caption: z.string().optional() })).min(1).max(3),
 		})
 		.optional(),
 
 	faq: z
 		.object({
-			...head('Dúvidas frequentes', 'Antes de **marcar**.'),
+			...head('Perguntas frequentes'),
 			items: z.array(z.object({ q: z.string().min(1), a: z.string().min(1) })).min(1),
 		})
 		.optional(),
 
 	location: z.object({
-		...head('Onde estamos', 'Fácil de **chegar**.'),
+		...head('Como chegar'),
 		address: z.object({
 			street: z.string().min(1),
 			district: z.string().optional(),
@@ -131,7 +128,7 @@ export const salviaSchema = baseSiteSchema.extend({
 			state: z.string().length(2),
 			zip: z.string().optional(),
 		}),
-		/** "Abrir no mapa" button (Google Maps share link). */
+		/** "Abrir no mapa" link (Google Maps share link). */
 		mapsUrl: z.url().optional(),
 		mapsLabel: z.string().default('Abrir no mapa'),
 		/** Short tips: transit, parking, accessibility. */
@@ -153,6 +150,8 @@ export const salviaSchema = baseSiteSchema.extend({
 
 	footer: z.object({
 		line: z.string().min(1),
+		/** Giant name at the very bottom. Defaults to brand.name; a short word reads best. */
+		wordmark: z.string().optional(),
 		/** Responsável técnico with registry. Councils (CFM, CRO) require it in clinic advertising. */
 		technicalLead: z.string().optional(),
 	}),

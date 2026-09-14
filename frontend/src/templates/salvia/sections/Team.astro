@@ -1,7 +1,8 @@
 ---
 /**
- * Team (#equipe), optional: photo or initials, role, council registry chip
- * (CRM, CRO, CREFITO…) and a one-line bio.
+ * Team (#equipe), optional: an editorial table. Serif name with the bio under
+ * it, role, and the council registry right-aligned. Photo column only when at
+ * least one person has a photo.
  */
 import { Image } from 'astro:assets';
 import type { SalviaConfig } from '../schema';
@@ -11,41 +12,31 @@ interface Props {
 	team: NonNullable<SalviaConfig['team']>;
 }
 const { team } = Astro.props;
-const initialsOf = (name: string) =>
-	name
-		.replace(/^(dra?\.?|dr\.?)\s+/i, '')
-		.split(/\s+/)
-		.filter(Boolean)
-		.slice(0, 2)
-		.map((w) => w.charAt(0).toUpperCase())
-		.join('');
+const withPhotos = team.people.some((p) => p.photo);
 ---
 
 <section class='sec' id='equipe' aria-labelledby='salvia-team-title'>
 	<div class='wrap'>
-		<div class='sec-h'>
-			<p class='eyebrow'>{team.eyebrow}</p>
+		<header class='sec-head'>
 			<h2 id='salvia-team-title' set:html={md(team.title)} />
 			{team.lead && <p class='lead'>{team.lead}</p>}
-		</div>
+		</header>
 
-		<ul class='people'>
+		<ul class:list={['people', { 'with-photos': withPhotos }]}>
 			{
 				team.people.map((p) => (
 					<li class='person'>
-						<div class='face'>
-							{p.photo ? (
-								<Image src={p.photo} alt='' width={72} height={72} densities={[1, 2]} format='webp' quality='high' loading='lazy' decoding='async' />
-							) : (
-								<span aria-hidden='true'>{initialsOf(p.name)}</span>
-							)}
-						</div>
-						<div class='info'>
-							<h3>{p.name}</h3>
-							<p class='role'>{p.role}</p>
-							{p.registry && <p class='registry'>{p.registry}</p>}
+						{withPhotos && (
+							<span class='face'>
+								{p.photo && <Image src={p.photo} alt='' width={72} height={90} densities={[1, 2]} format='webp' quality='high' loading='lazy' decoding='async' />}
+							</span>
+						)}
+						<div class='who'>
+							<h3 class='serif'>{p.name}</h3>
 							{p.bio && <p class='bio'>{p.bio}</p>}
 						</div>
+						<p class='role'>{p.role}</p>
+						<p class='registry'>{p.registry}</p>
 					</li>
 				))
 			}
@@ -56,32 +47,26 @@ const initialsOf = (name: string) =>
 <style>
 	.people {
 		list-style: none;
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-		gap: 16px;
+		border-bottom: 1px solid var(--line);
 	}
 	.person {
-		display: flex;
-		flex-direction: column;
-		gap: 18px;
-		padding: 24px;
-		border-radius: var(--r-lg);
-		background: var(--bg-3);
-		box-shadow: 0 0 0 1px var(--rule);
-	}
-	/* Round on purpose: a small arch around a face reads as a headstone. */
-	.face {
 		display: grid;
-		place-items: center;
+		grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 0.7fr);
+		column-gap: 24px;
+		align-items: baseline;
+		padding-block: 26px;
+		border-top: 1px solid var(--line);
+	}
+	.with-photos .person {
+		grid-template-columns: 72px minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 0.7fr);
+		align-items: start;
+	}
+	.face {
 		width: 72px;
-		height: 72px;
+		aspect-ratio: 4 / 5;
 		overflow: hidden;
-		border-radius: 50%;
-		background: var(--accent-soft);
-		color: var(--accent-text);
-		font-size: 24px;
-		font-weight: 700;
-		letter-spacing: -0.02em;
+		border-radius: var(--radius);
+		background: var(--bg-2);
 	}
 	.face :global(img) {
 		width: 100%;
@@ -89,45 +74,43 @@ const initialsOf = (name: string) =>
 		object-fit: cover;
 	}
 	h3 {
-		font-size: 18px;
-		font-weight: 650;
-		letter-spacing: -0.01em;
-		line-height: 1.3;
+		font-size: clamp(26px, 2.6vw, 36px);
+		line-height: 1.1;
+		letter-spacing: -0.015em;
 	}
-	.role {
-		margin-top: 2px;
+	.bio {
+		margin-top: 8px;
+		max-width: 46ch;
 		font-size: 15px;
 		color: var(--ink-2);
 	}
+	.role {
+		font-size: 16px;
+	}
 	.registry {
-		display: inline-block;
-		margin-top: 10px;
-		padding: 3px 10px;
-		border-radius: 999px;
-		background: var(--bg-2);
-		font-family: var(--mono);
-		font-size: 12px;
+		justify-self: end;
+		font-size: 14px;
+		font-variant-numeric: tabular-nums;
 		letter-spacing: 0.02em;
+		color: var(--ink-2);
 		white-space: nowrap;
-		color: var(--ink-2);
 	}
-	@media (max-width: 560px) {
-		.person {
-			flex-direction: row;
-			align-items: flex-start;
-			padding: 20px;
+	@media (max-width: 760px) {
+		.person,
+		.with-photos .person {
+			grid-template-columns: minmax(0, 1fr);
+			row-gap: 6px;
 		}
-		.face {
-			flex: none;
-			width: 60px;
-			height: 60px;
-			font-size: 20px;
+		.with-photos .person {
+			grid-template-columns: 64px minmax(0, 1fr);
+			column-gap: 16px;
 		}
-	}
-	.bio {
-		margin-top: 10px;
-		font-size: 14.5px;
-		line-height: 1.55;
-		color: var(--ink-2);
+		.with-photos .face {
+			grid-row: 1 / span 3;
+			width: 64px;
+		}
+		.registry {
+			justify-self: start;
+		}
 	}
 </style>

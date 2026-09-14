@@ -1,17 +1,22 @@
 /**
  * Demo config for the portfolio page /templates/salvia/demo.
  * Fictional clinic, people, registries and insurers. Photos: Unsplash License
- * (interiors only, no people). No phone, e-mail or WhatsApp number, so nothing
- * on the demo reaches a real person; the booking widget runs in demo mode.
+ * (interiors and objects only, no people). No phone, e-mail or WhatsApp number,
+ * so nothing on the demo reaches a real person; booking runs in demo mode.
  */
 import { defineSalvia } from './schema';
-import recepcao from './assets/demo/recepcao.jpg';
+import recepcaoLarga from './assets/demo/recepcao-larga.jpg';
 import salaAtendimento from './assets/demo/sala-atendimento.jpg';
 import consultorioOdonto from './assets/demo/consultorio-odonto.jpg';
+import servicoGeral from './assets/demo/servico-geral.jpg';
+import servicoDermato from './assets/demo/servico-dermato.jpg';
+import servicoOdonto from './assets/demo/servico-odonto.jpg';
+import servicoNutri from './assets/demo/servico-nutri.jpg';
+import servicoPsico from './assets/demo/servico-psico.jpg';
 
 export default defineSalvia({
 	brand: { name: 'Clínica Sálvia', tagline: 'Clínica integrada em Botafogo', locale: 'pt-BR' },
-	theme: { accent: '#3b7457', bg: '#f5f6f1', ink: '#18231c', radius: 12 },
+	theme: { accent: '#5b7563', bg: '#f7f7f4', bg2: '#eeefea', ink: '#1f2421', radius: 2 },
 	seo: {
 		title: 'Clínica Sálvia: demo do template',
 		description: 'Demo do template Sálvia, landing de clínica por Fab Bahiense. Dados fictícios.',
@@ -26,30 +31,31 @@ export default defineSalvia({
 		{ label: 'Especialidades', href: '#especialidades' },
 		{ label: 'Equipe', href: '#equipe' },
 		{ label: 'Convênios', href: '#convenios' },
-		{ label: 'Onde estamos', href: '#onde' },
+		{ label: 'Como chegar', href: '#onde' },
 	],
 
 	topbar: { cta: 'Agendar' },
 
 	hero: {
-		eyebrow: 'Clínica integrada · Botafogo, Rio',
-		title: 'Cuidado de perto,\n**sem pressa**.',
-		sub: 'Seis especialidades no mesmo endereço. Você marca pelo WhatsApp em dois toques e é atendido por quem conhece o seu histórico.',
-		photo: recepcao,
+		tagline: 'Clínica integrada em Botafogo, Rio de Janeiro. Seis especialidades no mesmo endereço.',
+		title: 'Cuidado de perto, sem pressa.',
+		sub: 'Você marca pelo WhatsApp em dois toques e é atendido por quem conhece o seu histórico, do check-up ao tratamento.',
+		photo: recepcaoLarga,
 		photoAlt: 'Recepção da clínica com arcos brancos e mesas de madeira',
-		highlights: ['Particular e convênios', 'Estacionamento conveniado', 'Acessível pra cadeira de rodas'],
+		highlights: ['Particular e convênios', 'Estacionamento conveniado', 'Acessível'],
 		cta: 'Agendar pelo WhatsApp',
 		secondaryCta: 'Ver especialidades',
 	},
 
 	services: {
+		lead: 'Seis áreas no mesmo endereço. Escolha uma e ela já fica marcada no agendamento.',
 		items: [
-			{ name: 'Clínica geral', icon: 'stethoscope', desc: 'Check-up, acompanhamento de rotina e encaminhamento pro especialista certo.' },
-			{ name: 'Dermatologia', icon: 'drop', desc: 'Consulta, avaliação de pintas e tratamento de acne, manchas e queda de cabelo.' },
-			{ name: 'Odontologia', icon: 'tooth', desc: 'Limpeza, restaurações, clareamento e ortodontia.' },
-			{ name: 'Fisioterapia', icon: 'bone', desc: 'Reabilitação ortopédica, dor nas costas e pós-operatório.' },
-			{ name: 'Nutrição', icon: 'apple', desc: 'Plano alimentar pra emagrecimento, performance e saúde intestinal.' },
-			{ name: 'Psicologia', icon: 'brain', desc: 'Terapia individual para adultos, presencial ou online.' },
+			{ name: 'Clínica geral', photo: servicoGeral, desc: 'Check-up, acompanhamento de rotina e encaminhamento pro especialista certo.' },
+			{ name: 'Dermatologia', photo: servicoDermato, desc: 'Consulta, avaliação de pintas e tratamento de acne, manchas e queda de cabelo.' },
+			{ name: 'Odontologia', photo: servicoOdonto, desc: 'Limpeza, restaurações, clareamento e ortodontia.' },
+			{ name: 'Fisioterapia', photo: salaAtendimento, desc: 'Reabilitação ortopédica, dor nas costas e pós-operatório.' },
+			{ name: 'Nutrição', photo: servicoNutri, desc: 'Plano alimentar pra emagrecimento, performance e saúde intestinal.' },
+			{ name: 'Psicologia', photo: servicoPsico, desc: 'Terapia individual para adultos, presencial ou online.' },
 		],
 	},
 
@@ -58,10 +64,10 @@ export default defineSalvia({
 	},
 
 	team: {
-		lead: 'Profissionais com registro ativo no conselho de cada área.',
+		lead: 'Todos com registro ativo no conselho da própria área.',
 		people: [
-			{ name: 'Dr. Rafael Menezes', role: 'Clínica geral · diretor técnico', registry: 'CRM-RJ 52.000.001', bio: 'Acompanha o paciente do check-up ao encaminhamento.' },
-			{ name: 'Dra. Helena Duarte', role: 'Dermatologia', registry: 'CRM-RJ 52.000.002', bio: 'Atende pele, cabelo e unhas, com foco em acne e manchas.' },
+			{ name: 'Dr. Rafael Menezes', role: 'Clínica geral, diretor técnico', registry: 'CRM-RJ 52.000.001', bio: 'Acompanha o paciente do check-up ao encaminhamento.' },
+			{ name: 'Dra. Helena Duarte', role: 'Dermatologia', registry: 'CRM-RJ 52.000.002', bio: 'Pele, cabelo e unhas, com foco em acne e manchas.' },
 			{ name: 'Dra. Camila Rocha', role: 'Odontologia', registry: 'CRO-RJ 40.001', bio: 'Clínica geral e ortodontia com alinhadores.' },
 			{ name: 'Lucas Andrade', role: 'Fisioterapia', registry: 'CREFITO-2 100.001-F', bio: 'Reabilitação ortopédica e pós-operatório de joelho e ombro.' },
 		],
@@ -75,8 +81,8 @@ export default defineSalvia({
 	space: {
 		lead: 'Salas silenciosas, luz natural e uma recepção onde a espera é curta.',
 		photos: [
-			{ image: salaAtendimento, alt: 'Sala de atendimento com maca, pia e móveis de madeira' },
-			{ image: consultorioOdonto, alt: 'Consultório odontológico claro com cadeira e equipamentos' },
+			{ image: salaAtendimento, alt: 'Sala de atendimento com maca, pia e móveis de madeira', caption: 'Sala de fisioterapia' },
+			{ image: consultorioOdonto, alt: 'Consultório odontológico claro com cadeira e equipamentos', caption: 'Consultório odontológico' },
 		],
 	},
 
@@ -101,7 +107,8 @@ export default defineSalvia({
 	},
 
 	footer: {
-		line: '© 2026 · Clínica Sálvia · Botafogo, Rio de Janeiro',
-		technicalLead: 'Dr. Rafael Menezes · CRM-RJ 52.000.001',
+		line: '© 2026 Clínica Sálvia',
+		wordmark: 'Sálvia',
+		technicalLead: 'Dr. Rafael Menezes, CRM-RJ 52.000.001',
 	},
 });

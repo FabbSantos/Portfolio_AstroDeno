@@ -1,18 +1,23 @@
 /* ==========================================================================
    Sálvia — rules shared by more than one section. Everything else lives in
-   sections/*.astro. Colours come only from the core ThemeVars tokens; the
-   accent must hold white text (≥ 4.5:1), it fills the buttons.
-   Text never uses --ink-3: on light sage grounds it drops under 4.5:1.
+   sections/*.astro. Colours come only from the core ThemeVars tokens.
+
+   Direction: editorial and quiet. Serif titles at regular weight, hairlines
+   instead of cards, near-square corners (theme.radius ≈ 2), one dark button.
+   Text never uses --ink-3: on light grounds it drops under 4.5:1.
    ========================================================================== */
 .tpl-salvia {
-	--wrap: 1180px;
-	--pad-x: clamp(20px, 4vw, 40px);
-	--r-lg: calc(var(--radius) * 2.2);
-	--r-md: calc(var(--radius) * 1.3);
-	--arch: 999px 999px var(--r-lg) var(--r-lg);
+	--serif: 'Newsreader Variable', 'Newsreader', Georgia, 'Times New Roman', serif;
+	--grot: 'Hanken Grotesk Variable', 'Hanken Grotesk', -apple-system, 'Segoe UI', system-ui, sans-serif;
+	--wrap: 1280px;
+	--pad-x: clamp(20px, 4vw, 48px);
+	--line: color-mix(in srgb, var(--ink) 16%, transparent);
+	--ease: cubic-bezier(0.76, 0, 0.24, 1);
 	background: var(--bg);
 	color: var(--ink);
-	font-family: var(--sans);
+	font-family: var(--grot);
+	font-size: 17px;
+	line-height: 1.55;
 	min-height: 100vh;
 }
 
@@ -22,127 +27,169 @@
 	padding-inline: var(--pad-x);
 }
 .tpl-salvia .sec {
-	padding-block: clamp(72px, 10vw, 120px);
+	padding-block: clamp(80px, 11vw, 150px);
+}
+.tpl-salvia .serif {
+	font-family: var(--serif);
+	font-weight: 400;
+	font-optical-sizing: auto;
 }
 
 /* md(): **text** / ==text== */
 .tpl-salvia .hl {
 	color: var(--accent-text);
 	font-weight: inherit;
+	font-style: italic;
 }
 .tpl-salvia .em {
 	font-weight: inherit;
-	background: linear-gradient(transparent 58%, var(--accent-soft) 58%);
-	padding: 0 3px;
+	background: linear-gradient(transparent 62%, var(--accent-soft) 62%);
 }
 
-/* Eyebrow: a short sprig line + small caps */
-.tpl-salvia .eyebrow {
-	display: inline-flex;
-	align-items: center;
-	gap: 10px;
-	font-size: 13px;
-	font-weight: 600;
-	letter-spacing: 0.14em;
-	text-transform: uppercase;
-	color: var(--accent-text);
+/* Section head: title on the left, lead bottom-aligned on the right (12-col grid). */
+.tpl-salvia .sec-head {
+	display: grid;
+	grid-template-columns: repeat(12, minmax(0, 1fr));
+	column-gap: 24px;
+	row-gap: 20px;
+	align-items: end;
+	margin-bottom: clamp(40px, 6vw, 72px);
 }
-.tpl-salvia .eyebrow::before {
-	content: '';
-	width: 20px;
-	height: 2px;
-	border-radius: 2px;
-	background: currentColor;
-}
-
-.tpl-salvia .sec-h {
-	max-width: 720px;
-	margin-bottom: clamp(36px, 5vw, 56px);
-}
-.tpl-salvia .sec-h h2 {
-	margin-top: 14px;
-	font-size: clamp(32px, 4.4vw, 52px);
-	font-weight: 700;
-	letter-spacing: -0.03em;
-	line-height: 1.08;
+.tpl-salvia .sec-head h2 {
+	grid-column: 1 / span 7;
+	font-family: var(--serif);
+	font-weight: 400;
+	font-size: clamp(40px, 6vw, 84px);
+	line-height: 1;
+	letter-spacing: -0.035em;
 	text-wrap: balance;
 }
-.tpl-salvia .sec-h .lead {
-	margin-top: 16px;
-	font-size: 18px;
-	line-height: 1.6;
+.tpl-salvia .sec-head .lead {
+	grid-column: 9 / span 4;
+	max-width: 38ch;
+	font-size: 17px;
+	line-height: 1.55;
 	color: var(--ink-2);
-	max-width: 58ch;
 }
 
-/* Buttons */
+/* Buttons: one dark rectangle, one underlined link */
 .tpl-salvia .btn {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	gap: 10px;
-	min-height: 52px;
+	gap: 14px;
+	min-height: 54px;
 	padding: 0 26px;
-	border-radius: 999px;
-	font-size: 16px;
+	border-radius: var(--radius);
+	background: var(--ink);
+	color: var(--bg);
+	font-size: 15px;
 	font-weight: 600;
+	letter-spacing: 0.01em;
 	white-space: nowrap;
-	transition:
-		transform 0.35s var(--ease-out-expo),
-		background 0.2s,
-		box-shadow 0.3s;
+	transition: background 0.3s;
 }
-.tpl-salvia .btn-primary {
+.tpl-salvia .btn:hover {
 	background: var(--accent);
-	color: #fff;
-	box-shadow: 0 16px 34px -18px var(--accent-glow);
 }
-.tpl-salvia .btn-primary:hover {
-	transform: translateY(-2px);
-	background: color-mix(in srgb, var(--accent) 86%, var(--ink));
+.tpl-salvia .btn .arr {
+	display: inline-block;
+	transition: transform 0.4s var(--ease);
 }
-.tpl-salvia .btn-ghost {
+.tpl-salvia .btn:hover .arr {
+	transform: translateX(5px);
+}
+.tpl-salvia .link {
+	display: inline-flex;
+	align-items: center;
+	min-height: 44px;
+	font-size: 15px;
+	font-weight: 600;
 	color: var(--ink);
-	box-shadow: inset 0 0 0 1.5px var(--rule-2);
+	text-decoration: underline;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 6px;
+	transition: text-decoration-color 0.2s;
 }
-.tpl-salvia .btn-ghost:hover {
-	transform: translateY(-2px);
-	box-shadow: inset 0 0 0 1.5px var(--ink-2);
+.tpl-salvia .link:hover {
+	text-decoration-color: var(--accent);
 }
 
 /* "Aberto agora" status (text filled by the script in SalviaBody) */
 .tpl-salvia .status {
 	display: inline-flex;
 	align-items: center;
-	gap: 9px;
-	font-size: 14px;
-	font-weight: 600;
+	gap: 10px;
+	font-size: 15px;
 	color: var(--ink);
 }
 .tpl-salvia .status-dot {
 	flex: none;
-	width: 9px;
-	height: 9px;
+	width: 7px;
+	height: 7px;
 	border-radius: 50%;
-	background: var(--ink-4);
+	background: var(--ink-2);
 }
 .tpl-salvia .status.is-open .status-dot {
-	background: #25d366;
-	box-shadow: 0 0 0 4px color-mix(in srgb, #25d366 24%, transparent);
+	background: var(--accent);
+	box-shadow: 0 0 0 5px var(--accent-soft);
 }
 
 /* Topbar (core MobileNav). One extra class so these beat the component's scoped rules. */
+.tpl-salvia .mnav.mnav {
+	background: color-mix(in srgb, var(--bg) 92%, transparent);
+	border-bottom-color: var(--line);
+}
+.tpl-salvia .mnav .mnav-inner {
+	max-width: var(--wrap);
+	padding-inline: var(--pad-x);
+	min-height: 72px;
+}
 .tpl-salvia .mnav .mnav-brand {
-	font-size: 19px;
-	letter-spacing: -0.02em;
+	font-family: var(--serif);
+	font-size: 24px;
+	font-weight: 400;
+	letter-spacing: -0.01em;
+}
+.tpl-salvia .mnav .mnav-links a {
+	color: var(--ink-2);
+}
+.tpl-salvia .mnav .mnav-links a:hover {
+	color: var(--ink);
 }
 .tpl-salvia .mnav .mnav-cta {
-	border-radius: 999px;
-	padding: 0 20px;
+	min-height: 42px;
+	padding: 0 18px;
+	border-radius: var(--radius);
+	background: transparent;
+	color: var(--ink);
+	box-shadow: inset 0 0 0 1px var(--ink);
+	font-weight: 600;
+	transition:
+		background 0.25s,
+		color 0.25s;
+}
+.tpl-salvia .mnav .mnav-cta:hover {
+	background: var(--ink);
+	color: var(--bg);
+}
+.tpl-salvia .mnav .mnav-panel .mnav-cta {
+	background: var(--ink);
+	color: var(--bg);
 }
 
-@media (prefers-reduced-motion: reduce) {
-	.tpl-salvia .btn:hover {
-		transform: none;
+.tpl-salvia .visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+	.tpl-salvia .sec-head h2,
+	.tpl-salvia .sec-head .lead {
+		grid-column: 1 / -1;
 	}
 }

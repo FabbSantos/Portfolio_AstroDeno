@@ -1,8 +1,11 @@
 ---
 /**
- * Hero: eyebrow, title, sub, two CTAs (booking + services), short highlights,
- * the portrait photo in an arch (eager: it is the LCP) and an hours card whose
- * status line becomes "Aberto agora · fecha às 19h" in the browser.
+ * Hero, after 21st.dev "Editorial Hero" (felipemenezes098/hero-05): tagline and
+ * live hours bottom-left, serif title + sub + actions on the right half of a
+ * 12-column grid, then a full-bleed landscape photo whose top edge fades in.
+ *
+ * The entrance animates blur + translate only, never opacity: the title is the
+ * mobile LCP and must be painted on the first frame.
  */
 import { Image } from 'astro:assets';
 import type { SalviaConfig } from '../schema';
@@ -17,186 +20,167 @@ const { hero, location, brand } = config;
 const locale = brand.locale;
 const summary = hoursSummary(location.hours, locale);
 const status = JSON.stringify({ hours: location.hours, tz: location.timezone, locale, strings: OPEN_STRINGS[locale] });
-const widths = (w: number) => [...[480, 720, 960].filter((x) => x < w), w];
+const widths = (w: number) => [...[640, 960, 1280, 1600].filter((x) => x < w), w];
 ---
 
-<section class='hero wrap' aria-labelledby='salvia-hero-title'>
-	<div class='copy'>
-		<p class='eyebrow'>{hero.eyebrow}</p>
-		<h1 id='salvia-hero-title' set:html={md(hero.title)} />
-		<p class='sub'>{hero.sub}</p>
-		<div class='actions'>
-			<a class='btn btn-primary' href='#agendar'>{hero.cta}</a>
-			<a class='btn btn-ghost' href='#especialidades'>{hero.secondaryCta}</a>
-		</div>
-		{
-			hero.highlights.length > 0 && (
-				<ul class='highlights'>
-					{hero.highlights.map((h) => (
-						<li>
-							<svg viewBox='0 0 20 20' aria-hidden='true'>
-								<path d='M5 10.5l3.2 3L15 6.5' />
-							</svg>
-							{h}
-						</li>
-					))}
-				</ul>
-			)
-		}
-	</div>
-
-	<div class='art'>
-		<div class='arch-line' aria-hidden='true'></div>
-		<div class='arch'>
-			{
-				hero.photo && (
-					<Image
-						src={hero.photo}
-						alt={hero.photoAlt}
-						widths={widths(hero.photo.width)}
-						sizes='(max-width: 900px) 86vw, 470px'
-						format='webp'
-						quality='high'
-						loading='eager'
-						fetchpriority='high'
-						decoding='async'
-					/>
-				)
-			}
-		</div>
-		<div class='hours-card'>
+<section class='hero' aria-labelledby='salvia-hero-title'>
+	<div class='wrap grid'>
+		<div class='side' style='--d: 0ms'>
+			<p class='tagline'>{hero.tagline}</p>
 			<p class='status' data-open-status={status}>
 				<span class='status-dot' aria-hidden='true'></span>
 				<span data-open-text>{location.hoursTitle}</span>
 			</p>
-			<p class='hours-line'>{summary}</p>
+			<p class='summary'>{summary}</p>
+		</div>
+
+		<div class='copy'>
+			<h1 id='salvia-hero-title' class='serif' style='--d: 60ms' set:html={md(hero.title)} />
+			<p class='sub' style='--d: 140ms'>{hero.sub}</p>
+			<div class='actions' style='--d: 200ms'>
+				<a class='btn' href='#agendar'>{hero.cta} <span class='arr' aria-hidden='true'>→</span></a>
+				<a class='link' href='#especialidades'>{hero.secondaryCta}</a>
+			</div>
+			{hero.highlights.length > 0 && <p class='facts' style='--d: 260ms'>{hero.highlights.join(' · ')}</p>}
 		</div>
 	</div>
+
+	{
+		hero.photo && (
+			<figure class='media'>
+				<Image
+					src={hero.photo}
+					alt={hero.photoAlt}
+					widths={widths(hero.photo.width)}
+					sizes='100vw'
+					format='webp'
+					quality='high'
+					loading='eager'
+					fetchpriority='high'
+					decoding='async'
+				/>
+			</figure>
+		)
+	}
 </section>
 
 <style>
 	.hero {
+		padding-top: clamp(56px, 10vw, 136px);
+	}
+	.grid {
 		display: grid;
-		grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-		gap: clamp(40px, 6vw, 88px);
-		align-items: center;
-		padding-block: clamp(40px, 7vw, 88px) clamp(64px, 9vw, 112px);
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		column-gap: 24px;
+		row-gap: 40px;
+		padding-bottom: clamp(48px, 6vw, 80px);
+	}
+	.side {
+		grid-column: 1 / span 4;
+		align-self: end;
+		display: grid;
+		gap: 10px;
+		max-width: 30ch;
+	}
+	.tagline {
+		font-size: 17px;
+		line-height: 1.45;
+		color: var(--ink);
+	}
+	.side .status {
+		margin-top: 18px;
+		padding-top: 18px;
+		border-top: 1px solid var(--line);
+	}
+	.summary {
+		font-size: 14px;
+		color: var(--ink-2);
+	}
+	.copy {
+		grid-column: 7 / span 6;
+		display: grid;
+		gap: 26px;
+		justify-items: start;
 	}
 	h1 {
-		margin-top: 20px;
-		font-size: clamp(42px, 5.6vw, 76px);
-		font-weight: 700;
-		letter-spacing: -0.035em;
+		font-size: clamp(44px, 5.6vw, 80px);
 		line-height: 1.02;
+		letter-spacing: -0.035em;
 		text-wrap: balance;
 	}
 	.sub {
-		margin-top: 22px;
-		max-width: 46ch;
-		font-size: clamp(17px, 1.6vw, 20px);
+		max-width: 44ch;
+		font-size: clamp(17px, 1.4vw, 19px);
 		line-height: 1.6;
 		color: var(--ink-2);
 	}
 	.actions {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 12px;
-		margin-top: 34px;
+		align-items: center;
+		gap: 12px 28px;
+		margin-top: 6px;
 	}
-	.highlights {
-		list-style: none;
-		display: flex;
-		flex-wrap: wrap;
-		gap: 10px 22px;
-		margin-top: 30px;
-		font-size: 15px;
+	.facts {
+		font-size: 14px;
 		color: var(--ink-2);
 	}
-	.highlights li {
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-	}
-	.highlights svg {
-		width: 20px;
-		height: 20px;
-		padding: 2px;
-		border-radius: 50%;
-		background: var(--accent-soft);
-	}
-	.highlights path {
-		fill: none;
-		stroke: var(--accent-text);
-		stroke-width: 2;
-		stroke-linecap: round;
-		stroke-linejoin: round;
-	}
 
-	/* Arch photo with an offset outline arch behind it */
-	.art {
+	.media {
 		position: relative;
-		justify-self: center;
-		width: min(100%, 470px);
-		padding: 0 0 36px 28px;
-	}
-	.arch {
-		position: relative;
-		aspect-ratio: 4 / 5;
-		border-radius: var(--arch);
+		aspect-ratio: 9 / 4;
 		overflow: hidden;
-		background:
-			radial-gradient(120% 80% at 30% 20%, color-mix(in srgb, var(--accent) 22%, var(--bg)), transparent 70%),
-			linear-gradient(180deg, color-mix(in srgb, var(--accent) 14%, var(--bg)), color-mix(in srgb, var(--accent) 34%, var(--bg)));
+		background: var(--bg-2);
+		/* Top edge melts into the page, like the 21st reference. */
+		-webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 18%);
+		mask-image: linear-gradient(to bottom, transparent 0%, #000 18%);
 	}
-	.arch :global(img) {
+	.media :global(img) {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
 	}
-	.arch-line {
-		position: absolute;
-		inset: -18px 22px 58px 6px;
-		border: 1.5px solid color-mix(in srgb, var(--accent) 45%, transparent);
-		border-radius: var(--arch);
+
+	/* Entrance: blur + rise, staggered by --d. No opacity (LCP). */
+	.side,
+	.copy > * {
+		animation: salvia-in 0.9s var(--ease) both;
+		animation-delay: var(--d, 0ms);
 	}
-	.hours-card {
-		position: absolute;
-		left: 0;
-		bottom: 0;
-		display: grid;
-		gap: 4px;
-		max-width: 300px;
-		padding: 16px 20px;
-		border-radius: var(--r-md);
-		background: var(--bg-3);
-		box-shadow:
-			0 24px 50px -24px color-mix(in srgb, var(--ink) 35%, transparent),
-			0 0 0 1px var(--rule);
+	.media {
+		animation: salvia-media 1.2s var(--ease) 120ms both;
 	}
-	.hours-line {
-		font-size: 13px;
-		line-height: 1.45;
-		color: var(--ink-2);
+	@keyframes salvia-in {
+		from {
+			transform: translateY(14px);
+			filter: blur(6px);
+		}
+	}
+	@keyframes salvia-media {
+		from {
+			transform: translateY(24px);
+			filter: blur(10px);
+		}
 	}
 
 	@media (max-width: 900px) {
-		.hero {
-			grid-template-columns: minmax(0, 1fr);
+		.side,
+		.copy {
+			grid-column: 1 / -1;
 		}
-		.art {
-			width: min(100%, 420px);
+		.side {
+			order: 2;
+			max-width: none;
+		}
+		.media {
+			aspect-ratio: 4 / 3;
 		}
 	}
-	@media (max-width: 480px) {
-		.actions .btn {
-			flex: 1 1 100%;
-		}
-		.art {
-			padding-left: 14px;
-		}
-		.hours-card {
-			right: 14px;
-			max-width: none;
+	@media (prefers-reduced-motion: reduce) {
+		.side,
+		.copy > *,
+		.media {
+			animation: none;
 		}
 	}
 </style>
