@@ -36,6 +36,7 @@ export const work: Shape<typeof ptShape> = {
 		role: 'My role:',
 		outcome: 'Outcome',
 		thumbAlt: '{title}',
+		packages: 'Packages',
 	},
 
 	cta: {
