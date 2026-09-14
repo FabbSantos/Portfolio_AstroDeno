@@ -11,12 +11,23 @@
 
 const reducedMotion = (): boolean => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+/**
+ * Calls `cb(true)` while the page is scrolled more than `px`, `cb(false)` above it.
+ * Watches a 1px sentinel with IntersectionObserver: reading `window.scrollY` on
+ * load forces a synchronous layout of the whole page.
+ */
+export function onScrolledPast(px: number, cb: (past: boolean) => void): void {
+	const sentinel = document.createElement('div');
+	sentinel.setAttribute('aria-hidden', 'true');
+	sentinel.style.cssText = `position:absolute;top:${px}px;left:0;width:1px;height:1px;visibility:hidden;pointer-events:none`;
+	document.body.prepend(sentinel);
+	new IntersectionObserver(([e]) => e && cb(!e.isIntersecting && e.boundingClientRect.top < 0)).observe(sentinel);
+}
+
 function initStickyTopbar(): void {
 	const tb = document.getElementById('topbar');
-	if (!tb) return;
-	const onScroll = () => tb.classList.toggle('is-scrolled', window.scrollY > 12);
-	window.addEventListener('scroll', onScroll, { passive: true });
-	onScroll();
+	if (!tb || !('IntersectionObserver' in window)) return;
+	onScrolledPast(12, (past) => tb.classList.toggle('is-scrolled', past));
 }
 
 function initReveal(): void {

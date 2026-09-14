@@ -74,7 +74,7 @@ type Card = Testimonial & { hue: (typeof HUES)[number]; initials: string };
 											</blockquote>
 											<figcaption>
 												{c.avatar ? (
-													<Image class='avatar' src={c.avatar} alt='' width={88} height={88} loading='lazy' />
+													<Image class='avatar' src={c.avatar} alt='' width={88} height={88} quality='high' loading='lazy' />
 												) : (
 													<span class='tile' aria-hidden='true'>
 														{c.initials}
@@ -91,7 +91,7 @@ type Card = Testimonial & { hue: (typeof HUES)[number]; initials: string };
 														</a>
 													)}
 												</span>
-												{c.logo && <Image class='logo' src={c.logo} alt='' height={22} loading='lazy' />}
+												{c.logo && <Image class='logo' src={c.logo} alt='' height={22} quality='high' loading='lazy' />}
 											</figcaption>
 										</figure>
 									</li>

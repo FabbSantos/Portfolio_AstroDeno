@@ -6,7 +6,7 @@
  * the contact section (#contato) is on screen, since that block already has
  * a WhatsApp button. Everything stops under prefers-reduced-motion.
  */
-import { SITE, whatsappUrl } from '../../data/site';
+import { whatsappUrl } from '../../data/site';
 import { localeOf, useT } from '../../i18n';
 
 const locale = localeOf(Astro);
@@ -37,6 +37,8 @@ const href = whatsappUrl(locale);
 }
 
 <script>
+	import { onScrolledPast } from '../../scripts/site';
+
 	const fab = document.querySelector<HTMLAnchorElement>('[data-wa-fab]');
 	const contact = document.getElementById('contato');
 	if (fab) {
@@ -48,9 +50,8 @@ const href = whatsappUrl(locale);
 			).observe(contact);
 		}
 		// Show only after the hero has been passed a little, so it doesn't fight the hero CTAs.
-		const reveal = () => fab.classList.toggle('is-ready', window.scrollY > 240);
-		window.addEventListener('scroll', reveal, { passive: true });
-		reveal();
+		if ('IntersectionObserver' in window) onScrolledPast(240, (past) => fab.classList.toggle('is-ready', past));
+		else fab.classList.add('is-ready');
 		fab.addEventListener('click', () => {
 			import('@vercel/analytics').then(({ track }) => track('whatsapp_click', { where: 'fab' })).catch(() => {});
 		});
