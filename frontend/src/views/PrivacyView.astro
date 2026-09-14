@@ -12,6 +12,7 @@ import { localeOf, useT } from '../i18n';
 const locale = localeOf(Astro);
 const t = useT(locale);
 const p = t.privacy;
+const umamiOn = Boolean(import.meta.env.PUBLIC_UMAMI_WEBSITE_ID);
 ---
 
 <Layout title={t.meta.privacy.title} description={t.meta.privacy.description}>
@@ -29,6 +30,7 @@ const p = t.privacy;
 				<section>
 					<h2>{s.h}</h2>
 					{s.p.map((par) => <p>{par}</p>)}
+					{s.id === 'processors' && umamiOn && <p>{p.umami}</p>}
 				</section>
 			))}
 			<p class='contact-line'>

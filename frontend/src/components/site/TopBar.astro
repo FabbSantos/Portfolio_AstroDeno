@@ -4,8 +4,9 @@
  *
  * - All links go through localePath(); the language switch is a plain link to
  *   the same page in the other locale (no client-side swapping).
- * - The language pill lives OUTSIDE <nav> so it stays reachable on mobile when
- *   the menu is collapsed (site.ts toggles `inert` on #nav-mini).
+ * - The contact button always stays in the bar. On desktop the language pill sits
+ *   next to it; on mobile (≤ 780px) the bar is brand + contact + toggle and the
+ *   language link moves into the menu (site.ts toggles `inert` on #nav-mini).
  * - Mobile menu: opacity + transform + visibility (transition-safe) — no body
  *   scroll lock, the page stays scrollable behind the dropdown.
  */
@@ -26,8 +27,9 @@ const links = [
 	{ key: 'work', href: localePath(locale, '/work'), label: t.nav.work },
 	{ key: 'templates', href: localePath(locale, '/templates'), label: t.nav.templates },
 	{ key: 'about', href: localePath(locale, '/about'), label: t.nav.about },
-	{ key: 'contact', href: localePath(locale, '/#contato'), label: t.nav.contact },
 ] as const;
+// Contact is the always-visible button in .tools, not a nav link, so it survives the collapsed mobile menu.
+const contactHref = localePath(locale, '/#contato');
 
 const switchHref = switchPath(locale, Astro.url.pathname);
 const CODE: Record<typeof locale, string> = { pt: 'PT', en: 'EN' };
@@ -47,9 +49,18 @@ const CODE: Record<typeof locale, string> = { pt: 'PT', en: 'EN' };
 					</a>
 				))
 			}
+			<a class='nav-lang' href={switchHref} hreflang={LANG_TAG[alt]} lang={LANG_TAG[alt]}>
+				<span class='nav-lang-code' aria-hidden='true'>{CODE[alt]}</span>
+				{t.common.switchTo}
+			</a>
 		</nav>
 
 		<div class='tools'>
+			<!-- Only one label is displayed per breakpoint; display:none keeps the other out of the accessible name. -->
+			<a class='top-cta' href={contactHref} data-cta='topbar'>
+				<span class='top-cta-full'>{t.common.ctaContact}</span>
+				<span class='top-cta-short'>{t.common.ctaContactShort}</span>
+			</a>
 			<div class='lang' role='group' aria-label={t.common.language}>
 				{
 					(['pt', 'en'] as const).map((l) =>
@@ -199,6 +210,51 @@ const CODE: Record<typeof locale, string> = { pt: 'PT', en: 'EN' };
 		align-items: center;
 		gap: 10px;
 	}
+
+	/* Contact button: same language as .btn-primary, sized for the bar. */
+	.top-cta {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		min-height: 38px;
+		padding: 0 18px;
+		border-radius: 999px;
+		background: var(--ink);
+		color: #fff;
+		font-size: 14px;
+		font-weight: 600;
+		white-space: nowrap;
+		overflow: hidden;
+		transition:
+			background 0.25s,
+			transform 0.35s var(--ease-out-expo),
+			box-shadow 0.3s;
+	}
+	.top-cta:hover,
+	.top-cta:focus-visible {
+		background: var(--accent);
+		transform: translateY(-1px);
+		box-shadow: 0 10px 24px -12px rgba(255, 89, 100, 0.65);
+	}
+	.top-cta::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.28) 50%, transparent 65%);
+		transform: translateX(-120%);
+	}
+	.top-cta:hover::after {
+		transition: transform 0.8s ease;
+		transform: translateX(120%);
+	}
+	.top-cta-short {
+		display: none;
+	}
+	/* Mobile-only language row inside the menu (desktop uses .lang). */
+	.nav-mini .nav-lang {
+		display: none;
+	}
 	.lang {
 		display: inline-flex;
 		align-items: center;
@@ -288,6 +344,42 @@ const CODE: Record<typeof locale, string> = { pt: 'PT', en: 'EN' };
 			min-height: 36px;
 			padding: 0 14px;
 		}
+		.tools {
+			gap: 8px;
+		}
+		.lang {
+			display: none;
+		}
+		.top-cta {
+			min-height: 38px;
+			padding: 0 16px;
+			font-size: 14px;
+		}
+		.top-cta-full {
+			display: none;
+		}
+		.top-cta-short {
+			display: inline;
+		}
+		.nav-mini .nav-lang {
+			display: flex;
+			gap: 10px;
+			color: var(--ink-2);
+		}
+		.nav-lang-code {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			min-width: 34px;
+			height: 24px;
+			border: 1px solid var(--rule-2);
+			border-radius: 999px;
+			font-family: var(--mono);
+			font-size: 11px;
+			font-weight: 600;
+			letter-spacing: 0.5px;
+			color: var(--ink-2);
+		}
 
 		.nav-mini {
 			position: absolute;
@@ -350,7 +442,8 @@ const CODE: Record<typeof locale, string> = { pt: 'PT', en: 'EN' };
 			animation: none;
 		}
 		.brand:hover .dot,
-		.nav-mini a:hover {
+		.nav-mini a:hover,
+		.top-cta:hover {
 			transform: none;
 		}
 	}

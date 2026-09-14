@@ -3,6 +3,8 @@
  * Home page (rendered by /  and /en). Locale comes from the URL — never
  * hardcode it here. Sections in sales order: hero → proof → services →
  * work → templates → process → testimonials → about → contact.
+ * Every content section ends in a way to contact: its own CTA (hero, process)
+ * or a SectionCta. About is skipped on purpose: the form comes right after it.
  */
 import Layout from '../layouts/Layout.astro';
 import TopBar from '../components/site/TopBar.astro';
@@ -16,6 +18,7 @@ import Process from '../components/home/Process.astro';
 import Testimonials from '../components/home/Testimonials.astro';
 import AboutShort from '../components/home/AboutShort.astro';
 import Contact from '../components/home/Contact.astro';
+import SectionCta from '../components/home/SectionCta.astro';
 import { localeOf, useT } from '../i18n';
 
 const locale = localeOf(Astro);
@@ -28,8 +31,11 @@ const t = useT(locale);
 		<Hero />
 		<ProofBand />
 		<Services />
+		<SectionCta section='services' />
 		<WorksList />
+		<SectionCta section='works' />
 		<Templates />
+		<SectionCta section='templates' />
 		<Process />
 		<Testimonials />
 		<AboutShort />

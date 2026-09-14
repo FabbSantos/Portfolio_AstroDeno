@@ -16,6 +16,7 @@ import { process } from './process';
 import { testimonials } from './testimonials';
 import { notFound } from './notFound';
 import { privacy } from './privacy';
+import { sectionCta } from './sectionCta';
 
 export const pt = {
 	common,
@@ -35,4 +36,5 @@ export const pt = {
 	testimonials,
 	notFound,
 	privacy,
+	sectionCta,
 } as const;

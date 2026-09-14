@@ -1,0 +1,174 @@
+---
+/**
+ * One-line contact nudge that closes a home section: a question, the quote
+ * button and a WhatsApp link. Deliberately not a form.
+ *
+ * `data-cta` names the spot for cta_click / whatsapp_click (scripts/analytics.ts).
+ */
+import { SITE, whatsappUrl } from '../../data/site';
+import { fmt, localeOf, localePath, pick, useT } from '../../i18n';
+
+interface Props {
+	/** Which line of t.sectionCta to show; also the tracking spot (`after_<section>`). */
+	section: 'services' | 'works' | 'templates';
+}
+
+const { section } = Astro.props;
+const locale = localeOf(Astro);
+const t = useT(locale);
+const wa = whatsappUrl(locale);
+const reply = fmt(t.common.replyIn, { time: pick(SITE.responseTime, locale) });
+---
+
+<div class='section-cta reveal' data-cta={`after_${section}`}>
+	<div class='inner'>
+		<p class='ask'>
+			<span class='dot' aria-hidden='true'></span>
+			<span>{t.sectionCta[section]}</span>
+		</p>
+		<div class='actions'>
+			<a class='btn btn-primary' href={`${localePath(locale, '/')}#contato`}>{t.common.ctaContact}</a>
+			{
+				wa && (
+					<a class='wa' href={wa} target='_blank' rel='noopener'>
+						<span class='link-underline'>{t.sectionCta.whatsapp}</span>
+					</a>
+				)
+			}
+		</div>
+		<p class='reply'>{reply}</p>
+	</div>
+</div>
+
+<style>
+	/* Pulled into the previous section's bottom padding; the bottom margin keeps it
+	   off full-bleed bands (templates) that start right after it. */
+	.section-cta {
+		max-width: var(--maxw);
+		margin: -56px auto 64px;
+		padding: 0 32px;
+	}
+	.inner {
+		position: relative;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		grid-template-areas:
+			'ask actions'
+			'reply actions';
+		align-items: center;
+		gap: 4px 28px;
+		padding: 22px 28px;
+		border-radius: 20px;
+		border: 1px solid var(--rule-2);
+		background: linear-gradient(100deg, var(--accent-soft), var(--accent-2-soft));
+		overflow: hidden;
+		transition:
+			border-color 0.3s,
+			box-shadow 0.4s var(--ease-out-expo),
+			transform 0.4s var(--ease-out-expo);
+	}
+	.inner:hover {
+		border-color: rgba(255, 89, 100, 0.35);
+		box-shadow: 0 24px 50px -30px rgba(255, 89, 100, 0.45);
+		transform: translateY(-2px);
+	}
+	.ask {
+		grid-area: ask;
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		font-size: clamp(18px, 2vw, 22px);
+		font-weight: 700;
+		letter-spacing: -0.02em;
+		line-height: 1.25;
+		color: var(--ink);
+		text-wrap: balance;
+	}
+	.dot {
+		flex: none;
+		width: 9px;
+		height: 9px;
+		border-radius: 50%;
+		background: var(--accent);
+		box-shadow: 0 0 0 0 rgba(255, 89, 100, 0.5);
+		animation: ctaPing 2.4s ease-out infinite;
+	}
+	@keyframes ctaPing {
+		70% {
+			box-shadow: 0 0 0 9px rgba(255, 89, 100, 0);
+		}
+		100% {
+			box-shadow: 0 0 0 0 rgba(255, 89, 100, 0);
+		}
+	}
+	.reply {
+		grid-area: reply;
+		padding-left: 21px;
+		font-family: var(--mono);
+		font-size: 12px;
+		letter-spacing: 0.02em;
+		/* --ink-3 drops to 4.2:1 on the tinted gradient; --ink-2 stays above 5.5:1 */
+		color: var(--ink-2);
+	}
+	.actions {
+		grid-area: actions;
+		display: flex;
+		align-items: center;
+		gap: 18px;
+	}
+	.actions .btn {
+		white-space: nowrap;
+	}
+	.wa {
+		display: inline-flex;
+		align-items: center;
+		min-height: 44px;
+		font-size: 14px;
+		font-weight: 600;
+		color: var(--hue-green-text);
+		white-space: nowrap;
+	}
+
+	@media (max-width: 900px) {
+		.section-cta {
+			margin: -40px auto 48px;
+			padding: 0 20px;
+		}
+		.inner {
+			grid-template-columns: minmax(0, 1fr);
+			grid-template-areas:
+				'ask'
+				'reply'
+				'actions';
+			justify-items: center;
+			text-align: center;
+			gap: 6px;
+			padding: 22px 20px;
+		}
+		.ask {
+			flex-direction: column;
+			gap: 12px;
+		}
+		.reply {
+			padding-left: 0;
+		}
+		.actions {
+			flex-direction: column;
+			gap: 2px;
+			margin-top: 12px;
+			width: 100%;
+		}
+		.actions .btn {
+			width: 100%;
+			max-width: 360px;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.dot {
+			animation: none;
+		}
+		.inner:hover {
+			transform: none;
+		}
+	}
+</style>

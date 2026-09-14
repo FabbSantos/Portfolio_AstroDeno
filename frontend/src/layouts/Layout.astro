@@ -28,6 +28,7 @@ interface Props {
 }
 
 const { title, description, noindex = false, ogImage = '/og.png', ogType = 'website' } = Astro.props;
+const umamiId = String(import.meta.env.PUBLIC_UMAMI_WEBSITE_ID ?? '');
 const locale = localeOf(Astro);
 const t = useT(locale);
 const path = stripLocale(Astro.url.pathname);
@@ -114,6 +115,31 @@ const jsonLd = {
 				window.va('beforeSend', function () { return null; });
 			})();
 		</script>
+
+		<!-- Umami (cookieless analytics + lead funnel events, see scripts/analytics.ts). Only with
+		     PUBLIC_UMAMI_WEBSITE_ID; loaded after `load` so it never competes with the first render,
+		     skipped inside iframes, and limited to the production host. -->
+		{
+			umamiId && (
+				<script is:inline define:vars={{ umamiId, host: new URL(SITE.url).host }}>
+					(function () {
+						try { if (window.self !== window.top) return; } catch { return; }
+						addEventListener('load', function () {
+							const s = document.createElement('script');
+							s.src = 'https://cloud.umami.is/script.js';
+							s.dataset.websiteId = umamiId;
+							s.dataset.domains = host;
+							s.onload = function () {
+								const q = window.__umq || [];
+								window.__umq = [];
+								q.forEach(function (e) { if (window.umami) window.umami.track(e[0], e[1]); });
+							};
+							document.head.appendChild(s);
+						});
+					})();
+				</script>
+			)
+		}
 
 		<script type='application/ld+json' is:inline set:html={JSON.stringify(jsonLd)} />
 	</head>
