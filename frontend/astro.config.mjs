@@ -56,6 +56,8 @@ export default defineConfig({
 			CONTACT_TO: envField.string({ context: 'server', access: 'secret', optional: true }),
 			TURNSTILE_SECRET_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),
 			PUBLIC_TURNSTILE_SITE_KEY: envField.string({ context: 'client', access: 'public', optional: true }),
+			// Umami Cloud website id. Unset = no Umami script at all.
+			PUBLIC_UMAMI_WEBSITE_ID: envField.string({ context: 'client', access: 'public', optional: true }),
 		},
 	},
 });

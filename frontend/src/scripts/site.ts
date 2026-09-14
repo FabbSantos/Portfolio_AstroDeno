@@ -6,8 +6,10 @@
  *  - marquee slow-down on hover (playbackRate — no jump, unlike changing duration)
  *  - draggable horizontal scroller (.scroller) — mouse only; touch scrolls natively
  *  - mobile nav toggle (with `inert` on the closed menu)
+ *  - contact / WhatsApp click tracking (scripts/analytics.ts)
  * Language switching is a plain link now (server-side i18n) — nothing to wire.
  */
+import { initCtaTracking } from './analytics';
 
 const reducedMotion = (): boolean => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -183,6 +185,7 @@ function initMobileNav(): void {
 }
 
 export function initSite(): void {
+	initCtaTracking();
 	initStickyTopbar();
 	initReveal();
 	initCountUp();

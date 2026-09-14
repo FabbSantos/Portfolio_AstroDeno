@@ -619,7 +619,7 @@ const [successBefore = '', successAfter = ''] = c.success.title.split('{name}');
 </style>
 
 <script>
-	import { track } from '@vercel/analytics';
+	import { trackEvent } from '../../scripts/analytics';
 
 	declare global {
 		interface Window {
@@ -695,6 +695,21 @@ const [successBefore = '', successAfter = ''] = c.success.title.split('{name}');
 		}
 		for (const k of UTM_KEYS) setHidden(k, utm[k] ?? '');
 
+		/* ---- Funnel: saw the form, started typing ---------------------------- */
+		const funnelProps = () => ({ need: need?.value ?? '', page: location.pathname });
+		if ('IntersectionObserver' in window) {
+			const seen = new IntersectionObserver(
+				(entries) => {
+					if (!entries.some((e) => e.isIntersecting)) return;
+					trackEvent('contact_view', funnelProps());
+					seen.disconnect();
+				},
+				{ threshold: 0.3 }
+			);
+			seen.observe(form);
+		}
+		form.addEventListener('input', () => trackEvent('form_start', funnelProps()), { once: true });
+
 		/* ---- Status helpers -------------------------------------------------- */
 		const msgEl = status.querySelector<HTMLElement>('[data-msg]');
 		const mailEl = status.querySelector<HTMLAnchorElement>('[data-mailto]');
@@ -766,15 +781,15 @@ const [successBefore = '', successAfter = ''] = c.success.title.split('{name}');
 				const json = (await res.json().catch(() => ({}))) as { ok?: boolean; code?: string };
 				if (res.ok && json.ok) {
 					showSuccess(payload.name);
-					track('contact_submit', { need: payload.need, template: payload.template || null, locale: payload.locale });
+					trackEvent('contact_submit', { need: payload.need, template: payload.template || null, locale: payload.locale });
 				} else {
 					const code = json.code || (res.status === 429 ? 'RATE_LIMITED' : 'UNKNOWN');
 					showError(code, payload);
-					track('contact_error', { code });
+					trackEvent('contact_error', { code });
 				}
 			} catch {
 				showError('NETWORK', payload);
-				track('contact_error', { code: 'NETWORK' });
+				trackEvent('contact_error', { code: 'NETWORK' });
 			} finally {
 				submit.disabled = false;
 				submit.removeAttribute('aria-busy');

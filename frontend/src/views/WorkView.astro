@@ -22,7 +22,8 @@ const experiments = lab();
 
 const contactHref = localePath(locale, '/#contato');
 const wa = whatsappUrl(locale);
-const accessHref = (id: string) => localePath(locale, `/#contato?assunto=acesso-${id}`);
+// Query before the hash: `/#contato?assunto=…` neither scrolls to #contato nor reaches location.search.
+const accessHref = (id: string) => localePath(locale, `/?assunto=acesso-${id}#contato`);
 const statusLabel = (s: Work['status']) => t.common[s];
 
 const eyebrow = fmt(w.hero.eyebrow, { from: SITE.since, to: new Date().getFullYear() });

@@ -3,10 +3,13 @@ export const privacy = {
 	eyebrow: 'LGPD',
 	title: 'Política de privacidade',
 	lead: 'Este site tem um formulário de contato e nada mais. Aqui está, sem juridiquês, o que acontece com o que você manda.',
-	updated: 'Atualizado em agosto de 2026',
+	updated: 'Atualizado em setembro de 2026',
 	contactLabel: 'Dúvidas ou pedidos:',
+	/** Appended to "Quem processa" only when Umami is configured (PUBLIC_UMAMI_WEBSITE_ID). */
+	umami: 'Umami: contagem agregada de visitas e de cliques nos botões de contato, sem cookies e sem identificar pessoas.',
 	sections: [
 		{
+			id: 'collect',
 			h: 'Quais dados eu coleto',
 			p: [
 				'Só o que você preenche no formulário: nome, e-mail, mensagem e, se você informar, WhatsApp, empresa e prazo.',
@@ -14,6 +17,7 @@ export const privacy = {
 			],
 		},
 		{
+			id: 'purpose',
 			h: 'Pra quê',
 			p: [
 				'Pra responder ao seu contato. Só isso.',
@@ -21,6 +25,7 @@ export const privacy = {
 			],
 		},
 		{
+			id: 'processors',
 			h: 'Quem processa',
 			p: [
 				'Resend: envio do e-mail de notificação (servidores nos EUA).',
@@ -29,6 +34,7 @@ export const privacy = {
 			],
 		},
 		{
+			id: 'retention',
 			h: 'Por quanto tempo',
 			p: [
 				'Enquanto durar a conversa. Depois disso, a mensagem fica só na minha caixa de entrada, como qualquer e-mail.',
@@ -36,6 +42,7 @@ export const privacy = {
 			],
 		},
 		{
+			id: 'rights',
 			h: 'Seus direitos',
 			p: [
 				'A LGPD garante a você acesso, correção e exclusão dos seus dados, além de saber com quem eles foram compartilhados.',
@@ -43,6 +50,7 @@ export const privacy = {
 			],
 		},
 		{
+			id: 'cookies',
 			h: 'Cookies',
 			p: [
 				'O site não usa cookies de rastreamento nem pixels de anúncio.',
