@@ -1,0 +1,172 @@
+---
+/**
+ * Services (#especialidades): one card per service with a line icon. The
+ * "Agendar" link jumps to the booking widget with that service preselected
+ * (script in Booking.astro).
+ */
+import type { SalviaConfig } from '../schema';
+import { ICON_PATHS } from './icons';
+import { md } from './_md';
+
+interface Props {
+	config: SalviaConfig;
+}
+const { services } = Astro.props.config;
+---
+
+<section class='sec' id='especialidades' aria-labelledby='salvia-services-title'>
+	<div class='wrap'>
+		<div class='sec-h'>
+			<p class='eyebrow'>{services.eyebrow}</p>
+			<h2 id='salvia-services-title' set:html={md(services.title)} />
+			{services.lead && <p class='lead'>{services.lead}</p>}
+		</div>
+
+		<ul class='grid'>
+			{
+				services.items.map((s) => (
+					<li class='card'>
+						<span class='icon' aria-hidden='true'>
+							<svg viewBox='0 0 24 24'>
+								<path d={ICON_PATHS[s.icon]} />
+							</svg>
+						</span>
+						<h3>{s.name}</h3>
+						<p>{s.desc}</p>
+						<a class='book' href='#agendar' data-book-service={s.name}>
+							{services.bookLabel}
+							<span class='visually-hidden'>: {s.name}</span>
+							<span class='arr' aria-hidden='true'>→</span>
+						</a>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</section>
+
+<style>
+	/* 3 columns so the usual 6 services close two full rows. */
+	.grid {
+		list-style: none;
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 16px;
+	}
+	.card {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		padding: 26px 24px 20px;
+		border-radius: var(--r-lg);
+		background: var(--bg-3);
+		box-shadow: 0 0 0 1px var(--rule);
+		transition:
+			transform 0.4s var(--ease-out-expo),
+			box-shadow 0.4s;
+	}
+	.card:hover {
+		transform: translateY(-4px);
+		box-shadow:
+			0 0 0 1px var(--rule-2),
+			0 26px 50px -30px color-mix(in srgb, var(--ink) 40%, transparent);
+	}
+	.icon {
+		display: grid;
+		place-items: center;
+		width: 48px;
+		height: 48px;
+		margin-bottom: 6px;
+		border-radius: 50%;
+		background: var(--accent-soft);
+		color: var(--accent-text);
+	}
+	.icon svg {
+		width: 24px;
+		height: 24px;
+	}
+	.icon path {
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 1.6;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+	h3 {
+		font-size: 20px;
+		font-weight: 650;
+		letter-spacing: -0.015em;
+		line-height: 1.25;
+	}
+	p {
+		flex: 1;
+		font-size: 15.5px;
+		line-height: 1.55;
+		color: var(--ink-2);
+	}
+	.book {
+		display: inline-flex;
+		align-items: center;
+		align-self: flex-start;
+		gap: 6px;
+		min-height: 44px;
+		margin-top: 4px;
+		font-size: 15px;
+		font-weight: 600;
+		color: var(--accent-text);
+	}
+	.arr {
+		transition: transform 0.35s var(--ease-out-expo);
+	}
+	.card:hover .arr,
+	.book:focus-visible .arr {
+		transform: translateX(4px);
+	}
+	.visually-hidden {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+		white-space: nowrap;
+	}
+	@media (max-width: 960px) {
+		.grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+	/* Phone: compact rows, icon beside the text, so six services don't become six screens. */
+	@media (max-width: 600px) {
+		.grid {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 10px;
+		}
+		.card {
+			display: grid;
+			grid-template-columns: 44px minmax(0, 1fr);
+			column-gap: 16px;
+			row-gap: 4px;
+			padding: 18px 18px 8px;
+		}
+		.icon {
+			grid-row: 1 / span 3;
+			width: 44px;
+			height: 44px;
+			margin: 0;
+		}
+		h3 {
+			font-size: 18px;
+		}
+		p {
+			font-size: 15px;
+		}
+		.book {
+			margin-top: 0;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.card:hover {
+			transform: none;
+		}
+	}
+</style>

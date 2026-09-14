@@ -1,0 +1,14 @@
+---
+/**
+ * Sálvia — portfolio demo. All copy/images live in templates/salvia/demo.config.ts.
+ */
+import DemoLayout from '../../../layouts/DemoLayout.astro';
+import ThemeVars from '../../../templates/core/ThemeVars.astro';
+import SalviaBody from '../../../templates/salvia/SalviaBody.astro';
+import demo from '../../../templates/salvia/demo.config';
+---
+
+<DemoLayout slug='salvia' title={demo.seo.title} description={demo.seo.description} locale='pt' themeColor={demo.theme.bg}>
+	<ThemeVars theme={demo.theme} />
+	<SalviaBody config={demo} demo />
+</DemoLayout>

@@ -1,0 +1,73 @@
+---
+/**
+ * Insurance (#convenios), optional: accepted plans as chips plus a note
+ * (private care, reimbursement).
+ */
+import type { SalviaConfig } from '../schema';
+import { md } from './_md';
+
+interface Props {
+	insurance: NonNullable<SalviaConfig['insurance']>;
+}
+const { insurance } = Astro.props;
+---
+
+<section class='sec band' id='convenios' aria-labelledby='salvia-insurance-title'>
+	<div class='wrap inner'>
+		<div class='sec-h'>
+			<p class='eyebrow'>{insurance.eyebrow}</p>
+			<h2 id='salvia-insurance-title' set:html={md(insurance.title)} />
+			{insurance.lead && <p class='lead'>{insurance.lead}</p>}
+		</div>
+		<div>
+			<ul class='plans'>
+				{insurance.plans.map((p) => <li>{p}</li>)}
+			</ul>
+			{insurance.note && <p class='note'>{insurance.note}</p>}
+		</div>
+	</div>
+</section>
+
+<style>
+	.band {
+		background: var(--bg-2);
+	}
+	.inner {
+		display: grid;
+		grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+		gap: clamp(28px, 5vw, 64px);
+		align-items: center;
+	}
+	.inner .sec-h {
+		margin-bottom: 0;
+	}
+	.plans {
+		list-style: none;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+	}
+	.plans li {
+		display: inline-flex;
+		align-items: center;
+		min-height: 46px;
+		padding: 0 20px;
+		border-radius: 999px;
+		background: var(--bg-3);
+		box-shadow: 0 0 0 1px var(--rule);
+		font-size: 16px;
+		font-weight: 600;
+	}
+	.note {
+		margin-top: 20px;
+		max-width: 52ch;
+		font-size: 15.5px;
+		line-height: 1.55;
+		color: var(--ink-2);
+	}
+	@media (max-width: 900px) {
+		.inner {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+</style>

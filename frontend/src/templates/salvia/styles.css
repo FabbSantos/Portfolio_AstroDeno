@@ -1,0 +1,148 @@
+/* ==========================================================================
+   Sálvia — rules shared by more than one section. Everything else lives in
+   sections/*.astro. Colours come only from the core ThemeVars tokens; the
+   accent must hold white text (≥ 4.5:1), it fills the buttons.
+   Text never uses --ink-3: on light sage grounds it drops under 4.5:1.
+   ========================================================================== */
+.tpl-salvia {
+	--wrap: 1180px;
+	--pad-x: clamp(20px, 4vw, 40px);
+	--r-lg: calc(var(--radius) * 2.2);
+	--r-md: calc(var(--radius) * 1.3);
+	--arch: 999px 999px var(--r-lg) var(--r-lg);
+	background: var(--bg);
+	color: var(--ink);
+	font-family: var(--sans);
+	min-height: 100vh;
+}
+
+.tpl-salvia .wrap {
+	max-width: var(--wrap);
+	margin-inline: auto;
+	padding-inline: var(--pad-x);
+}
+.tpl-salvia .sec {
+	padding-block: clamp(72px, 10vw, 120px);
+}
+
+/* md(): **text** / ==text== */
+.tpl-salvia .hl {
+	color: var(--accent-text);
+	font-weight: inherit;
+}
+.tpl-salvia .em {
+	font-weight: inherit;
+	background: linear-gradient(transparent 58%, var(--accent-soft) 58%);
+	padding: 0 3px;
+}
+
+/* Eyebrow: a short sprig line + small caps */
+.tpl-salvia .eyebrow {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--accent-text);
+}
+.tpl-salvia .eyebrow::before {
+	content: '';
+	width: 20px;
+	height: 2px;
+	border-radius: 2px;
+	background: currentColor;
+}
+
+.tpl-salvia .sec-h {
+	max-width: 720px;
+	margin-bottom: clamp(36px, 5vw, 56px);
+}
+.tpl-salvia .sec-h h2 {
+	margin-top: 14px;
+	font-size: clamp(32px, 4.4vw, 52px);
+	font-weight: 700;
+	letter-spacing: -0.03em;
+	line-height: 1.08;
+	text-wrap: balance;
+}
+.tpl-salvia .sec-h .lead {
+	margin-top: 16px;
+	font-size: 18px;
+	line-height: 1.6;
+	color: var(--ink-2);
+	max-width: 58ch;
+}
+
+/* Buttons */
+.tpl-salvia .btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	min-height: 52px;
+	padding: 0 26px;
+	border-radius: 999px;
+	font-size: 16px;
+	font-weight: 600;
+	white-space: nowrap;
+	transition:
+		transform 0.35s var(--ease-out-expo),
+		background 0.2s,
+		box-shadow 0.3s;
+}
+.tpl-salvia .btn-primary {
+	background: var(--accent);
+	color: #fff;
+	box-shadow: 0 16px 34px -18px var(--accent-glow);
+}
+.tpl-salvia .btn-primary:hover {
+	transform: translateY(-2px);
+	background: color-mix(in srgb, var(--accent) 86%, var(--ink));
+}
+.tpl-salvia .btn-ghost {
+	color: var(--ink);
+	box-shadow: inset 0 0 0 1.5px var(--rule-2);
+}
+.tpl-salvia .btn-ghost:hover {
+	transform: translateY(-2px);
+	box-shadow: inset 0 0 0 1.5px var(--ink-2);
+}
+
+/* "Aberto agora" status (text filled by the script in SalviaBody) */
+.tpl-salvia .status {
+	display: inline-flex;
+	align-items: center;
+	gap: 9px;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--ink);
+}
+.tpl-salvia .status-dot {
+	flex: none;
+	width: 9px;
+	height: 9px;
+	border-radius: 50%;
+	background: var(--ink-4);
+}
+.tpl-salvia .status.is-open .status-dot {
+	background: #25d366;
+	box-shadow: 0 0 0 4px color-mix(in srgb, #25d366 24%, transparent);
+}
+
+/* Topbar (core MobileNav). One extra class so these beat the component's scoped rules. */
+.tpl-salvia .mnav .mnav-brand {
+	font-size: 19px;
+	letter-spacing: -0.02em;
+}
+.tpl-salvia .mnav .mnav-cta {
+	border-radius: 999px;
+	padding: 0 20px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.tpl-salvia .btn:hover {
+		transform: none;
+	}
+}

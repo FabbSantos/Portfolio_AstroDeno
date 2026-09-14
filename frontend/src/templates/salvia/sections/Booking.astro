@@ -1,0 +1,386 @@
+---
+/**
+ * Booking (#agendar): pick a service and a period, optionally a name, and the
+ * WhatsApp message is composed live in a chat-bubble preview. Submitting opens
+ * wa.me with that text.
+ *
+ * Works without JS: the form GETs wa.me with the default message in `text`.
+ * `demo` (portfolio page only) keeps the widget interactive without a number:
+ * submit shows a note instead of opening WhatsApp.
+ */
+import type { SalviaConfig } from '../schema';
+import { md } from './_md';
+
+interface Props {
+	config: SalviaConfig;
+	demo?: boolean;
+}
+const { config, demo = false } = Astro.props;
+const { booking, services, contact, brand } = config;
+const en = brand.locale === 'en';
+
+const action = contact.whatsapp ? `https://wa.me/${contact.whatsapp.number}` : undefined;
+const initial = booking.message
+	.replace('{servico}', services.items[0]?.name ?? '')
+	.replace('{periodo}', (booking.periods[0] ?? '').toLowerCase());
+const initials = brand.name
+	.split(/\s+/)
+	.slice(0, 2)
+	.map((w) => w.charAt(0).toUpperCase())
+	.join('');
+const demoNote = en
+	? 'Demo: on the published site this button opens the clinic’s WhatsApp with this message.'
+	: 'Demo: no site publicado, este botão abre o WhatsApp da clínica com essa mensagem.';
+---
+
+<section class='sec' id='agendar' aria-labelledby='salvia-booking-title'>
+	<div class='wrap'>
+		<div class='panel'>
+			<div class='intro'>
+				<p class='eyebrow'>{booking.eyebrow}</p>
+				<h2 id='salvia-booking-title' set:html={md(booking.title)} />
+				<p class='lead'>{booking.lead}</p>
+
+				<form
+					class='form'
+					action={action}
+					method='get'
+					target='_blank'
+					data-booking
+					data-message={booking.message}
+					data-name-sentence={booking.nameSentence}
+					data-demo={demo ? '' : undefined}
+				>
+					<fieldset>
+						<legend>{booking.serviceLabel}</legend>
+						<div class='chips'>
+							{
+								services.items.map((s, i) => (
+									<label class='chip'>
+										<input type='radio' name='servico' value={s.name} checked={i === 0} />
+										<span>{s.name}</span>
+									</label>
+								))
+							}
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<legend>{booking.periodLabel}</legend>
+						<div class='chips'>
+							{
+								booking.periods.map((p, i) => (
+									<label class='chip'>
+										<input type='radio' name='periodo' value={p} checked={i === 0} />
+										<span>{p}</span>
+									</label>
+								))
+							}
+						</div>
+					</fieldset>
+
+					<label class='field'>
+						<span>{booking.nameLabel}</span>
+						<input name='nome' type='text' autocomplete='given-name' maxlength='60' />
+					</label>
+
+					<input type='hidden' name='text' value={initial} />
+
+					<div class='submit'>
+						<button class='btn wa' type='submit'>
+							<svg viewBox='0 0 24 24' width='20' height='20' aria-hidden='true'>
+								<path
+									fill='currentColor'
+									d='M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91A9.85 9.85 0 0 0 12.04 2zm5.8 14.03c-.25.69-1.44 1.33-2 1.41-.51.08-1.16.11-1.87-.12-.43-.14-.98-.32-1.69-.62-2.98-1.29-4.92-4.29-5.07-4.49-.15-.2-1.21-1.61-1.21-3.07s.77-2.18 1.04-2.48c.27-.3.59-.37.79-.37h.57c.18.01.43-.07.67.51.25.59.84 2.05.91 2.2.07.15.12.32.02.52-.1.2-.15.32-.3.5-.15.17-.31.39-.45.52-.15.15-.3.31-.13.61.17.3.77 1.27 1.65 2.06 1.13 1.01 2.09 1.32 2.39 1.47.3.15.47.12.64-.07.17-.2.74-.86.94-1.16.2-.3.4-.25.67-.15.27.1 1.73.82 2.03.97.3.15.5.22.57.35.07.12.07.72-.18 1.41z'
+								></path>
+							</svg>
+							{booking.cta}
+						</button>
+						{booking.foot && <p class='foot'>{booking.foot}</p>}
+					</div>
+					<p class='demo-note' data-booking-note role='status' hidden>{demoNote}</p>
+				</form>
+			</div>
+
+			<figure class='chat'>
+				<figcaption class='chat-head'>
+					<span class='avatar' aria-hidden='true'>{initials}</span>
+					<span class='who'>
+						<strong>{brand.name}</strong>
+						<small>{booking.previewLabel}</small>
+					</span>
+				</figcaption>
+				<div class='chat-body'>
+					<span class='day' aria-hidden='true'>{en ? 'Today' : 'Hoje'}</span>
+					<p class='bubble' data-booking-preview>{initial}</p>
+				</div>
+			</figure>
+		</div>
+	</div>
+</section>
+
+<script>
+	document.querySelectorAll<HTMLFormElement>('form[data-booking]').forEach((form) => {
+		const preview = form.closest('.panel')?.querySelector<HTMLElement>('[data-booking-preview]');
+		const note = form.querySelector<HTMLElement>('[data-booking-note]');
+		const hidden = form.elements.namedItem('text') as HTMLInputElement | null;
+		const value = (name: string) => (form.elements.namedItem(name) as RadioNodeList | HTMLInputElement | null)?.value ?? '';
+
+		const compose = () => {
+			const text = (form.dataset.message ?? '').replace('{servico}', value('servico')).replace('{periodo}', value('periodo').toLowerCase());
+			const nome = value('nome').trim();
+			return nome ? `${text} ${(form.dataset.nameSentence ?? '').replace('{nome}', nome)}` : text;
+		};
+		const sync = () => {
+			const text = compose();
+			if (preview) preview.textContent = text;
+			if (hidden) hidden.value = text;
+		};
+
+		form.addEventListener('input', sync);
+		form.addEventListener('change', sync);
+		sync();
+
+		form.addEventListener('submit', (e) => {
+			e.preventDefault();
+			sync();
+			if (form.hasAttribute('data-demo') || !form.getAttribute('action')) {
+				if (note) note.hidden = false;
+				return;
+			}
+			window.open(`${form.getAttribute('action')}?text=${encodeURIComponent(compose())}`, '_blank', 'noopener');
+		});
+	});
+
+	// "Agendar" on a service card preselects that service here.
+	document.querySelectorAll<HTMLAnchorElement>('[data-book-service]').forEach((link) => {
+		link.addEventListener('click', () => {
+			const radios = document.querySelectorAll<HTMLInputElement>('form[data-booking] input[name="servico"]');
+			const match = Array.from(radios).find((r) => r.value === link.dataset.bookService);
+			if (!match) return;
+			match.checked = true;
+			match.dispatchEvent(new Event('change', { bubbles: true }));
+		});
+	});
+</script>
+
+<style>
+	.panel {
+		display: grid;
+		grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+		gap: clamp(32px, 5vw, 64px);
+		align-items: center;
+		padding: clamp(28px, 5vw, 64px);
+		border-radius: calc(var(--r-lg) * 1.4);
+		background: var(--ink);
+		color: var(--bg);
+		/* on the dark panel the "ink" ramp flips to the ground colour */
+		--on-2: color-mix(in srgb, var(--bg) 80%, var(--ink));
+		--on-line: color-mix(in srgb, var(--bg) 26%, var(--ink));
+		--on-fill: color-mix(in srgb, var(--bg) 9%, var(--ink));
+	}
+	.panel .eyebrow {
+		color: color-mix(in srgb, var(--accent) 45%, var(--bg));
+	}
+	h2 {
+		margin-top: 14px;
+		font-size: clamp(32px, 4.4vw, 52px);
+		font-weight: 700;
+		letter-spacing: -0.03em;
+		line-height: 1.08;
+		text-wrap: balance;
+	}
+	h2 :global(.hl) {
+		color: color-mix(in srgb, var(--accent) 45%, var(--bg));
+	}
+	.lead {
+		margin-top: 14px;
+		max-width: 50ch;
+		font-size: 17px;
+		line-height: 1.6;
+		color: var(--on-2);
+	}
+
+	.form {
+		display: grid;
+		gap: 22px;
+		margin-top: 32px;
+	}
+	fieldset {
+		border: 0;
+		min-width: 0;
+	}
+	legend,
+	.field > span {
+		display: block;
+		margin-bottom: 10px;
+		font-size: 12.5px;
+		font-weight: 600;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--on-2);
+	}
+	.chips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+	.chip {
+		position: relative;
+		cursor: pointer;
+	}
+	.chip input {
+		position: absolute;
+		opacity: 0;
+		inset: 0;
+		cursor: pointer;
+	}
+	.chip span {
+		display: inline-flex;
+		align-items: center;
+		min-height: 44px;
+		padding: 0 18px;
+		border-radius: 999px;
+		font-size: 15px;
+		font-weight: 500;
+		box-shadow: inset 0 0 0 1.5px var(--on-line);
+		transition:
+			background 0.2s,
+			color 0.2s,
+			box-shadow 0.2s;
+	}
+	.chip:hover span {
+		box-shadow: inset 0 0 0 1.5px var(--on-2);
+	}
+	.chip input:checked + span {
+		background: var(--bg);
+		color: var(--ink);
+		box-shadow: none;
+	}
+	.chip input:focus-visible + span {
+		outline: 2px solid var(--bg);
+		outline-offset: 3px;
+	}
+	.field input {
+		width: 100%;
+		max-width: 360px;
+		min-height: 48px;
+		padding: 0 16px;
+		border: 0;
+		border-radius: var(--r-md);
+		background: var(--on-fill);
+		box-shadow: inset 0 0 0 1.5px var(--on-line);
+		color: var(--bg);
+		font: inherit;
+		font-size: 16px;
+	}
+	.field input:focus-visible {
+		outline: 2px solid var(--bg);
+		outline-offset: 2px;
+	}
+	.submit {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 12px 20px;
+		margin-top: 6px;
+	}
+	.wa {
+		background: #25d366;
+		color: #000;
+	}
+	.wa:hover {
+		transform: translateY(-2px);
+		background: color-mix(in srgb, #25d366 88%, #fff);
+	}
+	.foot,
+	.demo-note {
+		font-size: 14px;
+		line-height: 1.5;
+		color: var(--on-2);
+	}
+	.demo-note {
+		padding: 12px 16px;
+		border-radius: var(--r-md);
+		background: var(--on-fill);
+	}
+
+	/* Chat preview */
+	.chat {
+		border-radius: var(--r-lg);
+		overflow: hidden;
+		background: color-mix(in srgb, #25d366 7%, var(--bg));
+		color: var(--ink);
+		box-shadow: 0 40px 80px -40px #000;
+	}
+	.chat-head {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 14px 18px;
+		background: var(--bg-3);
+		border-bottom: 1px solid var(--rule);
+	}
+	.avatar {
+		display: grid;
+		place-items: center;
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		background: var(--accent);
+		color: #fff;
+		font-size: 14px;
+		font-weight: 700;
+	}
+	.who {
+		display: grid;
+		line-height: 1.25;
+	}
+	.who strong {
+		font-size: 15px;
+	}
+	.who small {
+		font-size: 13px;
+		color: var(--ink-2);
+	}
+	.chat-body {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		align-items: flex-end;
+		gap: 24px;
+		min-height: 220px;
+		padding: 18px 18px 28px;
+	}
+	.day {
+		align-self: center;
+		padding: 4px 12px;
+		border-radius: 8px;
+		background: var(--bg-3);
+		box-shadow: 0 1px 1px color-mix(in srgb, #000 8%, transparent);
+		font-size: 12px;
+		font-weight: 600;
+		color: var(--ink-2);
+	}
+	.bubble {
+		position: relative;
+		max-width: 92%;
+		padding: 12px 14px;
+		border-radius: 14px 14px 4px 14px;
+		background: color-mix(in srgb, #25d366 22%, #fff);
+		font-size: 15.5px;
+		line-height: 1.5;
+		box-shadow: 0 1px 1px color-mix(in srgb, #000 12%, transparent);
+	}
+
+	@media (max-width: 900px) {
+		.panel {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+	@media (max-width: 480px) {
+		.wa {
+			flex: 1 1 100%;
+		}
+	}
+</style>

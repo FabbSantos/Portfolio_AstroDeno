@@ -1,0 +1,243 @@
+---
+/**
+ * Location (#onde): address, directions and contact buttons on one side;
+ * the week's hours on the other, with today's row and the open/closed status
+ * filled in by the script in SalviaBody.
+ */
+import type { SalviaConfig } from '../schema';
+import { hoursTable, OPEN_STRINGS } from '../hours';
+import { md } from './_md';
+
+interface Props {
+	config: SalviaConfig;
+}
+const { config } = Astro.props;
+const { location, contact, brand } = config;
+const locale = brand.locale;
+const a = location.address;
+const rows = hoursTable(location.hours, locale);
+const status = JSON.stringify({ hours: location.hours, tz: location.timezone, locale, strings: OPEN_STRINGS[locale] });
+const phoneHref = contact.phone ? `tel:${contact.phone.replace(/[^\d+]/g, '')}` : null;
+const waHref = contact.whatsapp ? `https://wa.me/${contact.whatsapp.number}?text=${encodeURIComponent(contact.whatsapp.message)}` : null;
+const en = locale === 'en';
+---
+
+<section class='sec' id='onde' aria-labelledby='salvia-location-title'>
+	<div class='wrap'>
+		<div class='sec-h'>
+			<p class='eyebrow'>{location.eyebrow}</p>
+			<h2 id='salvia-location-title' set:html={md(location.title)} />
+			{location.lead && <p class='lead'>{location.lead}</p>}
+		</div>
+
+		<div class='grid'>
+			<div class='place'>
+				<address>
+					<strong>{brand.name}</strong>
+					<span>{a.street}</span>
+					<span>{[a.district, `${a.city} · ${a.state}`].filter(Boolean).join(', ')}</span>
+					{a.zip && <span class='zip'>{en ? 'ZIP' : 'CEP'} {a.zip}</span>}
+				</address>
+
+				{
+					location.directions.length > 0 && (
+						<ul class='directions'>
+							{location.directions.map((d) => (
+								<li>{d}</li>
+							))}
+						</ul>
+					)
+				}
+
+				<div class='buttons'>
+					{
+						location.mapsUrl && (
+							<a class='btn btn-primary' href={location.mapsUrl} target='_blank' rel='noopener'>
+								{location.mapsLabel}
+							</a>
+						)
+					}
+					{
+						phoneHref && (
+							<a class='btn btn-ghost' href={phoneHref}>
+								{contact.phone}
+							</a>
+						)
+					}
+					{
+						waHref && (
+							<a class='btn btn-ghost' href={waHref} target='_blank' rel='noopener'>
+								WhatsApp
+							</a>
+						)
+					}
+				</div>
+			</div>
+
+			<div class='hours'>
+				<div class='hours-head'>
+					<h3>{location.hoursTitle}</h3>
+					<p class='status' data-open-status={status}>
+						<span class='status-dot' aria-hidden='true'></span>
+						<span data-open-text></span>
+					</p>
+				</div>
+				<table data-hours-tz={location.timezone}>
+					<caption class='visually-hidden'>{location.hoursTitle}</caption>
+					<tbody>
+						{
+							rows.map((r) => (
+								<tr data-day={r.day} class:list={{ closed: r.closed }}>
+									<th scope='row'>{r.label}</th>
+									<td>{r.value}</td>
+								</tr>
+							))
+						}
+					</tbody>
+				</table>
+				{location.hoursNote && <p class='note'>{location.hoursNote}</p>}
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		gap: 16px;
+		align-items: stretch;
+	}
+	.place,
+	.hours {
+		padding: clamp(24px, 3.5vw, 40px);
+		border-radius: var(--r-lg);
+		background: var(--bg-3);
+		box-shadow: 0 0 0 1px var(--rule);
+	}
+	address {
+		display: grid;
+		gap: 4px;
+		font-style: normal;
+		font-size: 18px;
+		line-height: 1.5;
+	}
+	address strong {
+		margin-bottom: 6px;
+		font-size: 22px;
+		font-weight: 700;
+		letter-spacing: -0.02em;
+	}
+	address span {
+		color: var(--ink-2);
+	}
+	.zip {
+		font-family: var(--mono);
+		font-size: 14px;
+	}
+	.directions {
+		list-style: none;
+		display: grid;
+		gap: 10px;
+		margin-top: 24px;
+		padding-top: 22px;
+		border-top: 1px solid var(--rule);
+		font-size: 15.5px;
+		color: var(--ink-2);
+	}
+	.directions li {
+		display: flex;
+		gap: 12px;
+	}
+	.directions li::before {
+		content: '';
+		flex: none;
+		width: 8px;
+		height: 8px;
+		margin-top: 8px;
+		border-radius: 50%;
+		background: var(--accent);
+	}
+	.buttons {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin-top: 28px;
+	}
+
+	.hours-head {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 10px 16px;
+		margin-bottom: 14px;
+	}
+	/* No status until the script knows whether the clinic is open. */
+	.hours-head .status:not(:global(.is-known)) {
+		display: none;
+	}
+	.hours-head .status:not(:global(.is-open)) .status-dot {
+		background: var(--ink-2);
+	}
+	h3 {
+		font-size: 20px;
+		font-weight: 650;
+		letter-spacing: -0.015em;
+	}
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		font-variant-numeric: tabular-nums;
+	}
+	th,
+	td {
+		padding: 11px 12px;
+		text-align: left;
+		font-size: 16px;
+		border-bottom: 1px solid var(--rule);
+	}
+	th {
+		font-weight: 500;
+		color: var(--ink-2);
+	}
+	td {
+		text-align: right;
+		font-weight: 600;
+	}
+	tr.closed td {
+		font-weight: 500;
+		color: var(--ink-2);
+	}
+	tr:global(.is-today) th,
+	tr:global(.is-today) td {
+		background: var(--accent-soft);
+		color: var(--ink);
+	}
+	tr:global(.is-today) th {
+		font-weight: 700;
+		border-radius: var(--r-md) 0 0 var(--r-md);
+	}
+	tr:global(.is-today) td {
+		border-radius: 0 var(--r-md) var(--r-md) 0;
+	}
+	.note {
+		margin-top: 16px;
+		font-size: 14.5px;
+		line-height: 1.5;
+		color: var(--ink-2);
+	}
+	.visually-hidden {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+		white-space: nowrap;
+	}
+	@media (max-width: 900px) {
+		.grid {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+</style>

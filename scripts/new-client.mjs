@@ -103,6 +103,7 @@ const IMAGE_SIZES = [
 	[/planta/i, '1200px de largura (PNG ou JPG, fundo branco)'],
 	[/mapa/i, '1200×800 (PNG ou JPG)'],
 	[/case|product|produto|lookbook/i, '1200×900 (JPG, ≤ 300 KB)'],
+	[/recepcao|sala|consultorio|espaco/i, '1200×1500 retrato (JPG, ≤ 400 KB)'],
 	[/fachada|vista|decorado|lazer|hero/i, '1600×1000 (JPG, ≤ 400 KB)'],
 ];
 const IMAGE_SIZE_DEFAULT = '1600×1000 (JPG, ≤ 400 KB)';

@@ -1,0 +1,75 @@
+---
+/**
+ * Sálvia — everything between <main> and </main>. Used by the portfolio demo
+ * (DemoLayout + ThemeVars + this, with `demo`) and by SalviaPage (core Page + this).
+ * Optional sections (team, insurance, space, faq) render only when configured.
+ */
+import './styles.css';
+import type { SalviaConfig } from './schema';
+import Topbar from './sections/Topbar.astro';
+import Hero from './sections/Hero.astro';
+import Services from './sections/Services.astro';
+import Booking from './sections/Booking.astro';
+import Team from './sections/Team.astro';
+import Insurance from './sections/Insurance.astro';
+import Space from './sections/Space.astro';
+import Faq from './sections/Faq.astro';
+import Location from './sections/Location.astro';
+import Footer from './sections/Footer.astro';
+
+interface Props {
+	config: SalviaConfig;
+	/** Portfolio demo: booking works without a WhatsApp number (shows a note). */
+	demo?: boolean;
+}
+const { config, demo = false } = Astro.props;
+---
+
+<div class='tpl tpl-salvia' id='top'>
+	<Topbar config={config} />
+	<Hero config={config} />
+	<Services config={config} />
+	<Booking config={config} demo={demo} />
+	{config.team && <Team team={config.team} />}
+	{config.insurance && <Insurance insurance={config.insurance} />}
+	{config.space && <Space space={config.space} />}
+	{config.faq && <Faq faq={config.faq} />}
+	<Location config={config} />
+	<Footer config={config} />
+</div>
+
+<script>
+	import { openStatus, type OpenStrings, type Slot } from './hours';
+
+	interface StatusData {
+		hours: Slot[];
+		tz: string;
+		locale: 'pt-BR' | 'en';
+		strings: OpenStrings;
+	}
+
+	// "Aberto agora · fecha às 19h" in the clinic's time zone.
+	document.querySelectorAll<HTMLElement>('[data-open-status]').forEach((el) => {
+		try {
+			const data = JSON.parse(el.dataset.openStatus ?? '') as StatusData;
+			const status = openStatus(data.hours, data.tz, data.locale, data.strings);
+			const text = el.querySelector('[data-open-text]');
+			if (!status || !text) return;
+			text.textContent = status.text;
+			el.classList.add('is-known');
+			el.classList.toggle('is-open', status.open);
+		} catch {
+			/* unknown time zone or bad data: keep the static hours */
+		}
+	});
+
+	// Highlight today's row in the hours table.
+	document.querySelectorAll<HTMLTableElement>('table[data-hours-tz]').forEach((table) => {
+		try {
+			const day = new Intl.DateTimeFormat('en-US', { timeZone: table.dataset.hoursTz, weekday: 'short' }).format(new Date()).slice(0, 3).toLowerCase();
+			table.querySelector(`tr[data-day="${day}"]`)?.classList.add('is-today');
+		} catch {
+			/* unknown time zone */
+		}
+	});
+</script>

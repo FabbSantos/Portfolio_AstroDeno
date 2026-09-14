@@ -1,0 +1,90 @@
+---
+/**
+ * Space (#espaco), optional: up to three photos of the clinic. The first one
+ * gets the arch; the others are rounded rectangles.
+ */
+import { Image } from 'astro:assets';
+import type { SalviaConfig } from '../schema';
+import { md } from './_md';
+
+interface Props {
+	space: NonNullable<SalviaConfig['space']>;
+}
+const { space } = Astro.props;
+const widths = (w: number) => [...[480, 720, 960].filter((x) => x < w), w];
+---
+
+<section class='sec' id='espaco' aria-labelledby='salvia-space-title'>
+	<div class='wrap'>
+		<div class='sec-h'>
+			<p class='eyebrow'>{space.eyebrow}</p>
+			<h2 id='salvia-space-title' set:html={md(space.title)} />
+			{space.lead && <p class='lead'>{space.lead}</p>}
+		</div>
+		<div class:list={['photos', `n${space.photos.length}`]}>
+			{
+				space.photos.map((ph) => (
+					<figure>
+						<Image
+							src={ph.image}
+							alt={ph.alt}
+							widths={widths(ph.image.width)}
+							sizes='(max-width: 760px) 90vw, 640px'
+							format='webp'
+							quality='high'
+							loading='lazy'
+							decoding='async'
+						/>
+					</figure>
+				))
+			}
+		</div>
+	</div>
+</section>
+
+<style>
+	.photos {
+		display: grid;
+		gap: 16px;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		align-items: end;
+	}
+	.photos.n1 {
+		grid-template-columns: minmax(0, 520px);
+	}
+	/* Two photos: a narrower arch and a wider landscape frame, about the same height. */
+	.photos.n2 {
+		grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+	}
+	.photos.n2 figure:nth-child(2) {
+		aspect-ratio: 5 / 4;
+	}
+	figure {
+		overflow: hidden;
+		aspect-ratio: 4 / 5;
+		border-radius: var(--r-lg);
+		background: color-mix(in srgb, var(--accent) 16%, var(--bg));
+	}
+	figure:first-child {
+		border-radius: var(--arch);
+	}
+	.photos.n3 figure:nth-child(2) {
+		aspect-ratio: 4 / 4.4;
+	}
+	figure :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+	@media (max-width: 760px) {
+		.photos,
+		.photos.n2,
+		.photos.n3 {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		.photos.n2 figure:nth-child(2),
+		.photos.n3 figure:nth-child(2) {
+			aspect-ratio: 4 / 3;
+		}
+	}
+</style>

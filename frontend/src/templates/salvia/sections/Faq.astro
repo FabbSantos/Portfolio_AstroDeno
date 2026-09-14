@@ -1,0 +1,109 @@
+---
+/**
+ * FAQ (#duvidas), optional: native <details> accordion, first item open.
+ */
+import type { SalviaConfig } from '../schema';
+import { md } from './_md';
+
+interface Props {
+	faq: NonNullable<SalviaConfig['faq']>;
+}
+const { faq } = Astro.props;
+---
+
+<section class='sec' id='duvidas' aria-labelledby='salvia-faq-title'>
+	<div class='wrap inner'>
+		<div class='sec-h'>
+			<p class='eyebrow'>{faq.eyebrow}</p>
+			<h2 id='salvia-faq-title' set:html={md(faq.title)} />
+			{faq.lead && <p class='lead'>{faq.lead}</p>}
+		</div>
+		<div class='list'>
+			{
+				faq.items.map((item, i) => (
+					<details open={i === 0}>
+						<summary>
+							<span>{item.q}</span>
+							<span class='plus' aria-hidden='true' />
+						</summary>
+						<p>{item.a}</p>
+					</details>
+				))
+			}
+		</div>
+	</div>
+</section>
+
+<style>
+	.inner {
+		display: grid;
+		grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+		gap: clamp(28px, 5vw, 72px);
+		align-items: start;
+	}
+	.list {
+		border-top: 1px solid var(--rule-2);
+	}
+	details {
+		border-bottom: 1px solid var(--rule-2);
+	}
+	summary {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 20px;
+		min-height: 64px;
+		padding-block: 16px;
+		list-style: none;
+		cursor: pointer;
+		font-size: 18px;
+		font-weight: 600;
+		letter-spacing: -0.01em;
+		line-height: 1.35;
+	}
+	summary::-webkit-details-marker {
+		display: none;
+	}
+	.plus {
+		position: relative;
+		flex: none;
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		background: var(--accent-soft);
+	}
+	.plus::before,
+	.plus::after {
+		content: '';
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		width: 12px;
+		height: 2px;
+		margin: -1px 0 0 -6px;
+		border-radius: 2px;
+		background: var(--accent-text);
+		transition: transform 0.3s var(--ease-out-expo);
+	}
+	.plus::after {
+		transform: rotate(90deg);
+	}
+	details[open] .plus::after {
+		transform: rotate(0deg);
+	}
+	details p {
+		max-width: 62ch;
+		padding: 0 52px 22px 0;
+		font-size: 16px;
+		line-height: 1.65;
+		color: var(--ink-2);
+	}
+	@media (max-width: 900px) {
+		.inner {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		details p {
+			padding-right: 0;
+		}
+	}
+</style>

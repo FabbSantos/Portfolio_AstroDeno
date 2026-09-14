@@ -33,6 +33,7 @@ export const templates: Shape<typeof ptShape> = {
 	},
 
 	solves: {
+		salvia: 'a clinic that wants bookings over WhatsApp',
 		mirante: 'a real-estate launch that needs leads',
 		stratus: 'a B2B SaaS that needs trials',
 		atelier: 'a studio or agency that needs a portfolio',
@@ -63,6 +64,8 @@ export const templates: Shape<typeof ptShape> = {
 		notIncluded: 'Not included',
 		features: {
 			lead: 'Lead form + WhatsApp',
+			booking: 'WhatsApp booking',
+			hours: 'Opening hours with "open now"',
 			gallery: 'Photo gallery',
 			plans: 'Floor plans and map',
 			pricing: 'Pricing and FAQ',

@@ -1,0 +1,79 @@
+---
+/**
+ * Footer: brand + line, responsável técnico, company/CNPJ, extra legal lines
+ * and the privacy link.
+ */
+import type { SalviaConfig } from '../schema';
+
+interface Props {
+	config: SalviaConfig;
+}
+const { config } = Astro.props;
+const { brand, footer, legal } = config;
+const en = brand.locale === 'en';
+const legalLine = [legal.company, legal.cnpj ? `CNPJ ${legal.cnpj}` : null].filter(Boolean).join(' · ');
+---
+
+<footer class='foot'>
+	<div class='wrap inner'>
+		<div class='brand'>
+			<strong>{brand.name}</strong>
+			<span>{footer.line}</span>
+		</div>
+		<div class='legal'>
+			{footer.technicalLead && <p>{en ? 'Medical director' : 'Responsável técnico'}: {footer.technicalLead}</p>}
+			{legalLine && <p>{legalLine}</p>}
+			{legal.lines.map((l) => <p>{l}</p>)}
+			{legal.privacyUrl && <a href={legal.privacyUrl}>{en ? 'Privacy policy' : 'Política de privacidade'}</a>}
+		</div>
+	</div>
+</footer>
+
+<style>
+	.foot {
+		padding-block: 44px 56px;
+		border-top: 1px solid var(--rule-2);
+	}
+	.inner {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 24px 48px;
+	}
+	.brand {
+		display: grid;
+		gap: 6px;
+	}
+	.brand strong {
+		font-size: 20px;
+		letter-spacing: -0.02em;
+	}
+	.brand span,
+	.legal {
+		font-size: 14px;
+		line-height: 1.6;
+		color: var(--ink-2);
+	}
+	.legal {
+		display: grid;
+		gap: 2px;
+		text-align: right;
+	}
+	.legal a {
+		justify-self: end;
+		display: inline-flex;
+		align-items: center;
+		min-height: 44px;
+		color: var(--ink);
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+	@media (max-width: 700px) {
+		.legal {
+			text-align: left;
+		}
+		.legal a {
+			justify-self: start;
+		}
+	}
+</style>
