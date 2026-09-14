@@ -14,8 +14,9 @@
 	/* decoration only (arrows, rules). Never for text. */
 	--ink-4: #c7c7cc;
 	--accent: #ff5964;
-	/* text-safe accent (4.6:1 on --bg). Use for links, eyebrows, labels < 24px. */
-	--accent-text: #d63d49;
+	/* text-safe accent: 5.0:1 on --bg, ≥ 4.5:1 on --bg-2 and --accent-soft.
+	   Use for links, eyebrows, labels < 24px. (#d63d49 was 4.4:1 on --bg.) */
+	--accent-text: #ce2c38;
 	--accent-2: #7c3aed;
 	--accent-soft: rgba(255, 89, 100, 0.1);
 	--accent-2-soft: rgba(124, 58, 237, 0.1);
@@ -32,12 +33,12 @@
 	--hue-sky-soft: rgba(14, 165, 233, 0.12);
 	--hue-amber-soft: rgba(245, 158, 11, 0.14);
 	--hue-green-soft: rgba(22, 163, 74, 0.12);
-	/* AA text variants (≥ 4.5:1 on --bg) */
-	--hue-coral-text: #d63d49;
+	/* AA text variants: ≥ 4.5:1 on --bg, --bg-2 and their own -soft chip */
+	--hue-coral-text: #ce2c38;
 	--hue-violet-text: #6d28d9;
 	--hue-sky-text: #0369a1;
-	--hue-amber-text: #b45309;
-	--hue-green-text: #15803d;
+	--hue-amber-text: #ad5009;
+	--hue-green-text: #14793a;
 	--rule: rgba(26, 26, 28, 0.07);
 	--rule-2: rgba(26, 26, 28, 0.14);
 	--sans: 'Inter Variable', 'Inter', -apple-system, system-ui, sans-serif;

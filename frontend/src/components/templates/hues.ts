@@ -3,15 +3,16 @@
  * compare strip so a template reads the same everywhere.
  *
  * `hue`  bright value for dots, rings and chip backgrounds.
- * `text` AA-safe variant (≥ 4.5:1 on --bg) for 11–12px labels.
+ * `text` AA-safe variant (≥ 4.5:1 on --bg, --bg-2 and the kind's own soft chip)
+ * for 11–12px labels.
  */
 import type { TemplateKind } from '../../data/templates';
 
 export const TEMPLATE_HUES: Record<TemplateKind, { hue: string; text: string }> = {
-	realestate: { hue: '#b45309', text: '#b45309' }, // amber — 5.0:1
-	saas: { hue: '#ff5c3d', text: '#c2410c' }, // coral — text variant 5.2:1
-	agency: { hue: '#7c3aed', text: '#7c3aed' }, // violet — 5.7:1
-	shop: { hue: '#16a34a', text: '#15803d' }, // green — text variant 5.0:1
+	realestate: { hue: '#b45309', text: '#ad5009' }, // amber, text 5.2:1 on --bg, 4.5:1 on its chip
+	saas: { hue: '#ff5c3d', text: '#c2410c' }, // coral, text 5.2:1
+	agency: { hue: '#7c3aed', text: '#7c3aed' }, // violet, 5.7:1
+	shop: { hue: '#16a34a', text: '#14793a' }, // green, text 5.3:1 on --bg, 4.6:1 on its chip
 };
 
 function rgba(hex: string, alpha: number): string {

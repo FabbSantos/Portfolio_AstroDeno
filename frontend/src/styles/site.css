@@ -313,8 +313,8 @@
 	white-space: nowrap;
 }
 .pill.live {
-	background: rgba(22, 163, 74, 0.12);
-	color: #15803d;
+	background: var(--hue-green-soft);
+	color: var(--hue-green-text);
 }
 .pill.beta {
 	background: rgba(124, 58, 237, 0.12);
