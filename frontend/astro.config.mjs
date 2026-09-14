@@ -22,6 +22,10 @@ export default defineConfig({
 
 	prefetch: { prefetchAll: true, defaultStrategy: 'viewport' },
 
+	// The CSS is ~25 KB split into small per-component files; linked, each one is a
+	// render-blocking request on first load. Inlined, the HTML carries it.
+	build: { inlineStylesheets: 'always' },
+
 	integrations: [
 		sitemap({
 			i18n: { defaultLocale: 'pt', locales: { pt: 'pt-BR', en: 'en' } },
@@ -34,6 +38,15 @@ export default defineConfig({
 		webAnalytics: { enabled: true },
 		// Vercel Image Optimization at the edge: no sharp in the serverless bundle.
 		imageService: true,
+		imagesConfig: {
+			// Allowlist of widths. The adapter drops any `widths` entry not listed here and
+			// snaps `width` to the nearest one, so this covers what src/ asks for
+			// (portfolio + template demos).
+			sizes: [96, 144, 256, 320, 400, 480, 500, 640, 720, 800, 960, 1000, 1100, 1200, 1280, 1300, 1440, 1600, 1920],
+			// Without `formats` Vercel serves the source format (JPEG/PNG). AVIF is left out:
+			// smaller, but far slower to encode on a cache miss.
+			formats: ['image/webp'],
+		},
 		devImageService: 'sharp',
 	}),
 

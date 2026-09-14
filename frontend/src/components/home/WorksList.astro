@@ -43,7 +43,7 @@ const accessHref = (id: string) => `${home}?assunto=${encodeURIComponent(`acesso
 							</span>
 							<span class='work-thumb'>
 								{w.image ? (
-									<Image class='work-thumb-img' src={w.image} alt='' width={144} height={96} format='webp' loading='lazy' />
+									<Image class='work-thumb-img' src={w.image} alt='' width={144} height={96} format='webp' quality='high' loading='lazy' />
 								) : (
 									<span class='work-thumb-ph' aria-hidden='true' />
 								)}

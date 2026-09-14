@@ -38,7 +38,7 @@ const clients = [
 			{
 				clients.map((c) => (
 					<li class:list={[{ silhouette: !!c.silhouette }]}>
-						<Image src={c.src} alt={c.alt} height={48} loading='lazy' />
+						<Image src={c.src} alt={c.alt} height={48} densities={[1, 2]} quality='high' loading='lazy' />
 					</li>
 				))
 			}
@@ -47,7 +47,7 @@ const clients = [
 			{
 				clients.map((c) => (
 					<li class:list={[{ silhouette: !!c.silhouette }]}>
-						<Image src={c.src} alt='' height={48} loading='lazy' />
+						<Image src={c.src} alt='' height={48} densities={[1, 2]} quality='high' loading='lazy' />
 					</li>
 				))
 			}
