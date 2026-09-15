@@ -16,6 +16,7 @@ Dependências: só o que já vem com o Astro (`astro/zod`, `astro:assets`) + `@f
 | `LeadForm.astro` | `{ site, id, variant: 'mini'\|'full', fields: LeadField[], cta, foot?, class?, source? }` → formulário ligado ao `contact.form.provider` (`none` demo · `whatsapp` · `formspree` · `web3forms` · `resend` · `webhook`). Honeypot `hp`, campo oculto `source`, status `aria-live`. |
 | `MobileNav.astro` | `{ brand, brandHref?, nav, cta?, class?, id? }` → topbar sticky com links desktop + hambúrguer 44px (painel `inert`, `aria-expanded`/`aria-controls`, Esc fecha). |
 | `WhatsAppFab.astro` | `{ site, class? }` → botão flutuante `wa.me` (só quando `contact.whatsapp` existe). |
+| `accordion.ts` | `enhanceAccordions(root?)` → anima todo `<details data-accordion>` (altura + fade da resposta, reversível no meio). Sem JS ou com movimento reduzido fica o toggle nativo. Ícones: `details[open]:not(.is-closing)`. |
 | `Analytics.astro` | `{ analytics }` → GA4 / Meta Pixel / Plausible, cada um só quando o id está preenchido. |
 | `LgpdNotice.astro` | `{ legal, locale, needsConsent }` → barra de consentimento (só com `legal.privacyUrl` e `needsConsent`). Lembra a dispensa em `localStorage`. |
 | `api/lead.ts` | Endpoint `POST /api/lead` (SSR) para `provider: 'resend' \| 'webhook'`. Env: `LEAD_WEBHOOK_URL` **ou** `RESEND_API_KEY` + `LEAD_TO` + `LEAD_FROM`; `SITE_NAME` opcional. Resposta `{ ok, code? }`. |

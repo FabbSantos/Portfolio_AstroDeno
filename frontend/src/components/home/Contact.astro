@@ -172,7 +172,7 @@ const [successBefore = '', successAfter = ''] = c.success.title.split('{name}');
 			<div class='faq'>
 				<h3 class='eyebrow'>{c.faq.title}</h3>
 				{c.faq.items.map((item) => (
-					<details class='faq-item'>
+					<details class='faq-item' data-accordion>
 						<summary>{item.q}</summary>
 						<p>{item.a}</p>
 					</details>
@@ -492,7 +492,7 @@ const [successBefore = '', successAfter = ''] = c.success.title.split('{name}');
 		color: var(--ink-3);
 		transition: transform 0.25s var(--ease-out-expo);
 	}
-	.faq-item[open] summary::after {
+	.faq-item[open]:not(.is-closing) summary::after {
 		transform: rotate(45deg);
 	}
 	.faq-item summary:focus-visible {

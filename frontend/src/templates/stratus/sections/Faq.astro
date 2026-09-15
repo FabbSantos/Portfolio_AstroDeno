@@ -17,7 +17,7 @@ const { faq } = Astro.props.config;
 			</div>
 			<div class='faq-list'>
 				{faq.items.map((item) => (
-					<details>
+					<details data-accordion>
 						<summary>{item.q}</summary>
 						<p set:html={md(item.a)} />
 					</details>
@@ -26,6 +26,11 @@ const { faq } = Astro.props.config;
 		</section>
 	)
 }
+
+<script>
+	import { enhanceAccordions } from '../../core/accordion';
+	enhanceAccordions();
+</script>
 
 <style>
 	.faq {
@@ -45,7 +50,7 @@ const { faq } = Astro.props.config;
 		background: var(--bg-3);
 		transition: border-color 0.2s;
 	}
-	.faq details[open] {
+	.faq details[open]:not(.is-closing) {
 		border-color: var(--accent);
 	}
 	.faq summary {
@@ -68,7 +73,7 @@ const { faq } = Astro.props.config;
 		font-weight: 400;
 		transition: transform 0.25s;
 	}
-	.faq details[open] summary::after {
+	.faq details[open]:not(.is-closing) summary::after {
 		transform: rotate(45deg);
 	}
 	.faq p {

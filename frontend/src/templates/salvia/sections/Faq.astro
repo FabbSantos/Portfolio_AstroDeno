@@ -2,7 +2,7 @@
 /**
  * FAQ (#duvidas), optional, after 21st.dev "Interactive Accordion"
  * (jatin-yadav05): numbered rows on hairlines, a plus that turns into ×.
- * Native <details>, first item open.
+ * Native <details>, first item open, animated by core/accordion.
  */
 import type { SalviaConfig } from '../schema';
 import { md } from './_md';
@@ -23,7 +23,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 		<div class='list'>
 			{
 				faq.items.map((item, i) => (
-					<details open={i === 0}>
+					<details open={i === 0} data-accordion>
 						<summary>
 							<span class='n'>{pad(i + 1)}</span>
 							<span class='q'>{item.q}</span>
@@ -36,6 +36,11 @@ const pad = (n: number) => String(n).padStart(2, '0');
 		</div>
 	</div>
 </section>
+
+<script>
+	import { enhanceAccordions } from '../../core/accordion';
+	enhanceAccordions();
+</script>
 
 <style>
 	.faq {
@@ -121,7 +126,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 	.x::after {
 		transform: rotate(90deg);
 	}
-	details[open] .x {
+	details[open]:not(.is-closing) .x {
 		transform: rotate(45deg);
 	}
 	details p {
