@@ -1,8 +1,9 @@
 ---
 /**
- * Desktop topbar (brand · tagline · nav · underlined CTA) ≥ 900px; below
- * that the core MobileNav takes over (44px hamburger, inert panel, Escape).
- * Only one of the two is displayed at any width.
+ * Desktop topbar (≥ 900px): sits over the hero photo in paper-coloured text
+ * and turns solid once the hero scrolls past. Sticky with a negative bottom
+ * margin, so the hero starts underneath it and the demo ribbon (also sticky)
+ * keeps its place. Below 900px the core MobileNav takes over, solid.
  */
 import { Image } from 'astro:assets';
 import MobileNav from '../../core/MobileNav.astro';
@@ -14,18 +15,17 @@ interface Props {
 const { brand, nav, topbar } = Astro.props.config;
 ---
 
-<header class='tb'>
+<header class='tb' data-tb>
 	<div class='tb-inner'>
-		<a href={topbar.brandHref} class='brand'>
+		<a href={topbar.brandHref} class='tb-brand'>
 			{
 				brand.logo ? (
-					<Image class='brand-logo' src={brand.logo} alt={brand.name} height={28} densities={[1, 2]} format='webp' loading='eager' quality='high' />
+					<Image class='tb-logo' src={brand.logo} alt={brand.name} height={28} densities={[1, 2]} format='webp' loading='eager' quality='high' />
 				) : (
-					brand.name
+					<span class='tb-name'>{brand.name}</span>
 				)
 			}
-			<span class='dot' aria-hidden='true'>●</span>
-			{brand.tagline && <span class='loc'>{brand.tagline}</span>}
+			{brand.tagline && <span class='tb-loc'>{brand.tagline}</span>}
 		</a>
 		<nav class='tb-nav' aria-label='Menu'>
 			{nav.map((l) => <a href={l.href}>{l.label}</a>)}
@@ -37,64 +37,127 @@ const { brand, nav, topbar } = Astro.props.config;
 	<MobileNav brand={brand.name} brandHref={topbar.brandHref} nav={nav} cta={topbar.cta} id='mirante-nav' />
 </div>
 
+<script>
+	// Solid once the hero has scrolled by (its height minus the bar).
+	document.querySelectorAll<HTMLElement>('[data-tb]').forEach((tb) => {
+		const hero = tb.parentElement?.querySelector<HTMLElement>('[data-hero]');
+		if (!hero) return;
+		let ticking = false;
+		const update = () => {
+			ticking = false;
+			tb.classList.toggle('is-solid', window.scrollY > hero.offsetHeight - tb.offsetHeight - 8);
+		};
+		window.addEventListener(
+			'scroll',
+			() => {
+				if (!ticking) {
+					ticking = true;
+					requestAnimationFrame(update);
+				}
+			},
+			{ passive: true }
+		);
+		update();
+	});
+</script>
+
 <style>
 	.tb {
 		position: sticky;
 		top: 0;
 		z-index: 40;
-		background: var(--topbar);
+		height: var(--tb-h);
+		margin-bottom: calc(-1 * var(--tb-h));
+		color: #fff;
+		transition:
+			background 0.35s,
+			color 0.35s,
+			border-color 0.35s;
+		border-bottom: 1px solid transparent;
+	}
+	.tb.is-solid {
+		background: color-mix(in srgb, var(--bg) 92%, transparent);
 		backdrop-filter: blur(14px);
 		-webkit-backdrop-filter: blur(14px);
-		border-bottom: 1px solid var(--rule);
+		color: var(--ink);
+		border-bottom-color: var(--line-soft);
 	}
 	.tb-inner {
-		max-width: 1240px;
+		max-width: var(--wrap);
+		height: 100%;
 		margin: 0 auto;
-		padding: 18px 32px;
+		padding: 0 var(--pad-x);
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		gap: 24px;
+		gap: 32px;
+	}
+	.tb-brand {
+		display: inline-flex;
+		align-items: baseline;
+		gap: 14px;
+	}
+	.tb-name {
+		font-family: var(--display);
+		font-size: 30px;
+		font-weight: 600;
+		letter-spacing: -0.01em;
+		line-height: 1;
+	}
+	.tb-logo {
+		height: 28px;
+		width: auto;
+	}
+	.tb.is-solid .tb-logo {
+		filter: none;
+	}
+	.tb:not(.is-solid) .tb-logo {
+		filter: brightness(0) invert(1);
+	}
+	.tb-loc {
+		font-family: var(--mono);
+		font-size: 11px;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		opacity: 0.75;
 	}
 	.tb-nav {
 		display: flex;
-		gap: 26px;
-		font-size: 14px;
-		color: var(--ink-2);
+		gap: 30px;
+		font-size: 15px;
+		font-weight: 500;
+	}
+	.tb-nav a {
+		opacity: 0.85;
+		transition: opacity 0.2s;
 	}
 	.tb-nav a:hover {
-		color: var(--accent-text);
+		opacity: 1;
+		text-decoration: underline;
+		text-underline-offset: 6px;
+		text-decoration-thickness: 1px;
 	}
 	.tb-cta {
-		font-family: var(--mono);
-		font-size: 13px;
-		color: var(--ink);
+		font-size: 15px;
 		font-weight: 600;
-		border-bottom: 2px solid var(--accent);
-		padding-bottom: 2px;
 		white-space: nowrap;
+		text-decoration: underline;
+		text-underline-offset: 6px;
+		text-decoration-thickness: 1px;
+		text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
+		transition: text-decoration-color 0.2s;
 	}
-	@media (max-width: 960px) {
-		.tb .tb-inner :global(.brand .loc) {
+	.tb-cta:hover {
+		text-decoration-color: currentColor;
+	}
+	@media (max-width: 1060px) {
+		.tb-loc {
 			display: none;
 		}
 	}
 
-	/* Mobile: core MobileNav, restyled to the Mirante look */
 	.tb-mobile {
 		display: none;
-	}
-	.tb-mobile :global(.mnav) {
-		z-index: 40;
-	}
-	.tb-mobile :global(.mnav-brand) {
-		font-weight: 700;
-		font-size: 19px;
-		letter-spacing: -0.02em;
-	}
-	.tb-mobile :global(.mnav-cta) {
-		border-radius: var(--r-btn);
-		background: var(--ink);
 	}
 	@media (max-width: 899.98px) {
 		.tb {

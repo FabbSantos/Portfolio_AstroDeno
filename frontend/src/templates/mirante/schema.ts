@@ -6,8 +6,9 @@
  * what this config says. Legal lines (CRECI, RI, disclaimer) come from the
  * core `legal.lines`; the CNPJ from `legal.cnpj`.
  *
- * "rich" strings accept `**bold**` (→ accent colour inside headings, bold ink
- * in body text) and `\n` (→ line break). See sections/_md.ts.
+ * "rich" strings accept `**bold**` (→ italic inside headings, bold ink in body
+ * text, the giant figure in a condition headline) and `\n` (→ line break).
+ * See sections/_md.ts.
  */
 import { z } from 'astro/zod';
 import { baseSiteSchema, defineSite, image } from '../core/schema';
@@ -28,12 +29,16 @@ export const miranteSchema = baseSiteSchema.extend({
 		/** Shown after the pulsing "live" dot, e.g. 'Lançamento · Pinheiros, SP · Pré-vendas abertas'. */
 		eyebrow: z.string().min(1),
 		title: z.string().min(1),
-		/** Accent-coloured second half of the h1. */
+		/** Second half of the h1, set in italic. */
 		titleAccent: z.string().min(1),
 		/** rich */
 		sub: rich,
-		/** Exactly 4 photos: #1 fills the left column (portrait), #2/#3 are square, #4 is the wide strip below. */
-		gallery: z.array(z.object({ image, label: z.string().min(1), alt: z.string().min(1) })).length(4),
+		/**
+		 * 2 to 6 landscape photos (2400×1500). #1 opens the page full-screen (the LCP);
+		 * all of them make the hero filmstrip, and #2… take turns beside the project
+		 * copy. #2 is also the backdrop of the lead block.
+		 */
+		gallery: z.array(z.object({ image, label: z.string().min(1), alt: z.string().min(1) })).min(2).max(6),
 		/** Short lead form inside the hero (core LeadForm `mini`: nome + telefone). */
 		miniForm: z.object({
 			title: z.string().min(1),
