@@ -88,6 +88,8 @@ export const templates = {
 		notIncluded: 'Não incluso',
 		features: {
 			lead: 'Formulário de lead + WhatsApp',
+			menu: 'Cardápio com preços',
+			reservation: 'Reserva de mesa pelo WhatsApp',
 			booking: 'Agendamento pelo WhatsApp',
 			hours: 'Horário com "aberto agora"',
 			gallery: 'Galeria de fotos',

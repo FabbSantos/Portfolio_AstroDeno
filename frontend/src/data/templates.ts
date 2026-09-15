@@ -10,7 +10,7 @@
 import type { Bi } from './site';
 
 /** What the site does. Drives the card hue (components/templates/hues.ts). */
-export type TemplateKind = 'booking' | 'leads' | 'product' | 'portfolio' | 'storefront';
+export type TemplateKind = 'menu' | 'booking' | 'leads' | 'product' | 'portfolio' | 'storefront';
 
 export interface TemplateExample {
 	/** URL segment for extra examples ("salao" → /templates/salvia/demo/salao). Unused for the first. */
@@ -49,6 +49,37 @@ export interface TemplateMeta {
 }
 
 export const templates: TemplateMeta[] = [
+	{
+		slug: 'pimenta',
+		name: 'Pimenta',
+		kind: 'menu',
+		cat: { pt: 'Cardápio · Reservas', en: 'Menu · Reservations' },
+		desc: {
+			pt: 'Pra quem serve comida ou bebida: cardápio com preços, pratos da casa, reserva pelo WhatsApp e horário com "aberto agora".',
+			en: 'For places that serve food or drinks: priced menu, signature dishes, WhatsApp reservations and live "open now" hours.',
+		},
+		lead: {
+			pt: 'Página com cara de cartaz pra quem vive de mesa cheia. Cardápio com preços e selos (vegano, sem glúten), os pratos da casa em painéis que abrem no hover, a equipe, reserva que monta a mensagem no WhatsApp e links de delivery. Veja a mesma estrutura como restaurante e como café.',
+			en: 'A poster-like page for places that live on full tables. Priced menu with marks (vegan, gluten-free), signature dishes in panels that open on hover, the crew, a reservation that writes the WhatsApp message, and delivery links. See the same structure as a restaurant and as a café.',
+		},
+		fits: {
+			pt: ['restaurante', 'bar e boteco', 'café e padaria', 'hamburgueria'],
+			en: ['restaurant', 'bar', 'café and bakery', 'burger joint'],
+		},
+		examples: [
+			{ key: 'restaurante', label: { pt: 'restaurante', en: 'restaurant' } },
+			{ key: 'cafe', label: { pt: 'café', en: 'café' } },
+		],
+		sections: {
+			pt: ['Hero com prato em destaque e horário ao vivo', 'Cardápio com preços e selos', 'Pratos da casa em painéis', 'Quem faz', 'Reserva pelo WhatsApp e links de delivery', 'Onde estamos e horários', 'Rodapé com dados da empresa'],
+			en: ['Hero with a featured plate and live hours', 'Priced menu with marks', 'Signature dishes in panels', 'The crew', 'WhatsApp reservation and delivery links', 'Location and hours', 'Footer with company details'],
+		},
+		priceFrom: 1000,
+		days: 3,
+		demoLocale: 'pt',
+		grad: 'linear-gradient(135deg,#FFF1C2,#F2B705)',
+		isNew: true,
+	},
 	{
 		slug: 'salvia',
 		name: 'Sálvia',

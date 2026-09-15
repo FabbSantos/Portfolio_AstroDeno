@@ -1,0 +1,76 @@
+---
+/**
+ * Pimenta — everything between <main> and </main>. Used by the portfolio demo
+ * (DemoLayout + ThemeVars + this, with `demo`) and by PimentaPage (core Page + this).
+ * Optional sections (signature dishes, crew) render only when configured.
+ *
+ * Fonts are the template's own (Big Shoulders Display for titles, Schibsted
+ * Grotesk for text); the scaffold adds both packages to the client's package.json.
+ */
+import '@fontsource-variable/big-shoulders-display';
+import '@fontsource-variable/schibsted-grotesk';
+import './styles.css';
+import type { PimentaConfig } from './schema';
+import Topbar from './sections/Topbar.astro';
+import Hero from './sections/Hero.astro';
+import Menu from './sections/Menu.astro';
+import Signature from './sections/Signature.astro';
+import Crew from './sections/Crew.astro';
+import Reservation from './sections/Reservation.astro';
+import Location from './sections/Location.astro';
+import Footer from './sections/Footer.astro';
+
+interface Props {
+	config: PimentaConfig;
+	/** Portfolio demo: the reservation works without a WhatsApp number (shows a note). */
+	demo?: boolean;
+}
+const { config, demo = false } = Astro.props;
+---
+
+<div class='tpl tpl-pimenta' id='top'>
+	<Topbar config={config} />
+	<Hero config={config} />
+	<Menu config={config} />
+	{config.signature && <Signature signature={config.signature} locale={config.brand.locale} />}
+	{config.crew && <Crew crew={config.crew} />}
+	<Reservation config={config} demo={demo} />
+	<Location config={config} />
+	<Footer config={config} />
+</div>
+
+<script>
+	import { openStatus, type OpenStrings, type Slot } from '../core/hours';
+
+	interface StatusData {
+		hours: Slot[];
+		tz: string;
+		locale: 'pt-BR' | 'en';
+		strings: OpenStrings;
+	}
+
+	// "Aberto agora · fecha às 23h" in the place's time zone.
+	document.querySelectorAll<HTMLElement>('[data-open-status]').forEach((el) => {
+		try {
+			const data = JSON.parse(el.dataset.openStatus ?? '') as StatusData;
+			const status = openStatus(data.hours, data.tz, data.locale, data.strings);
+			const text = el.querySelector('[data-open-text]');
+			if (!status || !text) return;
+			text.textContent = status.text;
+			el.classList.add('is-known');
+			el.classList.toggle('is-open', status.open);
+		} catch {
+			/* unknown time zone or bad data: keep the static hours */
+		}
+	});
+
+	// Mark today's row in the weekly hours.
+	document.querySelectorAll<HTMLElement>('[data-hours-tz]').forEach((week) => {
+		try {
+			const day = new Intl.DateTimeFormat('en-US', { timeZone: week.dataset.hoursTz, weekday: 'short' }).format(new Date()).slice(0, 3).toLowerCase();
+			week.querySelector(`[data-day="${day}"]`)?.classList.add('is-today');
+		} catch {
+			/* unknown time zone */
+		}
+	});
+</script>

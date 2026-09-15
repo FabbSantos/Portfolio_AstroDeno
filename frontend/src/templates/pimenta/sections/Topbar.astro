@@ -1,0 +1,15 @@
+---
+/**
+ * Sticky topbar = core MobileNav: condensed wordmark, section links and the
+ * "Reservar" block, which always scrolls to the reservation form.
+ */
+import MobileNav from '../../core/MobileNav.astro';
+import type { PimentaConfig } from '../schema';
+
+interface Props {
+	config: PimentaConfig;
+}
+const { config } = Astro.props;
+---
+
+<MobileNav brand={config.brand.name} brandHref='#top' nav={config.nav} cta={{ label: config.topbar.cta, href: '#reservas' }} id='pimenta-nav' />

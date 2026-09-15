@@ -1,0 +1,361 @@
+---
+/**
+ * Reservation (#reservas) on a full accent band: giant title and the delivery
+ * links on the left; on the right a form with day, time, a people stepper and
+ * an optional name, a live preview of the WhatsApp message, and the button.
+ *
+ * Works without JS: the form GETs wa.me with the default message in `text`.
+ * `demo` (portfolio page only) keeps it interactive without a number: submit
+ * shows a note instead of opening WhatsApp.
+ */
+import type { PimentaConfig } from '../schema';
+import { composeReservation } from '../menu';
+
+interface Props {
+	config: PimentaConfig;
+	demo?: boolean;
+}
+const { config, demo = false } = Astro.props;
+const { reservation: r, contact, brand } = config;
+const locale = brand.locale;
+const en = locale === 'en';
+const PEOPLE = 2;
+
+const action = contact.whatsapp ? `https://wa.me/${contact.whatsapp.number}` : undefined;
+const initial = composeReservation({ message: r.message, nameSentence: r.nameSentence, people: PEOPLE, date: '', time: r.times[0] ?? '', locale });
+const copy = en
+	? {
+			preview: 'Message',
+			less: 'One person less',
+			more: 'One person more',
+			demo: `Demo: on the published site this button opens ${brand.name}’s WhatsApp with this message.`,
+			newTab: '(opens in a new tab)',
+		}
+	: {
+			preview: 'Mensagem',
+			less: 'Uma pessoa a menos',
+			more: 'Uma pessoa a mais',
+			demo: `Demo: no site publicado, este botão abre o WhatsApp de ${brand.name} com essa mensagem.`,
+			newTab: '(abre em nova aba)',
+		};
+---
+
+<section class='reserve' id='reservas' aria-labelledby='pimenta-reserve-title'>
+	<div class='wrap grid'>
+		<div class='left'>
+			<h2 id='pimenta-reserve-title' class='display'>{r.title}</h2>
+			<p class='lead'>{r.lead}</p>
+			{
+				r.delivery && (
+					<div class='delivery'>
+						<p class='d-title'>{r.delivery.title}</p>
+						<ul role='list'>
+							{r.delivery.links.map((l) => (
+								<li>
+									<a href={l.href} target='_blank' rel='noopener'>
+										{l.label} <span aria-hidden='true'>↗</span>
+										<span class='visually-hidden'>{copy.newTab}</span>
+									</a>
+								</li>
+							))}
+						</ul>
+					</div>
+				)
+			}
+		</div>
+
+		<form
+			class='form'
+			action={action}
+			method='get'
+			target='_blank'
+			data-reserve
+			data-message={r.message}
+			data-name-sentence={r.nameSentence}
+			data-locale={locale}
+			data-max={r.maxPeople}
+			data-demo={demo ? '' : undefined}
+		>
+			<div class='row two'>
+				<label class='field'>
+					<span class='label'>{r.dateLabel}</span>
+					<input name='data' type='date' data-reserve-date />
+				</label>
+				<label class='field'>
+					<span class='label'>{r.timeLabel}</span>
+					<select name='horario'>
+						{r.times.map((t) => <option value={t}>{t}</option>)}
+					</select>
+				</label>
+			</div>
+
+			<fieldset class='field people'>
+				<legend class='label'>{r.peopleLabel}</legend>
+				<div class='stepper'>
+					<button type='button' data-step='-1' aria-label={copy.less}>−</button>
+					<output data-reserve-count aria-live='polite'>{PEOPLE}</output>
+					<button type='button' data-step='1' aria-label={copy.more}>+</button>
+				</div>
+				<input type='hidden' name='pessoas' value={PEOPLE} />
+			</fieldset>
+
+			<label class='field'>
+				<span class='label'>{r.nameLabel}</span>
+				<input name='nome' type='text' autocomplete='given-name' maxlength='60' />
+			</label>
+
+			<p class='preview'>
+				<span class='p-label'>{copy.preview}</span>
+				<span data-reserve-preview>{initial}</span>
+			</p>
+			<input type='hidden' name='text' value={initial} />
+
+			<div class='submit'>
+				<button class='btn' type='submit'>
+					{r.cta} <span class='arr' aria-hidden='true'>↗</span>
+				</button>
+				{r.foot && <p class='foot'>{r.foot}</p>}
+			</div>
+			<p class='demo-note' data-reserve-note role='status' hidden>{copy.demo}</p>
+		</form>
+	</div>
+</section>
+
+<script>
+	import { composeReservation } from '../menu';
+
+	document.querySelectorAll<HTMLFormElement>('form[data-reserve]').forEach((form) => {
+		const preview = form.querySelector<HTMLElement>('[data-reserve-preview]');
+		const note = form.querySelector<HTMLElement>('[data-reserve-note]');
+		const count = form.querySelector<HTMLElement>('[data-reserve-count]');
+		const date = form.querySelector<HTMLInputElement>('[data-reserve-date]');
+		const field = (name: string) => form.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement | null;
+		const max = Number(form.dataset.max) || 12;
+		const locale = form.dataset.locale === 'en' ? 'en' : 'pt-BR';
+
+		// Today in the visitor's calendar as the earliest date.
+		if (date) {
+			const now = new Date();
+			date.min = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+		}
+
+		const compose = () =>
+			composeReservation({
+				message: form.dataset.message ?? '',
+				nameSentence: form.dataset.nameSentence ?? '',
+				people: Number(field('pessoas')?.value) || 1,
+				date: field('data')?.value ?? '',
+				time: field('horario')?.value ?? '',
+				name: field('nome')?.value,
+				locale,
+			});
+		const sync = () => {
+			const text = compose();
+			if (preview) preview.textContent = text;
+			const hidden = field('text');
+			if (hidden) hidden.value = text;
+		};
+
+		form.querySelectorAll<HTMLButtonElement>('[data-step]').forEach((btn) => {
+			btn.addEventListener('click', () => {
+				const input = field('pessoas');
+				if (!input) return;
+				const next = Math.min(max, Math.max(1, (Number(input.value) || 1) + Number(btn.dataset.step)));
+				input.value = String(next);
+				if (count) count.textContent = String(next);
+				sync();
+			});
+		});
+		form.addEventListener('input', sync);
+		form.addEventListener('change', sync);
+		sync();
+
+		form.addEventListener('submit', (e) => {
+			e.preventDefault();
+			sync();
+			if (form.hasAttribute('data-demo') || !form.getAttribute('action')) {
+				if (note) note.hidden = false;
+				return;
+			}
+			window.open(`${form.getAttribute('action')}?text=${encodeURIComponent(compose())}`, '_blank', 'noopener');
+		});
+	});
+</script>
+
+<style>
+	.reserve {
+		background: var(--accent);
+		color: var(--on-accent);
+		padding-block: clamp(80px, 11vw, 150px);
+	}
+	.reserve :global(:focus-visible) {
+		outline-color: var(--on-accent);
+	}
+	.grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		gap: clamp(40px, 6vw, 96px);
+		align-items: start;
+	}
+	h2 {
+		font-size: clamp(64px, 10vw, 160px);
+	}
+	.lead {
+		margin-top: 24px;
+		max-width: 36ch;
+		font-size: 18px;
+		line-height: 1.5;
+	}
+	.delivery {
+		margin-top: clamp(40px, 6vw, 72px);
+		padding-top: 20px;
+		border-top: 2px solid var(--on-accent);
+	}
+	.d-title {
+		font-size: 15px;
+		font-weight: 700;
+	}
+	.delivery ul {
+		list-style: none;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px 28px;
+		margin-top: 8px;
+	}
+	.delivery a {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		min-height: 48px;
+		font-family: var(--display);
+		font-size: 34px;
+		font-weight: 800;
+		text-transform: uppercase;
+		letter-spacing: 0.01em;
+	}
+	.delivery a:hover {
+		text-decoration: underline;
+		text-decoration-thickness: 3px;
+		text-underline-offset: 6px;
+	}
+
+	/* Form: fields as thick underlines on the band */
+	.form {
+		display: grid;
+		gap: 26px;
+	}
+	.row.two {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		gap: 20px;
+	}
+	.field {
+		display: grid;
+		gap: 6px;
+		border: 0;
+		min-width: 0;
+	}
+	.label {
+		font-size: 14px;
+		font-weight: 700;
+		padding: 0;
+	}
+	input,
+	select {
+		width: 100%;
+		min-height: 52px;
+		padding: 0 2px;
+		border: 0;
+		border-bottom: 3px solid var(--on-accent);
+		border-radius: 0;
+		background: transparent;
+		color: inherit;
+		font: inherit;
+		font-size: 20px;
+		font-weight: 600;
+		color-scheme: light;
+	}
+	select option {
+		color: #111;
+	}
+	input:focus-visible,
+	select:focus-visible {
+		outline-offset: 4px;
+	}
+	.stepper {
+		display: inline-flex;
+		align-items: center;
+		gap: 0;
+		justify-self: start;
+		border: 3px solid var(--on-accent);
+	}
+	.stepper button {
+		width: 56px;
+		height: 52px;
+		font-size: 28px;
+		font-weight: 700;
+		line-height: 1;
+		transition:
+			background 0.2s,
+			color 0.2s;
+	}
+	.stepper button:hover {
+		background: var(--on-accent);
+		color: var(--accent);
+	}
+	.stepper output {
+		min-width: 64px;
+		text-align: center;
+		font-family: var(--display);
+		font-size: 36px;
+		font-weight: 800;
+		font-variant-numeric: tabular-nums;
+	}
+	.preview {
+		display: grid;
+		gap: 6px;
+		padding: 18px 20px;
+		background: var(--bg);
+		color: var(--ink);
+		font-size: 17px;
+		line-height: 1.5;
+	}
+	.p-label {
+		font-size: 13px;
+		font-weight: 700;
+		color: var(--ink-2);
+	}
+	.submit {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 12px 24px;
+	}
+	.reserve .btn:hover {
+		background: var(--bg);
+		color: var(--ink);
+	}
+	.foot {
+		font-size: 15px;
+	}
+	.demo-note {
+		padding: 12px 16px;
+		background: var(--ink);
+		color: var(--bg);
+		font-size: 15px;
+	}
+	.demo-note[hidden] {
+		display: none;
+	}
+
+	@media (max-width: 900px) {
+		.grid {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+	@media (max-width: 480px) {
+		.row.two {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+</style>

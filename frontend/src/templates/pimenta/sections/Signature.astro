@@ -1,0 +1,282 @@
+---
+/**
+ * Signature dishes (#da-casa), after 21st.dev "Hover Expand Gallery"
+ * (kedhareswer): on an ink band, a row of hairline panels with the dish name
+ * set vertically in the rail. Hovering, focusing or tapping one grows it to
+ * show the photo and a caption block in the accent. Below 1024px the same list
+ * is an accordion whose photo height animates.
+ *
+ * Without JS the first dish stays open. Closed panels are aria-hidden + inert.
+ */
+import { Image } from 'astro:assets';
+import { formatPrice } from '../menu';
+import type { PimentaConfig } from '../schema';
+
+interface Props {
+	signature: NonNullable<PimentaConfig['signature']>;
+	locale: 'pt-BR' | 'en';
+}
+const { signature, locale } = Astro.props;
+---
+
+<section class='sec signature' id='da-casa' aria-labelledby='pimenta-signature-title'>
+	<div class='wrap grid'>
+		<header class='head'>
+			<h2 id='pimenta-signature-title' class='display'>{signature.title}</h2>
+			{signature.lead && <p class='lead'>{signature.lead}</p>}
+		</header>
+
+		<ul class='panels' role='list' data-expand style={`--count:${signature.items.length}`}>
+			{
+				signature.items.map((item, i) => {
+					const open = i === 0;
+					const id = `pimenta-casa-${i}`;
+					const price = item.price !== undefined && item.price > 0 ? formatPrice(item.price, locale) : undefined;
+					return (
+						<li class:list={['panel', { 'is-open': open }]} data-expand-item>
+							<button type='button' class='rail' id={`${id}-btn`} aria-expanded={open ? 'true' : 'false'} aria-controls={id}>
+								<span class='rail-name'>{item.name}</span>
+								{price && <span class='rail-price'>{price}</span>}
+							</button>
+							<div class='body' id={id} role='region' aria-labelledby={`${id}-btn`} aria-hidden={open ? undefined : 'true'} inert={!open}>
+								<div class='body-inner'>
+									<Image
+										src={item.photo}
+										alt={item.alt}
+										widths={[480, 720, 900]}
+										sizes='(max-width: 1023px) 92vw, 560px'
+										format='webp'
+										quality='high'
+										loading='lazy'
+										decoding='async'
+									/>
+									<div class='cap'>
+										<p class='cap-name display'>{item.name}</p>
+										{item.desc && <p class='cap-desc'>{item.desc}</p>}
+										{price && <p class='cap-price'>{price}</p>}
+									</div>
+								</div>
+							</div>
+						</li>
+					);
+				})
+			}
+		</ul>
+	</div>
+</section>
+
+<script>
+	document.querySelectorAll<HTMLElement>('[data-expand]').forEach((list) => {
+		const items = Array.from(list.querySelectorAll<HTMLElement>('[data-expand-item]'));
+		const open = (target: HTMLElement) => {
+			if (target.classList.contains('is-open')) return;
+			items.forEach((item) => {
+				const on = item === target;
+				item.classList.toggle('is-open', on);
+				item.querySelector('.rail')?.setAttribute('aria-expanded', String(on));
+				const body = item.querySelector<HTMLElement>('.body');
+				if (!body) return;
+				body.inert = !on;
+				if (on) body.removeAttribute('aria-hidden');
+				else body.setAttribute('aria-hidden', 'true');
+			});
+		};
+		items.forEach((item) => {
+			const rail = item.querySelector<HTMLElement>('.rail');
+			if (!rail) return;
+			rail.addEventListener('click', () => open(item));
+			rail.addEventListener('focus', () => open(item));
+			item.addEventListener('pointerenter', (e) => {
+				if (e.pointerType === 'mouse' && window.matchMedia('(min-width: 1024px)').matches) open(item);
+			});
+		});
+	});
+</script>
+
+<style>
+	.signature {
+		background: var(--ink);
+		color: var(--bg);
+	}
+	.signature :global(:focus-visible) {
+		outline-color: var(--bg);
+	}
+	.grid {
+		display: grid;
+		grid-template-columns: minmax(0, 0.8fr) minmax(0, 2fr);
+		gap: clamp(32px, 5vw, 72px);
+		align-items: end;
+	}
+	/* the column is narrow: one long word (FORNADAS) must still fit */
+	.head h2 {
+		font-size: clamp(56px, 6.8vw, 104px);
+	}
+	.lead {
+		margin-top: 20px;
+		max-width: 32ch;
+		font-size: 17px;
+		color: color-mix(in srgb, var(--bg) 78%, transparent);
+	}
+
+	/* ---------- Desktop: rails that grow ---------- */
+	.panels {
+		--rail: 76px;
+		list-style: none;
+		display: flex;
+		height: clamp(520px, 64vh, 640px);
+		border-right: 1px solid color-mix(in srgb, var(--bg) 22%, transparent);
+	}
+	.panel {
+		position: relative;
+		flex: 0 0 var(--rail);
+		min-width: 0;
+		border-left: 1px solid color-mix(in srgb, var(--bg) 22%, transparent);
+		transition: flex-grow 0.62s cubic-bezier(0.32, 0.72, 0, 1);
+	}
+	.panel.is-open {
+		flex-grow: 1;
+	}
+	.rail {
+		position: absolute;
+		inset: 0 auto 0 0;
+		width: var(--rail);
+		display: flex;
+		flex-direction: column-reverse;
+		justify-content: space-between;
+		align-items: center;
+		padding-block: 22px;
+		color: color-mix(in srgb, var(--bg) 55%, transparent);
+		transition: color 0.4s;
+	}
+	.rail:hover,
+	.is-open .rail {
+		color: var(--bg);
+	}
+	.rail-name,
+	.rail-price {
+		writing-mode: vertical-rl;
+		transform: rotate(180deg);
+		white-space: nowrap;
+	}
+	.rail-name {
+		font-family: var(--display);
+		font-size: 30px;
+		font-weight: 800;
+		text-transform: uppercase;
+		letter-spacing: 0.02em;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		max-height: 80%;
+	}
+	.rail-price {
+		font-size: 14px;
+		font-weight: 600;
+		font-variant-numeric: tabular-nums;
+	}
+	.body {
+		position: absolute;
+		inset: 10px 12px 10px var(--rail);
+		overflow: hidden;
+		opacity: 0;
+		transition: opacity 0.45s ease;
+	}
+	.is-open .body {
+		opacity: 1;
+		transition-delay: 0.12s;
+	}
+	.body-inner {
+		position: relative;
+		height: 100%;
+	}
+	.body :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+	.cap {
+		position: absolute;
+		left: 0;
+		bottom: 0;
+		max-width: min(100%, 360px);
+		padding: 18px 20px 16px;
+		background: var(--accent);
+		color: var(--on-accent);
+	}
+	.cap-name {
+		font-size: 38px;
+	}
+	.cap-desc {
+		margin-top: 8px;
+		font-size: 14px;
+		line-height: 1.45;
+	}
+	.cap-price {
+		margin-top: 10px;
+		font-size: 16px;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+	}
+
+	/* ---------- Below 1024px: accordion ---------- */
+	@media (max-width: 1023px) {
+		.grid {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		.panels {
+			display: block;
+			height: auto;
+			border-right: 0;
+			border-top: 1px solid color-mix(in srgb, var(--bg) 22%, transparent);
+		}
+		.panel {
+			border-left: 0;
+			border-bottom: 1px solid color-mix(in srgb, var(--bg) 22%, transparent);
+		}
+		.rail {
+			position: static;
+			width: 100%;
+			min-height: 64px;
+			flex-direction: row;
+			padding: 0;
+		}
+		.rail-name,
+		.rail-price {
+			writing-mode: horizontal-tb;
+			transform: none;
+		}
+		.rail-name {
+			font-size: 28px;
+			max-height: none;
+		}
+		.body {
+			position: static;
+			display: grid;
+			grid-template-rows: 0fr;
+			opacity: 0;
+			transition:
+				grid-template-rows 0.55s cubic-bezier(0.32, 0.72, 0, 1),
+				opacity 0.4s ease;
+		}
+		.is-open .body {
+			grid-template-rows: 1fr;
+			opacity: 1;
+		}
+		.body-inner {
+			min-height: 0;
+			height: auto;
+		}
+		.body :global(img) {
+			height: min(420px, 110vw);
+		}
+		.is-open .body-inner {
+			margin-bottom: 18px;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.panel,
+		.body {
+			transition: none;
+		}
+	}
+</style>

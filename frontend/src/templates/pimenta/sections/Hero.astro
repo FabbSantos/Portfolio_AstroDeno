@@ -1,0 +1,234 @@
+---
+/**
+ * Hero, after 21st.dev "Minimalist Hero" (ravikatiyar162): short text and the
+ * actions on the left, a flat accent disc with the signature plate in black
+ * and white in the middle, the giant condensed title on the right, overlapping
+ * the disc. Address, hours and Instagram run along the bottom.
+ *
+ * Each title line is nowrap, so the block keeps its height when the display
+ * font swaps in (no layout shift). The entrance moves transforms only: the
+ * title is the LCP and must paint on the first frame.
+ */
+import { Image } from 'astro:assets';
+import { hoursSummary, OPEN_STRINGS } from '../../core/hours';
+import type { PimentaConfig } from '../schema';
+import { md } from './_md';
+
+interface Props {
+	config: PimentaConfig;
+}
+const { config } = Astro.props;
+const { hero, location, brand } = config;
+const locale = brand.locale;
+const en = locale === 'en';
+const lines = hero.title.split('\n').map((l) => l.trim()).filter(Boolean).map(md);
+const status = JSON.stringify({ hours: location.hours, tz: location.timezone, locale, strings: OPEN_STRINGS[locale] });
+const a = location.address;
+---
+
+<section class='hero' aria-labelledby='pimenta-hero-title'>
+	<div class='wrap stage'>
+		<h1 id='pimenta-hero-title' class='title display'>
+			{lines.map((l) => <span class='line' set:html={l} />)}
+		</h1>
+
+		<div class='media'>
+			<span class='disc' aria-hidden='true'></span>
+			<figure class='plate'>
+				<Image
+					src={hero.photo}
+					alt={hero.photoAlt}
+					widths={[480, 720, 960]}
+					sizes='(max-width: 900px) 70vw, 460px'
+					format='webp'
+					quality='high'
+					loading='eager'
+					fetchpriority='high'
+					decoding='async'
+				/>
+			</figure>
+		</div>
+
+		<div class='copy'>
+			<p class='tagline'>{hero.tagline}</p>
+			<p class='status' data-open-status={status}>
+				<span class='status-dot' aria-hidden='true'></span>
+				<span data-open-text>{hoursSummary(location.hours, locale)}</span>
+			</p>
+			<div class='actions'>
+				<a class='btn' href='#reservas'>{hero.cta} <span class='arr' aria-hidden='true'>→</span></a>
+				<a class='link' href='#cardapio'>{hero.secondaryCta}</a>
+			</div>
+		</div>
+	</div>
+
+	<div class='wrap foot'>
+		<p>{[a.street, a.district].filter(Boolean).join(' · ')}</p>
+		{
+			hero.instagram && (
+				<a class='link' href={hero.instagram} target='_blank' rel='noopener'>
+					Instagram <span aria-hidden='true'>↗</span>
+					<span class='visually-hidden'>{en ? '(opens in a new tab)' : '(abre em nova aba)'}</span>
+				</a>
+			)
+		}
+	</div>
+</section>
+
+<style>
+	.hero {
+		position: relative;
+		padding-top: clamp(32px, 5vw, 64px);
+		overflow: hidden;
+	}
+	.stage {
+		display: grid;
+		grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr) minmax(0, 1fr);
+		grid-template-areas: 'copy media title';
+		align-items: center;
+		column-gap: 24px;
+		min-height: min(78vh, 720px);
+	}
+
+	/* Title: overlaps the disc from the right */
+	.title {
+		grid-area: title;
+		position: relative;
+		z-index: 2;
+		margin-left: -6%;
+		font-size: clamp(64px, 9.4vw, 168px);
+	}
+	.line {
+		display: block;
+		white-space: nowrap;
+	}
+
+	/* Disc + plate */
+	.media {
+		grid-area: media;
+		position: relative;
+		display: grid;
+		place-items: center;
+		aspect-ratio: 1;
+		width: 100%;
+		max-width: 560px;
+		justify-self: center;
+	}
+	.disc {
+		position: absolute;
+		inset: 0;
+		border-radius: 50%;
+		background: var(--accent);
+	}
+	.plate {
+		position: relative;
+		width: 82%;
+		aspect-ratio: 1;
+		border-radius: 50%;
+		overflow: hidden;
+		transform: translate(-10%, 10%);
+		box-shadow: 0 40px 60px -30px color-mix(in srgb, var(--ink) 55%, transparent);
+	}
+	.plate :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		filter: grayscale(1) contrast(1.08);
+		transition: filter 0.8s var(--ease);
+	}
+	.media:hover .plate :global(img) {
+		filter: grayscale(0) contrast(1);
+	}
+
+	/* Copy */
+	.copy {
+		grid-area: copy;
+		position: relative;
+		z-index: 3;
+		display: grid;
+		gap: 22px;
+		justify-items: start;
+		max-width: 34ch;
+	}
+	.tagline {
+		font-size: clamp(17px, 1.4vw, 19px);
+		line-height: 1.55;
+	}
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 12px 24px;
+		margin-top: 4px;
+	}
+
+	.foot {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		align-items: center;
+		gap: 8px 24px;
+		margin-top: clamp(32px, 4vw, 48px);
+		padding-block: 18px;
+		border-top: 2px solid var(--ink);
+		font-size: 15px;
+		font-weight: 600;
+	}
+
+	/* Entrance: the disc grows, the plate rises and turns, the title slides. Transforms only. */
+	@media (prefers-reduced-motion: no-preference) {
+		.disc {
+			animation: pimenta-disc 1s var(--ease) both;
+		}
+		.plate {
+			animation: pimenta-plate 1.2s var(--ease) 120ms both;
+		}
+		.title .line {
+			animation: pimenta-line 0.9s var(--ease) both;
+		}
+		.title .line:nth-child(2) {
+			animation-delay: 70ms;
+		}
+		.title .line:nth-child(3) {
+			animation-delay: 140ms;
+		}
+		.title .line:nth-child(n + 4) {
+			animation-delay: 210ms;
+		}
+		@keyframes pimenta-disc {
+			from {
+				transform: scale(0.82);
+			}
+		}
+		@keyframes pimenta-plate {
+			from {
+				transform: translate(-10%, 28%) rotate(-18deg);
+			}
+		}
+		@keyframes pimenta-line {
+			from {
+				transform: translateX(40px);
+			}
+		}
+	}
+
+	@media (max-width: 900px) {
+		.stage {
+			grid-template-columns: minmax(0, 1fr);
+			grid-template-areas: 'title' 'media' 'copy';
+			row-gap: 28px;
+			min-height: 0;
+		}
+		.title {
+			margin-left: 0;
+			font-size: clamp(56px, 17vw, 120px);
+		}
+		.media {
+			width: 84%;
+			margin-top: -12%;
+		}
+		.copy {
+			max-width: none;
+		}
+	}
+</style>

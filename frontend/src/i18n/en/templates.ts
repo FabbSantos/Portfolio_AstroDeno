@@ -68,6 +68,8 @@ export const templates: Shape<typeof ptShape> = {
 		notIncluded: 'Not included',
 		features: {
 			lead: 'Lead form + WhatsApp',
+			menu: 'Priced menu',
+			reservation: 'WhatsApp table reservations',
 			booking: 'WhatsApp booking',
 			hours: 'Opening hours with "open now"',
 			gallery: 'Photo gallery',

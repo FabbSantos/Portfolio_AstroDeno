@@ -1,0 +1,15 @@
+---
+/**
+ * Pimenta — portfolio demo (restaurant). All copy/images live in templates/pimenta/demo.config.ts.
+ */
+import DemoLayout from '../../../layouts/DemoLayout.astro';
+import ThemeVars from '../../../templates/core/ThemeVars.astro';
+import PimentaBody from '../../../templates/pimenta/PimentaBody.astro';
+import { PIMENTA_PRELOAD } from '../../../templates/pimenta/fonts';
+import demo from '../../../templates/pimenta/demo.config';
+---
+
+<DemoLayout slug='pimenta' title={demo.seo.title} description={demo.seo.description} locale='pt' themeColor={demo.theme.bg} preloadFonts={false} preload={PIMENTA_PRELOAD}>
+	<ThemeVars theme={demo.theme} />
+	<PimentaBody config={demo} demo />
+</DemoLayout>

@@ -1,0 +1,162 @@
+---
+/**
+ * Crew (#quem-faz), after 21st.dev "Team Showcase" (makviesainte): a staggered
+ * grid of black-and-white photos beside a list of big names. Hovering or
+ * focusing a name (or its photo) brings that photo to colour and marks the row
+ * with the accent. Purely decorative pairing: nothing here is a link.
+ */
+import { Image } from 'astro:assets';
+import type { PimentaConfig } from '../schema';
+
+interface Props {
+	crew: NonNullable<PimentaConfig['crew']>;
+}
+const { crew } = Astro.props;
+---
+
+<section class='sec crew' id='quem-faz' aria-labelledby='pimenta-crew-title'>
+	<div class='wrap'>
+		<header class='sec-head'>
+			<h2 id='pimenta-crew-title' class='display'>{crew.title}</h2>
+			{crew.lead && <p class='lead'>{crew.lead}</p>}
+		</header>
+
+		<div class='grid' data-crew style={`--cols:${Math.min(crew.people.length, 3)}`}>
+			<div class='photos'>
+				{
+					crew.people.map((p, i) => (
+						<figure class='ph' data-crew-photo={i}>
+							<Image src={p.photo} alt={p.alt} widths={[400, 600, 800]} sizes='(max-width: 900px) 42vw, 260px' format='webp' quality='high' loading='lazy' decoding='async' />
+						</figure>
+					))
+				}
+			</div>
+			<ul class='people' role='list'>
+				{
+					crew.people.map((p, i) => (
+						<li class='person' data-crew-person={i}>
+							<p class='name display'>{p.name}</p>
+							<p class='role'>{p.role}</p>
+							</li>
+					))
+				}
+			</ul>
+		</div>
+	</div>
+</section>
+
+<script>
+	document.querySelectorAll<HTMLElement>('[data-crew]').forEach((grid) => {
+		const photos = Array.from(grid.querySelectorAll<HTMLElement>('[data-crew-photo]'));
+		const people = Array.from(grid.querySelectorAll<HTMLElement>('[data-crew-person]'));
+		const mark = (i: number | null) => {
+			photos.forEach((el, j) => el.classList.toggle('is-on', j === i));
+			people.forEach((el, j) => el.classList.toggle('is-on', j === i));
+		};
+		[...photos, ...people].forEach((el) => {
+			const i = Number(el.dataset.crewPhoto ?? el.dataset.crewPerson);
+			el.addEventListener('pointerenter', () => mark(i));
+			el.addEventListener('pointerleave', () => mark(null));
+		});
+	});
+</script>
+
+<style>
+	.grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+		gap: clamp(40px, 6vw, 96px);
+		align-items: center;
+	}
+
+	/* Staggered photos: every column sits at a different height */
+	.photos {
+		display: grid;
+		grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr));
+		gap: 14px;
+		padding-bottom: 72px;
+	}
+	.ph {
+		position: relative;
+		aspect-ratio: 4 / 5;
+		overflow: hidden;
+		background: var(--bg-2);
+	}
+	.ph:nth-child(3n + 2) {
+		transform: translateY(72px);
+	}
+	.ph:nth-child(3n) {
+		transform: translateY(28px);
+	}
+	.ph :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		filter: grayscale(1) contrast(1.05);
+		transition:
+			filter 0.6s var(--ease),
+			transform 0.8s var(--ease);
+	}
+	.ph.is-on :global(img) {
+		filter: grayscale(0) contrast(1);
+		transform: scale(1.04);
+	}
+
+	.people {
+		list-style: none;
+		border-top: 2px solid var(--ink);
+	}
+	.person {
+		position: relative;
+		display: grid;
+		gap: 4px;
+		padding: 20px 0 18px 0;
+		border-bottom: 1px solid var(--line);
+		transition: padding-left 0.45s var(--ease);
+	}
+	.person::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 22px;
+		bottom: 20px;
+		width: 10px;
+		background: var(--accent);
+		transform: scaleX(0);
+		transform-origin: left;
+		transition: transform 0.45s var(--ease);
+	}
+	.person.is-on {
+		padding-left: 26px;
+	}
+	.person.is-on::before {
+		transform: scaleX(1);
+	}
+	.name {
+		font-size: clamp(40px, 4.4vw, 64px);
+	}
+	.role {
+		font-size: 15px;
+		color: var(--ink-2);
+	}
+
+	@media (max-width: 900px) {
+		.grid {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		.photos {
+			padding-bottom: 48px;
+		}
+		.ph:nth-child(3n + 2) {
+			transform: translateY(48px);
+		}
+		.ph:nth-child(3n) {
+			transform: translateY(20px);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.person {
+			transition: none;
+		}
+	}
+</style>
