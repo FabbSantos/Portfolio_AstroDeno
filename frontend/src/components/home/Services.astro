@@ -11,12 +11,17 @@
  *   prev/next buttons (data-scroll / data-for, wired by src/scripts/site.ts).
  * - All five previews are in the DOM (stacked); only the active one is visible,
  *   the others are aria-hidden + inert so the crossfade is instant.
+ * - A service with several previews (Landing page) is a carousel: the whole
+ *   example (screenshot, name, what it fits, link) swaps when the progress bar
+ *   under it fills. The bar eases out, so it lingers before the swap. Paused
+ *   while hovered, focused, off screen, in a background tab, on another
+ *   service, or by the pause button; never auto-advances under reduced motion.
  */
 import type { ImageMetadata } from 'astro';
 import { Image } from 'astro:assets';
 import { SERVICES, type PreviewImage, type ServiceIcon } from '../../data/services';
 import { SITE } from '../../data/site';
-import { demoPath, formatBRL, getTemplate } from '../../data/templates';
+import { demoPath, formatBRL, getTemplate, joinList } from '../../data/templates';
 import { fmt, localeOf, localePath, pick, useT } from '../../i18n';
 import shotPulsar from '../../assets/featured/pulsar_dash.png';
 import shotQuasar from '../../assets/featured/quasar_dash.png';
@@ -43,6 +48,7 @@ const templateShot = (slug: string): ImageMetadata | undefined => {
 };
 
 const SHOTS: Record<PreviewImage, ImageMetadata | undefined> = {
+	salvia: templateShot('salvia'),
 	mirante: templateShot('mirante'),
 	stratus: templateShot('stratus'),
 	atelier: templateShot('atelier'),
@@ -135,63 +141,130 @@ const ICONS: Record<ServiceIcon, string> = {
 	<div class='svc-panel reveal d2' role='region' aria-live='polite' aria-label={t.services.panelLabel}>
 		{
 			SERVICES.map((s, i) => {
-				const label = pick(s.preview.label, locale);
-				const isTemplate = s.preview.href.startsWith('/templates/');
-				const alt = fmt(t.services.previewAlt, { label });
-				const shot = SHOTS[s.preview.image];
-				// No screenshot yet → the live demo, scaled down and inert (templates only).
-				const tpl = !shot && isTemplate ? getTemplate(s.preview.image) : undefined;
+				const multi = s.previews.length > 1;
+				const slides = s.previews.map((p, j) => {
+					const label = pick(p.label, locale);
+					const isTemplate = p.href.startsWith('/templates/');
+					const shot = SHOTS[p.image];
+					const template = isTemplate ? getTemplate(p.image) : undefined;
+					return {
+						key: `${p.image}-${j}`,
+						label,
+						href: p.href,
+						isTemplate,
+						shot,
+						alt: fmt(t.services.previewAlt, { label }),
+						// No screenshot yet → the live demo, scaled down and inert (templates only).
+						fallback: !shot ? template : undefined,
+						fits: template ? joinList(pick(template.fits, locale), locale) : undefined,
+					};
+				});
 				return (
 					<div
-						class:list={['svc-view', { 'is-active': i === 0 }]}
+						class:list={['svc-view', { 'is-active': i === 0, 'has-slides': multi }]}
 						data-svc-view={s.id}
 						style={`--hue:${s.hue}`}
 						aria-hidden={i === 0 ? undefined : 'true'}
 						inert={i !== 0}
 					>
-						<div class='svc-browser'>
-							<div class='svc-chrome' aria-hidden='true'>
-								<i />
-								<i />
-								<i />
-								<span class='svc-url'>{`${host}${s.preview.href}`}</span>
-							</div>
-							<div class='svc-shot' style={tpl ? `background:${tpl.grad}` : undefined}>
-								{shot ? (
-									<Image
-										src={shot}
-										widths={[720, 1200]}
-										sizes='(max-width: 1100px) 100vw, 680px'
-										format='webp'
-										quality='high'
-										alt={alt}
-										loading='lazy'
-										decoding='async'
-									/>
-								) : tpl ? (
-									<iframe src={demoPath(tpl.slug)} title={alt} loading='lazy' tabindex='-1' aria-hidden='true' />
-								) : (
-									<span class='svc-shot-ph' aria-hidden='true' />
-								)}
-							</div>
+						<div class='svc-slides' data-slides={multi ? '' : undefined} aria-live={multi ? 'off' : undefined}>
+							{slides.map((sl, j) => (
+								<div
+									class:list={['svc-slide', { 'is-active': j === 0 }]}
+									data-slide={j}
+									role={multi ? 'group' : undefined}
+									aria-roledescription={multi ? t.services.example : undefined}
+									aria-label={multi ? fmt(t.services.exampleOf, { n: j + 1, total: slides.length, label: sl.label }) : undefined}
+									aria-hidden={j === 0 ? undefined : 'true'}
+									inert={j !== 0}
+								>
+									<div class='svc-browser'>
+										<div class='svc-chrome' aria-hidden='true'>
+											<i />
+											<i />
+											<i />
+											<span class='svc-url'>{`${host}${sl.href}`}</span>
+										</div>
+										<div class='svc-shot' style={sl.fallback ? `background:${sl.fallback.grad}` : undefined}>
+											{sl.shot && j > 0 ? (
+												/* later examples: markup waits in a <template> until the panel is on screen */
+												<template data-deferred-shot>
+													<Image
+														src={sl.shot}
+														widths={sl.isTemplate ? [500, 1000] : [720, 1200]}
+														sizes='(max-width: 1100px) 100vw, 680px'
+														format='webp'
+														quality='high'
+														alt={sl.alt}
+														decoding='async'
+													/>
+												</template>
+											) : sl.shot ? (
+												<Image
+													src={sl.shot}
+													widths={sl.isTemplate ? [500, 1000] : [720, 1200]}
+													sizes='(max-width: 1100px) 100vw, 680px'
+													format='webp'
+													quality='high'
+													alt={sl.alt}
+													loading='lazy'
+													decoding='async'
+												/>
+											) : sl.fallback ? (
+												<iframe src={demoPath(sl.fallback.slug)} title={sl.alt} loading='lazy' tabindex='-1' aria-hidden='true' />
+											) : (
+												<span class='svc-shot-ph' aria-hidden='true' />
+											)}
+										</div>
+									</div>
+
+									<div class='svc-side'>
+										<p class='svc-solves'>
+											<span class='dot' aria-hidden='true' />
+											<span>
+												{t.services.solvesWith} <b>{sl.label}</b>
+											</span>
+										</p>
+										{sl.fits && (
+											<p class='svc-fits'>
+												<span>{t.templates.card.fits}</span> {sl.fits}
+											</p>
+										)}
+										<span class='eyebrow'>{t.services.outcome}</span>
+										<p class='svc-outcome'>{pick(s.outcome, locale)}</p>
+										<p class='svc-eta'>
+											<span>{t.services.timeline}</span> · {pick(s.timeline, locale)}
+										</p>
+										<a class='btn-link svc-more' href={localePath(locale, sl.href)}>
+											{sl.isTemplate ? t.services.viewTemplate : t.services.viewProduct}
+										</a>
+									</div>
+								</div>
+							))}
 						</div>
 
-						<div class='svc-side'>
-							<p class='svc-solves'>
-								<span class='dot' aria-hidden='true' />
-								<span>
-									{t.services.solvesWith} <b>{label}</b>
-								</span>
-							</p>
-							<span class='eyebrow'>{t.services.outcome}</span>
-							<p class='svc-outcome'>{pick(s.outcome, locale)}</p>
-							<p class='svc-eta'>
-								<span>{t.services.timeline}</span> · {pick(s.timeline, locale)}
-							</p>
-							<a class='btn-link svc-more' href={localePath(locale, s.preview.href)}>
-								{isTemplate ? t.services.viewTemplate : t.services.viewProduct}
-							</a>
-						</div>
+						{multi && (
+							<div class='svc-progress'>
+								<div class='svc-segs' role='group' aria-label={t.services.examples}>
+									{slides.map((sl, j) => (
+										<button type='button' class='svc-seg' data-go={j} aria-label={fmt(t.services.goTo, { label: sl.label })} aria-current={j === 0 ? 'true' : undefined}>
+											<span class='svc-seg-track' aria-hidden='true'>
+												<span class='svc-seg-fill' />
+											</span>
+										</button>
+									))}
+								</div>
+								<button type='button' class='svc-pause' data-pause data-label-pause={t.services.pause} data-label-play={t.services.play} aria-label={t.services.pause}>
+									<svg class='i-pause' viewBox='0 0 16 16' width='14' height='14' aria-hidden='true'>
+										<rect x='3.5' y='2.5' width='3' height='11' rx='1' fill='currentColor' />
+										<rect x='9.5' y='2.5' width='3' height='11' rx='1' fill='currentColor' />
+									</svg>
+									<svg class='i-play' viewBox='0 0 16 16' width='14' height='14' aria-hidden='true'>
+										<path d='M5 3.2v9.6a.6.6 0 0 0 .9.5l7.6-4.8a.6.6 0 0 0 0-1L5.9 2.7a.6.6 0 0 0-.9.5Z' fill='currentColor' />
+									</svg>
+								</button>
+							</div>
+						)}
 					</div>
 				);
 			})
@@ -370,10 +443,9 @@ const ICONS: Record<ServiceIcon, string> = {
 		--hue: var(--accent);
 		grid-area: 1 / 1;
 		position: relative;
-		display: grid;
-		grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-		gap: 36px;
-		align-items: center;
+		display: flex;
+		flex-direction: column;
+		gap: 22px;
 		padding: 28px;
 		opacity: 0;
 		transform: translateY(10px);
@@ -394,6 +466,127 @@ const ICONS: Record<ServiceIcon, string> = {
 		opacity: 1;
 		transform: none;
 		pointer-events: auto;
+	}
+
+	/* Slides: every example shares one cell, so the panel never changes height */
+	.svc-slides {
+		position: relative;
+		display: grid;
+	}
+	.svc-slide {
+		grid-area: 1 / 1;
+		display: grid;
+		grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+		gap: 36px;
+		align-items: center;
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity 0.45s ease;
+	}
+	.svc-slide.is-active {
+		opacity: 1;
+		pointer-events: auto;
+	}
+	.svc-fits {
+		font-size: 14px;
+		line-height: 1.45;
+		color: var(--ink-2);
+	}
+	.svc-fits span {
+		font-family: var(--mono);
+		font-size: 11px;
+		font-weight: 600;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--ink-3);
+		margin-right: 2px;
+	}
+
+	/* Progress: one segment per example; the running one fills and eases out */
+	.svc-progress {
+		position: relative;
+		display: flex;
+		align-items: center;
+		gap: 14px;
+	}
+	.svc-segs {
+		flex: 1;
+		display: flex;
+		gap: 8px;
+	}
+	.svc-seg {
+		flex: 1;
+		display: flex;
+		align-items: center;
+		min-height: 24px;
+		padding: 0;
+		cursor: pointer;
+	}
+	.svc-seg-track {
+		position: relative;
+		width: 100%;
+		height: 4px;
+		border-radius: 999px;
+		overflow: hidden;
+		background: color-mix(in srgb, var(--ink) 10%, transparent);
+		transition: height 0.2s var(--ease-out-expo);
+	}
+	.svc-seg:hover .svc-seg-track,
+	.svc-seg:focus-visible .svc-seg-track {
+		height: 6px;
+	}
+	.svc-seg-fill {
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		background: linear-gradient(90deg, var(--hue), color-mix(in srgb, var(--hue) 55%, var(--accent-2)));
+		transform: scaleX(0);
+		transform-origin: left center;
+	}
+	.svc-seg-fill.is-done {
+		transform: scaleX(1);
+	}
+	/* fast at first, then it lingers near the end before the swap */
+	.svc-seg-fill.is-running {
+		animation: svc-fill var(--svc-dur, 7s) cubic-bezier(0.1, 0.55, 0.25, 1) forwards;
+	}
+	[data-paused] .svc-seg-fill.is-running {
+		animation-play-state: paused;
+	}
+	@keyframes svc-fill {
+		from {
+			transform: scaleX(0);
+		}
+		to {
+			transform: scaleX(1);
+		}
+	}
+	.svc-pause {
+		flex: none;
+		display: grid;
+		place-items: center;
+		width: 36px;
+		height: 36px;
+		border-radius: 50%;
+		border: 1px solid var(--rule-2);
+		background: var(--bg-3);
+		color: var(--ink);
+		transition:
+			background 0.25s,
+			border-color 0.25s,
+			color 0.25s;
+	}
+	.svc-pause:hover {
+		background: var(--ink);
+		border-color: var(--ink);
+		color: #fff;
+	}
+	.svc-pause .i-play,
+	.svc-pause[aria-pressed='true'] .i-pause {
+		display: none;
+	}
+	.svc-pause[aria-pressed='true'] .i-play {
+		display: block;
 	}
 
 	.svc-browser {
@@ -542,8 +735,52 @@ const ICONS: Record<ServiceIcon, string> = {
 		.svc-card.is-active .arr {
 			transform: translateX(4px);
 		}
-		.svc-view.is-active .svc-shot img {
+		.svc-view.is-active .svc-slide.is-active .svc-shot img {
 			animation: svc-kb 6s var(--ease-out-expo) forwards;
+		}
+		/* Example swap: the frame slides in from the right, the text rises in a
+		   stagger; the old example drifts left while it fades. */
+		.svc-slide .svc-browser {
+			transform: translateX(32px) scale(0.985);
+			transition: transform 0.9s var(--ease-out-expo);
+		}
+		.svc-slide .svc-side > * {
+			opacity: 0;
+			transform: translateY(14px);
+			transition:
+				opacity 0.35s ease,
+				transform 0.35s ease;
+		}
+		.svc-slide.is-active .svc-browser {
+			transform: none;
+		}
+		.svc-slide.is-active .svc-side > * {
+			opacity: 1;
+			transform: none;
+			transition:
+				opacity 0.6s ease calc(var(--i, 0) * 70ms + 120ms),
+				transform 0.8s var(--ease-out-expo) calc(var(--i, 0) * 70ms + 120ms);
+		}
+		.svc-slide .svc-side > :nth-child(2) {
+			--i: 1;
+		}
+		.svc-slide .svc-side > :nth-child(3) {
+			--i: 2;
+		}
+		.svc-slide .svc-side > :nth-child(4) {
+			--i: 3;
+		}
+		.svc-slide .svc-side > :nth-child(5) {
+			--i: 4;
+		}
+		.svc-slide .svc-side > :nth-child(n + 6) {
+			--i: 5;
+		}
+		.svc-slide.is-leaving .svc-browser {
+			transform: translateX(-32px) scale(0.985);
+		}
+		.svc-slide.is-leaving .svc-side > * {
+			transform: translateY(-10px);
 		}
 		@keyframes svc-kb {
 			from {
@@ -561,9 +798,13 @@ const ICONS: Record<ServiceIcon, string> = {
 			grid-template-columns: repeat(3, minmax(0, 1fr));
 		}
 		.svc-view {
+			gap: 18px;
+			padding: 22px;
+		}
+		.svc-slide {
 			grid-template-columns: minmax(0, 1fr);
 			gap: 22px;
-			padding: 22px;
+			align-items: start;
 		}
 	}
 
@@ -604,6 +845,9 @@ const ICONS: Record<ServiceIcon, string> = {
 		}
 		.svc-view {
 			padding: 16px;
+			gap: 14px;
+		}
+		.svc-slide {
 			gap: 18px;
 		}
 		.svc-chrome {
@@ -636,8 +880,126 @@ const ICONS: Record<ServiceIcon, string> = {
 				v.toggleAttribute('inert', !on);
 				if (on) v.removeAttribute('aria-hidden');
 				else v.setAttribute('aria-hidden', 'true');
+				v.dispatchEvent(new CustomEvent('svc:shown', { detail: on }));
 			});
 		};
+
+		/**
+		 * Carousel for a service with several examples. The fill animation of the
+		 * running segment is the timer: its animationend advances. Pausing is just
+		 * animation-play-state, so it resumes where it stopped.
+		 */
+		const carousel = (view: HTMLElement) => {
+			const box = view.querySelector<HTMLElement>('[data-slides]');
+			const slides = Array.from(view.querySelectorAll<HTMLElement>('[data-slide]'));
+			const segs = Array.from(view.querySelectorAll<HTMLButtonElement>('[data-go]'));
+			const fills = segs.map((s) => s.querySelector<HTMLElement>('.svc-seg-fill'));
+			const pause = view.querySelector<HTMLButtonElement>('[data-pause]');
+			if (!box || slides.length < 2) return;
+			let index = 0;
+			// Every reason that holds the timer; it runs only when the set is empty.
+			const holds = new Set<string>(['offscreen']);
+			if (reduce.matches) holds.add('user');
+			if (!view.classList.contains('is-active')) holds.add('inactive');
+
+			const sync = () => {
+				const paused = holds.size > 0;
+				view.toggleAttribute('data-paused', paused);
+				box.setAttribute('aria-live', paused ? 'polite' : 'off');
+				if (pause) {
+					const user = holds.has('user');
+					pause.setAttribute('aria-pressed', String(user));
+					pause.setAttribute('aria-label', (user ? pause.dataset.labelPlay : pause.dataset.labelPause) ?? '');
+				}
+			};
+			const hold = (reason: string, on: boolean) => {
+				if (on) holds.add(reason);
+				else holds.delete(reason);
+				sync();
+			};
+
+			// Restart the running fill without a forced reflow: drop the class, add it next frame.
+			const run = (i: number) => {
+				fills.forEach((f, j) => {
+					f?.classList.remove('is-running');
+					f?.classList.toggle('is-done', j < i);
+					segs[j]?.toggleAttribute('aria-current', j === i);
+				});
+				requestAnimationFrame(() => requestAnimationFrame(() => fills[i]?.classList.add('is-running')));
+			};
+
+			const show = (i: number) => {
+				if (i !== index) {
+					const prev = slides[index];
+					const next = slides[i];
+					if (prev) {
+						prev.classList.remove('is-active');
+						prev.classList.add('is-leaving');
+						prev.inert = true;
+						prev.setAttribute('aria-hidden', 'true');
+						window.setTimeout(() => prev.classList.remove('is-leaving'), 900);
+					}
+					if (next) {
+						next.classList.remove('is-leaving');
+						next.classList.add('is-active');
+						next.inert = false;
+						next.removeAttribute('aria-hidden');
+					}
+					index = i;
+				}
+				run(i);
+			};
+
+			fills.forEach((f, j) =>
+				f?.addEventListener('animationend', () => {
+					if (j === index) show((index + 1) % slides.length);
+				})
+			);
+			segs.forEach((s, j) => s.addEventListener('click', () => show(j)));
+			pause?.addEventListener('click', () => hold('user', !holds.has('user')));
+
+			view.addEventListener('pointerenter', (e) => {
+				if (e.pointerType === 'mouse') hold('hover', true);
+			});
+			view.addEventListener('pointerleave', () => hold('hover', false));
+			// Keyboard focus pauses; a mouse click on a segment or on play must not leave it stuck.
+			view.addEventListener('focusin', (e) => hold('focus', (e.target as Element).matches(':focus-visible')));
+			view.addEventListener('focusout', (e) => {
+				if (!view.contains(e.relatedTarget as Node | null)) hold('focus', false);
+			});
+			view.addEventListener('svc:shown', (e) => {
+				const on = (e as CustomEvent<boolean>).detail;
+				hold('inactive', !on);
+				if (on) run(index);
+			});
+			document.addEventListener('visibilitychange', () => hold('hidden', document.hidden));
+
+			// Screenshots of the later examples load only once the panel is near the screen.
+			let hydrated = false;
+			const hydrate = () => {
+				if (hydrated) return;
+				hydrated = true;
+				view.querySelectorAll<HTMLTemplateElement>('template[data-deferred-shot]').forEach((tpl) => tpl.replaceWith(tpl.content));
+			};
+			if ('IntersectionObserver' in window) {
+				new IntersectionObserver(
+					([entry]) => {
+						if (entry?.isIntersecting) hydrate();
+						hold('offscreen', !(entry && entry.intersectionRatio >= 0.35));
+					},
+					{ threshold: [0, 0.35] }
+				).observe(view);
+			} else {
+				hydrate();
+				hold('offscreen', false);
+			}
+			// A segment click can reach an example before the observer fired.
+			segs.forEach((s) => s.addEventListener('click', hydrate, { once: true }));
+
+			sync();
+			run(0);
+		};
+		views.filter((v) => v.classList.contains('has-slides')).forEach(carousel);
 
 		cards.forEach((card) => {
 			const id = card.dataset.svcCard ?? '';

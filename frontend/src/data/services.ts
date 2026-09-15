@@ -4,7 +4,8 @@
  *
  * Home cards are compact: `title` + `short` + chips. The long `forWhom` /
  * `outcome` / `timeline` copy shows up in the hover preview panel, where
- * `preview` points at the template or product that solves the service.
+ * `previews` point at the templates or products that solve the service. With
+ * more than one, the panel rotates through them (progress bar, pause button).
  *
  * TODO(fab): every `priceFrom` here is a proposal from the audit, not a
  * confirmed number. Adjust or set to 0 to hide the price on that card.
@@ -15,7 +16,7 @@ import type { Bi } from './site';
 export type ServiceIcon = 'rocket' | 'layout' | 'server' | 'sparkles' | 'shield-check';
 
 /** Screenshot ids: templates come from src/assets/templates, products from src/assets/featured. */
-export type PreviewImage = 'mirante' | 'stratus' | 'atelier' | 'brava' | 'pulsar' | 'quasar' | 'nexus';
+export type PreviewImage = 'salvia' | 'mirante' | 'stratus' | 'atelier' | 'brava' | 'pulsar' | 'quasar' | 'nexus';
 
 export interface ServicePreview {
 	image: PreviewImage;
@@ -43,7 +44,8 @@ export interface Service {
 	/** Card colour (hex). Tile tint, active border/glow, chips and sweep line — never body text. */
 	hue: string;
 	icon: ServiceIcon;
-	preview: ServicePreview;
+	/** First one shows on load; more than one turns the panel into an auto-advancing carousel. */
+	previews: readonly [ServicePreview, ...ServicePreview[]];
 }
 
 export const SERVICES: Service[] = [
@@ -65,11 +67,12 @@ export const SERVICES: Service[] = [
 		timelineShort: { pt: '3 a 5 dias úteis', en: '3 to 5 business days' },
 		hue: '#ff5964',
 		icon: 'rocket',
-		preview: {
-			image: 'mirante',
-			label: { pt: 'Mirante Captação', en: 'Mirante Captação' },
-			href: '/templates/mirante',
-		},
+		previews: [
+			{ image: 'mirante', label: { pt: 'Mirante Captação', en: 'Mirante Captação' }, href: '/templates/mirante' },
+			{ image: 'salvia', label: { pt: 'Sálvia', en: 'Sálvia' }, href: '/templates/salvia' },
+			{ image: 'stratus', label: { pt: 'Stratus Planos', en: 'Stratus Planos' }, href: '/templates/stratus' },
+			{ image: 'brava', label: { pt: 'Brava Vitrine', en: 'Brava Vitrine' }, href: '/templates/brava' },
+		],
 	},
 	{
 		id: 'site',
@@ -89,11 +92,7 @@ export const SERVICES: Service[] = [
 		timelineShort: { pt: '3 a 5 semanas', en: '3 to 5 weeks' },
 		hue: '#7c3aed',
 		icon: 'layout',
-		preview: {
-			image: 'atelier',
-			label: { pt: 'Atelier Portfólio', en: 'Atelier Portfólio' },
-			href: '/templates/atelier',
-		},
+		previews: [{ image: 'atelier', label: { pt: 'Atelier Portfólio', en: 'Atelier Portfólio' }, href: '/templates/atelier' }],
 	},
 	{
 		id: 'system',
@@ -113,11 +112,7 @@ export const SERVICES: Service[] = [
 		timelineShort: { pt: 'fase 1 em 4 a 8 semanas', en: 'phase 1 in 4 to 8 weeks' },
 		hue: '#0ea5e9',
 		icon: 'server',
-		preview: {
-			image: 'nexus',
-			label: { pt: 'Nexus Comunicação', en: 'Nexus Comunicação' },
-			href: '/work',
-		},
+		previews: [{ image: 'nexus', label: { pt: 'Nexus Comunicação', en: 'Nexus Comunicação' }, href: '/work' }],
 	},
 	{
 		id: 'ai',
@@ -137,11 +132,7 @@ export const SERVICES: Service[] = [
 		timelineShort: { pt: 'piloto em 2 a 4 semanas', en: 'pilot in 2 to 4 weeks' },
 		hue: '#f59e0b',
 		icon: 'sparkles',
-		preview: {
-			image: 'quasar',
-			label: { pt: 'Quasar', en: 'Quasar' },
-			href: '/work',
-		},
+		previews: [{ image: 'quasar', label: { pt: 'Quasar', en: 'Quasar' }, href: '/work' }],
 	},
 	{
 		id: 'senior',
@@ -161,10 +152,6 @@ export const SERVICES: Service[] = [
 		timelineShort: { pt: 'auditoria em 1 semana', en: 'audit in 1 week' },
 		hue: '#16a34a',
 		icon: 'shield-check',
-		preview: {
-			image: 'pulsar',
-			label: { pt: 'Pulsar', en: 'Pulsar' },
-			href: '/work',
-		},
+		previews: [{ image: 'pulsar', label: { pt: 'Pulsar', en: 'Pulsar' }, href: '/work' }],
 	},
 ];

@@ -21,4 +21,11 @@ export const services = {
 	viewTemplate: 'Ver template',
 	viewProduct: 'Ver produto',
 	previewAlt: 'Prévia de {label}',
+	/** Carousel when a service has several previews. {n}/{total} = position, {label} = preview label. */
+	examples: 'Exemplos',
+	example: 'exemplo',
+	exampleOf: '{n} de {total}: {label}',
+	goTo: 'Mostrar {label}',
+	pause: 'Pausar a troca de exemplos',
+	play: 'Continuar a troca de exemplos',
 } as const;
