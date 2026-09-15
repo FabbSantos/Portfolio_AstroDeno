@@ -9,7 +9,7 @@
  */
 import { SITE, whatsappUrl } from '../../data/site';
 import { SERVICES } from '../../data/services';
-import { templates } from '../../data/templates';
+import { fullName, templates } from '../../data/templates';
 import { fmt, localeOf, localePath, pick, useT } from '../../i18n';
 
 const locale = localeOf(Astro);
@@ -88,8 +88,8 @@ const [successBefore = '', successAfter = ''] = c.success.title.split('{name}');
 							</optgroup>
 							<optgroup label={c.form.needGroupTemplates}>
 								{templates.map((tpl) => (
-									<option value={tpl.slug} data-name={`${tpl.name} ${tpl.accent}`}>
-										{fmt(c.form.needTemplate, { name: `${tpl.name} ${tpl.accent}` })}
+									<option value={tpl.slug} data-name={fullName(tpl)}>
+										{fmt(c.form.needTemplate, { name: fullName(tpl) })}
 									</option>
 								))}
 								<option value='template'>{c.form.needTemplateAny}</option>

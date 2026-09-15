@@ -13,7 +13,7 @@ import '../styles/site.css';
 import SpeedInsights from '@vercel/speed-insights/astro';
 import WhatsAppFab from '../components/site/WhatsAppFab.astro';
 import { SITE } from '../data/site';
-import { templates } from '../data/templates';
+import { fullName, templates } from '../data/templates';
 import { LOCALES, LANG_TAG, OG_LOCALE, localeOf, localePath, stripLocale, useT } from '../i18n';
 
 interface Props {
@@ -49,7 +49,7 @@ const jsonLd = {
 	knowsAbout: ['TypeScript', 'JavaScript', 'React', 'Vue', 'Next.js', 'Nuxt', 'Astro', 'Node.js', 'C#', 'AWS', 'LLM integration'],
 	makesOffer: templates.map((tpl) => ({
 		'@type': 'Offer',
-		name: `${tpl.name} ${tpl.accent}`,
+		name: fullName(tpl),
 		url: new URL(localePath(locale, `/templates/${tpl.slug}`), site).href,
 		priceCurrency: 'BRL',
 		price: tpl.priceFrom,

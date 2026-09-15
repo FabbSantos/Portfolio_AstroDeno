@@ -7,7 +7,7 @@
  * Hidden automatically when the demo is rendered inside an iframe (DemoLayout).
  */
 import { band, scoresFor } from '../../data/lighthouse';
-import { getTemplate } from '../../data/templates';
+import { fullName, getTemplate } from '../../data/templates';
 import { localePath, type Locale } from '../../i18n';
 
 interface Props {
@@ -18,7 +18,7 @@ interface Props {
 }
 const { slug, locale, example } = Astro.props;
 const tpl = getTemplate(slug);
-const name = tpl ? `${tpl.name} ${tpl.accent}` : slug;
+const name = tpl ? fullName(tpl) : slug;
 const back = localePath(locale, `/templates/${slug}`);
 const want = localePath(locale, `/?template=${slug}#contato`);
 const score = example ? undefined : scoresFor(slug)?.mobile;

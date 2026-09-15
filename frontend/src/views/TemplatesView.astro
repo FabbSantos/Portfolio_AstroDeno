@@ -12,7 +12,7 @@ import TemplateCard from '../components/templates/TemplateCard.astro';
 import Testimonials from '../components/home/Testimonials.astro';
 import { hueVars } from '../components/templates/hues';
 import { SITE, whatsappUrl } from '../data/site';
-import { formatBRL, joinList, templates } from '../data/templates';
+import { formatBRL, fullName, joinList, templates } from '../data/templates';
 import { fmt, localeOf, localePath, pick, useT } from '../i18n';
 
 const locale = localeOf(Astro);
@@ -47,7 +47,7 @@ const selected = templates.find((tpl) => tpl.slug === DEFAULT_SLUG) ?? templates
 
 const plans = templates.map((tpl) => ({
 	tpl,
-	name: `${tpl.name} ${tpl.accent}`,
+	name: fullName(tpl),
 	href: localePath(locale, `/templates/${tpl.slug}`),
 	style: hueVars(tpl.kind),
 	who: joinList(pick(tpl.fits, locale), locale),
@@ -140,7 +140,7 @@ const wa = whatsappUrl(locale, t.templates.cta.whatsappGallery);
 								<span class='plan-top'>
 									<i class='dot' aria-hidden='true' />
 									<span class='plan-name'>
-										{p.tpl.name} <span class='hl'>{p.tpl.accent}</span>
+										{p.tpl.name}{p.tpl.accent && <Fragment>{' '}<span class='hl'>{p.tpl.accent}</span></Fragment>}
 									</span>
 									<span class='plan-sel'>{cmp.selectedLabel}</span>
 								</span>
@@ -178,7 +178,7 @@ const wa = whatsappUrl(locale, t.templates.cta.whatsappGallery);
 								plans.map((p) => (
 									<th scope='col' class:list={[p.selected && 'is-sel']} style={p.style} data-col={p.tpl.slug}>
 										<i class='dot' aria-hidden='true' />
-										{p.tpl.name} <span class='hl'>{p.tpl.accent}</span>
+										{p.tpl.name}{p.tpl.accent && <Fragment>{' '}<span class='hl'>{p.tpl.accent}</span></Fragment>}
 									</th>
 								))
 							}
@@ -222,7 +222,7 @@ const wa = whatsappUrl(locale, t.templates.cta.whatsappGallery);
 
 			<div class='cmp-cta reveal d3'>
 				<a class='btn btn-primary' href={ctaHref(selected.slug)} data-cta>
-					{ctaBefore}<span data-cta-name>{selected.name} {selected.accent}</span>{ctaAfter}
+					{ctaBefore}<span data-cta-name>{fullName(selected)}</span>{ctaAfter}
 				</a>
 			</div>
 		</section>

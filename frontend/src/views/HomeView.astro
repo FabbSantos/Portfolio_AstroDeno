@@ -2,7 +2,7 @@
 /**
  * Home page (rendered by /  and /en). Locale comes from the URL — never
  * hardcode it here. Sections in sales order: hero → proof → services →
- * work → templates → process → testimonials → about → contact.
+ * templates → work → process → testimonials → about → contact.
  * Every content section ends in a way to contact: its own CTA (hero, process)
  * or a SectionCta. About is skipped on purpose: the form comes right after it.
  */
@@ -32,10 +32,10 @@ const t = useT(locale);
 		<ProofBand />
 		<Services />
 		<SectionCta section='services' />
-		<WorksList />
-		<SectionCta section='works' />
 		<Templates />
 		<SectionCta section='templates' />
+		<WorksList />
+		<SectionCta section='works' />
 		<Process />
 		<Testimonials />
 		<AboutShort />
