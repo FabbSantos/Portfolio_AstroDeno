@@ -67,7 +67,7 @@ export const SERVICES: Service[] = [
 		icon: 'rocket',
 		preview: {
 			image: 'mirante',
-			label: { pt: 'Mirante Lançamento', en: 'Mirante Lançamento' },
+			label: { pt: 'Mirante Captação', en: 'Mirante Captação' },
 			href: '/templates/mirante',
 		},
 	},
@@ -91,7 +91,7 @@ export const SERVICES: Service[] = [
 		icon: 'layout',
 		preview: {
 			image: 'atelier',
-			label: { pt: 'Atelier Studio', en: 'Atelier Studio' },
+			label: { pt: 'Atelier Portfólio', en: 'Atelier Portfólio' },
 			href: '/templates/atelier',
 		},
 	},

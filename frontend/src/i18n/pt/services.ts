@@ -1,7 +1,7 @@
 /**
  * Home "Serviços" — five compact cards + the hover preview panel.
  * Per-service copy (titles, one-liners, outcomes, chips) lives in src/data/services.ts.
- * Placeholders: {label} = preview label ("Mirante Lançamento").
+ * Placeholders: {label} = preview label ("Mirante Captação").
  */
 export const services = {
 	eyebrow: 'Serviços',

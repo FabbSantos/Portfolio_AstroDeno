@@ -1,5 +1,5 @@
 /**
- * One colour per template kind — shared by TemplateCard and the gallery's
+ * One colour per template kind (what the site does) — shared by TemplateCard and the gallery's
  * compare strip so a template reads the same everywhere.
  *
  * `hue`  bright value for dots, rings and chip backgrounds.
@@ -9,11 +9,11 @@
 import type { TemplateKind } from '../../data/templates';
 
 export const TEMPLATE_HUES: Record<TemplateKind, { hue: string; text: string }> = {
-	realestate: { hue: '#b45309', text: '#ad5009' }, // amber, text 5.2:1 on --bg, 4.5:1 on its chip
-	saas: { hue: '#ff5c3d', text: '#c2410c' }, // coral, text 5.2:1
-	agency: { hue: '#7c3aed', text: '#7c3aed' }, // violet, 5.7:1
-	shop: { hue: '#16a34a', text: '#14793a' }, // green, text 5.3:1 on --bg, 4.6:1 on its chip
-	clinic: { hue: '#3b7457', text: '#3b7457' }, // sage, 5.3:1 on --bg, 4.7:1 on its chip
+	leads: { hue: '#b45309', text: '#ad5009' }, // amber, text 5.2:1 on --bg, 4.5:1 on its chip
+	product: { hue: '#ff5c3d', text: '#c2410c' }, // coral, text 5.2:1
+	portfolio: { hue: '#7c3aed', text: '#7c3aed' }, // violet, 5.7:1
+	storefront: { hue: '#16a34a', text: '#14793a' }, // green, text 5.3:1 on --bg, 4.6:1 on its chip
+	booking: { hue: '#3b7457', text: '#3b7457' }, // sage, 5.3:1 on --bg, 4.7:1 on its chip
 };
 
 function rgba(hex: string, alpha: number): string {

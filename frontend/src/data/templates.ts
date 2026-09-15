@@ -1,15 +1,28 @@
 /**
  * Template catalogue — shared by the home band, the gallery, the sales page
  * (/templates/<slug>) and the demo pages (/templates/<slug>/demo).
+ *
+ * A template is a structure, not a niche: the name says what the site does
+ * (Agenda, Captação…), `fits` lists kinds of business it serves and each demo
+ * is one example of content. The first example lives at /templates/<slug>/demo,
+ * the others at /templates/<slug>/demo/<key>.
  */
 import type { Bi } from './site';
 
-export type TemplateKind = 'realestate' | 'saas' | 'agency' | 'shop' | 'clinic';
+/** What the site does. Drives the card hue (components/templates/hues.ts). */
+export type TemplateKind = 'booking' | 'leads' | 'product' | 'portfolio' | 'storefront';
+
+export interface TemplateExample {
+	/** URL segment for extra examples ("salao" → /templates/salvia/demo/salao). Unused for the first. */
+	key: string;
+	/** Lowercase, reads inside a sentence: "Na demo: clínica e salão". */
+	label: Bi;
+}
 
 export interface TemplateMeta {
 	slug: string;
 	name: string;
-	/** Second word of the name, rendered with the accent colour. */
+	/** Second word of the name, rendered with the accent colour. Names the function, not a niche. */
 	accent: string;
 	kind: TemplateKind;
 	cat: Bi;
@@ -17,6 +30,10 @@ export interface TemplateMeta {
 	desc: Bi;
 	/** Longer lead for the sales page. */
 	lead: Bi;
+	/** Kinds of business the structure serves, lowercase, up to 4 ("Serve pra: …"). */
+	fits: Bi<readonly string[]>;
+	/** Demo contents. The first is the main demo (card preview, Lighthouse score). */
+	examples: readonly [TemplateExample, ...TemplateExample[]];
 	/** Sections a buyer gets — sales page bullets. */
 	sections: Bi<readonly string[]>;
 	/** Price in BRL, rendered as "a partir de R$ 6.500". */
@@ -35,20 +52,28 @@ export const templates: TemplateMeta[] = [
 	{
 		slug: 'salvia',
 		name: 'Sálvia',
-		accent: 'Clínica',
-		kind: 'clinic',
-		cat: { pt: 'Saúde · Clínica', en: 'Health · Clinic' },
+		accent: 'Agenda',
+		kind: 'booking',
+		cat: { pt: 'Agendamento · WhatsApp', en: 'Booking · WhatsApp' },
 		desc: {
-			pt: 'Landing de clínica: especialidades, agendamento pelo WhatsApp em dois toques e horário com "aberto agora".',
-			en: 'Clinic landing: specialties, two-tap WhatsApp booking and live "open now" hours.',
+			pt: 'Pra quem atende com hora marcada: serviços, agendamento pelo WhatsApp em dois toques e horário com "aberto agora".',
+			en: 'For businesses that run on appointments: services, two-tap WhatsApp booking and live "open now" hours.',
 		},
 		lead: {
-			pt: 'Landing enxuta pra clínica e consultório. O paciente escolhe a especialidade e o período e a mensagem sai pronta no WhatsApp. Equipe com registro, convênios, horário ao vivo e SEO local já configurado.',
-			en: 'A lean landing for clinics and practices. Patients pick a specialty and a time of day and the WhatsApp message is ready to send. Team with registries, insurance, live opening hours and local SEO built in.',
+			pt: 'Página enxuta pra quem atende com hora marcada. O cliente escolhe o serviço e o período e a mensagem sai pronta no WhatsApp. Equipe, convênios ou formas de pagamento, horário ao vivo e SEO local já configurado. Veja a mesma estrutura como clínica e como salão.',
+			en: 'A lean page for businesses that run on appointments. Customers pick a service and a time of day and the WhatsApp message is ready to send. Team, insurance or payment options, live opening hours and local SEO built in. See the same structure as a clinic and as a salon.',
 		},
+		fits: {
+			pt: ['clínica', 'salão e barbearia', 'estúdio de estética', 'escritório'],
+			en: ['clinic', 'salon and barber', 'beauty studio', 'office'],
+		},
+		examples: [
+			{ key: 'clinica', label: { pt: 'clínica', en: 'clinic' } },
+			{ key: 'salao', label: { pt: 'salão', en: 'salon' } },
+		],
 		sections: {
-			pt: ['Hero editorial com horário ao vivo', 'Especialidades com foto no hover', 'Agendamento pelo WhatsApp', 'Equipe com registro', 'Convênios', 'O espaço', 'Perguntas frequentes', 'Como chegar e horários', 'Rodapé com responsável técnico'],
-			en: ['Editorial hero with live hours', 'Specialties with hover photos', 'WhatsApp booking', 'Team with registries', 'Insurance plans', 'The space', 'FAQ', 'Directions and hours', 'Footer with medical director'],
+			pt: ['Hero editorial com horário ao vivo', 'Serviços com foto no hover', 'Agendamento pelo WhatsApp', 'Equipe', 'Convênios ou formas de pagamento', 'O espaço', 'Perguntas frequentes', 'Como chegar e horários', 'Rodapé com dados da empresa'],
+			en: ['Editorial hero with live hours', 'Services with hover photos', 'WhatsApp booking', 'Team', 'Insurance or payment options', 'The space', 'FAQ', 'Directions and hours', 'Footer with company details'],
 		},
 		priceFrom: 1000,
 		days: 3,
@@ -59,20 +84,25 @@ export const templates: TemplateMeta[] = [
 	{
 		slug: 'mirante',
 		name: 'Mirante',
-		accent: 'Lançamento',
-		kind: 'realestate',
-		cat: { pt: 'Imobiliário · Conversão', en: 'Real estate · Conversion' },
+		accent: 'Captação',
+		kind: 'leads',
+		cat: { pt: 'Captação · Formulário', en: 'Lead capture · Form' },
 		desc: {
-			pt: 'Landing de lançamento imobiliário: formulário no hero, plantas, localização e cara de venda de verdade.',
-			en: 'Real-estate launch landing: lead form in the hero, floor plans, location and the proper sales feel.',
+			pt: 'Página de captação: formulário já no topo, números, detalhes, localização e condições. Feita pra encher a lista de interessados.',
+			en: 'Lead-capture page: form right in the hero, numbers, details, location and terms. Built to fill a list of interested people.',
 		},
 		lead: {
-			pt: 'Landing de lançamento imobiliário no padrão BR. Faixa de números, galeria, plantas, mapa e formulário de alta intenção. Feita pra converter visita em call com corretor.',
-			en: 'Brazilian-style real-estate launch landing. Numbers band, gallery, floor plans, location map and a high-intent lead form. Built to convert visits into scheduled tours.',
+			pt: 'Página de captação no padrão brasileiro: faixa de números, galeria, opções, mapa, condições e formulário de alta intenção. Na demo é um lançamento imobiliário, mas a estrutura serve pra qualquer oferta que precisa do contato antes da venda.',
+			en: 'Brazilian-style lead-capture page: numbers band, gallery, options, location map, terms and a high-intent form. The demo is a real-estate launch, but the structure fits any offer that needs a contact before the sale.',
 		},
+		fits: {
+			pt: ['lançamento imobiliário', 'curso ou turma', 'evento', 'pré-venda'],
+			en: ['real-estate launch', 'course or cohort', 'event', 'pre-sale'],
+		},
+		examples: [{ key: 'imovel', label: { pt: 'lançamento imobiliário', en: 'real-estate launch' } }],
 		sections: {
-			pt: ['Hero com formulário', 'Faixa de números', 'O empreendimento + lazer', 'Plantas', 'Localização', 'Condições', 'Formulário completo', 'Rodapé com CRECI/RI'],
-			en: ['Hero with lead form', 'Numbers band', 'The project + amenities', 'Floor plans', 'Location', 'Payment terms', 'Full lead form', 'Legal footer'],
+			pt: ['Hero com formulário', 'Faixa de números', 'O produto e os diferenciais', 'Opções (plantas, turmas, pacotes)', 'Localização', 'Condições', 'Formulário completo', 'Rodapé com dados legais'],
+			en: ['Hero with lead form', 'Numbers band', 'The offer and its highlights', 'Options (floor plans, cohorts, packages)', 'Location', 'Terms', 'Full lead form', 'Legal footer'],
 		},
 		priceFrom: 6500,
 		days: 3,
@@ -82,20 +112,25 @@ export const templates: TemplateMeta[] = [
 	{
 		slug: 'stratus',
 		name: 'Stratus',
-		accent: 'SaaS',
-		kind: 'saas',
-		cat: { pt: 'SaaS · B2B', en: 'SaaS · B2B' },
+		accent: 'Planos',
+		kind: 'product',
+		cat: { pt: 'Produto · Planos', en: 'Product · Plans' },
 		desc: {
-			pt: 'Landing focada em conversão de trial. Pricing + FAQ inline.',
-			en: 'Conversion-focused trial landing. Inline pricing + FAQ.',
+			pt: 'Página de produto com planos: prova social, recursos, tabela de preços e perguntas frequentes.',
+			en: 'Product page with plans: social proof, features, pricing table and FAQ.',
 		},
 		lead: {
-			pt: 'Landing focada em conversão para SaaS B2B: hero forte, prova social, features, pricing e FAQ inline.',
-			en: 'Conversion-focused landing for B2B SaaS: strong hero, social proof, features, pricing and inline FAQ.',
+			pt: 'Página de produto focada em conversão: hero forte, prova social, recursos, três planos e perguntas frequentes. Na demo é um SaaS B2B, mas serve pra app, curso online, assinatura ou qualquer serviço vendido em planos.',
+			en: 'Conversion-focused product page: strong hero, social proof, features, three plans and FAQ. The demo is a B2B SaaS, but it fits an app, an online course, a subscription or any service sold in plans.',
 		},
+		fits: {
+			pt: ['software ou app', 'curso online', 'assinatura', 'serviço com planos'],
+			en: ['software or app', 'online course', 'subscription', 'service with plans'],
+		},
+		examples: [{ key: 'saas', label: { pt: 'SaaS B2B', en: 'B2B SaaS' } }],
 		sections: {
-			pt: ['Hero + CTA de trial', 'Mock do produto', 'Logos', '6 features', 'Pricing (3 planos)', 'FAQ', 'CTA final', 'Rodapé'],
-			en: ['Hero + trial CTA', 'Product mock', 'Logo wall', '6 features', 'Pricing (3 plans)', 'FAQ', 'Final CTA', 'Footer'],
+			pt: ['Hero + CTA principal', 'Imagem do produto', 'Logos de clientes', '6 recursos', 'Planos (3 colunas)', 'Perguntas frequentes', 'CTA final', 'Rodapé'],
+			en: ['Hero + main CTA', 'Product shot', 'Client logos', '6 features', 'Plans (3 columns)', 'FAQ', 'Final CTA', 'Footer'],
 		},
 		priceFrom: 4200,
 		days: 3,
@@ -105,20 +140,25 @@ export const templates: TemplateMeta[] = [
 	{
 		slug: 'atelier',
 		name: 'Atelier',
-		accent: 'Studio',
-		kind: 'agency',
-		cat: { pt: 'Agência · Estúdio', en: 'Agency · Studio' },
+		accent: 'Portfólio',
+		kind: 'portfolio',
+		cat: { pt: 'Portfólio · Trabalhos', en: 'Portfolio · Work' },
 		desc: {
-			pt: 'Portfólio editorial. Grid de cases e processo numerado.',
-			en: 'Editorial portfolio. Case grid and numbered process.',
+			pt: 'Portfólio editorial: grid de trabalhos, processo numerado e muito respiro.',
+			en: 'Editorial portfolio: work grid, numbered process and lots of whitespace.',
 		},
 		lead: {
-			pt: 'Portfólio editorial para estúdios e agências: grid de cases, processo numerado, muito respiro.',
-			en: 'Editorial portfolio for studios and agencies: case grid, numbered process, lots of whitespace.',
+			pt: 'Portfólio editorial pra quem vende pelo que já fez: grid de trabalhos, processo em passos, números e contato. Na demo é um estúdio de design, mas serve pra fotógrafo, arquiteto, produtora ou freelancer.',
+			en: 'Editorial portfolio for people who sell through past work: project grid, step-by-step process, numbers and contact. The demo is a design studio, but it fits a photographer, an architect, a production company or a freelancer.',
 		},
+		fits: {
+			pt: ['agência ou estúdio', 'fotógrafo', 'arquitetura', 'freelancer'],
+			en: ['agency or studio', 'photographer', 'architecture', 'freelancer'],
+		},
+		examples: [{ key: 'estudio', label: { pt: 'estúdio de design', en: 'design studio' } }],
 		sections: {
-			pt: ['Hero editorial', 'Grid de 6 cases', 'Processo em 4 passos', 'Sobre o estúdio + números', 'Contato', 'Rodapé'],
-			en: ['Editorial hero', '6-case grid', '4-step process', 'Studio + stats', 'Contact', 'Footer'],
+			pt: ['Hero editorial', 'Grid de 6 trabalhos', 'Processo em 4 passos', 'Sobre + números', 'Contato', 'Rodapé'],
+			en: ['Editorial hero', '6-project grid', '4-step process', 'About + stats', 'Contact', 'Footer'],
 		},
 		priceFrom: 3500,
 		days: 2,
@@ -128,20 +168,25 @@ export const templates: TemplateMeta[] = [
 	{
 		slug: 'brava',
 		name: 'Brava',
-		accent: 'Drop',
-		kind: 'shop',
-		cat: { pt: 'E-commerce · Drop', en: 'E-commerce · Drop' },
+		accent: 'Vitrine',
+		kind: 'storefront',
+		cat: { pt: 'Vitrine · Contagem regressiva', en: 'Storefront · Countdown' },
 		desc: {
-			pt: 'Lançamento limitado. Countdown + lookbook + vitrine que leva pro seu checkout.',
-			en: 'Limited drop. Countdown + lookbook + storefront that links to your checkout.',
+			pt: 'Vitrine com contagem regressiva: produtos, lookbook e newsletter, cada item levando pro seu checkout.',
+			en: 'Storefront with a countdown: products, lookbook and newsletter, each item linking to your checkout.',
 		},
 		lead: {
-			pt: 'Lançamento limitado para e-commerce: countdown, vitrine de produtos, lookbook e newsletter. Os produtos apontam pro checkout que você já usa (Shopify, Nuvemshop, Yampi…).',
-			en: 'Limited drop for e-commerce: countdown, product grid, lookbook and newsletter. Products link to the checkout you already use (Shopify, Nuvemshop, Yampi…).',
+			pt: 'Vitrine pra lançamento com data marcada: contagem regressiva, produtos, lookbook, história e newsletter. Os produtos apontam pro checkout que você já usa (Shopify, Nuvemshop, Yampi). Na demo é um drop de moda, mas serve pra coleção nova, pré-venda, encomendas de época ou ingresso de evento.',
+			en: 'Storefront for a dated launch: countdown, products, lookbook, story and newsletter. Products link to the checkout you already use (Shopify, Nuvemshop, Yampi). The demo is a fashion drop, but it fits a new collection, a pre-sale, seasonal orders or event tickets.',
 		},
+		fits: {
+			pt: ['loja ou marca', 'coleção nova', 'pré-venda', 'evento com ingresso'],
+			en: ['shop or brand', 'new collection', 'pre-sale', 'ticketed event'],
+		},
+		examples: [{ key: 'moda', label: { pt: 'drop de moda', en: 'fashion drop' } }],
 		sections: {
-			pt: ['Ticker', 'Hero + countdown', 'Vitrine (6 produtos)', 'Lookbook', 'História', 'Newsletter', 'Rodapé'],
-			en: ['Ticker', 'Hero + countdown', 'Storefront (6 products)', 'Lookbook', 'Story', 'Newsletter', 'Footer'],
+			pt: ['Faixa de avisos', 'Hero + contagem regressiva', 'Vitrine (6 produtos)', 'Lookbook', 'História', 'Newsletter', 'Rodapé'],
+			en: ['Announcement ticker', 'Hero + countdown', 'Storefront (6 products)', 'Lookbook', 'Story', 'Newsletter', 'Footer'],
 		},
 		priceFrom: 4800,
 		days: 3,
@@ -152,6 +197,13 @@ export const templates: TemplateMeta[] = [
 
 export const getTemplate = (slug: string) => templates.find((t) => t.slug === slug);
 export const demoPath = (slug: string) => `/templates/${slug}/demo`;
+
+/** Demo URL of one example: the first is the main demo, the rest live under it. */
+export const examplePath = (tpl: TemplateMeta, key: string) => (key === tpl.examples[0].key ? demoPath(tpl.slug) : `${demoPath(tpl.slug)}/${key}`);
+
+/** "a, b e c" / "a, b and c". */
+export const joinList = (items: readonly string[], locale: 'pt' | 'en') =>
+	new Intl.ListFormat(locale === 'pt' ? 'pt-BR' : 'en-US', { style: 'long', type: 'conjunction' }).format(items);
 
 export function formatBRL(n: number): string {
 	return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(n);

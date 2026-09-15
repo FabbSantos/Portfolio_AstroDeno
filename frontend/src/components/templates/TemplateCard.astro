@@ -20,7 +20,7 @@ import type { ImageMetadata } from 'astro';
 import { Image } from 'astro:assets';
 import { scoresFor } from '../../data/lighthouse';
 import { SITE } from '../../data/site';
-import { demoPath, formatBRL, type TemplateMeta } from '../../data/templates';
+import { demoPath, formatBRL, joinList, type TemplateMeta } from '../../data/templates';
 import { fmt, localePath, pick, useT, type Locale } from '../../i18n';
 import { hueVars } from './hues';
 import ScoreGauge from './ScoreGauge.astro';
@@ -65,7 +65,8 @@ const panDur = `${Math.max(2, Math.round((ratio - FRAME_RATIO) * 19) / 10)}s`;
 const name = `${tpl.name} ${tpl.accent}`;
 const previewAlt = fmt(t.templates.card.previewAlt, { name });
 const includes = fmt(t.templates.card.includes, { months: SITE.promises.adjustmentsMonths });
-const solves = (t.templates.solves as Record<string, string | undefined>)[tpl.slug];
+const fits = joinList(pick(tpl.fits, locale), locale);
+const demoAs = fmt(t.templates.card.demoAs, { what: joinList(tpl.examples.map((e) => pick(e.label, locale)), locale) });
 const sales = localePath(locale, `/templates/${tpl.slug}`);
 const demo = demoPath(tpl.slug);
 const style = `${hueVars(tpl.kind)};--frame-pct:${framePct};--pan-dur:${panDur}`;
@@ -135,15 +136,12 @@ const style = `${hueVars(tpl.kind)};--frame-pct:${framePct};--pan-dur:${panDur}`
 				</h3>
 			)
 		}
-		{
-			solves && (
-				<p class='solves'>
-					<span class='k'>{t.templates.card.solves}</span>
-					{solves}
-				</p>
-			)
-		}
+		<p class='solves'>
+			<span class='k'>{t.templates.card.fits}</span>
+			{fits}
+		</p>
 		<p class='desc'>{pick(tpl.desc, locale)}</p>
+		<p class='demo-as'>{demoAs}</p>
 		<p class='inc'>{includes}</p>
 		{
 			wide && scores && (
@@ -522,6 +520,12 @@ const style = `${hueVars(tpl.kind)};--frame-pct:${framePct};--pan-dur:${panDur}`
 		font-size: 14px;
 		color: var(--ink-2);
 		line-height: 1.5;
+	}
+	/* which content the demo shows: the structure is the product, the demo one example */
+	.demo-as {
+		font-family: var(--mono);
+		font-size: 12px;
+		color: var(--ink-3);
 	}
 	.inc {
 		font-size: 13px;
