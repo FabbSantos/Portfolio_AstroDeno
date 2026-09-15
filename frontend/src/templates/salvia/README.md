@@ -77,6 +77,17 @@ Os textos do exemplo Clínica seguem a linha dos conselhos (CFM, CRO): informati
 
 Na dúvida, a regra que vale é a do conselho da área do cliente.
 
+## Como adicionar outro exemplo
+
+Nicho novo (barbearia, pet shop, escritório) não pede template novo, só mais um exemplo de conteúdo:
+
+1. `demo.<chave>.config.ts` nesta pasta, copiando um dos exemplos e trocando textos, fotos (`assets/demo/<chave>-*.jpg`), `theme` e `businessType`.
+2. `src/pages/templates/salvia/demo/<chave>.astro`, igual a `demo/salao.astro` com o import e `example='<chave>'` trocados.
+3. Uma linha em `examples` do template em `src/data/templates.ts` (`{ key: '<chave>', label: { pt, en } }`). O seletor "Exemplo" da página de venda aparece sozinho.
+4. Conferir acessibilidade e performance da nova demo antes de publicar.
+
+O scaffold já aceita o novo exemplo com `--example <chave>`.
+
 ## O que o scaffold gera
 
 `node scripts/new-client.mjs --template salvia --form whatsapp …` → `client-starter/` com `src/templates/core/` + `src/templates/salvia/` vendorados (sem configs de demo nem `assets/demo`), as fontes no `package.json`, `src/site.config.ts` com o conteúdo do exemplo Clínica e campos `TODO_` (incluindo `contact.whatsapp.number`), `src/assets/README.md`, páginas `index` (`SalviaPage`), `privacidade`, `obrigado` e `404`. Com `--example salao`, o `site.config.ts` parte do exemplo Salão. Equipe, convênios, espaço e perguntas vêm do exemplo: apague os blocos que o cliente não tiver.
