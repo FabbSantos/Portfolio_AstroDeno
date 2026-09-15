@@ -86,8 +86,9 @@ const footParts = lead.foot && legal.privacyUrl && lead.foot.includes(lead.priva
 		gap: 56px;
 		align-items: center;
 	}
+	/* dark block: the light accent variant */
 	.lead-l .eyebrow {
-		color: var(--accent);
+		color: var(--accent-on-dark);
 		display: block;
 		margin-bottom: 16px;
 	}
@@ -96,6 +97,9 @@ const footParts = lead.foot && legal.privacyUrl && lead.foot.includes(lead.priva
 		font-weight: 800;
 		letter-spacing: -0.035em;
 		line-height: 1.05;
+	}
+	.lead-l h2 :global(strong) {
+		color: var(--accent-on-dark);
 	}
 	.lead-sub {
 		margin: 20px 0 28px;
@@ -118,7 +122,7 @@ const footParts = lead.foot && legal.privacyUrl && lead.foot.includes(lead.priva
 		gap: 12px;
 	}
 	.b-ic {
-		color: var(--accent);
+		color: var(--accent-on-dark);
 		font-weight: 700;
 	}
 
@@ -147,7 +151,7 @@ const footParts = lead.foot && legal.privacyUrl && lead.foot.includes(lead.priva
 		text-align: left;
 	}
 	.lead .big-form .mf-foot a {
-		color: var(--accent);
+		color: var(--accent-text);
 	}
 	@media (max-width: 900px) {
 		.lead-inner {

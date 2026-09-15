@@ -32,6 +32,7 @@ const { shop } = config;
 									format='webp'
 									loading='lazy'
 									decoding='async'
+									quality='high'
 								/>
 							)}
 							{p.tag && <span class='p-tag'>{p.tag}</span>}
@@ -143,7 +144,7 @@ const { shop } = config;
 	.prod-meta p {
 		font-family: var(--mono);
 		font-size: 14px;
-		color: var(--accent);
+		color: var(--accent-text);
 		font-weight: 600;
 		margin-top: 4px;
 	}

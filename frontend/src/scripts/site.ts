@@ -10,6 +10,7 @@
  * Language switching is a plain link now (server-side i18n) — nothing to wire.
  */
 import { initCtaTracking } from './analytics';
+import { enhanceAccordions } from '../templates/core/accordion';
 
 const reducedMotion = (): boolean => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -186,6 +187,7 @@ function initMobileNav(): void {
 
 export function initSite(): void {
 	initCtaTracking();
+	enhanceAccordions();
 	initStickyTopbar();
 	initReveal();
 	initCountUp();

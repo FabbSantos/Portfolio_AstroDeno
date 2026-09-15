@@ -3,8 +3,10 @@
  * Sticky bar on top of every template demo. Two links, both localized:
  *  ← back to the sales page of this template
  *  "I want this template →" straight to the prefilled contact form.
+ * In between, the credit and the demo's measured Lighthouse mobile score.
  * Hidden automatically when the demo is rendered inside an iframe (DemoLayout).
  */
+import { band, scoresFor } from '../../data/lighthouse';
 import { getTemplate } from '../../data/templates';
 import { localePath, type Locale } from '../../i18n';
 
@@ -17,15 +19,26 @@ const tpl = getTemplate(slug);
 const name = tpl ? `${tpl.name} ${tpl.accent}` : slug;
 const back = localePath(locale, `/templates/${slug}`);
 const want = localePath(locale, `/?template=${slug}#contato`);
+const score = scoresFor(slug)?.mobile;
 const copy =
 	locale === 'pt'
-		? { back: `← Sobre o template ${name}`, want: 'Quero esse template →', by: 'Demo · template por Fab Bahiense' }
-		: { back: `← About the ${name} template`, want: 'I want this template →', by: 'Demo · template by Fab Bahiense' };
+		? { back: `← Sobre o template ${name}`, want: 'Quero esse template →', by: 'Demo · template por Fab Bahiense', device: 'no celular' }
+		: { back: `← About the ${name} template`, want: 'I want this template →', by: 'Demo · template by Fab Bahiense', device: 'on mobile' };
 ---
 
 <div class='demo-ribbon' role='region' aria-label={copy.by}>
 	<a class='r-back' href={back}>{copy.back}</a>
-	<span class='r-by'>{copy.by}</span>
+	<span class='r-by'>
+		{copy.by}
+		{
+			score !== undefined && (
+				<span class:list={['r-score', `is-${band(score)}`]}>
+					<i aria-hidden='true' />
+					Lighthouse <b>{score}</b> {copy.device}
+				</span>
+			)
+		}
+	</span>
 	<a class='r-want' href={want}>{copy.want}</a>
 </div>
 
@@ -58,6 +71,31 @@ const copy =
 		color: rgba(255, 255, 255, 0.55);
 		flex: 1;
 		text-align: center;
+	}
+	.r-score {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		margin-left: 12px;
+		padding: 3px 10px 3px 8px;
+		border-radius: 999px;
+		background: rgba(255, 255, 255, 0.08);
+		color: rgba(255, 255, 255, 0.85);
+	}
+	.r-score i {
+		width: 7px;
+		height: 7px;
+		border-radius: 50%;
+		background: #0cce6b;
+	}
+	.r-score.is-average i {
+		background: #ffa400;
+	}
+	.r-score.is-poor i {
+		background: #ff4e42;
+	}
+	.r-score b {
+		color: #fff;
 	}
 	/* Portfolio's AA coral (--accent-text): white on #ff5964 is only 3:1. */
 	.r-want {

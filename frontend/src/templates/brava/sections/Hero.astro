@@ -71,8 +71,8 @@ const cells = [
 							sizes='(max-width: 900px) 50vw, 20vw'
 							format='webp'
 							loading={i === 0 ? 'eager' : 'lazy'}
-							fetchpriority={i === 0 ? 'high' : undefined}
 							decoding='async'
+							quality='high'
 						/>
 					</div>
 				))
@@ -200,8 +200,8 @@ const cells = [
 		transition: all 0.2s;
 	}
 	.btn-acc:hover {
-		background: var(--accent);
-		border-color: var(--accent);
+		background: var(--accent-text);
+		border-color: var(--accent-text);
 		transform: translate(-3px, -3px);
 		box-shadow: 3px 3px 0 0 var(--ink);
 	}

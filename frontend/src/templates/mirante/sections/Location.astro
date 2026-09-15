@@ -46,6 +46,7 @@ const widths = (w: number) => [...[640, 960, 1300].filter((x) => x < w), w];
 						format='webp'
 						loading='lazy'
 						decoding='async'
+						quality='high'
 					/>
 				</figure>
 			) : map.kind === 'gmaps' ? (
@@ -155,7 +156,7 @@ const widths = (w: number) => [...[640, 960, 1300].filter((x) => x < w), w];
 		width: 30px;
 		height: 30px;
 		border-radius: 50%;
-		background: var(--accent);
+		background: var(--accent-text);
 		color: #fff;
 		font-family: var(--mono);
 		font-size: 11px;
@@ -184,7 +185,7 @@ const widths = (w: number) => [...[640, 960, 1300].filter((x) => x < w), w];
 		font-family: var(--mono);
 		font-size: 13px;
 		font-weight: 700;
-		color: var(--accent);
+		color: var(--accent-text);
 		text-align: center;
 	}
 	.p-info {

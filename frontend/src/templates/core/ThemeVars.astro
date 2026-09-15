@@ -3,6 +3,16 @@
  * Turns `site.theme` into the CSS tokens every template consumes.
  * Emitted as a raw <style> so it wins over any earlier :root definition
  * (portfolio demos render it after the portfolio's own base.css).
+ *
+ * Contrast (WCAG AA, 4.5:1) holds for any brand colour on a light ground:
+ * - `--accent-text` is the accent with its OKLCH lightness capped at 0.51, same
+ *   hue and chroma. Use it for accent-coloured text and for fills behind white
+ *   text (buttons, badges). `--accent` stays for borders, dots, glows, gradients.
+ * - `--accent-display` caps lightness at 0.62 (3:1, AA for large text): accent
+ *   words inside headings of 24px and up keep the brand colour almost untouched.
+ * - `--accent-on-dark` is the accent with lightness raised to at least 0.78, for
+ *   accent text on `--ink` blocks (dark lead sections, footers).
+ * - `--ink-2` and `--ink-3` are body and muted text; `--ink-4` is decorative only.
  */
 import type { BaseSite } from './schema';
 
@@ -17,20 +27,25 @@ const lines = [
 	`--accent-2: ${theme.accent2 ?? theme.accent}`,
 	`--accent-soft: color-mix(in srgb, var(--accent) 12%, transparent)`,
 	`--accent-glow: color-mix(in srgb, var(--accent) 40%, transparent)`,
-	`--accent-text: color-mix(in srgb, var(--accent) 82%, var(--ink))`,
+	// fallback for engines without relative colours (pre-2024), overridden below
+	`--accent-text: color-mix(in srgb, var(--accent) 65%, var(--ink))`,
+	`--accent-display: color-mix(in srgb, var(--accent) 88%, var(--ink))`,
+	`--accent-on-dark: color-mix(in srgb, var(--accent) 55%, #fff)`,
 	`--bg: ${theme.bg}`,
 	`--bg-2: ${theme.bg2 ?? 'color-mix(in srgb, var(--bg) 94%, var(--ink))'}`,
 	`--bg-3: #fff`,
 	`--ink: ${theme.ink}`,
-	`--ink-2: color-mix(in srgb, var(--ink) 72%, var(--bg))`,
-	`--ink-3: color-mix(in srgb, var(--ink) 55%, var(--bg))`,
+	`--ink-2: color-mix(in srgb, var(--ink) 82%, var(--bg))`,
+	`--ink-3: color-mix(in srgb, var(--ink) 68%, var(--bg))`,
 	`--ink-4: color-mix(in srgb, var(--ink) 25%, var(--bg))`,
 	`--rule: color-mix(in srgb, var(--ink) 8%, transparent)`,
 	`--rule-2: color-mix(in srgb, var(--ink) 15%, transparent)`,
 	`--topbar: color-mix(in srgb, var(--bg) 90%, transparent)`,
 	`--radius: ${theme.radius}px`,
 ];
-const css = `<style>:root{${lines.join(';')}}</style>`;
+const css =
+	`<style>:root{${lines.join(';')}}` +
+	`@supports (color: oklch(from red l c h)){:root{--accent-text: oklch(from var(--accent) min(l, 0.51) c h);--accent-display: oklch(from var(--accent) min(l, 0.62) c h);--accent-on-dark: oklch(from var(--accent) max(l, 0.78) c h)}}</style>`;
 ---
 
 <Fragment set:html={css} />

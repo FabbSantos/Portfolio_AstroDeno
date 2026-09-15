@@ -5,9 +5,6 @@
    colours except #fff/#000.
    ========================================================================== */
 .tpl-mirante {
-	/* The original palette had a darker ink-2 (#4b5563) and a lighter ink-3 (#9ca3af) than the core mixes. */
-	--ink-2: color-mix(in srgb, var(--ink) 80%, var(--bg));
-	--ink-3: color-mix(in srgb, var(--ink) 42%, var(--bg));
 	/* Corner radii derived from theme.radius (8px → 4 / 6 / 8 / 12 / 2). */
 	--r-btn: calc(var(--radius) / 2);
 	--r-input: calc(var(--radius) - 2px);
@@ -24,7 +21,7 @@
 /* Accent span in the h1 / `**text**` inside headings (see sections/_md.ts). */
 .tpl-mirante .hl,
 .tpl-mirante :is(h1, h2, h3) strong {
-	color: var(--accent);
+	color: var(--accent-display);
 	font-weight: inherit;
 }
 
@@ -34,7 +31,7 @@
 	font-weight: 700;
 	letter-spacing: 0.14em;
 	text-transform: uppercase;
-	color: var(--accent);
+	color: var(--accent-text);
 	display: inline-flex;
 	align-items: center;
 	gap: 8px;
@@ -51,7 +48,7 @@
 	gap: 8px;
 }
 .tpl-mirante .brand .dot {
-	color: var(--accent);
+	color: var(--accent-text);
 	font-size: 9px;
 }
 .tpl-mirante .brand .loc {
@@ -95,7 +92,7 @@
 	text-transform: uppercase;
 }
 .tpl-mirante .lead-form .lf-req {
-	color: var(--accent);
+	color: var(--accent-text);
 }
 .tpl-mirante .lead-form .lf-field input,
 .tpl-mirante .lead-form .lf-field select,
@@ -138,8 +135,8 @@
 	transition: all 0.2s;
 }
 .tpl-mirante .lead-form .lf-submit:hover {
-	background: var(--accent);
-	border-color: var(--accent);
+	background: var(--accent-text);
+	border-color: var(--accent-text);
 	transform: none;
 }
 .tpl-mirante .lead-form .lf-status {
@@ -156,7 +153,7 @@
 	text-align: center;
 }
 .tpl-mirante .mf-foot a {
-	color: var(--accent);
+	color: var(--accent-text);
 	font-weight: 600;
 	margin-left: 4px;
 }

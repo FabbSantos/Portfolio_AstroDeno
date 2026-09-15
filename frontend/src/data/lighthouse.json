@@ -1,0 +1,38 @@
+{
+	"measuredAt": "2026-09-14",
+	"source": "http://localhost:4400",
+	"lighthouse": "13.4.1",
+	"runs": 3,
+	"templates": {
+		"salvia": {
+			"mobile": 97,
+			"desktop": 100,
+			"accessibility": 100,
+			"bestPractices": 100
+		},
+		"mirante": {
+			"mobile": 94,
+			"desktop": 100,
+			"accessibility": 100,
+			"bestPractices": 100
+		},
+		"stratus": {
+			"mobile": 100,
+			"desktop": 100,
+			"accessibility": 100,
+			"bestPractices": 100
+		},
+		"atelier": {
+			"mobile": 97,
+			"desktop": 100,
+			"accessibility": 100,
+			"bestPractices": 100
+		},
+		"brava": {
+			"mobile": 92,
+			"desktop": 100,
+			"accessibility": 100,
+			"bestPractices": 100
+		}
+	}
+}

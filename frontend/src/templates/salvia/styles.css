@@ -4,7 +4,7 @@
 
    Direction: editorial and quiet. Serif titles at regular weight, hairlines
    instead of cards, near-square corners (theme.radius ≈ 2), one dark button.
-   Text never uses --ink-3: on light grounds it drops under 4.5:1.
+   Secondary text uses --ink-2 only, so the page reads in two tones.
    ========================================================================== */
 .tpl-salvia {
 	--serif: 'Newsreader Variable', 'Newsreader', Georgia, 'Times New Roman', serif;
@@ -90,7 +90,7 @@
 	transition: background 0.3s;
 }
 .tpl-salvia .btn:hover {
-	background: var(--accent);
+	background: var(--accent-text);
 }
 .tpl-salvia .btn .arr {
 	display: inline-block;

@@ -27,6 +27,8 @@ export interface TemplateMeta {
 	demoLocale: 'pt' | 'en';
 	/** Gradient for placeholder tiles. */
 	grad: string;
+	/** Recently added: "Novo" chip on its card. Keep new templates first in the list so they lead the home band. */
+	isNew?: boolean;
 }
 
 export const templates: TemplateMeta[] = [
@@ -52,6 +54,7 @@ export const templates: TemplateMeta[] = [
 		days: 3,
 		demoLocale: 'pt',
 		grad: 'linear-gradient(135deg,#E4EDE6,#BCD4C3)',
+		isNew: true,
 	},
 	{
 		slug: 'mirante',

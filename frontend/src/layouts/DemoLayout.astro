@@ -13,6 +13,7 @@ import '../styles/base.css';
 import DemoRibbon from '../components/templates/DemoRibbon.astro';
 import type { Locale } from '../i18n';
 import { LANG_TAG } from '../i18n';
+import { PRELOAD_FONTS } from '../templates/core/fonts';
 
 interface Props {
 	slug: string;
@@ -22,8 +23,10 @@ interface Props {
 	locale: Locale;
 	/** Theme colour for the browser UI. */
 	themeColor?: string;
+	/** Preload Inter + JetBrains Mono (see templates/core/fonts.ts). Off for templates with their own fonts. */
+	preloadFonts?: boolean;
 }
-const { slug, title, description, locale, themeColor = '#ffffff' } = Astro.props;
+const { slug, title, description, locale, themeColor = '#ffffff', preloadFonts = true } = Astro.props;
 ---
 
 <!doctype html>
@@ -35,6 +38,7 @@ const { slug, title, description, locale, themeColor = '#ffffff' } = Astro.props
 		<meta name='description' content={description} />
 		<meta name='robots' content='noindex,nofollow' />
 		<meta name='theme-color' content={themeColor} />
+		{preloadFonts && PRELOAD_FONTS.map((href) => <link rel='preload' as='font' type='font/woff2' href={href} crossorigin />)}
 		<link rel='icon' type='image/png' sizes='32x32' href='/favicon-32x32.png' />
 		<!-- Framed previews (cards) must not paint the ribbon -->
 		<script is:inline>

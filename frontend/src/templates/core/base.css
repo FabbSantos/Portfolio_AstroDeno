@@ -4,8 +4,20 @@
    ThemeVars.astro derives them from site.config.ts `theme`.
    Fonts are self-hosted via @fontsource-variable (imported in Head.astro).
    ========================================================================== */
+
+/* Arial resized to Inter's metrics: text laid out before Inter arrives keeps
+   its width and line breaks, so the swap doesn't shift big headlines. */
+@font-face {
+	font-family: 'Inter Fallback';
+	src: local('Arial');
+	size-adjust: 107.12%;
+	ascent-override: 90.44%;
+	descent-override: 22.52%;
+	line-gap-override: 0%;
+}
+
 :root {
-	--sans: 'Inter Variable', 'Inter', -apple-system, system-ui, sans-serif;
+	--sans: 'Inter Variable', 'Inter', 'Inter Fallback', -apple-system, system-ui, sans-serif;
 	--mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
 
 	--ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -42,7 +54,7 @@ body {
 }
 
 ::selection {
-	background: var(--accent);
+	background: var(--accent-text);
 	color: #fff;
 }
 

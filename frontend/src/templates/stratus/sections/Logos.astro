@@ -19,7 +19,7 @@ const { logos } = Astro.props.config;
 			<div class='logos-row'>
 				{logos.items.map((l) =>
 					l.image ? (
-						<Image class='logo-img' src={l.image} alt={l.name} height={28} densities={[1, 2]} format='webp' loading='lazy' decoding='async' />
+						<Image class='logo-img' src={l.image} alt={l.name} height={28} densities={[1, 2]} format='webp' loading='lazy' decoding='async' quality='high' />
 					) : (
 						<span class='logo-wm'>{l.name}</span>
 					),
@@ -56,8 +56,8 @@ const { logos } = Astro.props.config;
 		font-family: 'Georgia', serif;
 		font-size: 22px;
 		font-style: italic;
+		/* muted, but still AA: wordmarks are text */
 		color: var(--ink-3);
-		opacity: 0.5;
 		letter-spacing: -0.02em;
 	}
 	.logo-img {

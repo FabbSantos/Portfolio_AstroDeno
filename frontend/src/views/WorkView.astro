@@ -147,7 +147,7 @@ const groups = [
 				<p>{w.lab.lead}</p>
 			</div>
 
-			<details class='lab-details'>
+			<details class='lab-details' data-accordion>
 				<summary>
 					<span class='chev' aria-hidden='true'>›</span>
 					{fmt(w.lab.summary, { n: experiments.length })}
@@ -453,7 +453,7 @@ const groups = [
 		line-height: 1;
 		transition: transform 0.3s var(--ease-out-expo);
 	}
-	.lab-details[open] summary .chev {
+	.lab-details[open]:not(.is-closing) summary .chev {
 		transform: rotate(90deg);
 	}
 	.lab-rows {

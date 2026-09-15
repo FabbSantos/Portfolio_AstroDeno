@@ -20,7 +20,7 @@
 
 /* `**text**` inside a heading = accent highlight (see sections/_md.ts). */
 .tpl-stratus :is(h1, h2, h3) strong {
-	color: var(--accent);
+	color: var(--accent-display);
 	font-weight: inherit;
 }
 
@@ -34,7 +34,7 @@
 	color: var(--ink);
 }
 .tpl-stratus .brand .dot {
-	color: var(--accent);
+	color: var(--accent-text);
 }
 .tpl-stratus .brand-logo {
 	height: 28px;
@@ -59,7 +59,7 @@
 	color: #fff;
 }
 .tpl-stratus .btn-acc:hover {
-	background: var(--accent);
+	background: var(--accent-text);
 	transform: translateY(-1px);
 }
 .tpl-stratus .btn-ghost {
@@ -100,7 +100,7 @@
 	font-size: 12px;
 	font-weight: 600;
 	letter-spacing: 0.14em;
-	color: var(--accent);
+	color: var(--accent-text);
 	display: block;
 	margin-bottom: 16px;
 }

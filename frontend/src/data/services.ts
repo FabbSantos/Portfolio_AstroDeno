@@ -57,8 +57,8 @@ export const SERVICES: Service[] = [
 			en: 'Real-estate launch, campaign, new product, event. Anyone with ads running who needs the page live this week.',
 		},
 		outcome: {
-			pt: 'Página no seu domínio com formulário + WhatsApp integrados, SEO técnico, Lighthouse acima de 95, analytics configurado e 3 meses de ajustes. Template: você escolhe, eu troco marca, cores e copy. Sob medida: estrutura pensada pro seu funil.',
-			en: 'Page on your domain with form + WhatsApp wired, technical SEO, Lighthouse above 95, analytics set up and 3 months of adjustments. Template: you pick, I swap brand, colors and copy. Custom: structure designed for your funnel.',
+			pt: 'Página no seu domínio com formulário + WhatsApp integrados, SEO técnico, Lighthouse acima de 90 no celular, analytics configurado e 3 meses de ajustes. Template: você escolhe, eu troco marca, cores e copy. Sob medida: estrutura pensada pro seu funil.',
+			en: 'Page on your domain with form + WhatsApp wired, technical SEO, Lighthouse above 90 on mobile, analytics set up and 3 months of adjustments. Template: you pick, I swap brand, colors and copy. Custom: structure designed for your funnel.',
 		},
 		priceFrom: 3500,
 		timeline: { pt: 'template em 3 a 5 dias úteis · sob medida em 2 a 3 semanas', en: 'template in 3 to 5 business days · custom in 2 to 3 weeks' },
