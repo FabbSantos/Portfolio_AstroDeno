@@ -18,7 +18,7 @@ export default defineMirante({
 	brand: { name: 'Mirante', tagline: 'Pinheiros', locale: 'pt-BR' },
 	theme: { accent: '#a77b43', bg: '#faf6ee', bg2: '#f3ecdc', ink: '#1f2937', radius: 8 },
 	seo: {
-		title: 'Mirante Lançamento: demo do template',
+		title: 'Mirante Captação: demo do template',
 		description: 'Demo do template Mirante: landing de lançamento imobiliário por Fab Bahiense. Dados fictícios.',
 		canonical: 'https://www.fabbahiense.dev/templates/mirante/demo',
 	},

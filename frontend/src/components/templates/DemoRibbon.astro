@@ -13,13 +13,15 @@ import { localePath, type Locale } from '../../i18n';
 interface Props {
 	slug: string;
 	locale: Locale;
+	/** Extra content example: the score was measured on the main demo, so it isn't shown here. */
+	example?: string;
 }
-const { slug, locale } = Astro.props;
+const { slug, locale, example } = Astro.props;
 const tpl = getTemplate(slug);
 const name = tpl ? `${tpl.name} ${tpl.accent}` : slug;
 const back = localePath(locale, `/templates/${slug}`);
 const want = localePath(locale, `/?template=${slug}#contato`);
-const score = scoresFor(slug)?.mobile;
+const score = example ? undefined : scoresFor(slug)?.mobile;
 const copy =
 	locale === 'pt'
 		? { back: `← Sobre o template ${name}`, want: 'Quero esse template →', by: 'Demo · template por Fab Bahiense', device: 'no celular' }

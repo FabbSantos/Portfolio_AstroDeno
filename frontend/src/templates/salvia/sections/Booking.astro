@@ -24,8 +24,8 @@ const initial = booking.message
 	.replace('{servico}', services.items[0]?.name ?? '')
 	.replace('{periodo}', (booking.periods[0] ?? '').toLowerCase());
 const demoNote = en
-	? 'Demo: on the published site this button opens the clinic’s WhatsApp with this message.'
-	: 'Demo: no site publicado, este botão abre o WhatsApp da clínica com essa mensagem.';
+	? `Demo: on the published site this button opens ${brand.name}’s WhatsApp with this message.`
+	: `Demo: no site publicado, este botão abre o WhatsApp de ${brand.name} com essa mensagem.`;
 const via = en ? 'via WhatsApp' : 'pelo WhatsApp';
 ---
 

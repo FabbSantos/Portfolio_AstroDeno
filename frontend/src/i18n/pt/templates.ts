@@ -4,7 +4,7 @@
  *
  * Placeholders: {N} = count as a capitalised word ("Quatro"), {n} = lowercase
  * word, {days} = SITE.promises.templateDays, {months} = adjustments months,
- * {min}/{max} = formatted prices, {name} = "Mirante Lançamento".
+ * {min}/{max} = formatted prices, {name} = "Mirante Captação".
  */
 export const templates = {
 	/** Number words, index = number. Used so counts read as prose ("quatro templates"). */
@@ -27,7 +27,7 @@ export const templates = {
 		eyebrow: 'Templates',
 		head: 'Escolha um',
 		headAccent: 'ponto de partida.',
-		lead: '{N} direções, {n} públicos. Cada um abre um demo completo; o preço inclui personalização, domínio configurado, SEO e {months} meses de ajustes.',
+		lead: '{N} estruturas prontas, cada uma mostrada com um exemplo de conteúdo. O seu negócio entra no lugar do exemplo, e o preço inclui personalização, domínio configurado, SEO e {months} meses de ajustes.',
 		listLabel: 'Todos os templates',
 	},
 
@@ -39,8 +39,10 @@ export const templates = {
 		hoverHint: 'passe o mouse pra rolar',
 		/** Small overlay link to the live demo (always visible on touch). */
 		demo: 'Ver demo',
-		/** Label before templates.solves.<slug>. */
-		solves: 'Resolve:',
+		/** Label before the template's `fits` list. */
+		fits: 'Serve pra:',
+		/** {what} = example labels joined ("clínica e salão"). */
+		demoAs: 'Na demo: {what}',
 		/** Chip on templates flagged isNew. */
 		isNew: 'Novo',
 		/** Lighthouse badge over the preview: short visible label, full sentence for screen readers. */
@@ -56,27 +58,18 @@ export const templates = {
 		},
 	},
 
-	/** One short phrase per template: the problem it solves. Key = slug. */
-	solves: {
-		salvia: 'clínica que quer agenda cheia pelo WhatsApp',
-		mirante: 'lançamento imobiliário que precisa de lead',
-		stratus: 'SaaS B2B que precisa de trial',
-		atelier: 'estúdio/agência que precisa de portfólio',
-		brava: 'drop de e-commerce com countdown',
-	},
-
 	/**
 	 * Gallery: pricing table above the grid (delivery toggle, one card per
 	 * template, feature matrix, one CTA). {days} = SITE.promises.templateDays,
-	 * {hours} = express hours, {months} = adjustments, {name} = "Mirante Lançamento".
+	 * {hours} = express hours, {months} = adjustments, {name} = "Mirante Captação".
 	 */
 	compare: {
 		eyebrow: 'Qual é o meu?',
 		title: 'Compare em dez segundos',
-		sub: 'Público, prazo e preço lado a lado. Toca no card pra selecionar.',
+		sub: 'Pra que serve, prazo e preço lado a lado. Toca no card pra selecionar.',
 		criterion: 'Critério',
 		rows: {
-			who: 'pra quem',
+			who: 'serve pra',
 			days: 'prazo',
 			price: 'a partir de',
 			sections: 'seções',
@@ -98,10 +91,10 @@ export const templates = {
 			booking: 'Agendamento pelo WhatsApp',
 			hours: 'Horário com "aberto agora"',
 			gallery: 'Galeria de fotos',
-			plans: 'Plantas e mapa',
-			pricing: 'Pricing e FAQ',
-			countdown: 'Countdown e vitrine',
-			cases: 'Grid de cases',
+			plans: 'Opções com imagem e mapa',
+			pricing: 'Tabela de planos e perguntas',
+			countdown: 'Contagem regressiva e vitrine',
+			cases: 'Grid de trabalhos',
 			newsletter: 'Newsletter',
 			legal: 'Página de privacidade e 404',
 			seo: 'SEO técnico e analytics',
@@ -119,6 +112,11 @@ export const templates = {
 		demoNote: 'Demo ao vivo: role e clique à vontade. Marca, textos e imagens são fictícios; no seu, entram os seus.',
 		sectionsTitle: 'O que vem no template',
 		related: 'Outros templates',
+		/** Hero: kinds of business the structure serves (from tpl.fits). */
+		fitsTitle: 'Serve pra',
+		/** Demo: switch between content examples when a template has more than one. */
+		exampleLabel: 'Exemplo',
+		exampleNote: 'Mesma estrutura, outro negócio. Troque o exemplo pra ver.',
 		/**
 		 * Score panel in the hero, from src/data/lighthouse.json. {version} = Lighthouse
 		 * version, {runs} = runs per preset, {date} = measurement date.

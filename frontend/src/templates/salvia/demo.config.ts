@@ -1,5 +1,6 @@
 /**
- * Demo config for the portfolio page /templates/salvia/demo.
+ * Demo config for the portfolio page /templates/salvia/demo (example "Clínica";
+ * the salon example is demo.salao.config.ts).
  * Fictional clinic, people, registries and insurers. Photos: Unsplash License
  * (interiors and objects only, no people). No phone, e-mail or WhatsApp number,
  * so nothing on the demo reaches a real person; booking runs in demo mode.
@@ -15,6 +16,7 @@ import servicoNutri from './assets/demo/servico-nutri.jpg';
 import servicoPsico from './assets/demo/servico-psico.jpg';
 
 export default defineSalvia({
+	businessType: 'MedicalClinic',
 	brand: { name: 'Clínica Sálvia', tagline: 'Clínica integrada em Botafogo', locale: 'pt-BR' },
 	theme: { accent: '#5b7563', bg: '#f7f7f4', bg2: '#eeefea', ink: '#1f2421', radius: 2 },
 	seo: {
@@ -28,7 +30,7 @@ export default defineSalvia({
 	analytics: {},
 	legal: { company: 'Clínica Sálvia Serviços Médicos Ltda.', cnpj: '00.000.000/0001-00', lines: [] },
 	nav: [
-		{ label: 'Especialidades', href: '#especialidades' },
+		{ label: 'Especialidades', href: '#servicos' },
 		{ label: 'Equipe', href: '#equipe' },
 		{ label: 'Convênios', href: '#convenios' },
 		{ label: 'Como chegar', href: '#onde' },
@@ -48,6 +50,7 @@ export default defineSalvia({
 	},
 
 	services: {
+		title: 'Especialidades',
 		lead: 'Seis áreas no mesmo endereço. Escolha uma e ela já fica marcada no agendamento.',
 		items: [
 			{ name: 'Clínica geral', photo: servicoGeral, desc: 'Check-up, acompanhamento de rotina e encaminhamento pro especialista certo.' },
@@ -60,6 +63,8 @@ export default defineSalvia({
 	},
 
 	booking: {
+		lead: 'Escolha a especialidade e o melhor período. A mensagem sai pronta no WhatsApp da clínica.',
+		serviceLabel: 'Especialidade',
 		foot: 'A recepção responde em até 1 hora no horário de atendimento.',
 	},
 

@@ -11,6 +11,7 @@
  *   3. vendors templates/core → src/templates/core and templates/<slug> →
  *      src/templates/<slug> (no demo assets, no demo.config.ts, no _smoke.ts)
  *   4. --with-demo-assets: copies <slug>/assets/demo/* into src/assets/
+ *      (--example <key> starts from demo.<key>.config.ts instead of demo.config.ts)
  *   5. --form resend|webhook: copies core/api/lead.ts → src/pages/api/lead.ts,
  *      adds @astrojs/vercel and enables the adapter in astro.config.mjs
  *   6. generates src/site.config.ts from the template's demo.config.ts, with
@@ -131,6 +132,8 @@ Options:
                          resend/webhook enable the Vercel adapter + src/pages/api/lead.ts
   --lang <locale>        pt-BR | en                                                   (default: pt-BR)
   --out <dir>            where to create the project                                 (default: ${DEFAULT_OUT})
+  --example <key>        start from another content example: demo.<key>.config.ts
+                         (e.g. --template salvia --example salao)
   --with-demo-assets     copy the template's demo images into src/assets/ (same file names)
   --install              run npm install, then astro check + build (prints the TODO_ checklist)
   --git                  git init + first commit
@@ -226,6 +229,9 @@ function parseArgs(argv) {
 			case '--out':
 				opts.out = path.resolve(next());
 				break;
+			case '--example':
+				opts.example = next();
+				break;
 			case '--with-demo-assets':
 				opts.withDemoAssets = true;
 				break;
@@ -268,11 +274,16 @@ function validate(opts) {
 	for (const f of ['schema.ts', 'demo.config.ts', `${pas}Page.astro`]) {
 		if (!fs.existsSync(path.join(templateDir, f))) fail(`template "${opts.template}" is missing ${f} — not a finished template`);
 	}
+	const demoConfig = opts.example ? `demo.${opts.example}.config.ts` : 'demo.config.ts';
+	if (!fs.existsSync(path.join(templateDir, demoConfig))) {
+		const examples = fs.readdirSync(templateDir).flatMap((f) => /^demo\.([a-z0-9-]+)\.config\.ts$/.exec(f)?.[1] ?? []);
+		fail(`template "${opts.template}" has no example "${opts.example}"${examples.length ? `\navailable: ${examples.join(', ')}` : ''}`);
+	}
 
 	const dest = path.join(opts.out, opts.name);
 	if (fs.existsSync(dest)) fail(`${dest} already exists — pick another --name or delete it first`);
 
-	return { ...opts, pascal: pas, templateDir, dest };
+	return { ...opts, pascal: pas, templateDir, dest, demoConfig };
 }
 
 /* ----------------------------------------------------------------------------
@@ -305,8 +316,8 @@ function vendorTemplates(ctx) {
 		visit: (_s, r) => r !== '_smoke.ts',
 	});
 	const tplFiles = copyTree(ctx.templateDir, path.join(ctx.dest, 'src', 'templates', ctx.template), {
-		// demo.config.ts becomes site.config.ts (step 6); demo images live in src/assets.
-		visit: (_s, r) => r !== 'demo.config.ts' && r !== 'assets' && !r.startsWith('assets/'),
+		// demo.config.ts (or demo.<example>.config.ts) becomes site.config.ts (step 6); demo images live in src/assets.
+		visit: (_s, r) => !/^demo(\.[a-z0-9-]+)?\.config\.ts$/.test(r) && r !== 'assets' && !r.startsWith('assets/'),
 	});
 	log(`  core: ${coreFiles.length} files · ${ctx.template}: ${tplFiles.length} files`);
 
@@ -452,8 +463,8 @@ function ensureBlock(src, key, parent, topIndent) {
 }
 
 function generateSiteConfig(ctx) {
-	step('Generating src/site.config.ts from demo.config.ts');
-	let src = fs.readFileSync(path.join(ctx.templateDir, 'demo.config.ts'), 'utf8');
+	step(`Generating src/site.config.ts from ${ctx.demoConfig}`);
+	let src = fs.readFileSync(path.join(ctx.templateDir, ctx.demoConfig), 'utf8');
 
 	// Header comment → client-facing header.
 	src = src.replace(/^\/\*\*[\s\S]*?\*\/\s*/, '');

@@ -1,6 +1,6 @@
 /**
  * Opening hours: labels for the page, the "aberto agora" status (runs in the
- * browser too, so no Astro imports here) and the schema.org MedicalClinic.
+ * browser too, so no Astro imports here) and the schema.org LocalBusiness JSON-LD.
  */
 import type { SalviaConfig } from './schema';
 
@@ -121,13 +121,13 @@ export const OPEN_STRINGS: Record<Locale, OpenStrings> = {
 
 const SCHEMA_DAY: Record<Day, string> = { mon: 'Monday', tue: 'Tuesday', wed: 'Wednesday', thu: 'Thursday', fri: 'Friday', sat: 'Saturday', sun: 'Sunday' };
 
-/** schema.org MedicalClinic: what Google uses for local results (address, hours, phone). */
-export function clinicJsonLd(site: SalviaConfig): Record<string, unknown> {
+/** schema.org LocalBusiness (or the configured subtype): what Google uses for local results (address, hours, phone). */
+export function businessJsonLd(site: SalviaConfig): Record<string, unknown> {
 	const { brand, seo, contact, location } = site;
 	const a = location.address;
 	return {
 		'@context': 'https://schema.org',
-		'@type': 'MedicalClinic',
+		'@type': site.businessType,
 		name: brand.name,
 		url: seo.canonical,
 		...(brand.tagline ? { description: brand.tagline } : {}),
