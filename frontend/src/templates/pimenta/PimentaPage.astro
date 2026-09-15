@@ -1,0 +1,30 @@
+---
+/**
+ * Full standalone page for a client deploy: core Page (head, theme, WhatsApp
+ * FAB, LGPD notice) wrapping the Pimenta body. `src/pages/index.astro` of a
+ * scaffolded client is just `<PimentaPage config={site} />`.
+ *
+ * The reservation form opens WhatsApp, so a client build without
+ * `contact.whatsapp` fails here instead of shipping a dead button.
+ */
+import Page from '../core/Page.astro';
+import PimentaBody from './PimentaBody.astro';
+import { PIMENTA_PRELOAD } from './fonts';
+import type { PimentaConfig } from './schema';
+
+interface Props {
+	config: PimentaConfig;
+	noindex?: boolean;
+}
+const { config, noindex = false } = Astro.props;
+
+if (!config.contact.whatsapp) {
+	throw new Error('site.config.ts: 1 problem(s) found\n  - contact.whatsapp: required by the Pimenta reservation form (number with country code, e.g. 5521999998888)\n');
+}
+---
+
+<Page site={config} class='page-pimenta' noindex={noindex} preloadFonts={false} preload={PIMENTA_PRELOAD}>
+	<main id='main-content'>
+		<PimentaBody config={config} />
+	</main>
+</Page>

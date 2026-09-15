@@ -1,0 +1,216 @@
+/* ==========================================================================
+   Pimenta — rules shared by more than one section. Everything else lives in
+   sections/*.astro. Colours come only from the core ThemeVars tokens.
+
+   Direction: a poster. Huge condensed capitals, flat blocks of the accent and
+   of ink instead of cards, square corners, one circle as the recurring shape.
+   The accent is a fill, never small text: text on it is --on-accent, which
+   flips between ink and white from the accent's own lightness.
+   ========================================================================== */
+.tpl-pimenta {
+	--display: 'Big Shoulders Display Variable', 'Big Shoulders Display', 'Arial Narrow', 'Roboto Condensed', Impact, sans-serif;
+	--text: 'Schibsted Grotesk Variable', 'Schibsted Grotesk', -apple-system, 'Segoe UI', system-ui, sans-serif;
+	--wrap: 1320px;
+	--pad-x: clamp(20px, 4vw, 56px);
+	--line: color-mix(in srgb, var(--ink) 16%, transparent);
+	--ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--on-accent: var(--ink);
+	background: var(--bg);
+	color: var(--ink);
+	font-family: var(--text);
+	font-size: 17px;
+	line-height: 1.55;
+	min-height: 100vh;
+}
+/* Black on light accents (mustard), white on dark ones (cobalt). */
+@supports (color: oklch(from red l c h)) {
+	.tpl-pimenta {
+		--on-accent: oklch(from var(--accent) calc((0.64 - l) * 1000) 0 0);
+	}
+}
+
+.tpl-pimenta .wrap {
+	max-width: var(--wrap);
+	margin-inline: auto;
+	padding-inline: var(--pad-x);
+}
+.tpl-pimenta .sec {
+	padding-block: clamp(80px, 11vw, 150px);
+}
+.tpl-pimenta .display {
+	font-family: var(--display);
+	font-weight: 800;
+	text-transform: uppercase;
+	letter-spacing: -0.005em;
+	line-height: 0.86;
+}
+
+/* md(): **text** / ==text== */
+.tpl-pimenta .hl {
+	font-weight: inherit;
+	color: inherit;
+	background: linear-gradient(transparent 58%, var(--accent) 58%, var(--accent) 92%, transparent 92%);
+}
+.tpl-pimenta .em {
+	font-weight: inherit;
+	background: var(--accent);
+	color: var(--on-accent);
+	padding-inline: 0.08em;
+}
+
+/* Section head: giant title, lead underneath on the right */
+.tpl-pimenta .sec-head {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 30ch);
+	column-gap: 40px;
+	row-gap: 16px;
+	align-items: end;
+	margin-bottom: clamp(40px, 6vw, 72px);
+}
+.tpl-pimenta .sec-head h2 {
+	font-size: clamp(64px, 11vw, 168px);
+}
+.tpl-pimenta .sec-head .lead {
+	font-size: 17px;
+	line-height: 1.55;
+	color: var(--ink-2);
+	padding-bottom: 0.4em;
+}
+
+/* Buttons: accent block with ink text, and an underlined link */
+.tpl-pimenta .btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	min-height: 56px;
+	padding: 0 28px;
+	background: var(--ink);
+	color: var(--bg);
+	font-family: var(--display);
+	font-size: 22px;
+	font-weight: 800;
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+	white-space: nowrap;
+	transition:
+		background 0.25s,
+		color 0.25s;
+}
+.tpl-pimenta .btn:hover {
+	background: var(--accent);
+	color: var(--on-accent);
+}
+.tpl-pimenta .btn .arr {
+	display: inline-block;
+	transition: transform 0.35s var(--ease);
+}
+.tpl-pimenta .btn:hover .arr {
+	transform: translateX(5px);
+}
+.tpl-pimenta .link {
+	display: inline-flex;
+	align-items: center;
+	min-height: 44px;
+	font-size: 16px;
+	font-weight: 600;
+	color: var(--ink);
+	text-decoration: underline;
+	text-decoration-thickness: 2px;
+	text-decoration-color: var(--accent);
+	text-underline-offset: 6px;
+}
+.tpl-pimenta .link:hover {
+	text-decoration-color: var(--ink);
+}
+
+/* "Aberto agora" status (text filled by the script in PimentaBody) */
+.tpl-pimenta .status {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 15px;
+	font-weight: 600;
+}
+.tpl-pimenta .status-dot {
+	flex: none;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: var(--ink-3);
+}
+.tpl-pimenta .status.is-open .status-dot {
+	background: var(--accent);
+	box-shadow: 0 0 0 2px var(--ink);
+}
+
+/* Topbar (core MobileNav). One extra class so these beat the component's scoped rules. */
+.tpl-pimenta .mnav.mnav {
+	background: color-mix(in srgb, var(--bg) 94%, transparent);
+	border-bottom: 2px solid var(--ink);
+}
+.tpl-pimenta .mnav .mnav-inner {
+	max-width: var(--wrap);
+	padding-inline: var(--pad-x);
+	min-height: 72px;
+}
+.tpl-pimenta .mnav .mnav-brand {
+	font-family: var(--display);
+	font-size: 32px;
+	font-weight: 900;
+	letter-spacing: 0.01em;
+	text-transform: uppercase;
+	line-height: 1;
+}
+.tpl-pimenta .mnav .mnav-links {
+	gap: 30px;
+}
+.tpl-pimenta .mnav .mnav-links a {
+	font-weight: 600;
+	color: var(--ink);
+}
+.tpl-pimenta .mnav .mnav-links a:hover {
+	text-decoration: underline;
+	text-decoration-thickness: 2px;
+	text-decoration-color: var(--accent);
+	text-underline-offset: 6px;
+}
+.tpl-pimenta .mnav .mnav-cta {
+	min-height: 44px;
+	padding: 0 20px;
+	border-radius: 0;
+	background: var(--accent);
+	color: var(--on-accent);
+	font-family: var(--display);
+	font-size: 20px;
+	font-weight: 800;
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+	box-shadow: inset 0 0 0 2px var(--ink);
+	transition:
+		background 0.25s,
+		color 0.25s;
+}
+.tpl-pimenta .mnav .mnav-cta:hover {
+	background: var(--ink);
+	color: var(--bg);
+}
+.tpl-pimenta .mnav .mnav-panel a {
+	border-radius: 0;
+	font-weight: 600;
+}
+
+.tpl-pimenta .visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+	.tpl-pimenta .sec-head {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}

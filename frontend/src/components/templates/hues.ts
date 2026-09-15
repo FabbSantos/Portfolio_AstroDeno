@@ -9,6 +9,7 @@
 import type { TemplateKind } from '../../data/templates';
 
 export const TEMPLATE_HUES: Record<TemplateKind, { hue: string; text: string }> = {
+	menu: { hue: '#d99a00', text: '#855700' }, // mustard, text 6.1:1 on --bg
 	leads: { hue: '#b45309', text: '#ad5009' }, // amber, text 5.2:1 on --bg, 4.5:1 on its chip
 	product: { hue: '#ff5c3d', text: '#c2410c' }, // coral, text 5.2:1
 	portfolio: { hue: '#7c3aed', text: '#7c3aed' }, // violet, 5.7:1

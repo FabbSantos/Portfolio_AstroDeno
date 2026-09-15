@@ -15,8 +15,10 @@ interface Props {
 	noindex?: boolean;
 	/** See Head.astro. */
 	preloadFonts?: boolean;
+	/** See Head.astro. */
+	preload?: readonly string[];
 }
-const { site, class: className, noindex = false, preloadFonts = true } = Astro.props;
+const { site, class: className, noindex = false, preloadFonts = true, preload = [] } = Astro.props;
 
 // Plausible is cookieless; only GA4 / Meta Pixel need consent.
 const needsConsent = Boolean(site.analytics.ga4 || site.analytics.metaPixel);
@@ -25,7 +27,7 @@ const needsConsent = Boolean(site.analytics.ga4 || site.analytics.metaPixel);
 <!doctype html>
 <html lang={site.brand.locale}>
 	<head>
-		<Head site={site} noindex={noindex} preloadFonts={preloadFonts} />
+		<Head site={site} noindex={noindex} preloadFonts={preloadFonts} preload={preload} />
 		<ThemeVars theme={site.theme} />
 	</head>
 	<body class={className}>

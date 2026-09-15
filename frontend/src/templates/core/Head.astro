@@ -17,8 +17,10 @@ interface Props {
 	noindex?: boolean;
 	/** Preload Inter + JetBrains Mono. Off for templates with their own fonts. */
 	preloadFonts?: boolean;
+	/** Extra font files to preload (a template's own display face). */
+	preload?: readonly string[];
 }
-const { site, noindex = false, preloadFonts = true } = Astro.props;
+const { site, noindex = false, preloadFonts = true, preload = [] } = Astro.props;
 const { brand, seo, theme, contact, analytics } = site;
 
 const og = seo.ogImage ? await getImage({ src: seo.ogImage, width: 1200, format: 'jpg' }) : null;
@@ -49,7 +51,7 @@ const jsonLdText = JSON.stringify(jsonLd).replace(/</g, '\\u003c');
 <link rel='canonical' href={seo.canonical} />
 {noindex && <meta name='robots' content='noindex,nofollow' />}
 <meta name='theme-color' content={theme.bg} />
-{preloadFonts && PRELOAD_FONTS.map((href) => <link rel='preload' as='font' type='font/woff2' href={href} crossorigin />)}
+{[...(preloadFonts ? PRELOAD_FONTS : []), ...preload].map((href) => <link rel='preload' as='font' type='font/woff2' href={href} crossorigin />)}
 
 <meta property='og:type' content='website' />
 <meta property='og:site_name' content={brand.name} />

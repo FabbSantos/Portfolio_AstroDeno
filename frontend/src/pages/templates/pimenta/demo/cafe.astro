@@ -1,0 +1,25 @@
+---
+/**
+ * Pimenta — second example (café and bakery). Same template as /templates/pimenta/demo,
+ * content in templates/pimenta/demo.cafe.config.ts.
+ */
+import DemoLayout from '../../../../layouts/DemoLayout.astro';
+import ThemeVars from '../../../../templates/core/ThemeVars.astro';
+import PimentaBody from '../../../../templates/pimenta/PimentaBody.astro';
+import { PIMENTA_PRELOAD } from '../../../../templates/pimenta/fonts';
+import demo from '../../../../templates/pimenta/demo.cafe.config';
+---
+
+<DemoLayout
+	slug='pimenta'
+	example='cafe'
+	title={demo.seo.title}
+	description={demo.seo.description}
+	locale='pt'
+	themeColor={demo.theme.bg}
+	preloadFonts={false}
+	preload={PIMENTA_PRELOAD}
+>
+	<ThemeVars theme={demo.theme} />
+	<PimentaBody config={demo} demo />
+</DemoLayout>

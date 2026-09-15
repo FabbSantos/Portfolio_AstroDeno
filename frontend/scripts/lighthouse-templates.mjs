@@ -58,6 +58,8 @@ function lighthouse(url, desktop) {
 	}
 }
 
+// local calendar date (sv-SE formats as YYYY-MM-DD); UTC would read tomorrow on a late-evening run in Brazil
+const today = new Date().toLocaleDateString('sv-SE');
 const previous = existsSync(OUT) ? JSON.parse(readFileSync(OUT, 'utf8')) : { templates: {} };
 const templates = { ...previous.templates };
 
@@ -78,11 +80,11 @@ for (const slug of slugs) {
 		desktop: median(desktop.map((r) => r.performance)),
 		accessibility: median(mobile.map((r) => r.accessibility)),
 		bestPractices: median(mobile.map((r) => r.bestPractices)),
+		measuredAt: today,
 	};
 	console.log(`${slug} →`, JSON.stringify(templates[slug]));
 }
 
-// local calendar date (sv-SE formats as YYYY-MM-DD); UTC would read tomorrow on a late-evening run in Brazil
-const data = { measuredAt: new Date().toLocaleDateString('sv-SE'), source: BASE, lighthouse: LIGHTHOUSE.split('@')[1], runs: RUNS, templates };
+const data = { measuredAt: today, source: BASE, lighthouse: LIGHTHOUSE.split('@')[1], runs: RUNS, templates };
 writeFileSync(OUT, JSON.stringify(data, null, '\t') + '\n');
 console.log('wrote', OUT);

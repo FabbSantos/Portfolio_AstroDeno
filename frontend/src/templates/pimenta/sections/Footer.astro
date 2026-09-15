@@ -1,0 +1,139 @@
+---
+/**
+ * Footer on an ink band: four short columns (address, hours, contact, company)
+ * and the name set huge in the accent along the bottom edge.
+ */
+import { hoursSummary } from '../../core/hours';
+import type { PimentaConfig } from '../schema';
+
+interface Props {
+	config: PimentaConfig;
+}
+const { config } = Astro.props;
+const { brand, footer, legal, location, contact, hero } = config;
+const en = brand.locale === 'en';
+const a = location.address;
+const word = footer.wordmark ?? brand.name;
+const legalLine = [legal.company, legal.cnpj ? `CNPJ ${legal.cnpj}` : null].filter(Boolean).join(' · ');
+const phoneHref = contact.phone ? `tel:${contact.phone.replace(/[^\d+]/g, '')}` : null;
+const waHref = contact.whatsapp ? `https://wa.me/${contact.whatsapp.number}?text=${encodeURIComponent(contact.whatsapp.message)}` : null;
+const hasContact = Boolean(phoneHref || contact.email || waHref || hero.instagram);
+---
+
+<footer class='foot'>
+	<div class='wrap cols'>
+		<div>
+			<h3>{en ? 'Address' : 'Endereço'}</h3>
+			<p>{a.street}<br />{[a.district, a.city].filter(Boolean).join(', ')} · {a.state}</p>
+		</div>
+		<div>
+			<h3>{location.hoursTitle}</h3>
+			<p>{hoursSummary(location.hours, brand.locale)}</p>
+		</div>
+		{
+			hasContact && (
+				<div>
+					<h3>{en ? 'Contact' : 'Contato'}</h3>
+					<p class='stack'>
+						{waHref && (
+							<a href={waHref} target='_blank' rel='noopener'>
+								WhatsApp
+							</a>
+						)}
+						{phoneHref && <a href={phoneHref}>{contact.phone}</a>}
+						{contact.email && <a href={`mailto:${contact.email}`}>{contact.email}</a>}
+						{hero.instagram && (
+							<a href={hero.instagram} target='_blank' rel='noopener'>
+								Instagram
+							</a>
+						)}
+					</p>
+				</div>
+			)
+		}
+		<div>
+			<h3>{en ? 'Company' : 'Empresa'}</h3>
+			<p class='stack'>
+				{legalLine && <span>{legalLine}</span>}
+				{legal.lines.map((l) => <span>{l}</span>)}
+				{legal.privacyUrl && <a href={legal.privacyUrl}>{en ? 'Privacy policy' : 'Política de privacidade'}</a>}
+			</p>
+		</div>
+	</div>
+
+	<p class='wordmark display' aria-hidden='true' style={`--chars: ${[...word].length}`}>{word}</p>
+
+	<div class='wrap bottom'>
+		<p>{footer.line}</p>
+	</div>
+</footer>
+
+<style>
+	.foot {
+		background: var(--ink);
+		color: var(--bg);
+		padding-top: clamp(64px, 8vw, 110px);
+		overflow: hidden;
+	}
+	.foot :global(:focus-visible) {
+		outline-color: var(--bg);
+	}
+	.cols {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 32px;
+	}
+	h3 {
+		margin-bottom: 10px;
+		font-size: 13px;
+		font-weight: 700;
+		color: color-mix(in srgb, var(--bg) 72%, transparent);
+	}
+	.cols p {
+		font-size: 15px;
+		line-height: 1.55;
+	}
+	.stack {
+		display: grid;
+		gap: 4px;
+		justify-items: start;
+	}
+	.stack a {
+		text-decoration: underline;
+		text-decoration-color: color-mix(in srgb, var(--bg) 35%, transparent);
+		text-underline-offset: 4px;
+	}
+	.stack a:hover {
+		text-decoration-color: var(--accent-on-dark);
+	}
+	/* Fills the width: condensed capitals run about 0.46em per character */
+	.wordmark {
+		margin-top: clamp(48px, 7vw, 96px);
+		padding-inline: var(--pad-x);
+		font-size: min(calc((100vw - 2 * var(--pad-x)) / (var(--chars) * 0.46)), 34vw);
+		font-weight: 900;
+		line-height: 0.78;
+		color: var(--accent-on-dark);
+		white-space: nowrap;
+		text-align: center;
+		transform: translateY(8%);
+	}
+	.bottom {
+		position: relative;
+		padding-block: 18px;
+		border-top: 1px solid color-mix(in srgb, var(--bg) 22%, transparent);
+		font-size: 14px;
+		color: color-mix(in srgb, var(--bg) 72%, transparent);
+	}
+
+	@media (max-width: 900px) {
+		.cols {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+	@media (max-width: 480px) {
+		.cols {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+</style>

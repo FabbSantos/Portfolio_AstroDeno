@@ -11,6 +11,8 @@ export interface TemplateScores {
 	desktop: number;
 	accessibility: number;
 	bestPractices: number;
+	/** YYYY-MM-DD this template was last measured (falls back to the file's date). */
+	measuredAt?: string;
 }
 
 interface LighthouseData {

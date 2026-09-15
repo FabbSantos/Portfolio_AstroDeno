@@ -94,6 +94,7 @@ const FORM_HOOKS = {
 /** Packages a template imports beyond the starter's (usually its own fonts). */
 const TEMPLATE_DEPS = {
 	salvia: { '@fontsource-variable/hanken-grotesk': '^5.3.0', '@fontsource-variable/newsreader': '^5.3.0' },
+	pimenta: { '@fontsource-variable/big-shoulders-display': '^5.3.0', '@fontsource-variable/schibsted-grotesk': '^5.3.0' },
 };
 
 const VERCEL_ADAPTER_VERSION = '^11.0.10';
@@ -106,6 +107,9 @@ const BINARY_EXT = new Set(['.png', '.jpg', '.jpeg', '.webp', '.avif', '.gif', '
 const IMAGE_SIZES = [
 	[/logo/i, 'SVG (ou PNG 512px, fundo transparente)'],
 	[/\bog\b|^og[-_.]|[-_]og\./i, '1200×630 (JPG/PNG, ≤ 300 KB)'],
+	[/hero\.|prato-hero/i, '1200×1200 quadrada, prato ou xícara vista de cima (JPG, ≤ 300 KB)'],
+	[/destaque/i, '900×1200 retrato (JPG, ≤ 250 KB)'],
+	[/cozinha|balcao/i, '800×1000 retrato (JPG, ≤ 250 KB)'],
 	[/planta/i, '1200px de largura (PNG ou JPG, fundo branco)'],
 	[/mapa/i, '1200×800 (PNG ou JPG)'],
 	[/case|product|produto|lookbook/i, '1200×900 (JPG, ≤ 300 KB)'],

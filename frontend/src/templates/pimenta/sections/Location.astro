@@ -1,0 +1,153 @@
+---
+/**
+ * Location (#onde): the address set in giant condensed capitals with the
+ * directions and the map link under it; on the right the live status and the
+ * week, today's row filled with the accent (marked by the PimentaBody script).
+ */
+import { hoursTable, OPEN_STRINGS } from '../../core/hours';
+import type { PimentaConfig } from '../schema';
+
+interface Props {
+	config: PimentaConfig;
+}
+const { config } = Astro.props;
+const { location, brand } = config;
+const locale = brand.locale;
+const en = locale === 'en';
+const a = location.address;
+const rows = hoursTable(location.hours, locale);
+const status = JSON.stringify({ hours: location.hours, tz: location.timezone, locale, strings: OPEN_STRINGS[locale] });
+---
+
+<section class='sec where' id='onde' aria-labelledby='pimenta-where-title'>
+	<div class='wrap grid'>
+		<div class='addr'>
+			<h2 id='pimenta-where-title' class='kicker'>{location.title}</h2>
+			<address class='street display'>
+				<span>{a.street}</span>
+				<span>{[a.district, a.city].filter(Boolean).join(', ')} · {a.state}</span>
+			</address>
+			{
+				location.directions.length > 0 && (
+					<ul class='dir' role='list'>
+						{location.directions.map((d) => (
+							<li>{d}</li>
+						))}
+					</ul>
+				)
+			}
+			{
+				location.mapsUrl && (
+					<a class='btn' href={location.mapsUrl} target='_blank' rel='noopener'>
+						{location.mapsLabel} <span class='arr' aria-hidden='true'>↗</span>
+						<span class='visually-hidden'>{en ? '(opens in a new tab)' : '(abre em nova aba)'}</span>
+					</a>
+				)
+			}
+		</div>
+
+		<div class='hours'>
+			<p class='status' data-open-status={status}>
+				<span class='status-dot' aria-hidden='true'></span>
+				<span data-open-text>{location.hoursTitle}</span>
+			</p>
+			<h3 class='h-title display'>{location.hoursTitle}</h3>
+			<ul class='week' role='list' data-hours-tz={location.timezone}>
+				{
+					rows.map((row) => (
+						<li class:list={['day', { 'is-closed': row.closed }]} data-day={row.day}>
+							<span class='d-name'>{row.label}</span>
+							<span class='d-hours'>{row.value}</span>
+						</li>
+					))
+				}
+			</ul>
+			{location.hoursNote && <p class='note'>{location.hoursNote}</p>}
+		</div>
+	</div>
+</section>
+
+<style>
+	.grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+		gap: clamp(48px, 7vw, 120px);
+		align-items: start;
+	}
+	.kicker {
+		font-size: 15px;
+		font-weight: 700;
+	}
+	.street {
+		display: grid;
+		margin-top: 18px;
+		font-style: normal;
+		font-size: clamp(44px, 5.2vw, 84px);
+		text-wrap: balance;
+	}
+	.dir {
+		list-style: none;
+		display: grid;
+		gap: 8px;
+		margin-block: 32px;
+		padding-top: 20px;
+		border-top: 2px solid var(--ink);
+		font-size: 16px;
+	}
+	.dir li::before {
+		content: '';
+		display: inline-block;
+		width: 8px;
+		height: 8px;
+		margin-right: 12px;
+		border-radius: 50%;
+		background: var(--ink);
+		vertical-align: 2px;
+	}
+
+	.hours {
+		display: grid;
+		gap: 18px;
+		padding-top: 8px;
+	}
+	.h-title {
+		font-size: clamp(40px, 4vw, 56px);
+	}
+	.week {
+		list-style: none;
+		border-top: 2px solid var(--ink);
+	}
+	.day {
+		display: flex;
+		justify-content: space-between;
+		gap: 16px;
+		padding: 12px 10px;
+		border-bottom: 1px solid var(--line);
+		font-size: 16px;
+		font-variant-numeric: tabular-nums;
+	}
+	.d-name {
+		font-weight: 600;
+	}
+	.is-closed .d-hours {
+		color: var(--ink-2);
+	}
+	.day:global(.is-today) {
+		background: var(--accent);
+		color: var(--on-accent);
+		border-bottom-color: transparent;
+	}
+	.day:global(.is-today) .d-hours {
+		color: inherit;
+	}
+	.note {
+		font-size: 15px;
+		color: var(--ink-2);
+	}
+
+	@media (max-width: 900px) {
+		.grid {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+</style>
