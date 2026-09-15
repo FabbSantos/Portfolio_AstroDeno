@@ -17,6 +17,7 @@ Dependências: só o que já vem com o Astro (`astro/zod`, `astro:assets`) + `@f
 | `MobileNav.astro` | `{ brand, brandHref?, nav, cta?, class?, id? }` → topbar sticky com links desktop + hambúrguer 44px (painel `inert`, `aria-expanded`/`aria-controls`, Esc fecha). |
 | `WhatsAppFab.astro` | `{ site, class? }` → botão flutuante `wa.me` (só quando `contact.whatsapp` existe). |
 | `accordion.ts` | `enhanceAccordions(root?)` → anima todo `<details data-accordion>` (altura + fade da resposta, reversível no meio). Sem JS ou com movimento reduzido fica o toggle nativo. Ícones: `details[open]:not(.is-closing)`. |
+| `hours.ts` | `DAYS`, `formatTime`, `formatDays`, `hoursSummary`, `hoursTable`, `openStatus` ("Aberto agora · fecha às 19h" no fuso do negócio; `closes: '00:00'` é meia-noite), `OPEN_STRINGS` e `localBusinessJsonLd({ type, name, url, address, hours, extra? })`. Sem imports de Astro nem zod: roda no navegador. Usado pela Sálvia e pelo Pimenta. |
 | `Analytics.astro` | `{ analytics }` → GA4 / Meta Pixel / Plausible, cada um só quando o id está preenchido. |
 | `LgpdNotice.astro` | `{ legal, locale, needsConsent }` → barra de consentimento (só com `legal.privacyUrl` e `needsConsent`). Lembra a dispensa em `localStorage`. |
 | `api/lead.ts` | Endpoint `POST /api/lead` (SSR) para `provider: 'resend' \| 'webhook'`. Env: `LEAD_WEBHOOK_URL` **ou** `RESEND_API_KEY` + `LEAD_TO` + `LEAD_FROM`; `SITE_NAME` opcional. Resposta `{ ok, code? }`. |

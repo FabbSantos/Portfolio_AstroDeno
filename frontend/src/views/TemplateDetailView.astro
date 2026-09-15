@@ -63,7 +63,7 @@ const gauges = scores
 		]
 	: [];
 const measuredOn = new Intl.DateTimeFormat(locale === 'pt' ? 'pt-BR' : 'en-US', { dateStyle: 'medium', timeZone: 'UTC' }).format(
-	new Date(`${lighthouse.measuredAt}T12:00:00Z`)
+	new Date(`${scores?.measuredAt ?? lighthouse.measuredAt}T12:00:00Z`)
 );
 const scoresNote = fmt(sc.note, { version: lighthouse.lighthouse, runs: lighthouse.runs, date: measuredOn });
 // even count: two columns, so the last row is never a lone card

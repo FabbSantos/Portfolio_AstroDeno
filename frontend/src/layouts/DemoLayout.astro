@@ -25,10 +25,12 @@ interface Props {
 	themeColor?: string;
 	/** Preload Inter + JetBrains Mono (see templates/core/fonts.ts). Off for templates with their own fonts. */
 	preloadFonts?: boolean;
+	/** Extra font files to preload (a template's own display face). */
+	preload?: readonly string[];
 	/** Key of an extra content example (/templates/<slug>/demo/<example>); omit on the main demo. */
 	example?: string;
 }
-const { slug, title, description, locale, themeColor = '#ffffff', preloadFonts = true, example } = Astro.props;
+const { slug, title, description, locale, themeColor = '#ffffff', preloadFonts = true, preload = [], example } = Astro.props;
 ---
 
 <!doctype html>
@@ -40,7 +42,7 @@ const { slug, title, description, locale, themeColor = '#ffffff', preloadFonts =
 		<meta name='description' content={description} />
 		<meta name='robots' content='noindex,nofollow' />
 		<meta name='theme-color' content={themeColor} />
-		{preloadFonts && PRELOAD_FONTS.map((href) => <link rel='preload' as='font' type='font/woff2' href={href} crossorigin />)}
+		{[...(preloadFonts ? PRELOAD_FONTS : []), ...preload].map((href) => <link rel='preload' as='font' type='font/woff2' href={href} crossorigin />)}
 		<link rel='icon' type='image/png' sizes='32x32' href='/favicon-32x32.png' />
 		<!-- Framed previews (cards) must not paint the ribbon -->
 		<script is:inline>
