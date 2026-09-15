@@ -29,8 +29,8 @@ export default defineConfig({
 	integrations: [
 		sitemap({
 			i18n: { defaultLocale: 'pt', locales: { pt: 'pt-BR', en: 'en' } },
-			// Template demos are noindex and single-locale — keep them out of the sitemap.
-			filter: (page) => !/\/templates\/[a-z0-9-]+\/demo\/?$/.test(page),
+			// Template demos (and their extra examples, /demo/<example>) are noindex and single-locale — keep them out of the sitemap.
+			filter: (page) => !/\/templates\/[a-z0-9-]+\/demo(\/[a-z0-9-]+)?\/?$/.test(page),
 		}),
 	],
 

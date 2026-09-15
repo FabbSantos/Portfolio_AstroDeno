@@ -1,0 +1,23 @@
+---
+/**
+ * Sálvia — second example (salon). Same template as /templates/salvia/demo,
+ * content in templates/salvia/demo.salao.config.ts.
+ */
+import DemoLayout from '../../../../layouts/DemoLayout.astro';
+import ThemeVars from '../../../../templates/core/ThemeVars.astro';
+import SalviaBody from '../../../../templates/salvia/SalviaBody.astro';
+import demo from '../../../../templates/salvia/demo.salao.config';
+---
+
+<DemoLayout
+	slug='salvia'
+	example='salao'
+	title={demo.seo.title}
+	description={demo.seo.description}
+	locale='pt'
+	themeColor={demo.theme.bg}
+	preloadFonts={false}
+>
+	<ThemeVars theme={demo.theme} />
+	<SalviaBody config={demo} demo />
+</DemoLayout>

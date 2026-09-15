@@ -25,8 +25,10 @@ interface Props {
 	themeColor?: string;
 	/** Preload Inter + JetBrains Mono (see templates/core/fonts.ts). Off for templates with their own fonts. */
 	preloadFonts?: boolean;
+	/** Key of an extra content example (/templates/<slug>/demo/<example>); omit on the main demo. */
+	example?: string;
 }
-const { slug, title, description, locale, themeColor = '#ffffff', preloadFonts = true } = Astro.props;
+const { slug, title, description, locale, themeColor = '#ffffff', preloadFonts = true, example } = Astro.props;
 ---
 
 <!doctype html>
@@ -46,7 +48,7 @@ const { slug, title, description, locale, themeColor = '#ffffff', preloadFonts =
 		</script>
 	</head>
 	<body>
-		<DemoRibbon slug={slug} locale={locale} />
+		<DemoRibbon slug={slug} locale={locale} example={example} />
 		<main id='main-content'>
 			<slot />
 		</main>

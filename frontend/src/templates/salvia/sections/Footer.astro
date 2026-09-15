@@ -1,7 +1,7 @@
 ---
 /**
  * Footer, after 21st.dev "Large Name Footer": four short columns (address,
- * hours, contact, legal) and the clinic's name set huge at the bottom edge.
+ * hours, contact, legal) and the business name set huge at the bottom edge.
  */
 import type { SalviaConfig } from '../schema';
 import { hoursSummary } from '../hours';
@@ -18,6 +18,8 @@ const legalLine = [legal.company, legal.cnpj ? `CNPJ ${legal.cnpj}` : null].filt
 const phoneHref = contact.phone ? `tel:${contact.phone.replace(/[^\d+]/g, '')}` : null;
 const waHref = contact.whatsapp ? `https://wa.me/${contact.whatsapp.number}?text=${encodeURIComponent(contact.whatsapp.message)}` : null;
 const hasContact = Boolean(phoneHref || contact.email || waHref);
+// Health businesses name their technical lead; everyone else just gets the company data.
+const legalTitle = footer.technicalLeadLabel ?? (footer.technicalLead ? (en ? 'Medical director' : 'Responsável técnico') : en ? 'Company' : 'Empresa');
 ---
 
 <footer class='foot'>
@@ -47,7 +49,7 @@ const hasContact = Boolean(phoneHref || contact.email || waHref);
 			)
 		}
 		<div>
-			<h3>{en ? 'Medical director' : 'Responsável técnico'}</h3>
+			<h3>{legalTitle}</h3>
 			<p class='stack'>
 				{footer.technicalLead && <span>{footer.technicalLead}</span>}
 				{legalLine && <span>{legalLine}</span>}

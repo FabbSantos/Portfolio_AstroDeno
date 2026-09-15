@@ -1,5 +1,5 @@
 /**
- * Sálvia opening hours: labels, "aberto agora" and the MedicalClinic JSON-LD.
+ * Sálvia opening hours: labels, "aberto agora" and the LocalBusiness JSON-LD.
  * Lives outside templates/salvia so the client scaffold never vendors it.
  * America/Sao_Paulo is UTC-3 all year (no DST since 2019).
  */
@@ -64,15 +64,15 @@ describe('defineSalvia', () => {
 		footer: { line: '© 2026' },
 	});
 
-	it('fills section defaults so the client config can be mostly data', () => {
+	it('fills neutral section defaults so the client config can be mostly data', () => {
 		expect(site.booking.periods).toEqual(['Manhã', 'Tarde']);
-		expect(site.services.title).toBe('Especialidades');
+		expect(site.services.title).toBe('Serviços');
 		expect(site.services.items[0]?.photo).toBeNull();
 		expect(site.team).toBeUndefined();
 	});
-	it('describes the clinic as a schema.org MedicalClinic', () => {
+	it('describes the business as a schema.org LocalBusiness by default', () => {
 		expect(site.seo.jsonLd).toMatchObject({
-			'@type': 'MedicalClinic',
+			'@type': 'LocalBusiness',
 			name: 'Clínica Teste',
 			telephone: '(21) 3000-0000',
 			address: { addressRegion: 'RJ', addressCountry: 'BR' },
@@ -81,5 +81,17 @@ describe('defineSalvia', () => {
 				{ dayOfWeek: ['Saturday'], opens: '08:00', closes: '12:00' },
 			],
 		});
+	});
+	it('uses the configured schema.org subtype', () => {
+		const salon = defineSalvia({
+			...site,
+			businessType: 'BeautySalon',
+			seo: { title: 'Salão', description: 'Teste', canonical: 'https://salao.example' },
+			location: { ...site.location, hours: site.location.hours.map((h) => ({ ...h, days: [...h.days] })) },
+		});
+		expect(salon.seo.jsonLd).toMatchObject({ '@type': 'BeautySalon' });
+	});
+	it('rejects a business type that is not a schema.org name', () => {
+		expect(() => defineSalvia({ ...site, businessType: 'salão de beleza' })).toThrow();
 	});
 });
