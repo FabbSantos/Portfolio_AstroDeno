@@ -1,16 +1,18 @@
 /**
- * Sálvia — clinic landing (medical, dental, aesthetics, physio), editorial.
+ * Sálvia — editorial landing for any business that runs on appointments
+ * (clinic, salon, barber, studio, practice, office). Demos: clinic and salon.
  *
  * Lean on purpose: hero, services, booking and location are required; team,
- * insurance, space and faq render only when present. Section titles have
- * pt-BR defaults, so a client config can be mostly data (services, hours, address).
+ * insurance (or payment options), space and faq render only when present.
+ * Section titles have neutral pt-BR defaults, so a client config can be mostly
+ * data (services, hours, address).
  *
  * Strings marked "md" accept the mini-markdown of `sections/_md.ts`:
  *   **text** → accent colour · ==text== → highlighter · newline → <br>
  */
 import { z } from 'astro/zod';
 import { baseSiteSchema, defineSite, image } from '../core/schema';
-import { clinicJsonLd, DAYS } from './hours';
+import { businessJsonLd, DAYS } from './hours';
 
 const hhmm = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'expected 24h time like 08:00');
 
@@ -22,6 +24,15 @@ const head = (title: string) => ({
 });
 
 export const salviaSchema = baseSiteSchema.extend({
+	/**
+	 * schema.org type for Google's local results: LocalBusiness, or a subtype such as
+	 * MedicalClinic, Dentist, BeautySalon, HairSalon, NailSalon, LegalService, VeterinaryCare.
+	 */
+	businessType: z
+		.string()
+		.regex(/^[A-Z][A-Za-z]+$/, 'expected a schema.org type like LocalBusiness or BeautySalon')
+		.default('LocalBusiness'),
+
 	topbar: z
 		.object({
 			cta: z.string().min(1).default('Agendar'),
@@ -29,7 +40,7 @@ export const salviaSchema = baseSiteSchema.extend({
 		.prefault({}),
 
 	hero: z.object({
-		/** Short line on the left: kind of clinic + neighbourhood. */
+		/** Short line on the left: kind of business + neighbourhood. */
 		tagline: z.string().min(1),
 		/** md */
 		title: z.string().min(1),
@@ -40,11 +51,11 @@ export const salviaSchema = baseSiteSchema.extend({
 		/** Up to 4 short facts, printed as one line ("Particular e convênios · Estacionamento"). */
 		highlights: z.array(z.string().min(1)).max(4).default([]),
 		cta: z.string().min(1).default('Agendar pelo WhatsApp'),
-		secondaryCta: z.string().min(1).default('Ver especialidades'),
+		secondaryCta: z.string().min(1).default('Ver serviços'),
 	}),
 
 	services: z.object({
-		...head('Especialidades'),
+		...head('Serviços'),
 		items: z
 			.array(
 				z.object({
@@ -63,8 +74,8 @@ export const salviaSchema = baseSiteSchema.extend({
 	booking: z
 		.object({
 			...head('Agende em dois toques.'),
-			lead: z.string().default('Escolha a especialidade e o melhor período. A mensagem sai pronta no WhatsApp da clínica.'),
-			serviceLabel: z.string().default('Especialidade'),
+			lead: z.string().default('Escolha o serviço e o melhor período. A mensagem sai pronta no WhatsApp.'),
+			serviceLabel: z.string().default('Serviço'),
 			periodLabel: z.string().default('Período'),
 			periods: z.array(z.string().min(1)).min(1).default(['Manhã', 'Tarde']),
 			nameLabel: z.string().default('Seu nome (opcional)'),
@@ -85,7 +96,7 @@ export const salviaSchema = baseSiteSchema.extend({
 					z.object({
 						name: z.string().min(1),
 						role: z.string().min(1),
-						/** Council registry ("CRM-RJ 52.123.456"). */
+						/** Professional registry when there is one ("CRM-RJ 52.123.456", "OAB-SP 123.456"). */
 						registry: z.string().optional(),
 						/** Square photo. `null` → no photo column for that row. */
 						photo: image.nullable().default(null),
@@ -97,9 +108,12 @@ export const salviaSchema = baseSiteSchema.extend({
 		})
 		.optional(),
 
+	/** Accepted insurance plans, or any list set as one sentence: payment options, brands, partners. */
 	insurance: z
 		.object({
 			...head('Convênios'),
+			/** Section id for nav links ("#convenios", "#pagamento"). */
+			anchor: z.string().regex(/^[a-z][a-z0-9-]*$/).default('convenios'),
 			plans: z.array(z.string().min(1)).min(1),
 			note: z.string().optional(),
 		})
@@ -152,8 +166,10 @@ export const salviaSchema = baseSiteSchema.extend({
 		line: z.string().min(1),
 		/** Giant name at the very bottom. Defaults to brand.name; a short word reads best. */
 		wordmark: z.string().optional(),
-		/** Responsável técnico with registry. Councils (CFM, CRO) require it in clinic advertising. */
+		/** Responsável técnico with registry. Health councils (CFM, CRO) require it in clinic advertising. */
 		technicalLead: z.string().optional(),
+		/** Heading over technicalLead. Defaults to "Responsável técnico" / "Medical director". */
+		technicalLeadLabel: z.string().optional(),
 	}),
 });
 
@@ -161,9 +177,9 @@ export type SalviaConfig = z.infer<typeof salviaSchema>;
 /** What the client writes in `site.config.ts` (defaults still optional). */
 export type SalviaInput = z.input<typeof salviaSchema>;
 
-/** Validates the config and, unless `seo.jsonLd` is set, describes the clinic as a schema.org MedicalClinic. */
+/** Validates the config and, unless `seo.jsonLd` is set, describes the business as schema.org `businessType`. */
 export const defineSalvia = (config: SalviaInput): SalviaConfig => {
 	const site = defineSite(salviaSchema, config);
-	site.seo.jsonLd ??= clinicJsonLd(site);
+	site.seo.jsonLd ??= businessJsonLd(site);
 	return site;
 };

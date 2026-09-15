@@ -15,7 +15,7 @@ export default defineAtelier({
 	brand: { name: 'Atelier', tagline: 'Independent design studio', locale: 'en' },
 	theme: { accent: '#7c3aed', bg: '#fbfafd', ink: '#1a1525', radius: 12 },
 	seo: {
-		title: 'Atelier Studio: template demo',
+		title: 'Atelier Portfólio: template demo',
 		description: 'Demo of the Atelier template: studio / agency portfolio by Fab Bahiense. Placeholder data.',
 		canonical: 'https://www.fabbahiense.dev/templates/atelier/demo',
 	},

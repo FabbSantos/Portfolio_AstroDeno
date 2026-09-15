@@ -1,7 +1,8 @@
 ---
 /**
- * Insurance (#convenios), optional: the accepted plans set as one serif
- * sentence ("Vida Plena, Unida Saúde e Integra."), with the note beside it.
+ * Insurance (#convenios by default), optional: the accepted plans, or payment
+ * options, set as one serif sentence ("Vida Plena, Unida Saúde e Integra."),
+ * with the note beside it.
  */
 import type { SalviaConfig } from '../schema';
 import { md } from './_md';
@@ -16,7 +17,7 @@ const plans = insurance.plans;
 const sentence = plans.length > 1 ? `${plans.slice(0, -1).join(', ')}${and}${plans[plans.length - 1]}.` : `${plans[0]}.`;
 ---
 
-<section class='sec insurance' id='convenios' aria-labelledby='salvia-insurance-title'>
+<section class='sec insurance' id={insurance.anchor} aria-labelledby='salvia-insurance-title'>
 	<div class='wrap'>
 		<header class='sec-head'>
 			<h2 id='salvia-insurance-title' set:html={md(insurance.title)} />

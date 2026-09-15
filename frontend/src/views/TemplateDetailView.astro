@@ -1,9 +1,10 @@
 ---
 /**
  * /templates/<slug> (and /en/templates/<slug>) — the sales page of one template.
- * Hero (meta, name, price, CTAs, measured Lighthouse scores) → the real demo in
- * a browser frame or a phone chassis (Desktop / Celular toggle) → what's in it /
- * what's included / how it works → other templates → CTA band.
+ * Hero (meta, name, what it fits, price, CTAs, measured Lighthouse scores) → the
+ * real demo in a browser frame or a phone chassis (Desktop / Celular toggle, plus
+ * an Exemplo toggle when the template has more than one content example) →
+ * what's in it / what's included / how it works → other templates → CTA band.
  */
 import Layout from '../layouts/Layout.astro';
 import TopBar from '../components/site/TopBar.astro';
@@ -13,7 +14,7 @@ import PhoneFrame from '../components/templates/PhoneFrame.astro';
 import ScoreGauge from '../components/templates/ScoreGauge.astro';
 import { lighthouse, scoresFor } from '../data/lighthouse';
 import { SITE, whatsappUrl } from '../data/site';
-import { demoPath, formatBRL, templates, type TemplateMeta } from '../data/templates';
+import { demoPath, examplePath, formatBRL, templates, type TemplateMeta } from '../data/templates';
 import { fmt, localeOf, localePath, pick, useT } from '../i18n';
 
 interface Props {
@@ -43,7 +44,11 @@ const steps = t.templates.steps.items.map((s) => ({ title: s.title, desc: fmt(s.
 const demo = demoPath(tpl.slug);
 const demoTitle = fmt(t.templates.detail.demoTitle, { name });
 const device = t.templates.detail.device;
-const demoUrlLabel = `${new URL(SITE.url).host}${demo}`;
+const demoHost = new URL(SITE.url).host;
+const demoUrlLabel = `${demoHost}${demo}`;
+const fits = pick(tpl.fits, locale);
+// Content examples: same structure, another business. Toggle only when there is more than one.
+const examples = tpl.examples.map((e) => ({ key: e.key, label: pick(e.label, locale), path: examplePath(tpl, e.key) }));
 const wantHref = localePath(locale, `/?template=${tpl.slug}#contato`);
 const wa = whatsappUrl(locale, fmt(t.templates.cta.whatsappDetail, { name }));
 
@@ -75,13 +80,19 @@ const relatedCols = others.length % 2 === 0 ? 2 : 3;
 				<p class='eyebrow accent'>{meta}</p>
 				<h1>{tpl.name} <span class='hl'>{tpl.accent}</span></h1>
 				<p class='lead'>{description}</p>
+				<div class='fits'>
+					<span class='fits-k' id='fits-title'>{t.templates.detail.fitsTitle}</span>
+					<ul role='list' aria-labelledby='fits-title'>
+						{fits.map((f) => <li>{f}</li>)}
+					</ul>
+				</div>
 				<p class='price'>
 					<span class='from'>{t.common.from}</span>
 					<strong>{formatBRL(tpl.priceFrom)}</strong>
 				</p>
 				<div class='actions'>
 					<a href={wantHref} class='btn btn-primary shine'>{t.templates.detail.want}</a>
-					<a href={demo} class='btn btn-ghost shine' target='_blank' rel='noopener'>
+					<a href={demo} class='btn btn-ghost shine' target='_blank' rel='noopener' data-demo-link>
 						{t.templates.detail.fullDemo} <span class='arrow' aria-hidden='true'>↗</span>
 						<span class='sr-only'>({t.common.openInNewTab})</span>
 					</a>
@@ -114,6 +125,23 @@ const relatedCols = others.length % 2 === 0 ? 2 : 3;
 
 		<section class='demo' data-device='desktop'>
 			<div class='device-row'>
+				{
+					examples.length > 1 && (
+						<div class='seg-group'>
+							<span class='seg-k' aria-hidden='true'>
+								{t.templates.detail.exampleLabel}
+							</span>
+							<div class='seg seg-ex' role='group' aria-label={t.templates.detail.exampleLabel} data-example-toggle style={`--n:${examples.length};--i:0`}>
+								<span class='seg-knob' aria-hidden='true' />
+								{examples.map((e, i) => (
+									<button type='button' data-example-path={e.path} aria-pressed={i === 0 ? 'true' : 'false'}>
+										{e.label}
+									</button>
+								))}
+							</div>
+						</div>
+					)
+				}
 				<div class='seg' role='group' aria-label={device.label} data-device-toggle>
 					<span class='seg-knob' aria-hidden='true'></span>
 					<button type='button' data-device='desktop' aria-pressed='true'>{device.desktop}</button>
@@ -125,7 +153,7 @@ const relatedCols = others.length % 2 === 0 ? 2 : 3;
 				<div class='browser' data-frame='desktop'>
 					<div class='chrome' aria-hidden='true'>
 						<span class='dots'><i></i><i></i><i></i></span>
-						<span class='url'>{demoUrlLabel}</span>
+						<span class='url' data-demo-url data-host={demoHost}>{demoUrlLabel}</span>
 					</div>
 					<iframe data-src={demo} title={demoTitle} loading='lazy'></iframe>
 					<noscript>
@@ -136,7 +164,10 @@ const relatedCols = others.length % 2 === 0 ? 2 : 3;
 					<PhoneFrame src={demo} title={demoTitle} />
 				</div>
 			</div>
-			<p class='demo-note'>{t.templates.detail.demoNote}</p>
+			<p class='demo-note'>
+				{t.templates.detail.demoNote}
+				{examples.length > 1 && <span class='ex-note'>{t.templates.detail.exampleNote}</span>}
+			</p>
 		</section>
 
 		<section class='section info'>
@@ -229,6 +260,30 @@ const relatedCols = others.length % 2 === 0 ? 2 : 3;
 			if (btn?.dataset.device) set(btn.dataset.device);
 		});
 		set(window.matchMedia('(max-width: 780px)').matches ? 'mobile' : 'desktop');
+
+		/**
+		 * Example switch: points both frames at the chosen example. A frame that
+		 * already loaded reloads now; the other just gets a new data-src. The URL
+		 * label and the "full screen" link follow.
+		 */
+		const examples = demo.querySelector<HTMLElement>('[data-example-toggle]');
+		const urlLabel = demo.querySelector<HTMLElement>('[data-demo-url]');
+		examples?.addEventListener('click', (e) => {
+			const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-example-path]');
+			const path = btn?.dataset.examplePath;
+			if (!btn || !path || btn.getAttribute('aria-pressed') === 'true') return;
+			const buttons = Array.from(examples.querySelectorAll<HTMLButtonElement>('[data-example-path]'));
+			buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+			examples.style.setProperty('--i', String(buttons.indexOf(btn)));
+			frames.forEach((f) => {
+				const iframe = f.querySelector<HTMLIFrameElement>('iframe[data-src]');
+				if (!iframe) return;
+				iframe.dataset.src = path;
+				if (iframe.getAttribute('src')) iframe.src = path;
+			});
+			if (urlLabel) urlLabel.textContent = `${urlLabel.dataset.host ?? ''}${path}`;
+			document.querySelectorAll<HTMLAnchorElement>('a[data-demo-link]').forEach((a) => (a.href = path));
+		});
 	});
 </script>
 
@@ -278,6 +333,39 @@ const relatedCols = others.length % 2 === 0 ? 2 : 3;
 		font-size: var(--fs-lead);
 		line-height: 1.5;
 		color: var(--ink-2);
+	}
+	/* What the structure fits: label + quiet chips */
+	.fits {
+		margin-top: 20px;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 8px 12px;
+	}
+	.fits-k {
+		font-family: var(--mono);
+		font-size: 12px;
+		font-weight: 600;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--ink-3);
+	}
+	.fits ul {
+		list-style: none;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+	.fits li {
+		padding: 5px 12px;
+		border: 1px solid var(--rule-2);
+		border-radius: 999px;
+		background: var(--bg-3);
+		font-size: 14px;
+		color: var(--ink-2);
+	}
+	.fits li::first-letter {
+		text-transform: uppercase;
 	}
 	.price {
 		margin-top: 28px;
@@ -466,6 +554,39 @@ const relatedCols = others.length % 2 === 0 ? 2 : 3;
 	.seg button[aria-pressed='true'],
 	.seg button:hover {
 		color: var(--ink);
+	}
+	/* Example switch: n options, knob follows --i (set by the script) */
+	.device-row {
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 12px 20px;
+	}
+	.seg-group {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+	.seg-k {
+		font-family: var(--mono);
+		font-size: 12px;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--ink-3);
+	}
+	.seg.seg-ex {
+		grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+	}
+	.demo .seg.seg-ex .seg-knob {
+		width: calc((100% - 8px) / var(--n));
+		transform: translateX(calc(var(--i) * 100%));
+	}
+	.seg-ex button::first-letter {
+		text-transform: uppercase;
+	}
+	.ex-note {
+		display: block;
+		margin-top: 4px;
 	}
 	.stage {
 		perspective: 1200px;

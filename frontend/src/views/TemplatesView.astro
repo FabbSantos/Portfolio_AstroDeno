@@ -12,7 +12,7 @@ import TemplateCard from '../components/templates/TemplateCard.astro';
 import Testimonials from '../components/home/Testimonials.astro';
 import { hueVars } from '../components/templates/hues';
 import { SITE, whatsappUrl } from '../data/site';
-import { formatBRL, templates } from '../data/templates';
+import { formatBRL, joinList, templates } from '../data/templates';
 import { fmt, localeOf, localePath, pick, useT } from '../i18n';
 
 const locale = localeOf(Astro);
@@ -34,7 +34,6 @@ const steps = t.templates.steps.items.map((s) => ({ title: s.title, desc: fmt(s.
  * SITE.promises and templates.compare; the client script only swaps state.
  */
 const cmp = t.templates.compare;
-const solves = t.templates.solves as Record<string, string | undefined>;
 const express = SITE.promises.express;
 const expressMultiplier = express?.multiplier ?? 0;
 const expressHours = express?.hours ?? 0;
@@ -51,7 +50,7 @@ const plans = templates.map((tpl) => ({
 	name: `${tpl.name} ${tpl.accent}`,
 	href: localePath(locale, `/templates/${tpl.slug}`),
 	style: hueVars(tpl.kind),
-	who: solves[tpl.slug] ?? pick(tpl.desc, locale),
+	who: joinList(pick(tpl.fits, locale), locale),
 	standard: tpl.priceFrom,
 	express: expressPrice(tpl.priceFrom),
 	selected: tpl.slug === selected.slug,
@@ -123,7 +122,7 @@ const wa = whatsappUrl(locale, t.templates.cta.whatsappGallery);
 				}
 			</div>
 
-			<ul class='plans' role='list' aria-label={cmp.plansLabel}>
+			<ul class='plans' role='list' aria-label={cmp.plansLabel} style={`--plans:${plans.length}`}>
 				{
 					plans.map((p, i) => (
 						<li
@@ -464,7 +463,8 @@ const wa = whatsappUrl(locale, t.templates.cta.whatsappGallery);
 	.plans {
 		list-style: none;
 		display: grid;
-		grid-template-columns: repeat(4, minmax(0, 1fr));
+		/* one column per template on desktop (--plans inline) */
+		grid-template-columns: repeat(var(--plans, 4), minmax(0, 1fr));
 		gap: 16px;
 	}
 	.plan {
@@ -753,7 +753,7 @@ const wa = whatsappUrl(locale, t.templates.cta.whatsappGallery);
 
 	@media (max-width: 1080px) {
 		.plans {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
+			grid-template-columns: repeat(3, minmax(0, 1fr));
 		}
 	}
 	@media (max-width: 780px) {

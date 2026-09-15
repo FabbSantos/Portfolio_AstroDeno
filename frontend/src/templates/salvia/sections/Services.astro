@@ -1,6 +1,6 @@
 ---
 /**
- * Services (#especialidades), after 21st.dev "Services with Animated Hover
+ * Services (#servicos), after 21st.dev "Services with Animated Hover
  * Modal" (cnippet-dev): big typographic rows on hairlines; on hover the other
  * rows dim, a photo frame trails the cursor and a small "Agendar" disc follows
  * it. Rewritten without GSAP/Framer Motion (rAF lerp + CSS transitions).
@@ -19,7 +19,7 @@ const { services } = Astro.props.config;
 const pad = (n: number) => String(n).padStart(2, '0');
 ---
 
-<section class='sec services' id='especialidades' aria-labelledby='salvia-services-title'>
+<section class='sec services' id='servicos' aria-labelledby='salvia-services-title'>
 	<div class='wrap'>
 		<header class='sec-head'>
 			<h2 id='salvia-services-title' set:html={md(services.title)} />

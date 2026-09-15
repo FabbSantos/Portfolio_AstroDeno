@@ -19,7 +19,7 @@ export const meta = {
 	templates: {
 		title: 'Templates prontos em 3 a 5 dias · Fabrício Bahiense',
 		description:
-			'Quatro templates que eu mesmo escrevi: lançamento imobiliário, SaaS B2B, estúdio/agência e drop de e-commerce. Você escolhe, eu personalizo e publico no seu domínio.',
+			'Cinco estruturas de site que eu mesmo escrevi: agendamento, captação, produto com planos, portfólio e vitrine. Serve pra clínica, salão, loja, escritório e o que mais o seu negócio for. Você escolhe, eu personalizo e publico no seu domínio.',
 	},
 	templateDetail: {
 		title: '{name} {accent} · template · Fabrício Bahiense',

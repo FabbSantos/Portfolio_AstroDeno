@@ -35,7 +35,7 @@ export default defineBrava({
 		radius: 12,
 	},
 	seo: {
-		title: 'Brava Drop: template demo',
+		title: 'Brava Vitrine: template demo',
 		description: 'Demo of the Brava template: limited-drop e-commerce landing by Fab Bahiense. Placeholder data.',
 		canonical: 'https://www.fabbahiense.dev/templates/brava/demo',
 		ogImage: hero1,
