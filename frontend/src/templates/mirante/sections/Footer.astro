@@ -25,7 +25,7 @@ const privacyLabel = brand.locale === 'en' ? 'Privacy' : 'Privacidade';
 			<a href={topbar.brandHref} class='brand'>
 				{
 					brand.logo ? (
-						<Image class='brand-logo' src={brand.logo} alt={brand.name} height={28} densities={[1, 2]} format='webp' loading='lazy' decoding='async' />
+						<Image class='brand-logo' src={brand.logo} alt={brand.name} height={28} densities={[1, 2]} format='webp' loading='lazy' decoding='async' quality='high' />
 					) : (
 						brand.name
 					)
@@ -40,7 +40,7 @@ const privacyLabel = brand.locale === 'en' ? 'Privacy' : 'Privacidade';
 				<div class='ft-info' style={`--cols:${footer.columns.length}`}>
 					{footer.columns.map((c) => (
 						<div>
-							<h4>{c.h}</h4>
+							<h3>{c.h}</h3>
 							<p set:html={md(c.p)} />
 						</div>
 					))}
@@ -91,13 +91,13 @@ const privacyLabel = brand.locale === 'en' ? 'Privacy' : 'Privacidade';
 		grid-template-columns: repeat(var(--cols, 3), 1fr);
 		gap: 28px;
 	}
-	.ft-info h4 {
+	.ft-info h3 {
 		font-family: var(--mono);
 		font-size: 11px;
 		font-weight: 700;
 		text-transform: uppercase;
 		letter-spacing: 0.12em;
-		color: var(--accent);
+		color: var(--accent-text);
 		margin-bottom: 10px;
 	}
 	.ft-info p {
@@ -119,7 +119,7 @@ const privacyLabel = brand.locale === 'en' ? 'Privacy' : 'Privacidade';
 		color: var(--ink-3);
 	}
 	.ft-bot a:hover {
-		color: var(--accent);
+		color: var(--accent-text);
 	}
 	@media (max-width: 900px) {
 		.ft-inner {

@@ -13,7 +13,7 @@
 
 /* md(): ==text== */
 .tpl-brava .hl {
-	color: var(--accent);
+	color: var(--accent-display);
 }
 /* md(): **text** inside headings — thick accent underline */
 .tpl-brava h1 strong,
@@ -32,7 +32,7 @@
 	font-weight: 700;
 	letter-spacing: 0.16em;
 	text-transform: uppercase;
-	color: var(--accent);
+	color: var(--accent-text);
 	display: block;
 	margin-bottom: 20px;
 }

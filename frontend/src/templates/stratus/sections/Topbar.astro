@@ -21,7 +21,7 @@ const mobileNav = header.signIn ? [...nav, header.signIn] : nav;
 		<a href={header.brandHref} class='brand'>
 			{
 				brand.logo ? (
-					<Image class='brand-logo' src={brand.logo} alt={brand.name} height={28} densities={[1, 2]} format='webp' loading='eager' />
+					<Image class='brand-logo' src={brand.logo} alt={brand.name} height={28} densities={[1, 2]} format='webp' loading='eager' quality='high' />
 				) : (
 					<>
 						{brand.name}

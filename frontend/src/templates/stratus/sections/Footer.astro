@@ -15,7 +15,7 @@ const copyright = footer.copyright ?? `© ${new Date().getFullYear()} ${legal.co
 			<a href={header.brandHref} class='brand'>
 				{
 					brand.logo ? (
-						<Image class='brand-logo' src={brand.logo} alt={brand.name} height={28} densities={[1, 2]} format='webp' loading='lazy' decoding='async' />
+						<Image class='brand-logo' src={brand.logo} alt={brand.name} height={28} densities={[1, 2]} format='webp' loading='lazy' decoding='async' quality='high' />
 					) : (
 						<>
 							{brand.name}
@@ -29,7 +29,7 @@ const copyright = footer.copyright ?? `© ${new Date().getFullYear()} ${legal.co
 		{
 			footer.columns.map((col) => (
 				<nav class='ft-col' aria-label={col.h}>
-					<h4>{col.h}</h4>
+					<h3>{col.h}</h3>
 					{col.links.map((l) => (
 						<a href={l.href}>{l.label}</a>
 					))}
@@ -77,7 +77,7 @@ const copyright = footer.copyright ?? `© ${new Date().getFullYear()} ${legal.co
 		color: color-mix(in srgb, #fff 50%, transparent);
 		max-width: 28ch;
 	}
-	.ft-col h4 {
+	.ft-col h3 {
 		color: #fff;
 		font-size: 13px;
 		font-family: var(--mono);
@@ -93,7 +93,7 @@ const copyright = footer.copyright ?? `© ${new Date().getFullYear()} ${legal.co
 		transition: color 0.2s;
 	}
 	.ft-col a:hover {
-		color: var(--accent);
+		color: var(--accent-on-dark);
 	}
 	.ft-bot {
 		max-width: 1240px;
@@ -105,7 +105,7 @@ const copyright = footer.copyright ?? `© ${new Date().getFullYear()} ${legal.co
 		justify-content: space-between;
 		flex-wrap: wrap;
 		gap: 16px;
-		color: color-mix(in srgb, #fff 40%, transparent);
+		color: color-mix(in srgb, #fff 60%, transparent);
 	}
 	.ft-links a {
 		color: color-mix(in srgb, #fff 60%, transparent);

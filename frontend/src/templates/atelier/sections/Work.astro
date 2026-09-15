@@ -21,7 +21,7 @@ const { work } = Astro.props.config;
 	</div>
 	<div class='case-grid'>
 		{
-			work.cases.map((c, i) => (
+			work.cases.map((c) => (
 				<article class='case' style={c.tint ? `--tint: ${c.tint}` : undefined}>
 					{c.image ? (
 						<Image
@@ -31,8 +31,9 @@ const { work } = Astro.props.config;
 							widths={[480, 720, 960, 1200]}
 							sizes='(max-width: 780px) calc(100vw - 64px), 572px'
 							format='webp'
-							loading={i === 0 ? 'eager' : 'lazy'}
+							loading='lazy'
 							decoding='async'
+							quality='high'
 						/>
 					) : (
 						<div class='case-thumb case-thumb--tint' aria-hidden='true' />
@@ -174,7 +175,7 @@ const { work } = Astro.props.config;
 			transform 0.25s;
 	}
 	.case:hover .c-arr {
-		color: var(--accent);
+		color: var(--accent-text);
 		transform: translate(4px, -4px);
 	}
 	.work-foot {

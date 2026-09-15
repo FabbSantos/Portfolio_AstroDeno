@@ -8,7 +8,7 @@ import SalviaBody from '../../../templates/salvia/SalviaBody.astro';
 import demo from '../../../templates/salvia/demo.config';
 ---
 
-<DemoLayout slug='salvia' title={demo.seo.title} description={demo.seo.description} locale='pt' themeColor={demo.theme.bg}>
+<DemoLayout slug='salvia' title={demo.seo.title} description={demo.seo.description} locale='pt' themeColor={demo.theme.bg} preloadFonts={false}>
 	<ThemeVars theme={demo.theme} />
 	<SalviaBody config={demo} demo />
 </DemoLayout>

@@ -16,7 +16,7 @@ const { brand, topbar, footer, legal } = config;
 			{
 				footer.columns.map((c) => (
 					<div>
-						<h4>{c.h}</h4>
+						<h3>{c.h}</h3>
 						{c.links.map((l) => (
 							<a href={l.href}>{l.label}</a>
 						))}
@@ -70,7 +70,7 @@ const { brand, topbar, footer, legal } = config;
 		grid-template-columns: repeat(3, 1fr);
 		gap: 32px;
 	}
-	.ft h4 {
+	.ft h3 {
 		font-family: var(--mono);
 		font-size: 11px;
 		font-weight: 700;
@@ -86,7 +86,7 @@ const { brand, topbar, footer, legal } = config;
 		padding: 4px 0;
 	}
 	.ft-cols a:hover {
-		color: var(--accent);
+		color: var(--accent-text);
 	}
 	.ft-bot {
 		max-width: 1240px;
@@ -102,7 +102,7 @@ const { brand, topbar, footer, legal } = config;
 		color: var(--ink-3);
 	}
 	.ft-bot a:hover {
-		color: var(--accent);
+		color: var(--accent-text);
 	}
 	@media (max-width: 780px) {
 		.ft-inner {
