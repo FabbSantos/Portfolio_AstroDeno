@@ -1,0 +1,114 @@
+---
+/**
+ * Lighthouse-style score ring: the arc covers score/100 of the circle and takes
+ * Lighthouse's own band colours (90+ green, 50 to 89 orange, below 50 red).
+ *
+ * - `tone='light'` for the portfolio ground (tinted disc, AA-dark number),
+ *   `tone='dark'` over screenshots and the demo ribbon (white number).
+ * - `draw` animates the arc in once on load (off under reduced motion). Only
+ *   worth it above the fold; cards below it render the arc at rest. Stagger
+ *   several with `--gauge-delay` on a parent.
+ * The ring is decorative: callers put the score and its meaning in text.
+ */
+import { band } from '../../data/lighthouse';
+
+interface Props {
+	score: number;
+	/** Diameter in px. */
+	size?: number;
+	tone?: 'light' | 'dark';
+	draw?: boolean;
+	class?: string;
+}
+const { score, size = 64, tone = 'light', draw = false, class: cls } = Astro.props;
+
+const R = 15.9155; // circumference 100, so dash lengths are the score itself
+const value = Math.max(0, Math.min(100, score));
+---
+
+<span class:list={['gauge', `is-${band(value)}`, `on-${tone}`, draw && 'draw', cls]} style={`--size:${size}px`} aria-hidden='true'>
+	<svg viewBox='0 0 36 36' width={size} height={size}>
+		<circle class='disc' cx='18' cy='18' r={R}></circle>
+		<circle class='arc' cx='18' cy='18' r={R} pathLength='100' stroke-dasharray={`${value} 100`} style={`--value:${value}`}></circle>
+	</svg>
+	<span class:list={['num', value === 100 && 'is-3']}>{value}</span>
+</span>
+
+<style>
+	.gauge {
+		--good: #0cce6b;
+		--good-text: #007a33;
+		--average: #ffa400;
+		--average-text: #b25400;
+		--poor: #ff4e42;
+		--poor-text: #c7221f;
+		position: relative;
+		display: inline-grid;
+		place-items: center;
+		width: var(--size);
+		height: var(--size);
+		flex: none;
+	}
+	.is-good {
+		--ring: var(--good);
+		--ring-text: var(--good-text);
+	}
+	.is-average {
+		--ring: var(--average);
+		--ring-text: var(--average-text);
+	}
+	.is-poor {
+		--ring: var(--poor);
+		--ring-text: var(--poor-text);
+	}
+	svg {
+		position: absolute;
+		inset: 0;
+		/* start the arc at 12 o'clock */
+		transform: rotate(-90deg);
+	}
+	.disc {
+		fill: color-mix(in srgb, var(--ring) 10%, transparent);
+		stroke: color-mix(in srgb, var(--ring) 18%, transparent);
+		stroke-width: 2.6;
+	}
+	.arc {
+		fill: none;
+		stroke: var(--ring);
+		stroke-width: 2.6;
+		stroke-linecap: round;
+	}
+	.num {
+		position: relative;
+		font-family: var(--mono);
+		font-weight: 700;
+		font-size: calc(var(--size) * 0.34);
+		letter-spacing: -0.04em;
+		line-height: 1;
+		font-variant-numeric: tabular-nums;
+		color: var(--ring-text);
+	}
+	/* three digits: a notch smaller so "100" stays inside the ring */
+	.num.is-3 {
+		font-size: calc(var(--size) * 0.28);
+		letter-spacing: -0.06em;
+	}
+	.on-dark .disc {
+		fill: rgba(255, 255, 255, 0.06);
+		stroke: rgba(255, 255, 255, 0.14);
+	}
+	.on-dark .num {
+		color: #fff;
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.draw .arc {
+			animation: gauge-draw 1.2s cubic-bezier(0.22, 1, 0.36, 1) var(--gauge-delay, 0.25s) backwards;
+		}
+		@keyframes gauge-draw {
+			from {
+				stroke-dasharray: 0 100;
+			}
+		}
+	}
+</style>

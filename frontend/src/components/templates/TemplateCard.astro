@@ -9,24 +9,42 @@
  *   (`node scripts/shots.mjs templates`). On hover the page pans down to its end
  *   and eases back on leave — pure CSS, see `--frame-pct`. Without a screenshot
  *   the live demo is scaled down inside an inert iframe.
+ * - Lighthouse badge (mobile performance) over the preview when the template has
+ *   a measured score in src/data/lighthouse.json.
+ * - `wide`: from 900px the card spans its grid row with the preview beside the
+ *   body. Grids use it on the first card when the count is odd, so no card is
+ *   left alone on the last row.
  * - `data-card` lets the home scroller measure the step for prev/next buttons.
  */
 import type { ImageMetadata } from 'astro';
 import { Image } from 'astro:assets';
+import { scoresFor } from '../../data/lighthouse';
 import { SITE } from '../../data/site';
 import { demoPath, formatBRL, type TemplateMeta } from '../../data/templates';
 import { fmt, localePath, pick, useT, type Locale } from '../../i18n';
 import { hueVars } from './hues';
+import ScoreGauge from './ScoreGauge.astro';
 
 interface Props {
 	tpl: TemplateMeta;
 	locale: Locale;
 	/** Heading level: h2 in the gallery (directly under the page h1), h3 under a section h2. */
 	heading?: 'h2' | 'h3';
+	wide?: boolean;
 	class?: string;
 }
-const { tpl, locale, heading = 'h3', class: cls } = Astro.props;
+const { tpl, locale, heading = 'h3', wide = false, class: cls } = Astro.props;
 const t = useT(locale);
+const scores = scoresFor(tpl.slug);
+const short = t.templates.card.scoreShort;
+const strip = scores
+	? [
+			{ label: short.mobile, score: scores.mobile },
+			{ label: short.desktop, score: scores.desktop },
+			{ label: short.accessibility, score: scores.accessibility },
+			{ label: short.bestPractices, score: scores.bestPractices },
+		]
+	: [];
 
 // Build-time full-page screenshots (optional): src/assets/templates/[slug].jpg
 type Shot = { default: ImageMetadata };
@@ -53,7 +71,7 @@ const demo = demoPath(tpl.slug);
 const style = `${hueVars(tpl.kind)};--frame-pct:${framePct};--pan-dur:${panDur}`;
 ---
 
-<article class:list={['tpl-card', cls]} data-card data-kind={tpl.kind} style={style}>
+<article class:list={['tpl-card', wide && 'is-wide', cls]} data-card data-kind={tpl.kind} style={style}>
 	<span class='tpl-ring' aria-hidden='true'></span>
 
 	<div class='tpl-frame' style={`background:${tpl.grad}`}>
@@ -64,7 +82,7 @@ const style = `${hueVars(tpl.kind)};--frame-pct:${framePct};--pan-dur:${panDur}`
 						<Image
 							src={shot}
 							widths={[500, 1000]}
-							sizes='(max-width: 780px) 84vw, (max-width: 1100px) 46vw, 620px'
+							sizes={wide ? '(max-width: 899px) 84vw, 700px' : '(max-width: 780px) 84vw, (max-width: 1100px) 46vw, 620px'}
 							format='webp'
 							quality='high'
 							alt={previewAlt}
@@ -77,6 +95,18 @@ const style = `${hueVars(tpl.kind)};--frame-pct:${framePct};--pan-dur:${panDur}`
 				)
 			}
 		</a>
+		{
+			scores && (
+				<p class='tpl-score'>
+					<ScoreGauge score={scores.mobile} size={32} tone='dark' />
+					<span class='score-text' aria-hidden='true'>
+						<b>{t.templates.card.scoreLabel}</b>
+						<span>{t.templates.card.scoreDevice}</span>
+					</span>
+					<span class='sr-only'>{fmt(t.templates.card.scoreSr, { score: scores.mobile })}</span>
+				</p>
+			)
+		}
 		{shot && <span class='tpl-hint' aria-hidden='true'>{t.templates.card.hoverHint}</span>}
 		<a href={demo} class='tpl-demo' target='_blank' rel='noopener'>
 			{t.templates.card.demo} ↗<span class='sr-only'> ({t.common.openInNewTab})</span>
@@ -85,9 +115,12 @@ const style = `${hueVars(tpl.kind)};--frame-pct:${framePct};--pan-dur:${panDur}`
 
 	<a href={sales} class='tpl-link'>
 		<p class='top'>
-			<span class='cat'>
-				<i class='cat-dot' aria-hidden='true'></i>
-				{pick(tpl.cat, locale)}
+			<span class='tags'>
+				<span class='cat'>
+					<i class='cat-dot' aria-hidden='true'></i>
+					{pick(tpl.cat, locale)}
+				</span>
+				{tpl.isNew && <span class='new'>{t.templates.card.isNew}</span>}
 			</span>
 			<span class='days'>{tpl.days} {t.common.businessDays}</span>
 		</p>
@@ -112,6 +145,24 @@ const style = `${hueVars(tpl.kind)};--frame-pct:${framePct};--pan-dur:${panDur}`
 		}
 		<p class='desc'>{pick(tpl.desc, locale)}</p>
 		<p class='inc'>{includes}</p>
+		{
+			wide && scores && (
+				<div class='strip'>
+					<span class='strip-k'>{t.templates.detail.scores.title}</span>
+					<span class='strip-row'>
+						{strip.map((g) => (
+							<span class='strip-item'>
+								<ScoreGauge score={g.score} size={44} />
+								<span class='strip-l'>
+									{g.label}
+									<span class='sr-only'>: {g.score}</span>
+								</span>
+							</span>
+						))}
+					</span>
+				</div>
+			)
+		}
 		<p class='foot'>
 			<span class='price'>
 				<span class='from'>{t.common.from}</span>
@@ -344,6 +395,39 @@ const style = `${hueVars(tpl.kind)};--frame-pct:${framePct};--pan-dur:${panDur}`
 		background: var(--accent);
 	}
 
+	/* Lighthouse badge: top-right, stays put while the page pans */
+	.tpl-score {
+		position: absolute;
+		top: 12px;
+		right: 12px;
+		z-index: 2;
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 4px 13px 4px 4px;
+		border-radius: 999px;
+		background: rgba(26, 26, 28, 0.86);
+		backdrop-filter: blur(6px);
+		box-shadow: 0 10px 24px -12px rgba(0, 0, 0, 0.55);
+		color: #fff;
+		pointer-events: none;
+	}
+	.score-text {
+		display: flex;
+		flex-direction: column;
+		font-family: var(--mono);
+		line-height: 1.15;
+	}
+	.score-text b {
+		font-size: 11px;
+		font-weight: 600;
+		letter-spacing: 0.02em;
+	}
+	.score-text span {
+		font-size: 10px;
+		color: rgba(255, 255, 255, 0.72);
+	}
+
 	/* ---- Body ---- */
 	.tpl-link {
 		display: flex;
@@ -365,6 +449,22 @@ const style = `${hueVars(tpl.kind)};--frame-pct:${framePct};--pan-dur:${panDur}`
 		font-family: var(--mono);
 		font-size: 12px;
 		color: var(--ink-3);
+	}
+	.tags {
+		display: inline-flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 6px;
+	}
+	.new {
+		font-size: 11px;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: #fff;
+		background: var(--accent-text);
+		padding: 4px 9px;
+		border-radius: 999px;
 	}
 	/* Category chip in the template's own hue */
 	.top .cat {
@@ -484,6 +584,71 @@ const style = `${hueVars(tpl.kind)};--frame-pct:${framePct};--pan-dur:${panDur}`
 	}
 	.tpl-card:hover .foot .pick::after {
 		transform: translateX(5px);
+	}
+
+	/* ---- Wide: preview beside the body, spanning the grid row ---- */
+	/* The four scores replace the preview badge in the body's spare height. */
+	.strip {
+		display: none;
+	}
+	@media (min-width: 900px) {
+		.is-wide .tpl-score {
+			display: none;
+		}
+		.is-wide .strip {
+			display: flex;
+			flex-direction: column;
+			gap: 12px;
+			margin-top: 10px;
+		}
+		.strip-k {
+			font-family: var(--mono);
+			font-size: 11px;
+			font-weight: 600;
+			letter-spacing: 0.1em;
+			text-transform: uppercase;
+			color: var(--ink-3);
+		}
+		.strip-row {
+			display: grid;
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+			gap: 8px;
+		}
+		.strip-item {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 6px;
+			text-align: center;
+		}
+		.strip-l {
+			font-size: 12px;
+			line-height: 1.25;
+			color: var(--ink-2);
+		}
+		.tpl-card.is-wide {
+			display: grid;
+			grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+		}
+		.is-wide .tpl-frame {
+			border-radius: 17px 0 0 17px;
+			border-bottom: 0;
+			border-right: 1px solid var(--rule);
+		}
+		.is-wide .tpl-link {
+			gap: 12px;
+			padding: 32px 36px;
+		}
+		.is-wide .tpl-link:focus-visible {
+			border-radius: 0 14px 14px 0;
+		}
+		.is-wide .tpl-link :global(.name) {
+			font-size: 32px;
+			letter-spacing: -0.03em;
+		}
+		.is-wide .desc {
+			font-size: 15px;
+		}
 	}
 
 	/* ---- Touch: no pan, no sticky hover lift, demo link always visible ---- */

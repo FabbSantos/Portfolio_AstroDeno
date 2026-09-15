@@ -16,6 +16,8 @@ export const templates = {
 		headAccent: 'no ar essa semana?',
 		lead: '{N} templates que eu mesmo escrevi. Você escolhe, eu troco marca, cores e copy e publico no seu domínio em {days} dias úteis. De {min} a {max}.',
 		viewAll: 'Ver todos os templates',
+		/** Shown only when every template is measured and the lowest mobile score is 90+. {min} = that score. */
+		scoreLine: 'Nota mínima de {min} no Lighthouse no celular, medida em cada demo',
 		listLabel: 'Templates disponíveis',
 		scrollPrev: 'Template anterior',
 		scrollNext: 'Próximo template',
@@ -39,6 +41,19 @@ export const templates = {
 		demo: 'Ver demo',
 		/** Label before templates.solves.<slug>. */
 		solves: 'Resolve:',
+		/** Chip on templates flagged isNew. */
+		isNew: 'Novo',
+		/** Lighthouse badge over the preview: short visible label, full sentence for screen readers. */
+		scoreLabel: 'Lighthouse',
+		scoreDevice: 'celular',
+		scoreSr: 'Nota {score} de 100 no Lighthouse, celular',
+		/** Wide card only: the four scores under the description (title reuses detail.scores.title). */
+		scoreShort: {
+			mobile: 'Celular',
+			desktop: 'Computador',
+			accessibility: 'Acessibilidade',
+			bestPractices: 'Boas práticas',
+		},
 	},
 
 	/** One short phrase per template: the problem it solves. Key = slug. */
@@ -104,6 +119,19 @@ export const templates = {
 		demoNote: 'Demo ao vivo: role e clique à vontade. Marca, textos e imagens são fictícios; no seu, entram os seus.',
 		sectionsTitle: 'O que vem no template',
 		related: 'Outros templates',
+		/**
+		 * Score panel in the hero, from src/data/lighthouse.json. {version} = Lighthouse
+		 * version, {runs} = runs per preset, {date} = measurement date.
+		 */
+		scores: {
+			title: 'Nota no Google Lighthouse',
+			mobile: 'Performance no celular',
+			desktop: 'Performance no computador',
+			accessibility: 'Acessibilidade',
+			bestPractices: 'Boas práticas',
+			outOf: 'de 100',
+			note: 'Medido nesta demo com o Lighthouse {version}, a mesma análise do PageSpeed Insights. Mediana de {runs} medições, em {date}.',
+		},
 		/** Desktop / phone switch above the demo frame. */
 		device: {
 			label: 'Ver como',
@@ -116,7 +144,7 @@ export const templates = {
 		title: 'O que vem junto',
 		items: [
 			'Publicado no seu domínio (o domínio é por sua conta; eu configuro DNS e SSL)',
-			'SEO técnico, Lighthouse > 95',
+			'SEO técnico e Lighthouse acima de 90 no celular',
 			'Personalização de logo, cores, copy e imagens',
 			'{months} meses de ajustes',
 			'Código entregue no seu repositório após o pagamento',

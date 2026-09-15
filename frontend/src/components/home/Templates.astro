@@ -1,10 +1,12 @@
 ---
 /**
  * Home band — "Templates · sites prontos em dias".
- * One list of cards: a 2×2 grid from 900px up, a snap scroller below that
+ * One list of cards: a two-column grid from 900px up (with an odd count the
+ * first card goes wide, so none is left alone), a snap scroller below that
  * (touch scrolls natively, mouse can drag, prev/next buttons for everyone).
  * Cards reveal with a stagger (.reveal .d1–.d3 from site.css).
  */
+import { scoresFor } from '../../data/lighthouse';
 import { SITE } from '../../data/site';
 import { formatBRL, templates } from '../../data/templates';
 import { fmt, localeOf, localePath, pick, useT } from '../../i18n';
@@ -24,6 +26,11 @@ const lead = fmt(t.templates.band.lead, {
 	min: formatBRL(Math.min(...prices)),
 	max: formatBRL(Math.max(...prices)),
 });
+
+// Proof line: only when every template has a measured score and the lowest is green.
+const mobileScores = templates.map((tpl) => scoresFor(tpl.slug)?.mobile);
+const minScore = mobileScores.every((s) => s !== undefined) ? Math.min(...(mobileScores as number[])) : 0;
+const scoreLine = minScore >= 90 ? fmt(t.templates.band.scoreLine, { min: minScore }) : null;
 ---
 
 <section class='tpl-band' id='templates' aria-labelledby='templates-title'>
@@ -34,13 +41,21 @@ const lead = fmt(t.templates.band.lead, {
 				{t.templates.band.head} <span class='hl'>{t.templates.band.headAccent}</span>
 			</h2>
 			<p>{lead}</p>
+			{
+				scoreLine && (
+					<p class='lh-proof'>
+						<i aria-hidden='true' />
+						{scoreLine}
+					</p>
+				)
+			}
 		</div>
 
 		<ul class='scroller' id='tpl-scroller' role='list' aria-label={t.templates.band.listLabel}>
 			{
 				templates.map((tpl, i) => (
-					<li class:list={['tpl-item', 'reveal', i > 0 && `d${Math.min(i, 3)}`]}>
-						<TemplateCard tpl={tpl} locale={locale} heading='h3' />
+					<li class:list={['tpl-item', 'reveal', i > 0 && `d${Math.min(i, 3)}`, i === 0 && n % 2 === 1 && 'is-wide']}>
+						<TemplateCard tpl={tpl} locale={locale} heading='h3' wide={i === 0 && n % 2 === 1} />
 					</li>
 				))
 			}
@@ -103,6 +118,31 @@ const lead = fmt(t.templates.band.lead, {
 			transform: scale(1.8);
 			opacity: 0;
 		}
+	}
+
+	/* Measured Lighthouse floor under the lead */
+	.sec-head .lh-proof {
+		display: inline-flex;
+		align-items: center;
+		gap: 9px;
+		margin-top: 18px;
+		max-width: 100%;
+		padding: 7px 14px 7px 11px;
+		border-radius: 999px;
+		background: var(--bg-3);
+		border: 1px solid var(--rule-2);
+		font-family: var(--mono);
+		font-size: 12px;
+		line-height: 1.4;
+		color: var(--ink-2);
+	}
+	.lh-proof i {
+		flex: none;
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: #0cce6b;
+		box-shadow: 0 0 0 3px rgba(12, 206, 107, 0.18);
 	}
 
 	/* Mobile / tablet: snap scroller */
@@ -199,6 +239,10 @@ const lead = fmt(t.templates.band.lead, {
 		}
 		.tpl-item {
 			flex: initial;
+		}
+		/* odd count: the first (newest) card takes the whole row */
+		.tpl-item.is-wide {
+			grid-column: 1 / -1;
 		}
 		.scroller-nav {
 			display: none;

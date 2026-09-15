@@ -232,8 +232,8 @@ const wa = whatsappUrl(locale, t.templates.cta.whatsappGallery);
 			<ul class='grid' role='list'>
 				{
 					templates.map((tpl, i) => (
-						<li class:list={['reveal', i > 0 && `d${Math.min(i, 3)}`]}>
-							<TemplateCard tpl={tpl} locale={locale} heading='h2' />
+						<li class:list={['reveal', i > 0 && `d${Math.min(i, 3)}`, i === 0 && templates.length % 2 === 1 && 'is-wide']}>
+							<TemplateCard tpl={tpl} locale={locale} heading='h2' wide={i === 0 && templates.length % 2 === 1} />
 						</li>
 					))
 				}
@@ -805,6 +805,10 @@ const wa = whatsappUrl(locale, t.templates.cta.whatsappGallery);
 	.grid li > :global(.tpl-card) {
 		width: 100%;
 	}
+	/* odd count: the first (newest) card takes the whole row */
+	.grid li.is-wide {
+		grid-column: 1 / -1;
+	}
 
 	/* How it works + what's included */
 	.how {
@@ -879,7 +883,7 @@ const wa = whatsappUrl(locale, t.templates.cta.whatsappGallery);
 		font-weight: 700;
 	}
 
-	@media (max-width: 900px) {
+	@media (max-width: 899px) {
 		.grid {
 			grid-template-columns: 1fr;
 			max-width: 560px;

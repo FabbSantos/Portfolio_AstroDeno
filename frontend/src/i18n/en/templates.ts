@@ -10,6 +10,7 @@ export const templates: Shape<typeof ptShape> = {
 		headAccent: 'live this week?',
 		lead: '{N} templates I wrote myself. You pick one, I swap in your brand, colours and copy and publish it on your domain in {days} business days. From {min} to {max}.',
 		viewAll: 'See all templates',
+		scoreLine: 'Lowest Lighthouse mobile score: {min}, measured on each demo',
 		listLabel: 'Available templates',
 		scrollPrev: 'Previous template',
 		scrollNext: 'Next template',
@@ -30,6 +31,16 @@ export const templates: Shape<typeof ptShape> = {
 		hoverHint: 'hover to scroll',
 		demo: 'View demo',
 		solves: 'Solves:',
+		isNew: 'New',
+		scoreLabel: 'Lighthouse',
+		scoreDevice: 'mobile',
+		scoreSr: 'Lighthouse score {score} out of 100, mobile',
+		scoreShort: {
+			mobile: 'Mobile',
+			desktop: 'Desktop',
+			accessibility: 'Accessibility',
+			bestPractices: 'Best practices',
+		},
 	},
 
 	solves: {
@@ -88,6 +99,15 @@ export const templates: Shape<typeof ptShape> = {
 		demoNote: 'Live demo: scroll and click around. Brand, copy and images are placeholders; yours go in.',
 		sectionsTitle: "What's in the template",
 		related: 'Other templates',
+		scores: {
+			title: 'Google Lighthouse score',
+			mobile: 'Performance on mobile',
+			desktop: 'Performance on desktop',
+			accessibility: 'Accessibility',
+			bestPractices: 'Best practices',
+			outOf: 'out of 100',
+			note: 'Measured on this demo with Lighthouse {version}, the same analysis behind PageSpeed Insights. Median of {runs} runs, on {date}.',
+		},
 		device: {
 			label: 'View as',
 			desktop: 'Desktop',
@@ -99,7 +119,7 @@ export const templates: Shape<typeof ptShape> = {
 		title: "What's included",
 		items: [
 			'Published on your domain (you own the domain; I set up DNS and SSL)',
-			'Technical SEO, Lighthouse > 95',
+			'Technical SEO and Lighthouse above 90 on mobile',
 			'Logo, colours, copy and image customization',
 			'{months} months of adjustments',
 			'Code delivered to your repository after payment',
