@@ -61,7 +61,9 @@ type FeatureKey = keyof typeof cmp.features;
 const ALL = templates.map((tpl) => tpl.slug);
 const matrix: readonly { key: FeatureKey; has: readonly string[] }[] = [
 	{ key: 'lead', has: ALL },
-	{ key: 'gallery', has: ['mirante', 'atelier', 'brava'] },
+	{ key: 'booking', has: ['salvia'] },
+	{ key: 'hours', has: ['salvia'] },
+	{ key: 'gallery', has: ['salvia', 'mirante', 'atelier', 'brava'] },
 	{ key: 'plans', has: ['mirante'] },
 	{ key: 'pricing', has: ['stratus'] },
 	{ key: 'countdown', has: ['brava'] },

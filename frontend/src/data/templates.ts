@@ -4,7 +4,7 @@
  */
 import type { Bi } from './site';
 
-export type TemplateKind = 'realestate' | 'saas' | 'agency' | 'shop';
+export type TemplateKind = 'realestate' | 'saas' | 'agency' | 'shop' | 'clinic';
 
 export interface TemplateMeta {
 	slug: string;
@@ -30,6 +30,29 @@ export interface TemplateMeta {
 }
 
 export const templates: TemplateMeta[] = [
+	{
+		slug: 'salvia',
+		name: 'Sálvia',
+		accent: 'Clínica',
+		kind: 'clinic',
+		cat: { pt: 'Saúde · Clínica', en: 'Health · Clinic' },
+		desc: {
+			pt: 'Landing de clínica: especialidades, agendamento pelo WhatsApp em dois toques e horário com "aberto agora".',
+			en: 'Clinic landing: specialties, two-tap WhatsApp booking and live "open now" hours.',
+		},
+		lead: {
+			pt: 'Landing enxuta pra clínica e consultório. O paciente escolhe a especialidade e o período e a mensagem sai pronta no WhatsApp. Equipe com registro, convênios, horário ao vivo e SEO local já configurado.',
+			en: 'A lean landing for clinics and practices. Patients pick a specialty and a time of day and the WhatsApp message is ready to send. Team with registries, insurance, live opening hours and local SEO built in.',
+		},
+		sections: {
+			pt: ['Hero editorial com horário ao vivo', 'Especialidades com foto no hover', 'Agendamento pelo WhatsApp', 'Equipe com registro', 'Convênios', 'O espaço', 'Perguntas frequentes', 'Como chegar e horários', 'Rodapé com responsável técnico'],
+			en: ['Editorial hero with live hours', 'Specialties with hover photos', 'WhatsApp booking', 'Team with registries', 'Insurance plans', 'The space', 'FAQ', 'Directions and hours', 'Footer with medical director'],
+		},
+		priceFrom: 1000,
+		days: 3,
+		demoLocale: 'pt',
+		grad: 'linear-gradient(135deg,#E4EDE6,#BCD4C3)',
+	},
 	{
 		slug: 'mirante',
 		name: 'Mirante',

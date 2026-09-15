@@ -43,6 +43,7 @@ export const templates = {
 
 	/** One short phrase per template: the problem it solves. Key = slug. */
 	solves: {
+		salvia: 'clínica que quer agenda cheia pelo WhatsApp',
 		mirante: 'lançamento imobiliário que precisa de lead',
 		stratus: 'SaaS B2B que precisa de trial',
 		atelier: 'estúdio/agência que precisa de portfólio',
@@ -79,6 +80,8 @@ export const templates = {
 		notIncluded: 'Não incluso',
 		features: {
 			lead: 'Formulário de lead + WhatsApp',
+			booking: 'Agendamento pelo WhatsApp',
+			hours: 'Horário com "aberto agora"',
 			gallery: 'Galeria de fotos',
 			plans: 'Plantas e mapa',
 			pricing: 'Pricing e FAQ',

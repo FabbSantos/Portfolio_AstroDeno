@@ -1,0 +1,186 @@
+---
+/**
+ * Hero, after 21st.dev "Editorial Hero" (felipemenezes098/hero-05): tagline and
+ * live hours bottom-left, serif title + sub + actions on the right half of a
+ * 12-column grid, then a full-bleed landscape photo whose top edge fades in.
+ *
+ * The entrance animates blur + translate only, never opacity: the title is the
+ * mobile LCP and must be painted on the first frame.
+ */
+import { Image } from 'astro:assets';
+import type { SalviaConfig } from '../schema';
+import { hoursSummary, OPEN_STRINGS } from '../hours';
+import { md } from './_md';
+
+interface Props {
+	config: SalviaConfig;
+}
+const { config } = Astro.props;
+const { hero, location, brand } = config;
+const locale = brand.locale;
+const summary = hoursSummary(location.hours, locale);
+const status = JSON.stringify({ hours: location.hours, tz: location.timezone, locale, strings: OPEN_STRINGS[locale] });
+const widths = (w: number) => [...[640, 960, 1280, 1600].filter((x) => x < w), w];
+---
+
+<section class='hero' aria-labelledby='salvia-hero-title'>
+	<div class='wrap grid'>
+		<div class='side' style='--d: 0ms'>
+			<p class='tagline'>{hero.tagline}</p>
+			<p class='status' data-open-status={status}>
+				<span class='status-dot' aria-hidden='true'></span>
+				<span data-open-text>{location.hoursTitle}</span>
+			</p>
+			<p class='summary'>{summary}</p>
+		</div>
+
+		<div class='copy'>
+			<h1 id='salvia-hero-title' class='serif' style='--d: 60ms' set:html={md(hero.title)} />
+			<p class='sub' style='--d: 140ms'>{hero.sub}</p>
+			<div class='actions' style='--d: 200ms'>
+				<a class='btn' href='#agendar'>{hero.cta} <span class='arr' aria-hidden='true'>→</span></a>
+				<a class='link' href='#especialidades'>{hero.secondaryCta}</a>
+			</div>
+			{hero.highlights.length > 0 && <p class='facts' style='--d: 260ms'>{hero.highlights.join(' · ')}</p>}
+		</div>
+	</div>
+
+	{
+		hero.photo && (
+			<figure class='media'>
+				<Image
+					src={hero.photo}
+					alt={hero.photoAlt}
+					widths={widths(hero.photo.width)}
+					sizes='100vw'
+					format='webp'
+					quality='high'
+					loading='eager'
+					fetchpriority='high'
+					decoding='async'
+				/>
+			</figure>
+		)
+	}
+</section>
+
+<style>
+	.hero {
+		padding-top: clamp(56px, 10vw, 136px);
+	}
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		column-gap: 24px;
+		row-gap: 40px;
+		padding-bottom: clamp(48px, 6vw, 80px);
+	}
+	.side {
+		grid-column: 1 / span 4;
+		align-self: end;
+		display: grid;
+		gap: 10px;
+		max-width: 30ch;
+	}
+	.tagline {
+		font-size: 17px;
+		line-height: 1.45;
+		color: var(--ink);
+	}
+	.side .status {
+		margin-top: 18px;
+		padding-top: 18px;
+		border-top: 1px solid var(--line);
+	}
+	.summary {
+		font-size: 14px;
+		color: var(--ink-2);
+	}
+	.copy {
+		grid-column: 7 / span 6;
+		display: grid;
+		gap: 26px;
+		justify-items: start;
+	}
+	h1 {
+		font-size: clamp(44px, 5.6vw, 80px);
+		line-height: 1.02;
+		letter-spacing: -0.035em;
+		text-wrap: balance;
+	}
+	.sub {
+		max-width: 44ch;
+		font-size: clamp(17px, 1.4vw, 19px);
+		line-height: 1.6;
+		color: var(--ink-2);
+	}
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 12px 28px;
+		margin-top: 6px;
+	}
+	.facts {
+		font-size: 14px;
+		color: var(--ink-2);
+	}
+
+	.media {
+		position: relative;
+		aspect-ratio: 9 / 4;
+		overflow: hidden;
+		background: var(--bg-2);
+		/* Top edge melts into the page, like the 21st reference. */
+		-webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 18%);
+		mask-image: linear-gradient(to bottom, transparent 0%, #000 18%);
+	}
+	.media :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	/* Entrance: blur + rise, staggered by --d. No opacity (LCP). */
+	.side,
+	.copy > * {
+		animation: salvia-in 0.9s var(--ease) both;
+		animation-delay: var(--d, 0ms);
+	}
+	.media {
+		animation: salvia-media 1.2s var(--ease) 120ms both;
+	}
+	@keyframes salvia-in {
+		from {
+			transform: translateY(14px);
+			filter: blur(6px);
+		}
+	}
+	@keyframes salvia-media {
+		from {
+			transform: translateY(24px);
+			filter: blur(10px);
+		}
+	}
+
+	@media (max-width: 900px) {
+		.side,
+		.copy {
+			grid-column: 1 / -1;
+		}
+		.side {
+			order: 2;
+			max-width: none;
+		}
+		.media {
+			aspect-ratio: 4 / 3;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.side,
+		.copy > *,
+		.media {
+			animation: none;
+		}
+	}
+</style>

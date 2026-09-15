@@ -1,0 +1,134 @@
+---
+/**
+ * Footer, after 21st.dev "Large Name Footer": four short columns (address,
+ * hours, contact, legal) and the clinic's name set huge at the bottom edge.
+ */
+import type { SalviaConfig } from '../schema';
+import { hoursSummary } from '../hours';
+
+interface Props {
+	config: SalviaConfig;
+}
+const { config } = Astro.props;
+const { brand, footer, legal, location, contact } = config;
+const en = brand.locale === 'en';
+const a = location.address;
+const word = footer.wordmark ?? brand.name;
+const legalLine = [legal.company, legal.cnpj ? `CNPJ ${legal.cnpj}` : null].filter(Boolean).join(' · ');
+const phoneHref = contact.phone ? `tel:${contact.phone.replace(/[^\d+]/g, '')}` : null;
+const waHref = contact.whatsapp ? `https://wa.me/${contact.whatsapp.number}?text=${encodeURIComponent(contact.whatsapp.message)}` : null;
+const hasContact = Boolean(phoneHref || contact.email || waHref);
+---
+
+<footer class='foot'>
+	<div class='wrap cols'>
+		<div>
+			<h3>{en ? 'Address' : 'Endereço'}</h3>
+			<p>{a.street}<br />{[a.district, a.city].filter(Boolean).join(', ')} · {a.state}</p>
+		</div>
+		<div>
+			<h3>{location.hoursTitle}</h3>
+			<p>{hoursSummary(location.hours, brand.locale)}</p>
+		</div>
+		{
+			hasContact && (
+				<div>
+					<h3>{en ? 'Contact' : 'Contato'}</h3>
+					<p class='stack'>
+						{phoneHref && <a href={phoneHref}>{contact.phone}</a>}
+						{contact.email && <a href={`mailto:${contact.email}`}>{contact.email}</a>}
+						{waHref && (
+							<a href={waHref} target='_blank' rel='noopener'>
+								WhatsApp
+							</a>
+						)}
+					</p>
+				</div>
+			)
+		}
+		<div>
+			<h3>{en ? 'Medical director' : 'Responsável técnico'}</h3>
+			<p class='stack'>
+				{footer.technicalLead && <span>{footer.technicalLead}</span>}
+				{legalLine && <span>{legalLine}</span>}
+				{legal.lines.map((l) => <span>{l}</span>)}
+				{legal.privacyUrl && <a href={legal.privacyUrl}>{en ? 'Privacy policy' : 'Política de privacidade'}</a>}
+			</p>
+		</div>
+	</div>
+
+	<p class='wordmark serif' aria-hidden='true' style={`--chars: ${[...word].length}`}>{word}</p>
+
+	<div class='wrap bottom'>
+		<span>{footer.line}</span>
+	</div>
+</footer>
+
+<style>
+	.foot {
+		overflow: hidden;
+		padding-top: clamp(64px, 8vw, 104px);
+		border-top: 1px solid var(--line);
+	}
+	.cols {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 32px 24px;
+	}
+	h3 {
+		margin-bottom: 10px;
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--ink);
+	}
+	.cols p {
+		font-size: 15px;
+		line-height: 1.6;
+		color: var(--ink-2);
+	}
+	.stack {
+		display: grid;
+		justify-items: start;
+	}
+	.stack a {
+		display: inline-flex;
+		align-items: center;
+		min-height: 32px;
+		color: var(--ink);
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 4px;
+	}
+	/* One line that spans the page: size follows the number of characters
+	   (Newsreader averages ~0.42em per glyph; the cap keeps a 3-letter name sane). */
+	.wordmark {
+		margin: clamp(40px, 6vw, 72px) 0 0;
+		padding-inline: var(--pad-x);
+		font-size: min(calc((100vw - 2 * var(--pad-x)) / (var(--chars) * 0.42)), 46vw);
+		line-height: 0.8;
+		letter-spacing: -0.04em;
+		white-space: nowrap;
+		color: var(--ink);
+		transform: translateY(0.12em);
+	}
+	.bottom {
+		position: relative;
+		display: flex;
+		justify-content: space-between;
+		padding-block: 18px 22px;
+		border-top: 1px solid var(--line);
+		background: var(--bg);
+		font-size: 13px;
+		color: var(--ink-2);
+	}
+	@media (max-width: 900px) {
+		.cols {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+	@media (max-width: 480px) {
+		.cols {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+</style>

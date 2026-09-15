@@ -1,0 +1,154 @@
+---
+/**
+ * FAQ (#duvidas), optional, after 21st.dev "Interactive Accordion"
+ * (jatin-yadav05): numbered rows on hairlines, a plus that turns into ×.
+ * Native <details>, first item open.
+ */
+import type { SalviaConfig } from '../schema';
+import { md } from './_md';
+
+interface Props {
+	faq: NonNullable<SalviaConfig['faq']>;
+}
+const { faq } = Astro.props;
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<section class='sec faq' id='duvidas' aria-labelledby='salvia-faq-title'>
+	<div class='wrap grid'>
+		<header class='head'>
+			<h2 id='salvia-faq-title' class='serif' set:html={md(faq.title)} />
+			{faq.lead && <p class='lead'>{faq.lead}</p>}
+		</header>
+		<div class='list'>
+			{
+				faq.items.map((item, i) => (
+					<details open={i === 0}>
+						<summary>
+							<span class='n'>{pad(i + 1)}</span>
+							<span class='q'>{item.q}</span>
+							<span class='x' aria-hidden='true' />
+						</summary>
+						<p>{item.a}</p>
+					</details>
+				))
+			}
+		</div>
+	</div>
+</section>
+
+<style>
+	.faq {
+		border-top: 1px solid var(--line);
+	}
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		column-gap: 24px;
+		row-gap: 40px;
+		align-items: start;
+	}
+	.head {
+		grid-column: 1 / span 4;
+		position: sticky;
+		top: 104px;
+	}
+	h2 {
+		font-size: clamp(40px, 4.8vw, 68px);
+		line-height: 1;
+		letter-spacing: -0.035em;
+		text-wrap: balance;
+	}
+	.lead {
+		margin-top: 18px;
+		max-width: 32ch;
+		color: var(--ink-2);
+	}
+	.list {
+		grid-column: 6 / span 7;
+		border-bottom: 1px solid var(--line);
+	}
+	details {
+		border-top: 1px solid var(--line);
+	}
+	summary {
+		display: grid;
+		grid-template-columns: 44px minmax(0, 1fr) 28px;
+		align-items: center;
+		gap: 12px;
+		min-height: 72px;
+		padding-block: 18px;
+		list-style: none;
+		cursor: pointer;
+	}
+	summary::-webkit-details-marker {
+		display: none;
+	}
+	.n {
+		font-size: 14px;
+		font-variant-numeric: tabular-nums;
+		color: var(--ink-2);
+	}
+	.q {
+		font-size: clamp(18px, 1.6vw, 21px);
+		font-weight: 500;
+		line-height: 1.35;
+		text-decoration: underline;
+		text-decoration-color: transparent;
+		text-underline-offset: 6px;
+		transition: text-decoration-color 0.25s;
+	}
+	summary:hover .q {
+		text-decoration-color: var(--line);
+	}
+	.x {
+		position: relative;
+		width: 28px;
+		height: 28px;
+		transition: transform 0.45s var(--ease);
+	}
+	.x::before,
+	.x::after {
+		content: '';
+		position: absolute;
+		left: 6px;
+		right: 6px;
+		top: 50%;
+		height: 1.5px;
+		margin-top: -0.75px;
+		background: var(--ink);
+	}
+	.x::after {
+		transform: rotate(90deg);
+	}
+	details[open] .x {
+		transform: rotate(45deg);
+	}
+	details p {
+		max-width: 58ch;
+		padding: 0 40px 26px 56px;
+		font-size: 16px;
+		line-height: 1.65;
+		color: var(--ink-2);
+	}
+	@media (max-width: 900px) {
+		.head,
+		.list {
+			grid-column: 1 / -1;
+		}
+		.head {
+			position: static;
+		}
+		details p {
+			padding-right: 0;
+		}
+	}
+	@media (max-width: 480px) {
+		summary {
+			grid-template-columns: 32px minmax(0, 1fr) 28px;
+		}
+		details p {
+			padding-left: 44px;
+		}
+	}
+</style>

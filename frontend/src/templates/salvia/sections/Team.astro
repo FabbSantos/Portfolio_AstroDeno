@@ -1,0 +1,116 @@
+---
+/**
+ * Team (#equipe), optional: an editorial table. Serif name with the bio under
+ * it, role, and the council registry right-aligned. Photo column only when at
+ * least one person has a photo.
+ */
+import { Image } from 'astro:assets';
+import type { SalviaConfig } from '../schema';
+import { md } from './_md';
+
+interface Props {
+	team: NonNullable<SalviaConfig['team']>;
+}
+const { team } = Astro.props;
+const withPhotos = team.people.some((p) => p.photo);
+---
+
+<section class='sec' id='equipe' aria-labelledby='salvia-team-title'>
+	<div class='wrap'>
+		<header class='sec-head'>
+			<h2 id='salvia-team-title' set:html={md(team.title)} />
+			{team.lead && <p class='lead'>{team.lead}</p>}
+		</header>
+
+		<ul class:list={['people', { 'with-photos': withPhotos }]}>
+			{
+				team.people.map((p) => (
+					<li class='person'>
+						{withPhotos && (
+							<span class='face'>
+								{p.photo && <Image src={p.photo} alt='' width={72} height={90} densities={[1, 2]} format='webp' quality='high' loading='lazy' decoding='async' />}
+							</span>
+						)}
+						<div class='who'>
+							<h3 class='serif'>{p.name}</h3>
+							{p.bio && <p class='bio'>{p.bio}</p>}
+						</div>
+						<p class='role'>{p.role}</p>
+						<p class='registry'>{p.registry}</p>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</section>
+
+<style>
+	.people {
+		list-style: none;
+		border-bottom: 1px solid var(--line);
+	}
+	.person {
+		display: grid;
+		grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 0.7fr);
+		column-gap: 24px;
+		align-items: baseline;
+		padding-block: 26px;
+		border-top: 1px solid var(--line);
+	}
+	.with-photos .person {
+		grid-template-columns: 72px minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 0.7fr);
+		align-items: start;
+	}
+	.face {
+		width: 72px;
+		aspect-ratio: 4 / 5;
+		overflow: hidden;
+		border-radius: var(--radius);
+		background: var(--bg-2);
+	}
+	.face :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+	h3 {
+		font-size: clamp(26px, 2.6vw, 36px);
+		line-height: 1.1;
+		letter-spacing: -0.015em;
+	}
+	.bio {
+		margin-top: 8px;
+		max-width: 46ch;
+		font-size: 15px;
+		color: var(--ink-2);
+	}
+	.role {
+		font-size: 16px;
+	}
+	.registry {
+		justify-self: end;
+		font-size: 14px;
+		font-variant-numeric: tabular-nums;
+		letter-spacing: 0.02em;
+		color: var(--ink-2);
+		white-space: nowrap;
+	}
+	@media (max-width: 760px) {
+		.person,
+		.with-photos .person {
+			grid-template-columns: minmax(0, 1fr);
+			row-gap: 6px;
+		}
+		.with-photos .person {
+			grid-template-columns: 64px minmax(0, 1fr);
+			column-gap: 16px;
+		}
+		.with-photos .face {
+			grid-row: 1 / span 3;
+			width: 64px;
+		}
+		.registry {
+			justify-self: start;
+		}
+	}
+</style>

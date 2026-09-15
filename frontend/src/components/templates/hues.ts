@@ -13,6 +13,7 @@ export const TEMPLATE_HUES: Record<TemplateKind, { hue: string; text: string }> 
 	saas: { hue: '#ff5c3d', text: '#c2410c' }, // coral, text 5.2:1
 	agency: { hue: '#7c3aed', text: '#7c3aed' }, // violet, 5.7:1
 	shop: { hue: '#16a34a', text: '#14793a' }, // green, text 5.3:1 on --bg, 4.6:1 on its chip
+	clinic: { hue: '#3b7457', text: '#3b7457' }, // sage, 5.3:1 on --bg, 4.7:1 on its chip
 };
 
 function rgba(hex: string, alpha: number): string {

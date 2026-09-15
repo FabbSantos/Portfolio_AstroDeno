@@ -1,0 +1,65 @@
+---
+/**
+ * Insurance (#convenios), optional: the accepted plans set as one serif
+ * sentence ("Vida Plena, Unida Saúde e Integra."), with the note beside it.
+ */
+import type { SalviaConfig } from '../schema';
+import { md } from './_md';
+
+interface Props {
+	insurance: NonNullable<SalviaConfig['insurance']>;
+	locale: 'pt-BR' | 'en';
+}
+const { insurance, locale } = Astro.props;
+const and = locale === 'en' ? ' and ' : ' e ';
+const plans = insurance.plans;
+const sentence = plans.length > 1 ? `${plans.slice(0, -1).join(', ')}${and}${plans[plans.length - 1]}.` : `${plans[0]}.`;
+---
+
+<section class='sec insurance' id='convenios' aria-labelledby='salvia-insurance-title'>
+	<div class='wrap'>
+		<header class='sec-head'>
+			<h2 id='salvia-insurance-title' set:html={md(insurance.title)} />
+			{insurance.lead && <p class='lead'>{insurance.lead}</p>}
+		</header>
+		<div class='body'>
+			<p class='plans serif'>
+				<span class='visually-hidden'>{plans.join(', ')}</span>
+				<span aria-hidden='true'>{sentence}</span>
+			</p>
+			{insurance.note && <p class='note'>{insurance.note}</p>}
+		</div>
+	</div>
+</section>
+
+<style>
+	.insurance {
+		border-top: 1px solid var(--line);
+	}
+	.body {
+		display: grid;
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		column-gap: 24px;
+		row-gap: 24px;
+		align-items: end;
+	}
+	.plans {
+		grid-column: 1 / span 8;
+		font-size: clamp(30px, 3.8vw, 52px);
+		line-height: 1.15;
+		letter-spacing: -0.02em;
+		text-wrap: balance;
+	}
+	.note {
+		grid-column: 9 / span 4;
+		max-width: 38ch;
+		font-size: 15.5px;
+		color: var(--ink-2);
+	}
+	@media (max-width: 900px) {
+		.plans,
+		.note {
+			grid-column: 1 / -1;
+		}
+	}
+</style>

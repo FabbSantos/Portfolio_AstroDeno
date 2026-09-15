@@ -90,6 +90,11 @@ const FORM_HOOKS = {
 	},
 };
 
+/** Packages a template imports beyond the starter's (usually its own fonts). */
+const TEMPLATE_DEPS = {
+	salvia: { '@fontsource-variable/hanken-grotesk': '^5.3.0', '@fontsource-variable/newsreader': '^5.3.0' },
+};
+
 const VERCEL_ADAPTER_VERSION = '^11.0.10';
 const ADAPTER_MARKER = '// __ADAPTER__ ';
 
@@ -103,6 +108,9 @@ const IMAGE_SIZES = [
 	[/planta/i, '1200px de largura (PNG ou JPG, fundo branco)'],
 	[/mapa/i, '1200×800 (PNG ou JPG)'],
 	[/case|product|produto|lookbook/i, '1200×900 (JPG, ≤ 300 KB)'],
+	[/larga|paisagem/i, '2000×900 paisagem (JPG, ≤ 400 KB)'],
+	[/servico/i, '800×1000 retrato (JPG, ≤ 250 KB)'],
+	[/recepcao|sala|consultorio|espaco/i, '1200×1500 retrato (JPG, ≤ 400 KB)'],
 	[/fachada|vista|decorado|lazer|hero/i, '1600×1000 (JPG, ≤ 400 KB)'],
 ];
 const IMAGE_SIZE_DEFAULT = '1600×1000 (JPG, ≤ 400 KB)';
@@ -301,6 +309,15 @@ function vendorTemplates(ctx) {
 		visit: (_s, r) => r !== 'demo.config.ts' && r !== 'assets' && !r.startsWith('assets/'),
 	});
 	log(`  core: ${coreFiles.length} files · ${ctx.template}: ${tplFiles.length} files`);
+
+	const extraDeps = TEMPLATE_DEPS[ctx.template];
+	if (extraDeps) {
+		const pkgPath = path.join(ctx.dest, 'package.json');
+		const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+		pkg.dependencies = Object.fromEntries(Object.entries({ ...pkg.dependencies, ...extraDeps }).sort(([a], [b]) => a.localeCompare(b)));
+		fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, '\t') + '\n');
+		log(`  template deps: ${Object.keys(extraDeps).join(', ')}`);
+	}
 
 	const demoAssets = path.join(ctx.templateDir, 'assets', 'demo');
 	if (ctx.withDemoAssets && fs.existsSync(demoAssets)) {

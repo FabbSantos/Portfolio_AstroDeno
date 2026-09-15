@@ -1,0 +1,205 @@
+---
+/**
+ * Location (#onde): the address set large in serif with directions and links on
+ * the left; the week's hours on the right as a menu-style list with dotted
+ * leaders. Today's row and the open/closed line are filled in by SalviaBody.
+ */
+import type { SalviaConfig } from '../schema';
+import { hoursTable, OPEN_STRINGS } from '../hours';
+import { md } from './_md';
+
+interface Props {
+	config: SalviaConfig;
+}
+const { config } = Astro.props;
+const { location, contact, brand } = config;
+const locale = brand.locale;
+const a = location.address;
+const rows = hoursTable(location.hours, locale);
+const status = JSON.stringify({ hours: location.hours, tz: location.timezone, locale, strings: OPEN_STRINGS[locale] });
+const phoneHref = contact.phone ? `tel:${contact.phone.replace(/[^\d+]/g, '')}` : null;
+const waHref = contact.whatsapp ? `https://wa.me/${contact.whatsapp.number}?text=${encodeURIComponent(contact.whatsapp.message)}` : null;
+const en = locale === 'en';
+---
+
+<section class='sec location' id='onde' aria-labelledby='salvia-location-title'>
+	<div class='wrap'>
+		<header class='sec-head'>
+			<h2 id='salvia-location-title' set:html={md(location.title)} />
+			{location.lead && <p class='lead'>{location.lead}</p>}
+		</header>
+
+		<div class='grid'>
+			<div class='place'>
+				<address class='serif'>
+					{a.street}<br />
+					{[a.district, a.city].filter(Boolean).join(', ')} · {a.state}
+				</address>
+				{a.zip && <p class='zip'>{en ? 'ZIP' : 'CEP'} {a.zip}</p>}
+
+				{
+					location.directions.length > 0 && (
+						<ul class='directions'>
+							{location.directions.map((d) => (
+								<li>{d}</li>
+							))}
+						</ul>
+					)
+				}
+
+				<div class='links'>
+					{
+						location.mapsUrl && (
+							<a class='link' href={location.mapsUrl} target='_blank' rel='noopener'>
+								{location.mapsLabel} ↗
+							</a>
+						)
+					}
+					{
+						phoneHref && (
+							<a class='link' href={phoneHref}>
+								{contact.phone}
+							</a>
+						)
+					}
+					{
+						waHref && (
+							<a class='link' href={waHref} target='_blank' rel='noopener'>
+								WhatsApp ↗
+							</a>
+						)
+					}
+				</div>
+			</div>
+
+			<div class='hours'>
+				<h3>{location.hoursTitle}</h3>
+				<p class='status' data-open-status={status}>
+					<span class='status-dot' aria-hidden='true'></span>
+					<span data-open-text></span>
+				</p>
+				<ul class='week' data-hours-tz={location.timezone}>
+					{
+						rows.map((r) => (
+							<li data-day={r.day} class:list={{ closed: r.closed }}>
+								<span class='d'>{r.label}</span>
+								<span class='dots' aria-hidden='true' />
+								<span class='t'>{r.value}</span>
+							</li>
+						))
+					}
+				</ul>
+				{location.hoursNote && <p class='note'>{location.hoursNote}</p>}
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.location {
+		border-top: 1px solid var(--line);
+	}
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		column-gap: 24px;
+		row-gap: 56px;
+		align-items: start;
+	}
+	.place {
+		grid-column: 1 / span 6;
+	}
+	address {
+		font-style: normal;
+		font-size: clamp(30px, 3.4vw, 46px);
+		line-height: 1.15;
+		letter-spacing: -0.015em;
+	}
+	.zip {
+		margin-top: 12px;
+		font-size: 14px;
+		font-variant-numeric: tabular-nums;
+		color: var(--ink-2);
+	}
+	.directions {
+		list-style: none;
+		margin-top: 32px;
+		border-top: 1px solid var(--line);
+	}
+	.directions li {
+		padding-block: 12px;
+		border-bottom: 1px solid var(--line);
+		font-size: 16px;
+		color: var(--ink-2);
+	}
+	.links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px 28px;
+		margin-top: 24px;
+	}
+
+	.hours {
+		grid-column: 8 / span 5;
+	}
+	h3 {
+		font-size: 15px;
+		font-weight: 600;
+	}
+	.hours .status {
+		margin-top: 8px;
+		min-height: 24px;
+	}
+	/* Nothing to say until the script knows whether the clinic is open. */
+	.hours .status:not(:global(.is-known)) {
+		visibility: hidden;
+	}
+	.week {
+		list-style: none;
+		margin-top: 20px;
+		font-variant-numeric: tabular-nums;
+	}
+	.week li {
+		display: flex;
+		align-items: baseline;
+		gap: 10px;
+		padding-block: 9px;
+		font-size: 17px;
+	}
+	.dots {
+		flex: 1;
+		min-width: 24px;
+		border-bottom: 1px dotted var(--ink-2);
+		transform: translateY(-4px);
+		opacity: 0.6;
+	}
+	.week .closed .t {
+		color: var(--ink-2);
+	}
+	.week li:global(.is-today) {
+		font-weight: 600;
+	}
+	.week li:global(.is-today) .d::before {
+		content: '';
+		display: inline-block;
+		width: 6px;
+		height: 6px;
+		margin: 0 10px 2px -16px;
+		border-radius: 50%;
+		background: var(--accent);
+	}
+	.note {
+		margin-top: 18px;
+		font-size: 14.5px;
+		color: var(--ink-2);
+	}
+	@media (max-width: 900px) {
+		.place,
+		.hours {
+			grid-column: 1 / -1;
+		}
+		.week li:global(.is-today) .d::before {
+			margin-left: 0;
+		}
+	}
+</style>

@@ -20,7 +20,7 @@ const mode = process.argv[2] ?? 'qa';
 const outDir = resolve(process.argv[3] ?? (mode === 'templates' ? 'src/assets/templates' : 'shots'));
 mkdirSync(outDir, { recursive: true });
 
-const SLUGS = ['mirante', 'stratus', 'atelier', 'brava'];
+const SLUGS = (process.env.SLUGS ?? 'salvia,mirante,stratus,atelier,brava').split(',');
 const ROUTES = ['/', '/work', '/about', '/templates', '/templates/mirante', '/templates/mirante/demo', '/templates/brava/demo', '/privacidade', '/en', '/en/work', '/nope-404'];
 
 const browser = await chromium.launch();

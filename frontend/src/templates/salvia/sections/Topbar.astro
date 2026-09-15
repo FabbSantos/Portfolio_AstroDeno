@@ -1,0 +1,15 @@
+---
+/**
+ * Sticky topbar = core MobileNav: brand, section links and the "Agendar"
+ * button, which always scrolls to the booking widget.
+ */
+import MobileNav from '../../core/MobileNav.astro';
+import type { SalviaConfig } from '../schema';
+
+interface Props {
+	config: SalviaConfig;
+}
+const { config } = Astro.props;
+---
+
+<MobileNav brand={config.brand.name} brandHref='#top' nav={config.nav} cta={{ label: config.topbar.cta, href: '#agendar' }} id='salvia-nav' />
