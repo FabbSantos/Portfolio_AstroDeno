@@ -19,4 +19,10 @@ export const services: Shape<typeof ptShape> = {
 	viewTemplate: 'View template',
 	viewProduct: 'View product',
 	previewAlt: 'Preview of {label}',
+	examples: 'Examples',
+	example: 'example',
+	exampleOf: '{n} of {total}: {label}',
+	goTo: 'Show {label}',
+	pause: 'Pause the examples',
+	play: 'Resume the examples',
 };
