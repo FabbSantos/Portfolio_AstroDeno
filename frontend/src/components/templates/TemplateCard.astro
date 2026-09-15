@@ -20,7 +20,7 @@ import type { ImageMetadata } from 'astro';
 import { Image } from 'astro:assets';
 import { scoresFor } from '../../data/lighthouse';
 import { SITE } from '../../data/site';
-import { demoPath, formatBRL, joinList, type TemplateMeta } from '../../data/templates';
+import { demoPath, formatBRL, fullName, joinList, type TemplateMeta } from '../../data/templates';
 import { fmt, localePath, pick, useT, type Locale } from '../../i18n';
 import { hueVars } from './hues';
 import ScoreGauge from './ScoreGauge.astro';
@@ -62,7 +62,7 @@ const ratio = shot ? shot.height / shot.width : FRAME_RATIO;
 const framePct = `${((FRAME_RATIO / ratio) * 100).toFixed(3)}%`;
 const panDur = `${Math.max(2, Math.round((ratio - FRAME_RATIO) * 19) / 10)}s`;
 
-const name = `${tpl.name} ${tpl.accent}`;
+const name = fullName(tpl);
 const previewAlt = fmt(t.templates.card.previewAlt, { name });
 const includes = fmt(t.templates.card.includes, { months: SITE.promises.adjustmentsMonths });
 const fits = joinList(pick(tpl.fits, locale), locale);
@@ -128,11 +128,11 @@ const style = `${hueVars(tpl.kind)};--frame-pct:${framePct};--pan-dur:${panDur}`
 		{
 			heading === 'h2' ? (
 				<h2 class='name'>
-					{tpl.name} <span class='hl'>{tpl.accent}</span>
+					{tpl.name}{tpl.accent && <Fragment>{' '}<span class='hl'>{tpl.accent}</span></Fragment>}
 				</h2>
 			) : (
 				<h3 class='name'>
-					{tpl.name} <span class='hl'>{tpl.accent}</span>
+					{tpl.name}{tpl.accent && <Fragment>{' '}<span class='hl'>{tpl.accent}</span></Fragment>}
 				</h3>
 			)
 		}

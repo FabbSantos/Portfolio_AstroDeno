@@ -22,8 +22,8 @@ export interface TemplateExample {
 export interface TemplateMeta {
 	slug: string;
 	name: string;
-	/** Second word of the name, rendered with the accent colour. Names the function, not a niche. */
-	accent: string;
+	/** Optional second word, rendered with the accent colour. Names the function, not a niche. Use `fullName()` for plain text. */
+	accent?: string;
 	kind: TemplateKind;
 	cat: Bi;
 	/** One-liner for cards. */
@@ -52,7 +52,6 @@ export const templates: TemplateMeta[] = [
 	{
 		slug: 'salvia',
 		name: 'Sálvia',
-		accent: 'Agenda',
 		kind: 'booking',
 		cat: { pt: 'Agendamento · WhatsApp', en: 'Booking · WhatsApp' },
 		desc: {
@@ -196,6 +195,8 @@ export const templates: TemplateMeta[] = [
 ];
 
 export const getTemplate = (slug: string) => templates.find((t) => t.slug === slug);
+/** "Mirante Captação", or just "Sálvia" when there is no accent word. */
+export const fullName = (tpl: Pick<TemplateMeta, 'name' | 'accent'>) => (tpl.accent ? `${tpl.name} ${tpl.accent}` : tpl.name);
 export const demoPath = (slug: string) => `/templates/${slug}/demo`;
 
 /** Demo URL of one example: the first is the main demo, the rest live under it. */

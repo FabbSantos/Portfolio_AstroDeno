@@ -3,7 +3,7 @@ import { Resend } from 'resend';
 import { RESEND_API_KEY, CONTACT_TO, TURNSTILE_SECRET_KEY } from 'astro:env/server';
 import { SITE } from '../../data/site';
 import { SERVICES } from '../../data/services';
-import { templates } from '../../data/templates';
+import { fullName, templates } from '../../data/templates';
 
 /**
  * POST /api/contact — receives the JSON payload from home Contact.astro,
@@ -137,7 +137,7 @@ function needLabel(need: string, template: string): string {
 	const service = SERVICES.find((s) => s.id === need);
 	if (service) return service.name.pt;
 	const tpl = templates.find((t) => t.slug === need);
-	if (tpl) return `Template ${tpl.name} ${tpl.accent}`;
+	if (tpl) return `Template ${fullName(tpl)}`;
 	switch (need) {
 		case 'template':
 			return template ? `Template ${template}` : 'Template';

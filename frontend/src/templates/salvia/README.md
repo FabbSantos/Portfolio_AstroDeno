@@ -1,4 +1,4 @@
-# Sálvia Agenda: página pra quem atende com hora marcada
+# Sálvia: página pra quem atende com hora marcada
 
 Landing editorial pra qualquer negócio que vive de agenda: clínica, consultório, salão, barbearia, estúdio de estética ou tatuagem, pet shop, escritório. Títulos em serifa, fios finos no lugar de cards, foto larga no topo. O centro é o agendamento: o cliente escolhe o serviço e o período, vê a mensagem impressa num tíquete e abre o WhatsApp com o texto pronto. Horário ao vivo ("Aberto agora · fecha às 19h") e SEO local (`LocalBusiness` ou o subtipo que o negócio tiver).
 

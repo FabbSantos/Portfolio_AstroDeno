@@ -24,7 +24,7 @@ export const meta: Shape<typeof ptShape> = {
 			'Five site structures I wrote myself: booking, lead capture, product with plans, portfolio and storefront. They fit a clinic, a salon, a shop, an office or whatever your business is. You pick one, I customize and publish it on your domain.',
 	},
 	templateDetail: {
-		title: '{name} {accent} · template · Fabrício Bahiense',
+		title: '{name} · template · Fabrício Bahiense',
 		description: '{lead}',
 	},
 	privacy: {

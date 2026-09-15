@@ -22,7 +22,7 @@ export const meta = {
 			'Cinco estruturas de site que eu mesmo escrevi: agendamento, captação, produto com planos, portfólio e vitrine. Serve pra clínica, salão, loja, escritório e o que mais o seu negócio for. Você escolhe, eu personalizo e publico no seu domínio.',
 	},
 	templateDetail: {
-		title: '{name} {accent} · template · Fabrício Bahiense',
+		title: '{name} · template · Fabrício Bahiense',
 		description: '{lead}',
 	},
 	privacy: {

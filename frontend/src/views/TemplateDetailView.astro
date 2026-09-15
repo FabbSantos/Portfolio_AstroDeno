@@ -14,7 +14,7 @@ import PhoneFrame from '../components/templates/PhoneFrame.astro';
 import ScoreGauge from '../components/templates/ScoreGauge.astro';
 import { lighthouse, scoresFor } from '../data/lighthouse';
 import { SITE, whatsappUrl } from '../data/site';
-import { demoPath, examplePath, formatBRL, templates, type TemplateMeta } from '../data/templates';
+import { demoPath, examplePath, formatBRL, fullName, templates, type TemplateMeta } from '../data/templates';
 import { fmt, localeOf, localePath, pick, useT } from '../i18n';
 
 interface Props {
@@ -25,11 +25,11 @@ const locale = localeOf(Astro);
 const t = useT(locale);
 
 const months = SITE.promises.adjustmentsMonths;
-const name = `${tpl.name} ${tpl.accent}`;
+const name = fullName(tpl);
 const index = templates.findIndex((x) => x.slug === tpl.slug) + 1;
 const others = templates.filter((x) => x.slug !== tpl.slug);
 
-const title = fmt(t.meta.templateDetail.title, { name: tpl.name, accent: tpl.accent });
+const title = fmt(t.meta.templateDetail.title, { name: fullName(tpl) });
 const description = pick(tpl.lead, locale);
 const meta = fmt(t.templates.detail.meta, {
 	n: index,
@@ -78,7 +78,7 @@ const relatedCols = others.length % 2 === 0 ? 2 : 3;
 			<div class='hero-main'>
 				<a href={localePath(locale, '/templates')} class='back'>← {t.templates.detail.back}</a>
 				<p class='eyebrow accent'>{meta}</p>
-				<h1>{tpl.name} <span class='hl'>{tpl.accent}</span></h1>
+				<h1>{tpl.name}{tpl.accent && <Fragment>{' '}<span class='hl'>{tpl.accent}</span></Fragment>}</h1>
 				<p class='lead'>{description}</p>
 				<div class='fits'>
 					<span class='fits-k' id='fits-title'>{t.templates.detail.fitsTitle}</span>
