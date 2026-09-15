@@ -1,87 +1,188 @@
 ---
-/** "O empreendimento": editorial copy on the left, amenities checklist on the right. */
+/**
+ * "O empreendimento": the photo stays pinned on the left and swaps as each
+ * paragraph scrolls into the middle of the screen (gallery photos 2… cycle);
+ * copy on the right, then the amenities as a two-column hairline list.
+ */
+import { Image } from 'astro:assets';
 import type { MiranteConfig } from '../schema';
 import { md } from './_md';
 
 interface Props {
 	config: MiranteConfig;
 }
-const { project } = Astro.props.config;
+const { project, hero } = Astro.props.config;
+// The hero photo already opens the page; the other gallery photos take turns here.
+const photos = hero.gallery.length > 1 ? hero.gallery.slice(1) : hero.gallery;
+const widths = (w: number) => [...[480, 640, 960, 1280].filter((x) => x < w), w];
 ---
 
-<section class='projeto' id='projeto' aria-labelledby='projeto-title'>
-	<div class='p-grid'>
-		<div class='p-l'>
-			{project.eyebrow && <p class='eyebrow'>{project.eyebrow}</p>}
-			<h2 id='projeto-title' set:html={md(project.title)} />
-			{project.paragraphs.map((p) => <p class='p-text' set:html={md(p)} />)}
+<section class='projeto sec' id='projeto' aria-labelledby='projeto-title'>
+	<div class='wrap pj-grid'>
+		<div class='pj-media' data-pj-media style={`--n:${photos.length}`}>
+			{
+				/* Mounted after the page has loaded: on phones this block sits within the lazy-load
+				   distance, so the photos would otherwise download alongside the hero (the LCP). */
+				photos.map((g, i) => (
+					<template data-pj-deferred>
+						<figure class:list={['pj-shot', { 'is-on': i === 0 }]} data-pj-shot={i}>
+							<Image src={g.image} alt={g.alt} widths={widths(g.image.width)} sizes='(max-width: 900px) calc(100vw - 40px), 44vw' format='webp' quality={76} loading='lazy' decoding='async' />
+							<figcaption class='pj-cap'>{g.label}</figcaption>
+						</figure>
+					</template>
+				))
+			}
 		</div>
-		<div class='p-r'>
-			{project.amenitiesTitle && <p class='eyebrow'>{project.amenitiesTitle}</p>}
-			<ul class='amen'>
-				{project.amenities.map((a) => <li>{a}</li>)}
-			</ul>
+		<div class='pj-copy'>
+			{project.eyebrow && <p class='eyebrow'>{project.eyebrow}</p>}
+			<h2 id='projeto-title' class='display' set:html={md(project.title)} />
+			<div class='pj-text'>
+				{project.paragraphs.map((p, i) => <p class:list={['pj-p', { 'is-on': i === 0 }]} data-pj-p={i % photos.length} set:html={md(p)} />)}
+			</div>
+			<div class='pj-amen'>
+				{project.amenitiesTitle && <p class='eyebrow'>{project.amenitiesTitle}</p>}
+				<ul class='amen'>
+					{project.amenities.map((a) => <li>{a}</li>)}
+				</ul>
+			</div>
 		</div>
 	</div>
 </section>
 
+<script>
+	const afterLoad = (fn: () => void) => {
+		if (document.readyState === 'complete') fn();
+		else window.addEventListener('load', fn, { once: true });
+	};
+	document.querySelectorAll<HTMLElement>('[data-pj-media]').forEach((media) => afterLoad(() => setup(media)));
+
+	function setup(media: HTMLElement) {
+		media.querySelectorAll<HTMLTemplateElement>('[data-pj-deferred]').forEach((t) => t.replaceWith(t.content));
+		const root = media.closest('.projeto');
+		const shots = [...media.querySelectorAll<HTMLElement>('[data-pj-shot]')];
+		const paras = [...(root?.querySelectorAll<HTMLElement>('[data-pj-p]') ?? [])];
+		if (shots.length < 2 || paras.length < 2) return;
+		const io = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((e) => {
+					if (!e.isIntersecting) return;
+					const k = Number((e.target as HTMLElement).dataset.pjP);
+					shots.forEach((s, i) => s.classList.toggle('is-on', i === k));
+					paras.forEach((p) => p.classList.toggle('is-on', p === e.target));
+				});
+			},
+			{ rootMargin: '-45% 0px -45% 0px', threshold: 0 }
+		);
+		paras.forEach((p) => io.observe(p));
+	}
+</script>
+
 <style>
-	.projeto {
-		max-width: 1240px;
-		margin: 0 auto;
-		padding: 100px 32px;
-	}
-	.p-grid {
+	.pj-grid {
 		display: grid;
-		grid-template-columns: 1.4fr 1fr;
-		gap: 64px;
+		grid-template-columns: minmax(0, 0.95fr) minmax(0, 1fr);
+		gap: clamp(40px, 6vw, 96px);
+		align-items: start;
 	}
-	.p-l .eyebrow {
-		display: block;
+	.pj-media {
+		position: sticky;
+		top: calc(var(--tb-h) + 16px);
+		aspect-ratio: 4 / 5;
+		max-height: calc(100svh - var(--tb-h) - 32px);
+		background: var(--bg-2);
+		overflow: hidden;
+	}
+	.pj-shot {
+		position: absolute;
+		inset: 0;
+		margin: 0;
+		opacity: 0;
+		transform: scale(1.04);
+		transition:
+			opacity 0.8s var(--ease),
+			transform 0.8s var(--ease);
+	}
+	.pj-shot.is-on {
+		opacity: 1;
+		transform: none;
+	}
+	.pj-shot :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+	.pj-cap {
+		position: absolute;
+		left: 18px;
+		bottom: 16px;
+		font-family: var(--mono);
+		font-size: 11px;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: #fff;
+		text-shadow: 0 1px 12px color-mix(in srgb, #000 55%, transparent);
+	}
+
+	.pj-copy .eyebrow {
 		margin-bottom: 18px;
 	}
-	.p-l h2 {
-		font-size: clamp(36px, 5vw, 60px);
-		font-weight: 800;
-		letter-spacing: -0.035em;
-		line-height: 1.04;
-		margin-bottom: 28px;
+	.pj-copy h2 {
+		font-size: clamp(44px, 5.4vw, 84px);
+		max-width: 13ch;
 	}
-	.p-text {
-		font-size: 17px;
-		color: var(--ink-2);
-		line-height: 1.7;
-		margin-bottom: 16px;
+	.pj-text {
+		margin-top: 36px;
+		display: grid;
+		gap: 22px;
+		max-width: 52ch;
 	}
-	.p-text :global(strong) {
+	.pj-p {
+		font-size: 18px;
+		line-height: 1.65;
+		color: var(--ink-3);
+		transition: color 0.4s;
+	}
+	.pj-p.is-on {
 		color: var(--ink);
-		font-weight: 700;
 	}
-	.p-r .eyebrow {
-		display: block;
-		margin-bottom: 18px;
+	.pj-p :global(strong) {
+		color: var(--ink);
+	}
+	.pj-amen {
+		margin-top: 56px;
+	}
+	.pj-amen .eyebrow {
+		margin-bottom: 8px;
 	}
 	.amen {
 		list-style: none;
-		display: flex;
-		flex-direction: column;
+		columns: 2;
+		column-gap: 32px;
 	}
 	.amen li {
+		break-inside: avoid;
 		padding: 12px 0;
 		font-size: 15px;
 		color: var(--ink-2);
-		border-bottom: 1px solid var(--rule);
-	}
-	.amen li::before {
-		content: '✓';
-		color: var(--accent-text);
-		font-weight: 700;
-		margin-right: 10px;
+		border-bottom: 1px solid var(--line-soft);
 	}
 	@media (max-width: 900px) {
-		.p-grid {
-			grid-template-columns: 1fr;
-			gap: 40px;
+		.pj-grid {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		.pj-media {
+			position: relative;
+			top: auto;
+			aspect-ratio: 4 / 3;
+			max-height: none;
+		}
+		.pj-p {
+			color: var(--ink-2);
+		}
+	}
+	@media (max-width: 560px) {
+		.amen {
+			columns: 1;
 		}
 	}
 </style>

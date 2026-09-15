@@ -1,5 +1,9 @@
 ---
-/** Payment conditions ("Condições") — one card per option, featured one highlighted. */
+/**
+ * Payment conditions: three columns separated by hairlines, no cards. The
+ * `**bold**` part of each headline becomes the giant serif figure ('12%',
+ * '10%'); the featured option sits on a block of the accent colour.
+ */
 import type { MiranteConfig } from '../schema';
 import { md } from './_md';
 
@@ -9,131 +13,167 @@ interface Props {
 const { conditions } = Astro.props.config;
 ---
 
-<section class='valores' id='valores' aria-labelledby='valores-title'>
-	<div class='sec-h'>
-		{conditions.eyebrow && <p class='eyebrow'>{conditions.eyebrow}</p>}
-		<h2 id='valores-title' set:html={md(conditions.title)} />
+<section class='valores sec' id='valores' aria-labelledby='valores-title'>
+	<div class='wrap'>
+		<div class='sec-head'>
+			{conditions.eyebrow && <p class='eyebrow'>{conditions.eyebrow}</p>}
+			<h2 id='valores-title' class='display' set:html={md(conditions.title)} />
+		</div>
+		<div class='val-grid' style={`--cols:${conditions.items.length}`}>
+			{
+				conditions.items.map((c) => (
+					<article class:list={['val', { 'is-featured': c.featured }]}>
+						<p class='v-tag'>
+							<span>{c.tag}</span>
+							{c.badge && <span class='v-badge'>{c.badge}</span>}
+						</p>
+						<h3 class='v-h' set:html={md(c.headline)} />
+						<p class='v-d'>{c.desc}</p>
+						{c.bullets.length > 0 && (
+							<ul class='v-list'>
+								{c.bullets.map((b) => (
+									<li>{b}</li>
+								))}
+							</ul>
+						)}
+					</article>
+				))
+			}
+		</div>
+		{conditions.foot && <p class='val-foot'>{conditions.foot}</p>}
 	</div>
-	<div class='val-grid'>
-		{
-			conditions.items.map((c) => (
-				<article class:list={['val', { 'is-mid': c.featured }]}>
-					{c.badge && <span class='v-badge'>{c.badge}</span>}
-					<span class='v-tag'>{c.tag}</span>
-					<p class='v-h' set:html={md(c.headline)} />
-					<p class='v-d'>{c.desc}</p>
-					{c.bullets.length > 0 && (
-						<ul>
-							{c.bullets.map((b) => (
-								<li>{b}</li>
-							))}
-						</ul>
-					)}
-				</article>
-			))
-		}
-	</div>
-	{conditions.foot && <p class='val-foot'>{conditions.foot}</p>}
 </section>
 
 <style>
-	.valores {
-		background: var(--bg-2);
-		padding: 100px 0;
-	}
 	.val-grid {
-		max-width: 1240px;
-		margin: 0 auto;
-		padding: 0 32px;
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 16px;
+		grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr));
+		border-top: 1px solid var(--line);
+		border-bottom: 1px solid var(--line);
 	}
 	.val {
-		background: #fff;
-		border: 1px solid var(--rule);
-		border-radius: var(--r-card);
-		padding: 32px 28px;
 		display: flex;
 		flex-direction: column;
-		gap: 14px;
-		position: relative;
+		gap: 18px;
+		padding: 36px 28px 40px;
+		border-left: 1px solid var(--line);
 	}
-	.val.is-mid {
-		border-color: var(--accent);
-		box-shadow: 0 30px 80px -30px color-mix(in srgb, var(--accent) 45%, transparent);
+	.val:first-child {
+		border-left: 0;
+		padding-left: 0;
 	}
-	.v-badge {
-		position: absolute;
-		top: -12px;
-		left: 50%;
-		transform: translateX(-50%);
+	.val:last-child {
+		padding-right: 0;
+	}
+	.val.is-featured {
 		background: var(--accent-text);
 		color: #fff;
-		font-family: var(--mono);
-		font-size: 10px;
-		font-weight: 700;
-		letter-spacing: 0.1em;
-		padding: 5px 12px;
-		text-transform: uppercase;
-		border-radius: var(--r-tag);
-		white-space: nowrap;
+		border-left-color: transparent;
+		padding-inline: 32px;
+		margin-block: -1px;
+	}
+	.val.is-featured + .val {
+		border-left-color: transparent;
 	}
 	.v-tag {
-		font-family: var(--mono);
-		font-size: 12px;
-		color: var(--ink-3);
-		font-weight: 600;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-	}
-	.v-h {
-		font-size: 26px;
-		font-weight: 800;
-		letter-spacing: -0.025em;
-		line-height: 1.1;
-		color: var(--ink);
-	}
-	.v-h :global(strong) {
-		color: var(--accent-text);
-		font-weight: inherit;
-	}
-	.v-d {
-		font-size: 14px;
-		color: var(--ink-2);
-		line-height: 1.5;
-	}
-	.val ul {
-		list-style: none;
 		display: flex;
-		flex-direction: column;
-		gap: 8px;
-		margin-top: 4px;
-		padding-top: 14px;
-		border-top: 1px solid var(--rule);
-	}
-	.val li {
-		font-size: 13px;
-		color: var(--ink-2);
-	}
-	.val li::before {
-		content: '–';
-		margin-right: 8px;
-		color: var(--accent-text);
-		font-weight: 700;
-	}
-	.val-foot {
-		max-width: 1240px;
-		margin: 28px auto 0;
-		padding: 0 32px;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
 		font-family: var(--mono);
 		font-size: 11px;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
 		color: var(--ink-3);
-		text-align: center;
+	}
+	.is-featured .v-tag {
+		color: color-mix(in srgb, #fff 78%, transparent);
+	}
+	.v-badge {
+		padding: 4px 8px;
+		background: var(--ink);
+		color: var(--bg);
+		letter-spacing: 0.08em;
+	}
+	.is-featured .v-badge {
+		background: #fff;
+		color: var(--accent-text);
+	}
+	.v-h {
+		font-family: var(--text);
+		font-size: 17px;
+		font-weight: 500;
+		line-height: 1.4;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0 0.35em;
+	}
+	.v-h :global(strong) {
+		display: block;
+		width: 100%;
+		font-family: var(--display);
+		font-style: normal;
+		font-weight: 500;
+		font-size: clamp(64px, 6.4vw, 104px);
+		line-height: 0.95;
+		letter-spacing: -0.02em;
+		margin: 4px 0 6px;
+		font-variant-numeric: tabular-nums;
+	}
+	.v-d {
+		font-size: 15px;
+		line-height: 1.55;
+		color: var(--ink-2);
+		max-width: 32ch;
+	}
+	.is-featured .v-d {
+		color: color-mix(in srgb, #fff 86%, transparent);
+	}
+	.v-list {
+		list-style: none;
+		margin-top: 6px;
+	}
+	.v-list li {
+		padding: 10px 0;
+		font-size: 14px;
+		color: var(--ink-2);
+		border-top: 1px solid var(--line-soft);
+	}
+	.is-featured .v-list li {
+		color: color-mix(in srgb, #fff 90%, transparent);
+		border-top-color: color-mix(in srgb, #fff 22%, transparent);
+	}
+	.val-foot {
+		margin-top: 20px;
+		font-family: var(--mono);
+		font-size: 11px;
+		line-height: 1.6;
+		color: var(--ink-3);
 	}
 	@media (max-width: 900px) {
 		.val-grid {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
+			border-top: 0;
+		}
+		.val,
+		.val:first-child,
+		.val:last-child {
+			border-left: 0;
+			border-top: 1px solid var(--line);
+			padding: 32px 0 36px;
+		}
+		.val.is-featured {
+			padding-inline: 24px;
+			margin-inline: 0;
+			margin-block: 0;
+			border-top-color: transparent;
+		}
+		.val.is-featured + .val {
+			border-top-color: transparent;
+		}
+		.v-h :global(strong) {
+			font-size: clamp(56px, 16vw, 88px);
 		}
 	}
 </style>

@@ -1,6 +1,6 @@
 {
 	"measuredAt": "2026-09-15",
-	"source": "http://localhost:4400",
+	"source": "http://localhost:4406",
 	"lighthouse": "13.4.1",
 	"runs": 3,
 	"templates": {
@@ -12,11 +12,11 @@
 			"measuredAt": "2026-09-14"
 		},
 		"mirante": {
-			"mobile": 94,
-			"desktop": 100,
+			"mobile": 95,
+			"desktop": 98,
 			"accessibility": 100,
 			"bestPractices": 100,
-			"measuredAt": "2026-09-14"
+			"measuredAt": "2026-09-15"
 		},
 		"stratus": {
 			"mobile": 100,

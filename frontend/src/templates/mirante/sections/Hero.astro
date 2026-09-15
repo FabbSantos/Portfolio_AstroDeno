@@ -1,8 +1,12 @@
 ---
 /**
- * Hero: live eyebrow, h1 with accent span, rich sub, the mini lead form
- * (core LeadForm: nome + telefone, WhatsApp link when configured) and the
- * 4-tile photo gallery (first tile eager / high priority — it is the LCP).
+ * Hero: the photo fills the screen. Title (serif, italic accent) and rich sub
+ * bottom-left, the mini lead form (core LeadForm: nome + telefone) in a dark
+ * translucent panel bottom-right, and a filmstrip of the gallery photos that
+ * swaps the backdrop. The first photo is the LCP (eager, high priority); the
+ * rest load lazily. The strip advances on a CSS-animation timer, paused while
+ * the pointer or focus is inside, when the tab is hidden, and never under
+ * reduced motion.
  */
 import { Image } from 'astro:assets';
 import LeadForm from '../../core/LeadForm.astro';
@@ -14,7 +18,7 @@ interface Props {
 	config: MiranteConfig;
 }
 const { config } = Astro.props;
-const { hero, contact } = config;
+const { hero, contact, brand } = config;
 const { miniForm } = hero;
 
 const fields: LeadField[] = [
@@ -22,28 +26,71 @@ const fields: LeadField[] = [
 	{ name: 'telefone', label: miniForm.labels.telefone, type: 'tel', required: true, placeholder: '(11) 99999-9999' },
 ];
 
-const whatsapp = contact.whatsapp
-	? `https://wa.me/${contact.whatsapp.number}?text=${encodeURIComponent(contact.whatsapp.message)}`
-	: null;
+const whatsapp = contact.whatsapp ? `https://wa.me/${contact.whatsapp.number}?text=${encodeURIComponent(contact.whatsapp.message)}` : null;
 
 /** srcset widths, capped at the source width (never upscale). */
-const widths = (w: number) => [...[480, 960, 1440].filter((x) => x < w), w];
-/** Rendered tile widths: #1 tall left column, #2/#3 right column, #4 full-width strip. */
-const sizes = ['(max-width: 960px) 56vw, 330px', '(max-width: 960px) 43vw, 260px', '(max-width: 960px) 43vw, 260px', '(max-width: 960px) calc(100vw - 64px), 590px'];
+const widths = (w: number) => [...[640, 768, 960, 1280, 1920, 2400].filter((x) => x < w), w];
+const en = brand.locale === 'en';
+const stripLabel = en ? 'Photos' : 'Fotos';
+const showLabel = en ? 'Show' : 'Mostrar';
 ---
 
-<section class='hero' aria-labelledby='hero-title'>
-	<div class='hero-l'>
-		<p class='eyebrow'>
-			<span class='live-dot' aria-hidden='true'></span>
-			{hero.eyebrow}
-		</p>
-		<h1 id='hero-title'>
-			{hero.title} <span class='hl'>{hero.titleAccent}</span>
-		</h1>
-		<p class='sub' set:html={md(hero.sub)} />
+<section class='hero' data-hero aria-labelledby='hero-title'>
+	<div class='hero-media' aria-hidden='true' data-hero-media>
+		{
+			hero.gallery.map((g, i) => {
+				const shot = (
+					<figure class:list={['hero-bg', { 'is-on': i === 0 }]} data-hero-bg={i}>
+						<Image
+							src={g.image}
+							alt=''
+							widths={widths(g.image.width)}
+							sizes='100vw'
+							format='webp'
+							quality={62}
+							loading={i === 0 ? 'eager' : 'lazy'}
+							fetchpriority={i === 0 ? 'high' : undefined}
+							decoding='async'
+						/>
+					</figure>
+				);
+				// Slides 2… sit inside the viewport, so `lazy` alone would still fetch them
+				// alongside the LCP photo; they are mounted once the page has loaded.
+				return i === 0 ? shot : <template data-hero-deferred>{shot}</template>;
+			})
+		}
+		<div class='hero-shade'></div>
+	</div>
 
-		<div class='mini-form'>
+	<div class='hero-inner wrap'>
+		<div class='hero-copy'>
+			<p class='eyebrow'>
+				<span class='live-dot' aria-hidden='true'></span>
+				{hero.eyebrow}
+			</p>
+			<h1 id='hero-title' class='display'>
+				{hero.title} <em class='hl'>{hero.titleAccent}</em>
+			</h1>
+			<p class='sub' set:html={md(hero.sub)} />
+		</div>
+
+		<div class='hero-film' role='group' aria-label={stripLabel} data-hero-film>
+			{
+				hero.gallery.map((g, i) => (
+					<button type='button' class:list={['film', { 'is-on': i === 0 }]} data-hero-go={i} aria-pressed={i === 0 ? 'true' : 'false'} aria-label={`${showLabel}: ${g.label}`}>
+						<span class='film-shot'>
+							<Image src={g.image} alt='' widths={[240, 480]} sizes='120px' format='webp' quality={70} loading={i === 0 ? 'eager' : 'lazy'} decoding='async' />
+						</span>
+						<span class='film-l'>{g.label}</span>
+						<span class='film-bar' aria-hidden='true'>
+							<span class='film-fill' />
+						</span>
+					</button>
+				))
+			}
+		</div>
+
+		<aside class='hero-form on-dark' aria-label={miniForm.title}>
 			<p class='mf-h'>{miniForm.title}</p>
 			<LeadForm site={config} id='mirante-hero' variant='mini' fields={fields} cta={miniForm.cta} source='hero' />
 			{
@@ -51,190 +98,357 @@ const sizes = ['(max-width: 960px) 56vw, 330px', '(max-width: 960px) 43vw, 260px
 					<p class='mf-foot'>
 						{miniForm.foot}
 						{whatsapp && (
-							<a href={whatsapp} class='wpp' target='_blank' rel='noopener'>
+							<a href={whatsapp} target='_blank' rel='noopener'>
 								{miniForm.whatsappLabel}
 							</a>
 						)}
 					</p>
 				)
 			}
-		</div>
-	</div>
-
-	<div class='hero-r'>
-		{
-			hero.gallery.map((g, i) => (
-				<figure class='img'>
-					<Image
-						src={g.image}
-						alt={g.alt}
-						widths={widths(g.image.width)}
-						sizes={sizes[i]}
-						format='webp'
-						loading={i === 0 ? 'eager' : 'lazy'}
-						fetchpriority={i === 0 ? 'high' : undefined}
-						decoding='async'
-						quality='high'
-					/>
-					<figcaption class='img-l'>{g.label}</figcaption>
-				</figure>
-			))
-		}
+		</aside>
 	</div>
 </section>
 
+<script>
+	const mountDeferred = (hero: HTMLElement) => {
+		hero.querySelectorAll<HTMLTemplateElement>('[data-hero-deferred]').forEach((t) => t.replaceWith(t.content));
+	};
+	const afterLoad = (fn: () => void) => {
+		if (document.readyState === 'complete') fn();
+		else window.addEventListener('load', fn, { once: true });
+	};
+
+	document.querySelectorAll<HTMLElement>('[data-hero]').forEach((hero) => {
+		afterLoad(() => setup(hero));
+	});
+
+	function setup(hero: HTMLElement) {
+		mountDeferred(hero);
+		const bgs = [...hero.querySelectorAll<HTMLElement>('[data-hero-bg]')];
+		const btns = [...hero.querySelectorAll<HTMLButtonElement>('[data-hero-go]')];
+		if (bgs.length < 2 || btns.length !== bgs.length) return;
+		const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+		let current = 0;
+
+		const holds = new Set<string>();
+		const syncHold = () => hero.toggleAttribute('data-paused', holds.size > 0);
+		const hold = (why: string, on: boolean) => {
+			if (on) holds.add(why);
+			else holds.delete(why);
+			syncHold();
+		};
+
+		const show = (i: number) => {
+			if (i !== current) hero.setAttribute('data-live', '');
+			current = (i + bgs.length) % bgs.length;
+			bgs.forEach((bg, k) => bg.classList.toggle('is-on', k === current));
+			btns.forEach((b, k) => {
+				const on = k === current;
+				b.classList.toggle('is-on', on);
+				b.setAttribute('aria-pressed', String(on));
+				const fill = b.querySelector<HTMLElement>('.film-fill');
+				if (!fill) return;
+				// Restart the timer bar on the active thumb (double rAF so the removal paints first).
+				fill.classList.remove('is-running');
+				if (on && !reduced.matches) {
+					requestAnimationFrame(() => requestAnimationFrame(() => fill.classList.add('is-running')));
+				}
+			});
+		};
+
+		btns.forEach((b, i) => {
+			b.addEventListener('click', () => show(i));
+		});
+		hero.addEventListener('animationend', (e) => {
+			if ((e.target as HTMLElement).classList.contains('film-fill')) show(current + 1);
+		});
+
+		// Holds: pointer or keyboard focus inside the strip or the form, hidden tab, offscreen.
+		const film = hero.querySelector<HTMLElement>('[data-hero-film]');
+		film?.addEventListener('pointerenter', () => hold('hover', true));
+		film?.addEventListener('pointerleave', () => hold('hover', false));
+		hero.addEventListener('focusin', (e) => {
+			if ((e.target as Element).matches(':focus-visible') || (e.target as Element).closest('form')) hold('focus', true);
+		});
+		hero.addEventListener('focusout', () => {
+			requestAnimationFrame(() => {
+				if (!hero.contains(document.activeElement)) hold('focus', false);
+			});
+		});
+		document.addEventListener('visibilitychange', () => hold('hidden', document.hidden));
+		new IntersectionObserver(([entry]) => hold('offscreen', !entry?.isIntersecting), { threshold: 0.15 }).observe(hero);
+
+		show(0);
+	}
+</script>
+
 <style>
 	.hero {
-		max-width: 1240px;
-		margin: 0 auto;
-		padding: 56px 32px 64px;
-		display: grid;
-		grid-template-columns: 1fr 1.1fr;
-		gap: 56px;
-		align-items: center;
-	}
-	.hero-l .eyebrow {
-		margin-bottom: 24px;
-	}
-	.live-dot {
-		width: 8px;
-		height: 8px;
-		border-radius: 50%;
-		background: var(--accent);
-		box-shadow: 0 0 0 0 var(--accent);
-		animation: mirante-pulse 2s infinite;
-	}
-	@keyframes mirante-pulse {
-		0% {
-			box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 50%, transparent);
-		}
-		70% {
-			box-shadow: 0 0 0 10px transparent;
-		}
-		100% {
-			box-shadow: 0 0 0 0 transparent;
-		}
-	}
-	.hero h1 {
-		font-size: clamp(48px, 6.5vw, 96px);
-		font-weight: 800;
-		letter-spacing: -0.04em;
-		line-height: 0.98;
-		max-width: 14ch;
-	}
-	.hero .sub {
-		margin-top: 24px;
-		font-size: 17px;
-		color: var(--ink-2);
-		line-height: 1.55;
-		max-width: 48ch;
-	}
-	.hero .sub :global(strong) {
-		color: var(--ink);
-		font-weight: 700;
-	}
-
-	/* Mini form (core LeadForm inside the white card) */
-	.mini-form {
-		margin-top: 32px;
-		padding: 24px;
-		background: #fff;
-		border: 1px solid var(--rule);
-		border-radius: var(--r-box);
-		max-width: 460px;
-		box-shadow: 0 30px 60px -20px color-mix(in srgb, var(--ink) 12%, transparent);
-	}
-	.mf-h {
-		font-family: var(--mono);
-		font-size: 11px;
-		font-weight: 700;
-		letter-spacing: 0.12em;
-		color: var(--accent-text);
-		text-transform: uppercase;
-		margin-bottom: 16px;
-	}
-	.mini-form :global(.lead-form .lf-body) {
-		grid-template-columns: 1fr 1fr;
-		gap: 14px 12px;
-		align-items: end;
-	}
-	.mini-form :global(.lead-form .lf-submit) {
-		grid-column: 1 / -1;
-	}
-	.mini-form :global(.lead-form .lf-status) {
-		text-align: center;
-	}
-
-	/* Hero gallery */
-	.hero-r {
-		display: grid;
-		grid-template-columns: 1.3fr 1fr;
-		grid-template-rows: 1fr 1fr;
-		gap: 8px;
-		aspect-ratio: 1.1;
-		max-height: 600px;
-	}
-	.img {
-		border-radius: var(--r-btn);
 		position: relative;
+		color: #fff;
+		isolation: isolate;
 		overflow: hidden;
-		display: flex;
-		align-items: flex-end;
-		padding: 12px;
 	}
-	.img :global(img) {
+	.hero-media {
 		position: absolute;
 		inset: 0;
+		z-index: -1;
+		background: var(--ink);
+	}
+	.hero-bg {
+		position: absolute;
+		inset: 0;
+		margin: 0;
+		opacity: 0;
+		transform: scale(1.06);
+		transition:
+			opacity 1.1s var(--ease),
+			transform 0s linear 1.1s;
+	}
+	.hero-bg.is-on {
+		opacity: 1;
+		transform: scale(1);
+		transition:
+			opacity 1.1s var(--ease),
+			transform 0s;
+	}
+	/* Slow zoom only after the first swap, so the first paint stays a still (no per-frame work while loading) */
+	[data-live] .hero-bg.is-on {
+		transition:
+			opacity 1.1s var(--ease),
+			transform 8s linear;
+	}
+	.hero-bg :global(img) {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
 	}
-	.img-l {
+	.hero-shade {
+		position: absolute;
+		inset: 0;
+		background:
+			linear-gradient(180deg, color-mix(in srgb, #000 42%, transparent) 0%, transparent 32%),
+			linear-gradient(180deg, transparent 38%, color-mix(in srgb, #000 22%, transparent) 62%, color-mix(in srgb, #000 74%, transparent) 100%);
+	}
+
+	.hero-inner {
+		min-height: 100svh;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(320px, 400px);
+		grid-template-rows: 1fr auto auto;
+		grid-template-areas:
+			'. .'
+			'copy form'
+			'film form';
+		column-gap: 48px;
+		row-gap: 36px;
+		padding-top: calc(var(--tb-h) + 32px);
+		padding-bottom: 32px;
+		align-items: end;
+	}
+	.hero-copy {
+		grid-area: copy;
+		max-width: 720px;
+	}
+	.hero-copy .eyebrow {
+		color: color-mix(in srgb, #fff 82%, transparent);
+	}
+	/* The pulse animates only transform and opacity on a ring (a box-shadow animation repainted the hero every frame). */
+	.live-dot {
 		position: relative;
-		z-index: 1;
-		font-family: var(--mono);
-		font-size: 10px;
-		font-weight: 700;
-		letter-spacing: 0.12em;
-		text-transform: uppercase;
-		color: #fff;
-		background: color-mix(in srgb, var(--ink) 55%, transparent);
-		backdrop-filter: blur(4px);
-		-webkit-backdrop-filter: blur(4px);
-		padding: 4px 8px;
-		border-radius: var(--r-tag);
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: var(--accent-on-dark);
 	}
-	/* Tinted gradients show while the photos load */
-	.img:nth-child(1) {
-		grid-row: 1 / 3;
-		background:
-			linear-gradient(135deg, color-mix(in srgb, var(--ink) 60%, transparent), color-mix(in srgb, var(--accent) 30%, transparent)),
-			linear-gradient(180deg, var(--ink-2) 0%, var(--ink) 100%);
+	.live-dot::after {
+		content: '';
+		position: absolute;
+		inset: -1px;
+		border-radius: 50%;
+		border: 1px solid var(--accent-on-dark);
+		animation: mirante-pulse 2.4s ease-out infinite;
 	}
-	.img:nth-child(2) {
-		background: linear-gradient(
-			180deg,
-			color-mix(in srgb, var(--accent-2) 50%, #fff) 0%,
-			color-mix(in srgb, var(--accent) 40%, transparent) 50%,
-			color-mix(in srgb, var(--ink) 70%, transparent) 100%
-		);
-	}
-	.img:nth-child(3) {
-		background: linear-gradient(135deg, var(--bg-2), color-mix(in srgb, var(--accent) 45%, var(--bg-2)));
-	}
-	.img:nth-child(4) {
-		grid-column: 1 / 3;
-		background:
-			linear-gradient(135deg, color-mix(in srgb, var(--accent) 40%, transparent), color-mix(in srgb, var(--ink) 30%, transparent)),
-			linear-gradient(90deg, var(--ink-3), var(--accent));
-	}
-	@media (max-width: 960px) {
-		.hero {
-			grid-template-columns: 1fr;
-			gap: 40px;
+	@keyframes mirante-pulse {
+		0% {
+			transform: scale(0.8);
+			opacity: 0.9;
 		}
-		.hero-r {
-			max-height: 460px;
+		100% {
+			transform: scale(2.6);
+			opacity: 0;
+		}
+	}
+	.hero h1 {
+		margin-top: 22px;
+		font-size: clamp(56px, 8.4vw, 132px);
+		line-height: 0.94;
+		max-width: 12ch;
+	}
+	.hero .sub {
+		margin-top: 24px;
+		font-size: 18px;
+		line-height: 1.55;
+		max-width: 46ch;
+		color: color-mix(in srgb, #fff 84%, transparent);
+	}
+	.hero .sub :global(strong) {
+		color: #fff;
+		font-weight: 600;
+	}
+
+	/* Filmstrip */
+	.hero-film {
+		grid-area: film;
+		display: flex;
+		gap: 14px;
+		flex-wrap: wrap;
+	}
+	.film {
+		display: grid;
+		gap: 8px;
+		width: 120px;
+		padding: 0;
+		text-align: left;
+		color: #fff;
+		opacity: 0.62;
+		transition: opacity 0.3s;
+	}
+	.film:hover,
+	.film.is-on {
+		opacity: 1;
+	}
+	.film:focus-visible {
+		outline: 2px solid #fff;
+		outline-offset: 4px;
+	}
+	.film-shot {
+		display: block;
+		aspect-ratio: 3 / 2;
+		overflow: hidden;
+		background: color-mix(in srgb, #fff 12%, transparent);
+	}
+	.film-shot :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		transition: transform 0.6s var(--ease);
+	}
+	.film:hover .film-shot :global(img) {
+		transform: scale(1.05);
+	}
+	.film-l {
+		font-family: var(--mono);
+		font-size: 11px;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+	.film-bar {
+		display: block;
+		height: 1px;
+		background: color-mix(in srgb, #fff 30%, transparent);
+		overflow: hidden;
+	}
+	.film-fill {
+		display: block;
+		height: 100%;
+		width: 100%;
+		background: #fff;
+		transform: scaleX(0);
+		transform-origin: left;
+	}
+	.film-fill.is-running {
+		animation: mirante-film 7s linear forwards;
+	}
+	[data-paused] .film-fill.is-running {
+		animation-play-state: paused;
+	}
+	@keyframes mirante-film {
+		to {
+			transform: scaleX(1);
+		}
+	}
+
+	/* Mini form panel */
+	.hero-form {
+		grid-area: form;
+		padding: 28px 28px 24px;
+		background: color-mix(in srgb, var(--ink) 86%, transparent);
+		border: 1px solid color-mix(in srgb, #fff 14%, transparent);
+	}
+	.mf-h {
+		font-family: var(--display);
+		font-size: 30px;
+		font-weight: 500;
+		line-height: 1.05;
+		letter-spacing: -0.01em;
+		margin-bottom: 18px;
+	}
+	/* Doubled class: beats the core mini layout (two columns) at every width */
+	.hero-form :global(.lead-form.lead-form .lf-body) {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 18px;
+	}
+	.hero-form :global(.lead-form.lead-form .lf-submit) {
+		grid-column: 1 / -1;
+		margin-top: 6px;
+	}
+	.hero-form :global(.lead-form.lead-form .lf-status) {
+		text-align: left;
+	}
+
+	@media (max-width: 1100px) {
+		.hero-inner {
+			grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
+			column-gap: 32px;
+		}
+	}
+	@media (max-width: 900px) {
+		.hero-inner {
+			min-height: 0;
+			grid-template-columns: minmax(0, 1fr);
+			grid-template-areas:
+				'copy'
+				'film'
+				'form';
+			grid-template-rows: auto;
+			row-gap: 32px;
+			padding-top: 88px;
+			padding-bottom: 28px;
+		}
+		.hero h1 {
+			font-size: clamp(52px, 13vw, 84px);
+		}
+		.hero-media {
+			/* Keep the photo behind the copy only; the form sits on solid ink below */
+			background: var(--ink);
+		}
+		.hero-film {
+			gap: 10px;
+		}
+		.film {
+			width: calc((100% - 30px) / 4);
+			min-width: 64px;
+		}
+		.film-l {
+			font-size: 10px;
+		}
+		.hero-shade {
+			background:
+				linear-gradient(180deg, color-mix(in srgb, #000 40%, transparent) 0%, color-mix(in srgb, #000 22%, transparent) 30%, color-mix(in srgb, #000 30%, transparent) 55%, color-mix(in srgb, #000 78%, transparent) 100%);
+		}
+		.hero-form {
+			padding: 24px 22px 20px;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.hero-bg,
+		.hero-bg.is-on {
+			transform: none;
+			transition: opacity 0.2s;
+		}
+		.film-fill.is-running {
+			animation: none;
 		}
 	}
 </style>

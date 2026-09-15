@@ -1,5 +1,5 @@
 ---
-/** Numbers band (ink background) — one column per stat, 3 / 2 columns on small screens. */
+/** Numbers row under the hero: serif numerals between hairlines, mono labels. 3 / 2 columns on small screens. */
 import type { MiranteConfig } from '../schema';
 
 interface Props {
@@ -8,60 +8,93 @@ interface Props {
 const { stats } = Astro.props.config;
 ---
 
-<section class='numbers'>
-	<div class='n-grid' style={`--cols:${stats.length}`}>
-		{
-			stats.map((s) => (
-				<div class='n'>
-					<span class='v'>{s.v}</span>
-					<span class='l'>{s.l}</span>
-				</div>
-			))
-		}
+<section class='numbers' aria-label='Números'>
+	<div class='wrap'>
+		<dl class='n-grid' style={`--cols:${stats.length}`}>
+			{
+				stats.map((s) => (
+					<div class='n'>
+						<dd class='v display'>{s.v}</dd>
+						<dt class='l'>{s.l}</dt>
+					</div>
+				))
+			}
+		</dl>
 	</div>
 </section>
 
 <style>
 	.numbers {
-		background: var(--ink);
-		color: #fff;
-		padding: 32px 32px;
+		padding-block: 8px;
 	}
 	.n-grid {
-		max-width: 1240px;
-		margin: 0 auto;
 		display: grid;
-		grid-template-columns: repeat(var(--cols, 6), 1fr);
-		gap: 24px;
+		grid-template-columns: repeat(var(--cols, 6), minmax(0, max-content));
+		justify-content: space-between;
+		column-gap: 24px;
+		border-top: 1px solid var(--line);
+		border-bottom: 1px solid var(--line);
 	}
 	.n {
 		display: flex;
-		flex-direction: column;
-		gap: 4px;
-		border-left: 2px solid var(--accent);
-		padding-left: 14px;
+		flex-direction: column-reverse;
+		gap: 6px;
+		padding: 26px 0 24px 20px;
+		border-left: 1px solid var(--line);
+		white-space: nowrap;
+	}
+	.n:first-child {
+		border-left: 0;
+		padding-left: 0;
 	}
 	.n .v {
-		font-size: 28px;
-		font-weight: 800;
-		letter-spacing: -0.025em;
+		font-size: clamp(36px, 3.6vw, 56px);
+		line-height: 1;
 		font-variant-numeric: tabular-nums;
 	}
 	.n .l {
 		font-family: var(--mono);
 		font-size: 11px;
-		color: color-mix(in srgb, #fff 55%, transparent);
-		letter-spacing: 0.06em;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--ink-3);
 	}
 	@media (max-width: 900px) {
 		.n-grid {
-			grid-template-columns: repeat(3, 1fr);
-			gap: 18px;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			column-gap: 0;
+		}
+		.n {
+			white-space: normal;
+		}
+		.n {
+			padding: 20px 14px 18px;
+		}
+		.n:nth-child(3n + 1) {
+			border-left: 0;
+			padding-left: 0;
+		}
+		.n:nth-child(n + 4) {
+			border-top: 1px solid var(--line);
 		}
 	}
 	@media (max-width: 540px) {
 		.n-grid {
-			grid-template-columns: 1fr 1fr;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+		.n:nth-child(3n + 1) {
+			border-left: 1px solid var(--line);
+			padding-left: 14px;
+		}
+		.n:nth-child(2n + 1) {
+			border-left: 0;
+			padding-left: 0;
+		}
+		.n:nth-child(n + 3) {
+			border-top: 1px solid var(--line);
+		}
+		.n .v {
+			font-size: 34px;
 		}
 	}
 </style>

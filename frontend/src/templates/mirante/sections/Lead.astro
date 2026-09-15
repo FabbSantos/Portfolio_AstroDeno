@@ -1,9 +1,11 @@
 ---
 /**
- * High-intent lead block (ink background): pitch + bullets on the left,
- * the core LeadForm (`full`) in a white card on the right. Field labels come
- * from `lead.labels`; the "tipologia" options from `plans.items`.
+ * High-intent lead block over the second gallery photo, darkened: pitch and
+ * bullets on the left, the core LeadForm (`full`) on a paper panel at the
+ * right. Field labels come from `lead.labels`; the "tipologia" options from
+ * `plans.items`.
  */
+import { Image } from 'astro:assets';
 import LeadForm from '../../core/LeadForm.astro';
 import type { LeadField } from '../../core/schema';
 import type { MiranteConfig } from '../schema';
@@ -13,8 +15,9 @@ interface Props {
 	config: MiranteConfig;
 }
 const { config } = Astro.props;
-const { lead, plans, legal } = config;
+const { lead, plans, legal, hero } = config;
 const L = lead.labels;
+const photo = hero.gallery[hero.gallery.length > 1 ? 1 : 0];
 
 const fields: LeadField[] = [
 	{ name: 'nome', label: L.nome, type: 'text', required: true, autocomplete: 'name' },
@@ -27,24 +30,23 @@ const fields: LeadField[] = [
 
 // "…concorda com nossa Política de Privacidade." → the label becomes a link when legal.privacyUrl exists.
 const footParts = lead.foot && legal.privacyUrl && lead.foot.includes(lead.privacyLabel) ? lead.foot.split(lead.privacyLabel) : null;
+const widths = (w: number) => [...[960, 1600, 2400].filter((x) => x < w), w];
 ---
 
 <section class='lead' id='lead' aria-labelledby='lead-title'>
-	<div class='lead-inner'>
+	<div class='lead-media' aria-hidden='true'>
+		{photo && <Image src={photo.image} alt='' widths={widths(photo.image.width)} sizes='100vw' format='webp' quality={72} loading='lazy' decoding='async' />}
+	</div>
+	<div class='wrap lead-inner'>
 		<div class='lead-l'>
 			{lead.eyebrow && <p class='eyebrow'>{lead.eyebrow}</p>}
-			<h2 id='lead-title' set:html={md(lead.title)} />
+			<h2 id='lead-title' class='display' set:html={md(lead.title)} />
 			<p class='lead-sub'>{lead.sub}</p>
 			{
 				lead.bullets.length > 0 && (
 					<ul class='lead-bullets'>
 						{lead.bullets.map((b) => (
-							<li>
-								<span class='b-ic' aria-hidden='true'>
-									✓
-								</span>
-								{b}
-							</li>
+							<li>{b}</li>
 						))}
 					</ul>
 				)
@@ -73,68 +75,69 @@ const footParts = lead.foot && legal.privacyUrl && lead.foot.includes(lead.priva
 
 <style>
 	.lead {
-		padding: 100px 0;
-		background: var(--ink);
+		position: relative;
+		isolation: isolate;
+		padding-block: clamp(80px, 10vw, 140px);
 		color: #fff;
+		background: var(--ink);
+	}
+	.lead-media {
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		overflow: hidden;
+	}
+	.lead-media :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		opacity: 0.55;
+	}
+	.lead-media::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(90deg, color-mix(in srgb, var(--ink) 78%, transparent) 0%, color-mix(in srgb, var(--ink) 35%, transparent) 100%);
 	}
 	.lead-inner {
-		max-width: 1240px;
-		margin: 0 auto;
-		padding: 0 32px;
 		display: grid;
-		grid-template-columns: 1fr 1.1fr;
-		gap: 56px;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+		gap: clamp(40px, 6vw, 96px);
 		align-items: center;
 	}
-	/* dark block: the light accent variant */
 	.lead-l .eyebrow {
-		color: var(--accent-on-dark);
-		display: block;
-		margin-bottom: 16px;
+		color: color-mix(in srgb, #fff 70%, transparent);
+		margin-bottom: 18px;
 	}
 	.lead-l h2 {
-		font-size: clamp(36px, 5vw, 56px);
-		font-weight: 800;
-		letter-spacing: -0.035em;
-		line-height: 1.05;
-	}
-	.lead-l h2 :global(strong) {
-		color: var(--accent-on-dark);
+		font-size: clamp(48px, 5.8vw, 92px);
+		max-width: 12ch;
 	}
 	.lead-sub {
-		margin: 20px 0 28px;
-		font-size: 16px;
-		color: color-mix(in srgb, #fff 70%, transparent);
-		line-height: 1.55;
+		margin: 24px 0 28px;
+		font-size: 17px;
+		line-height: 1.6;
+		color: color-mix(in srgb, #fff 82%, transparent);
 		max-width: 44ch;
 	}
 	.lead-bullets {
 		list-style: none;
-		display: flex;
-		flex-direction: column;
-		gap: 10px;
+		border-top: 1px solid var(--line-on-dark);
+		max-width: 44ch;
 	}
 	.lead-bullets li {
-		font-size: 14px;
-		color: color-mix(in srgb, #fff 85%, transparent);
-		display: flex;
-		align-items: center;
-		gap: 12px;
+		padding: 12px 0;
+		border-bottom: 1px solid var(--line-on-dark);
+		font-size: 15px;
+		color: color-mix(in srgb, #fff 88%, transparent);
 	}
-	.b-ic {
-		color: var(--accent-on-dark);
-		font-weight: 700;
-	}
-
 	.big-form {
-		background: #fff;
+		background: var(--bg);
 		color: var(--ink);
-		padding: 32px;
-		border-radius: var(--r-card);
-		box-shadow: 0 40px 80px -20px color-mix(in srgb, #000 30%, transparent);
+		padding: clamp(28px, 3.5vw, 48px);
 	}
 	.big-form :global(.lead-form .lf-body) {
-		gap: 16px 14px;
+		gap: 22px 24px;
 	}
 	/* Name spans both columns; the rest pairs up (e-mail + phone, plan + time). */
 	.big-form :global(.lead-form .lf-field:first-child) {
@@ -143,23 +146,14 @@ const footParts = lead.foot && legal.privacyUrl && lead.foot.includes(lead.priva
 	.big-form :global(.lead-form .lf-submit) {
 		justify-self: stretch;
 		margin-top: 8px;
-		padding: 18px 28px;
-		font-size: 15px;
-	}
-	.lead .big-form .mf-foot {
-		margin-top: 14px;
-		text-align: left;
-	}
-	.lead .big-form .mf-foot a {
-		color: var(--accent-text);
 	}
 	@media (max-width: 900px) {
 		.lead-inner {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
 			gap: 40px;
 		}
 		.big-form :global(.lead-form .lf-body) {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
 		}
 	}
 </style>

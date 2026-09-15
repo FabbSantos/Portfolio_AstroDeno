@@ -1,10 +1,12 @@
 ---
 /**
  * Full standalone Mirante page for a client site: core Page (head, theme
- * tokens, WhatsApp FAB, LGPD bar) wrapping MiranteBody.
+ * tokens, WhatsApp FAB, LGPD bar) wrapping MiranteBody. The core Inter preload
+ * is off (the template sets its own faces); Cormorant is preloaded instead.
  */
 import Page from '../core/Page.astro';
 import MiranteBody from './MiranteBody.astro';
+import { MIRANTE_PRELOAD } from './fonts';
 import type { MiranteConfig } from './schema';
 
 interface Props {
@@ -14,7 +16,7 @@ interface Props {
 const { config, noindex = false } = Astro.props;
 ---
 
-<Page site={config} class='page-mirante' noindex={noindex}>
+<Page site={config} class='page-mirante' noindex={noindex} preloadFonts={false} preload={MIRANTE_PRELOAD}>
 	<main id='main-content'>
 		<MiranteBody config={config} />
 	</main>

@@ -1,8 +1,9 @@
 ---
 /**
- * Location: the map (client image · Google Maps embed · CSS wireframe with
- * the brand marker and numbered pins) + the numbered list of points of
- * interest. POIs are numbered 01… in config order.
+ * Location, on an ink block: the map (client image · Google Maps embed · CSS
+ * wireframe with a grid, the brand marker and numbered pins) and the list of
+ * points of interest with distances aligned right. POIs are numbered 01… in
+ * config order.
  */
 import { Image } from 'astro:assets';
 import type { MiranteConfig } from '../schema';
@@ -25,83 +26,73 @@ const spots = [
 	{ top: '80%', left: '70%' },
 ];
 const mapTitle = brand.locale === 'en' ? `Map · ${brand.name}` : `Mapa · ${brand.name}`;
-/** srcset widths, capped at the source width. */
 const widths = (w: number) => [...[640, 960, 1300].filter((x) => x < w), w];
 ---
 
-<section class='local' id='local' aria-labelledby='local-title'>
-	<div class='sec-h'>
-		{location.eyebrow && <p class='eyebrow'>{location.eyebrow}</p>}
-		<h2 id='local-title' set:html={md(location.title)} />
-	</div>
-	<div class='local-grid'>
-		{
-			map.kind === 'image' ? (
-				<figure class='map map--img'>
-					<Image
-						src={map.image}
-						alt={map.alt ?? mapTitle}
-						widths={widths(map.image.width)}
-						sizes='(max-width: 900px) calc(100vw - 64px), 680px'
-						format='webp'
-						loading='lazy'
-						decoding='async'
-						quality='high'
-					/>
-				</figure>
-			) : map.kind === 'gmaps' ? (
-				<div class='map map--embed'>
-					<iframe src={map.embedUrl} title={mapTitle} loading='lazy' allowfullscreen referrerpolicy='no-referrer-when-downgrade' />
-				</div>
-			) : (
-				<div class='map' aria-hidden='true'>
-					<div class='map-grid' />
-					<span class='map-here'>{brand.name}</span>
-					{poi.slice(0, spots.length).map((p, i) => (
-						<span class='pin' style={`top:${spots[i]?.top};left:${spots[i]?.left}`} aria-label={p.name}>
-							{num(i)}
-						</span>
-					))}
-				</div>
-			)
-		}
-		<ul class='poi'>
+<section class='local sec' id='local' aria-labelledby='local-title'>
+	<div class='wrap'>
+		<div class='sec-head'>
+			{location.eyebrow && <p class='eyebrow'>{location.eyebrow}</p>}
+			<h2 id='local-title' class='display' set:html={md(location.title)} />
+		</div>
+		<div class='local-grid'>
 			{
-				poi.map((p, i) => (
-					<li>
-						<span class='p-n'>{num(i)}</span>
-						<div class='p-info'>
-							<b>{p.name}</b>
-							<span class='p-d'>{p.d}</span>
-						</div>
-					</li>
-				))
+				map.kind === 'image' ? (
+					<figure class='map map--img'>
+						<Image src={map.image} alt={map.alt ?? mapTitle} widths={widths(map.image.width)} sizes='(max-width: 900px) calc(100vw - 40px), 56vw' format='webp' quality={80} loading='lazy' decoding='async' />
+					</figure>
+				) : map.kind === 'gmaps' ? (
+					<div class='map map--embed'>
+						<iframe src={map.embedUrl} title={mapTitle} loading='lazy' allowfullscreen referrerpolicy='no-referrer-when-downgrade' />
+					</div>
+				) : (
+					<div class='map map--wire' aria-hidden='true'>
+						<div class='map-grid' />
+						<span class='map-here'>{brand.name}</span>
+						{poi.slice(0, spots.length).map((_, i) => (
+							<span class='pin' style={`top:${spots[i]?.top};left:${spots[i]?.left}`}>
+								{num(i)}
+							</span>
+						))}
+					</div>
+				)
 			}
-		</ul>
+			<ol class='poi'>
+				{
+					poi.map((p, i) => (
+						<li>
+							<span class='p-n display'>{num(i)}</span>
+							<span class='p-name'>{p.name}</span>
+							<span class='p-d'>{p.d}</span>
+						</li>
+					))
+				}
+			</ol>
+		</div>
 	</div>
 </section>
 
 <style>
 	.local {
-		padding: 60px 0 100px;
+		background: var(--ink);
+		color: var(--bg);
+	}
+	.local .eyebrow {
+		color: color-mix(in srgb, var(--bg) 62%, transparent);
 	}
 	.local-grid {
-		max-width: 1240px;
-		margin: 0 auto;
-		padding: 0 32px;
 		display: grid;
-		grid-template-columns: 1.4fr 1fr;
-		gap: 40px;
+		grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+		gap: clamp(32px, 5vw, 72px);
+		align-items: start;
 	}
 	.map {
 		position: relative;
-		aspect-ratio: 1.3;
-		background:
-			radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 60%),
-			linear-gradient(135deg, color-mix(in srgb, var(--bg-2) 96%, var(--ink)) 0%, var(--bg-2) 100%);
-		border-radius: var(--r-card);
-		border: 1px solid var(--rule);
+		aspect-ratio: 13 / 10;
+		margin: 0;
+		border: 1px solid var(--line-on-dark);
 		overflow: hidden;
+		background: color-mix(in srgb, var(--bg) 8%, var(--ink));
 	}
 	.map--img :global(img) {
 		width: 100%;
@@ -114,98 +105,91 @@ const widths = (w: number) => [...[640, 960, 1300].filter((x) => x < w), w];
 		width: 100%;
 		height: 100%;
 		border: 0;
+		filter: grayscale(0.2);
 	}
 	.map-grid {
 		position: absolute;
 		inset: 0;
 		background-image:
-			linear-gradient(color-mix(in srgb, var(--ink) 6%, transparent) 1px, transparent 1px),
-			linear-gradient(90deg, color-mix(in srgb, var(--ink) 6%, transparent) 1px, transparent 1px);
-		background-size: 40px 40px;
+			linear-gradient(color-mix(in srgb, var(--bg) 9%, transparent) 1px, transparent 1px),
+			linear-gradient(90deg, color-mix(in srgb, var(--bg) 9%, transparent) 1px, transparent 1px);
+		background-size: 48px 48px;
 	}
 	.map-here {
 		position: absolute;
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
-		background: var(--ink);
-		color: #fff;
-		font-family: var(--mono);
-		font-size: 11px;
-		font-weight: 700;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
 		padding: 8px 14px;
-		border-radius: var(--r-btn);
-		box-shadow: 0 10px 30px -10px color-mix(in srgb, var(--ink) 40%, transparent);
+		background: var(--bg);
+		color: var(--ink);
+		font-family: var(--display);
+		font-size: 20px;
+		font-weight: 600;
+		line-height: 1;
 	}
 	.map-here::after {
 		content: '';
 		position: absolute;
 		top: 100%;
 		left: 50%;
-		transform: translateX(-50%);
-		width: 0;
-		height: 0;
-		border-left: 6px solid transparent;
-		border-right: 6px solid transparent;
-		border-top: 6px solid var(--ink);
+		width: 1px;
+		height: 22px;
+		background: var(--bg);
 	}
 	.pin {
 		position: absolute;
-		width: 30px;
-		height: 30px;
+		width: 32px;
+		height: 32px;
 		border-radius: 50%;
-		background: var(--accent-text);
-		color: #fff;
+		display: grid;
+		place-items: center;
+		background: var(--accent-on-dark);
+		color: var(--ink);
 		font-family: var(--mono);
 		font-size: 11px;
-		font-weight: 700;
-		display: flex;
-		align-items: center;
-		justify-content: center;
+		font-weight: 600;
 		transform: translate(-50%, -50%);
-		box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 50%, transparent);
-		border: 2px solid #fff;
+	}
+	/* Static ring: six looping animations cost real rendering time on phones */
+	.pin::before {
+		content: '';
+		position: absolute;
+		inset: -6px;
+		border-radius: 50%;
+		border: 1px solid var(--accent-on-dark);
+		opacity: 0.45;
 	}
 	.poi {
 		list-style: none;
-		display: flex;
-		flex-direction: column;
+		border-top: 1px solid var(--line-on-dark);
 	}
 	.poi li {
 		display: grid;
-		grid-template-columns: 36px 1fr;
-		gap: 14px;
-		padding: 16px 0;
-		border-bottom: 1px solid var(--rule);
-		align-items: center;
+		grid-template-columns: 52px minmax(0, 1fr) auto;
+		align-items: baseline;
+		gap: 16px;
+		padding: 18px 0;
+		border-bottom: 1px solid var(--line-on-dark);
 	}
 	.p-n {
-		font-family: var(--mono);
-		font-size: 13px;
-		font-weight: 700;
-		color: var(--accent-text);
-		text-align: center;
+		font-size: 28px;
+		color: var(--accent-on-dark);
+		line-height: 1;
 	}
-	.p-info {
-		display: flex;
-		justify-content: space-between;
-		align-items: baseline;
-		gap: 12px;
-	}
-	.p-info b {
-		font-size: 15px;
-		font-weight: 600;
+	.p-name {
+		font-size: 18px;
+		font-weight: 500;
 	}
 	.p-d {
 		font-family: var(--mono);
-		font-size: 12px;
-		color: var(--ink-3);
+		font-size: 13px;
+		color: color-mix(in srgb, var(--bg) 62%, transparent);
+		font-variant-numeric: tabular-nums;
 	}
 	@media (max-width: 900px) {
 		.local-grid {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
 		}
 	}
 </style>

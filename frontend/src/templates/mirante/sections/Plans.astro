@@ -1,7 +1,10 @@
 ---
 /**
- * Floor plans. Each card shows the client's plan image or, when `image` is
- * null, a CSS wireframe (three room layouts, cycled by index).
+ * Floor plans as a list: one row per option (index, tag, m², description);
+ * hovering, focusing or clicking a row shows its plan large on the stage at
+ * the right, which stays pinned while the list scrolls. Below 900px the stage
+ * goes away and each row opens as an accordion with the plan inside.
+ * `image: null` falls back to the CSS wireframe (three layouts, cycled).
  */
 import { Image } from 'astro:assets';
 import type { MiranteConfig } from '../schema';
@@ -10,161 +13,296 @@ import { md } from './_md';
 interface Props {
 	config: MiranteConfig;
 }
-const { plans } = Astro.props.config;
+const { plans, brand } = Astro.props.config;
 
 const layouts = ['pl-A', 'pl-B', 'pl-C'];
 const roomClasses = ['r-sala', 'r-var', 'r-dorm', 'r-suite', 'r-cozi', 'r-wc'];
-/** srcset widths, capped at the source width. */
-const widths = (w: number) => [...[480, 960].filter((x) => x < w), w];
+const num = (i: number) => String(i + 1).padStart(2, '0');
+const widths = (w: number) => [...[640, 960].filter((x) => x < w), w];
+const en = brand.locale === 'en';
 ---
 
-<section class='plantas' id='plantas' aria-labelledby='plantas-title'>
-	<div class='sec-h'>
-		{plans.eyebrow && <p class='eyebrow'>{plans.eyebrow}</p>}
-		<h2 id='plantas-title' set:html={md(plans.title)} />
-	</div>
-	<div class='pl-grid'>
-		{
-			plans.items.map((t, i) => (
-				<article class:list={['pl-card', { 'is-mid': t.featured }]}>
-					{t.badge && <span class='pl-badge'>{t.badge}</span>}
-					{t.image ? (
-						<div class='pl-img'>
-							<Image
-								src={t.image}
-								alt={t.alt ?? `${t.tag} · ${t.m2}`}
-								widths={widths(t.image.width)}
-								sizes='(max-width: 900px) calc(100vw - 64px), 390px'
-								format='webp'
-								loading='lazy'
-								decoding='async'
-								quality='high'
-							/>
-						</div>
-					) : (
-						<div class:list={['pl-mock', layouts[i % layouts.length]]} aria-hidden='true'>
-							{plans.rooms.map((r, j) => (
-								<div class:list={['rm', roomClasses[j]]}>{r}</div>
-							))}
-						</div>
-					)}
-					<div class='pl-meta'>
-						<span class='pl-tag'>{t.tag}</span>
-						<h3>{t.m2}</h3>
-						<p>{t.desc}</p>
-						<a href={plans.link.href} class='link'>
-							{plans.link.label}
-						</a>
-					</div>
-				</article>
-			))
-		}
+<section class='plantas sec' id='plantas' aria-labelledby='plantas-title'>
+	<div class='wrap'>
+		<div class='sec-head'>
+			{plans.eyebrow && <p class='eyebrow'>{plans.eyebrow}</p>}
+			<h2 id='plantas-title' class='display' set:html={md(plans.title)} />
+		</div>
+
+		<div class='pl-grid' data-plans>
+			<ul class='pl-list'>
+				{
+					plans.items.map((t, i) => (
+						<li class:list={['pl-row', { 'is-on': i === 0 }]} data-pl-row={i}>
+							<button type='button' class='pl-btn' data-pl-btn={i} aria-expanded={i === 0 ? 'true' : 'false'} aria-controls={`pl-panel-${i}`}>
+								<span class='pl-n'>{num(i)}</span>
+								<span class='pl-main'>
+									<span class='pl-tag'>
+										{t.tag}
+										{t.badge && <span class='pl-badge'>{t.badge}</span>}
+									</span>
+									<span class='pl-m2 display'>{t.m2}</span>
+									<span class='pl-desc'>{t.desc}</span>
+								</span>
+								<span class='pl-arrow' aria-hidden='true'>
+									→
+								</span>
+							</button>
+							<div class='pl-panel' id={`pl-panel-${i}`} data-pl-panel>
+								<div class='pl-panel-in'>
+									{t.image ? (
+										<Image src={t.image} alt={t.alt ?? `${t.tag} · ${t.m2}`} widths={widths(t.image.width)} sizes='calc(100vw - 40px)' format='webp' quality={80} loading='lazy' decoding='async' />
+									) : (
+										<div class:list={['pl-mock', layouts[i % layouts.length]]} aria-hidden='true'>
+											{plans.rooms.map((r, j) => (
+												<div class:list={['rm', roomClasses[j]]}>{r}</div>
+											))}
+										</div>
+									)}
+									<a href={plans.link.href} class='link'>
+										{plans.link.label}
+									</a>
+								</div>
+							</div>
+						</li>
+					))
+				}
+			</ul>
+
+			<div class='pl-stage' aria-hidden='true'>
+				{
+					plans.items.map((t, i) => (
+						<figure class:list={['pl-shot', { 'is-on': i === 0 }]} data-pl-shot={i}>
+							{t.image ? (
+								<Image src={t.image} alt='' widths={widths(t.image.width)} sizes='(max-width: 1400px) 46vw, 640px' format='webp' quality={82} loading='lazy' decoding='async' />
+							) : (
+								<div class:list={['pl-mock', layouts[i % layouts.length]]}>
+									{plans.rooms.map((r, j) => (
+										<div class:list={['rm', roomClasses[j]]}>{r}</div>
+									))}
+								</div>
+							)}
+							<figcaption>
+								<span>
+									{t.tag} · {t.m2}
+								</span>
+								<span>{t.desc}</span>
+							</figcaption>
+						</figure>
+					))
+				}
+				<a href={plans.link.href} class='link pl-stage-link'>
+					{plans.link.label}
+				</a>
+			</div>
+		</div>
+		<p class='visually-hidden'>{en ? 'Choose a plan to see it large.' : 'Escolha uma planta para vê-la em tamanho maior.'}</p>
 	</div>
 </section>
 
+<script>
+	document.querySelectorAll<HTMLElement>('[data-plans]').forEach((root) => {
+		const rows = [...root.querySelectorAll<HTMLElement>('[data-pl-row]')];
+		const shots = [...root.querySelectorAll<HTMLElement>('[data-pl-shot]')];
+		const mq = window.matchMedia('(min-width: 900px)');
+		const set = (k: number, open: boolean) => {
+			rows.forEach((r, i) => {
+				const on = i === k && open;
+				r.classList.toggle('is-on', on);
+				r.querySelector('[data-pl-btn]')?.setAttribute('aria-expanded', String(on));
+			});
+			if (open) shots.forEach((s, i) => s.classList.toggle('is-on', i === k));
+		};
+		rows.forEach((r, i) => {
+			const btn = r.querySelector<HTMLButtonElement>('[data-pl-btn]');
+			btn?.addEventListener('click', () => set(i, mq.matches ? true : !r.classList.contains('is-on')));
+			// Desktop: pointer or keyboard focus previews without a click.
+			r.addEventListener('pointerenter', () => mq.matches && set(i, true));
+			btn?.addEventListener('focus', () => mq.matches && set(i, true));
+		});
+		mq.addEventListener('change', () => set(0, true));
+	});
+</script>
+
 <style>
-	.plantas {
-		padding: 60px 0 100px;
-	}
 	.pl-grid {
-		max-width: 1240px;
-		margin: 0 auto;
-		padding: 0 32px;
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 20px;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		gap: clamp(32px, 5vw, 80px);
+		align-items: start;
 	}
-	.pl-card {
-		background: #fff;
-		border: 1px solid var(--rule);
-		border-radius: var(--r-card);
-		overflow: hidden;
-		position: relative;
-		transition:
-			transform 0.35s,
-			box-shadow 0.35s;
+	.pl-list {
+		list-style: none;
+		border-top: 1px solid var(--line);
 	}
-	.pl-card:hover {
-		transform: translateY(-4px);
-		box-shadow: 0 30px 60px -20px color-mix(in srgb, var(--ink) 12%, transparent);
+	.pl-row {
+		border-bottom: 1px solid var(--line);
 	}
-	.pl-card.is-mid {
-		border-color: var(--accent);
-		box-shadow: 0 30px 80px -30px var(--accent-glow);
-	}
-	.pl-badge {
-		position: absolute;
-		top: 12px;
-		right: 12px;
-		background: var(--accent-text);
-		color: #fff;
-		font-family: var(--mono);
-		font-size: 10px;
-		font-weight: 700;
-		letter-spacing: 0.1em;
-		padding: 5px 10px;
-		text-transform: uppercase;
-		z-index: 2;
-	}
-	/* Client's plan image (6:5, white background) */
-	.pl-img {
-		aspect-ratio: 1.2;
-		background: #fff;
-		border-bottom: 1px solid var(--rule);
-		overflow: hidden;
-	}
-	.pl-img :global(img) {
+	.pl-btn {
 		width: 100%;
-		height: 100%;
-		object-fit: contain;
-	}
-	/* Floor plan wireframe (fallback) */
-	.pl-mock {
-		padding: 12px;
-		background: var(--bg-2);
-		aspect-ratio: 1.2;
 		display: grid;
-		gap: 4px;
+		grid-template-columns: 44px minmax(0, 1fr) 40px;
+		align-items: center;
+		gap: 16px;
+		padding: 26px 0;
+		text-align: left;
+		color: var(--ink);
+		transition: color 0.25s;
 	}
-	.rm {
-		background: #fff;
-		border: 1px solid var(--rule-2);
+	.pl-btn:focus-visible {
+		outline: 2px solid var(--ink);
+		outline-offset: 4px;
+	}
+	.pl-n {
+		font-family: var(--mono);
+		font-size: 12px;
+		color: var(--ink-3);
+		padding-top: 6px;
+		align-self: start;
+	}
+	.pl-main {
+		display: grid;
+		gap: 6px;
+	}
+	.pl-tag {
 		display: flex;
 		align-items: center;
-		justify-content: center;
+		gap: 12px;
+		font-family: var(--mono);
+		font-size: 11px;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--ink-3);
+	}
+	.pl-badge {
+		padding: 3px 8px;
+		background: var(--accent-text);
+		color: #fff;
+		letter-spacing: 0.08em;
+	}
+	.pl-m2 {
+		font-size: clamp(40px, 4.4vw, 64px);
+		line-height: 1;
+		transition: transform 0.4s var(--ease);
+	}
+	.pl-desc {
+		font-size: 16px;
+		color: var(--ink-2);
+	}
+	.pl-arrow {
+		font-family: var(--display);
+		font-size: 30px;
+		line-height: 1;
+		color: var(--ink-3);
+		opacity: 0;
+		transform: translateX(-8px);
+		transition:
+			opacity 0.3s,
+			transform 0.4s var(--ease);
+	}
+	.pl-row.is-on .pl-arrow {
+		opacity: 1;
+		transform: none;
+		color: var(--ink);
+	}
+	.pl-row:not(.is-on) .pl-btn:hover .pl-arrow {
+		opacity: 0.6;
+		transform: none;
+	}
+	.pl-row.is-on .pl-m2 {
+		transform: translateX(6px);
+	}
+	.pl-row:not(.is-on) .pl-btn {
+		color: var(--ink-2);
+	}
+
+	/* Accordion panel (phones only) */
+	.pl-panel {
+		display: none;
+	}
+
+	/* Pinned stage */
+	.pl-stage {
+		position: sticky;
+		top: calc(var(--tb-h) + 16px);
+		display: grid;
+	}
+	.pl-shot {
+		grid-area: 1 / 1;
+		margin: 0;
+		opacity: 0;
+		visibility: hidden;
+		transform: scale(0.98);
+		transition:
+			opacity 0.5s var(--ease),
+			transform 0.6s var(--ease),
+			visibility 0s 0.5s;
+		pointer-events: none;
+	}
+	.pl-shot.is-on {
+		opacity: 1;
+		visibility: visible;
+		transform: none;
+		transition-delay: 0s;
+	}
+	.pl-shot :global(img),
+	.pl-shot .pl-mock {
+		width: 100%;
+		height: auto;
+		aspect-ratio: 6 / 5;
+		object-fit: contain;
+		background: #fff;
+		border: 1px solid var(--line);
+	}
+	.pl-shot figcaption {
+		display: flex;
+		justify-content: space-between;
+		gap: 16px;
+		padding-top: 14px;
+		font-family: var(--mono);
+		font-size: 11px;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--ink-3);
+	}
+	.pl-stage-link {
+		justify-self: start;
+		margin-top: 18px;
+	}
+
+	/* Wireframe fallback: a line drawing on white */
+	.pl-mock {
+		padding: 14px;
+		display: grid;
+		gap: 0;
+	}
+	.rm {
+		border: 1px solid color-mix(in srgb, var(--ink) 40%, transparent);
+		margin: -0.5px;
+		display: flex;
+		align-items: end;
+		padding: 8px;
 		font-family: var(--mono);
 		font-size: 10px;
-		color: var(--ink-3);
+		letter-spacing: 0.08em;
 		text-transform: uppercase;
-		letter-spacing: 0.06em;
+		color: var(--ink-3);
 	}
-	/* Layout A — 2 dorms */
-	.pl-A {
-		grid-template-columns: 1.4fr 1fr 1fr;
-		grid-template-rows: 1.2fr 1fr 0.55fr;
-	}
+	.pl-A { grid-template-columns: 1.4fr 1fr 1fr; grid-template-rows: 1.2fr 1fr 0.55fr; }
 	.pl-A .r-sala { grid-column: 1 / 3; grid-row: 1; }
 	.pl-A .r-var { grid-column: 3; grid-row: 1; }
 	.pl-A .r-cozi { grid-column: 1; grid-row: 2; }
 	.pl-A .r-dorm { grid-column: 2; grid-row: 2; }
 	.pl-A .r-suite { grid-column: 3; grid-row: 2; }
 	.pl-A .r-wc { grid-column: 1 / 4; grid-row: 3; }
-	/* Layout B — 3 dorms */
-	.pl-B {
-		grid-template-columns: 1.5fr 1fr 1fr;
-		grid-template-rows: 1.2fr 1fr 1fr 0.5fr;
-	}
+	.pl-B { grid-template-columns: 1.5fr 1fr 1fr; grid-template-rows: 1.2fr 1fr 1fr 0.5fr; }
 	.pl-B .r-sala { grid-column: 1 / 4; grid-row: 1; }
 	.pl-B .r-cozi { grid-column: 1; grid-row: 2; }
 	.pl-B .r-var { grid-column: 2 / 4; grid-row: 2; }
 	.pl-B .r-dorm { grid-column: 1; grid-row: 3; }
 	.pl-B .r-suite { grid-column: 2 / 4; grid-row: 3; }
 	.pl-B .r-wc { grid-column: 1 / 4; grid-row: 4; }
-	/* Layout C — 3 dorms + 2 suítes */
-	.pl-C {
-		grid-template-columns: 1.4fr 1.2fr 1fr;
-		grid-template-rows: 1.4fr 1fr 1fr;
-	}
+	.pl-C { grid-template-columns: 1.4fr 1.2fr 1fr; grid-template-rows: 1.4fr 1fr 1fr; }
 	.pl-C .r-sala { grid-column: 1 / 3; grid-row: 1; }
 	.pl-C .r-var { grid-column: 3; grid-row: 1 / 3; }
 	.pl-C .r-dorm { grid-column: 1; grid-row: 2; }
@@ -172,46 +310,53 @@ const widths = (w: number) => [...[480, 960].filter((x) => x < w), w];
 	.pl-C .r-cozi { grid-column: 1; grid-row: 3; }
 	.pl-C .r-wc { grid-column: 2 / 4; grid-row: 3; }
 
-	.pl-meta {
-		padding: 22px 22px 24px;
-		display: flex;
-		flex-direction: column;
-		gap: 6px;
-	}
-	.pl-tag {
-		font-family: var(--mono);
-		font-size: 11px;
-		color: var(--accent-text);
-		font-weight: 700;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		margin-bottom: 4px;
-	}
-	.pl-meta h3 {
-		font-size: 32px;
-		font-weight: 800;
-		letter-spacing: -0.02em;
-		line-height: 1;
-	}
-	.pl-meta p {
-		font-size: 14px;
-		color: var(--ink-2);
-		margin-bottom: 8px;
-	}
-	.link {
-		font-family: var(--mono);
-		font-size: 12px;
-		color: var(--accent-text);
-		font-weight: 700;
-		border-bottom: 2px solid var(--accent);
-		padding-bottom: 2px;
-		align-self: flex-start;
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
-	}
-	@media (max-width: 900px) {
+	@media (max-width: 899.98px) {
 		.pl-grid {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr);
+		}
+		.pl-stage {
+			display: none;
+		}
+		.pl-btn {
+			grid-template-columns: 36px minmax(0, 1fr) 28px;
+			padding: 22px 0;
+		}
+		.pl-arrow {
+			opacity: 0.5;
+			transform: rotate(90deg);
+			transition: transform 0.35s var(--ease);
+		}
+		.pl-row.is-on .pl-arrow {
+			transform: rotate(-90deg);
+		}
+		.pl-row.is-on .pl-m2 {
+			transform: none;
+		}
+		.pl-panel {
+			display: grid;
+			grid-template-rows: 0fr;
+			transition: grid-template-rows 0.45s var(--ease);
+		}
+		.pl-row.is-on .pl-panel {
+			grid-template-rows: 1fr;
+		}
+		.pl-panel-in {
+			min-height: 0;
+			overflow: hidden;
+			display: grid;
+			gap: 6px;
+		}
+		.pl-panel-in :global(img),
+		.pl-panel-in .pl-mock {
+			width: 100%;
+			height: auto;
+			aspect-ratio: 6 / 5;
+			object-fit: contain;
+			background: #fff;
+			border: 1px solid var(--line);
+		}
+		.pl-panel-in .link {
+			margin-bottom: 22px;
 		}
 	}
 </style>
