@@ -3,6 +3,8 @@
  * Hero, after 21st.dev "Editorial Hero" (felipemenezes098/hero-05): tagline and
  * live hours bottom-left, serif title + sub + actions on the right half of a
  * 12-column grid, then a full-bleed landscape photo whose top edge fades in.
+ * The section is a column that fills the first screen: the copy takes what it
+ * needs and the photo takes the rest, so it is always visible before scrolling.
  *
  * The entrance animates blur + translate only, never opacity: the title is the
  * mobile LCP and must be painted on the first frame.
@@ -66,14 +68,18 @@ const widths = (w: number) => [...[640, 960, 1280, 1600].filter((x) => x < w), w
 
 <style>
 	.hero {
-		padding-top: clamp(56px, 10vw, 136px);
+		display: flex;
+		flex-direction: column;
+		/* 72px = the sticky topbar */
+		min-height: calc(100svh - 72px);
+		padding-top: clamp(40px, 6vw, 88px);
 	}
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(12, minmax(0, 1fr));
 		column-gap: 24px;
-		row-gap: 40px;
-		padding-bottom: clamp(48px, 6vw, 80px);
+		row-gap: 32px;
+		padding-bottom: clamp(36px, 5vw, 64px);
 	}
 	.side {
 		grid-column: 1 / span 4;
@@ -103,7 +109,7 @@ const widths = (w: number) => [...[640, 960, 1280, 1600].filter((x) => x < w), w
 		justify-items: start;
 	}
 	h1 {
-		font-size: clamp(44px, 5.6vw, 80px);
+		font-size: clamp(42px, 5.4vw, 76px);
 		line-height: 1.02;
 		letter-spacing: -0.035em;
 		text-wrap: balance;
@@ -128,12 +134,15 @@ const widths = (w: number) => [...[640, 960, 1280, 1600].filter((x) => x < w), w
 
 	.media {
 		position: relative;
-		aspect-ratio: 9 / 4;
+		flex: 1 0 auto;
+		width: 100%;
+		min-height: clamp(260px, 42svh, 560px);
+		max-height: 640px;
 		overflow: hidden;
 		background: var(--bg-2);
 		/* Top edge melts into the page, like the 21st reference. */
-		-webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 18%);
-		mask-image: linear-gradient(to bottom, transparent 0%, #000 18%);
+		-webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 14%);
+		mask-image: linear-gradient(to bottom, transparent 0%, #000 14%);
 	}
 	.media :global(img) {
 		width: 100%;
@@ -164,6 +173,9 @@ const widths = (w: number) => [...[640, 960, 1280, 1600].filter((x) => x < w), w
 	}
 
 	@media (max-width: 900px) {
+		.hero {
+			min-height: 0;
+		}
 		.side,
 		.copy {
 			grid-column: 1 / -1;
@@ -173,7 +185,10 @@ const widths = (w: number) => [...[640, 960, 1280, 1600].filter((x) => x < w), w
 			max-width: none;
 		}
 		.media {
+			flex: none;
 			aspect-ratio: 4 / 3;
+			min-height: 0;
+			max-height: none;
 		}
 	}
 	@media (prefers-reduced-motion: reduce) {

@@ -44,11 +44,40 @@ export interface TemplateMeta {
 	demoLocale: 'pt' | 'en';
 	/** Gradient for placeholder tiles. */
 	grad: string;
-	/** Recently added: "Novo" chip on its card. Keep new templates first in the list so they lead the home band. */
+	/** Recently added: "Novo" chip on its card. */
 	isNew?: boolean;
 }
 
+/** Order = order on the home band and the gallery: the strongest demo leads (Brava), then the newest. */
 export const templates: TemplateMeta[] = [
+	{
+		slug: 'brava',
+		name: 'Brava',
+		accent: 'Vitrine',
+		kind: 'storefront',
+		cat: { pt: 'Vitrine · Contagem regressiva', en: 'Storefront · Countdown' },
+		desc: {
+			pt: 'Vitrine com contagem regressiva: produtos, lookbook e newsletter, cada item levando pro seu checkout.',
+			en: 'Storefront with a countdown: products, lookbook and newsletter, each item linking to your checkout.',
+		},
+		lead: {
+			pt: 'Vitrine pra lançamento com data marcada: contagem regressiva, produtos, lookbook, história e newsletter. Os produtos apontam pro checkout que você já usa (Shopify, Nuvemshop, Yampi). Na demo é um drop de moda, mas serve pra coleção nova, pré-venda, encomendas de época ou ingresso de evento.',
+			en: 'Storefront for a dated launch: countdown, products, lookbook, story and newsletter. Products link to the checkout you already use (Shopify, Nuvemshop, Yampi). The demo is a fashion drop, but it fits a new collection, a pre-sale, seasonal orders or event tickets.',
+		},
+		fits: {
+			pt: ['loja ou marca', 'coleção nova', 'pré-venda', 'evento com ingresso'],
+			en: ['shop or brand', 'new collection', 'pre-sale', 'ticketed event'],
+		},
+		examples: [{ key: 'moda', label: { pt: 'drop de moda', en: 'fashion drop' } }],
+		sections: {
+			pt: ['Faixa de avisos', 'Hero + contagem regressiva', 'Vitrine (6 produtos)', 'Lookbook', 'História', 'Newsletter', 'Rodapé'],
+			en: ['Announcement ticker', 'Hero + countdown', 'Storefront (6 products)', 'Lookbook', 'Story', 'Newsletter', 'Footer'],
+		},
+		priceFrom: 4800,
+		days: 3,
+		demoLocale: 'en',
+		grad: 'linear-gradient(135deg,#DCFCE7,#B8F5CB)',
+	},
 	{
 		slug: 'pimenta',
 		name: 'Pimenta',
@@ -194,34 +223,6 @@ export const templates: TemplateMeta[] = [
 		days: 2,
 		demoLocale: 'en',
 		grad: 'linear-gradient(135deg,#E8E4FE,#D4CFFA)',
-	},
-	{
-		slug: 'brava',
-		name: 'Brava',
-		accent: 'Vitrine',
-		kind: 'storefront',
-		cat: { pt: 'Vitrine · Contagem regressiva', en: 'Storefront · Countdown' },
-		desc: {
-			pt: 'Vitrine com contagem regressiva: produtos, lookbook e newsletter, cada item levando pro seu checkout.',
-			en: 'Storefront with a countdown: products, lookbook and newsletter, each item linking to your checkout.',
-		},
-		lead: {
-			pt: 'Vitrine pra lançamento com data marcada: contagem regressiva, produtos, lookbook, história e newsletter. Os produtos apontam pro checkout que você já usa (Shopify, Nuvemshop, Yampi). Na demo é um drop de moda, mas serve pra coleção nova, pré-venda, encomendas de época ou ingresso de evento.',
-			en: 'Storefront for a dated launch: countdown, products, lookbook, story and newsletter. Products link to the checkout you already use (Shopify, Nuvemshop, Yampi). The demo is a fashion drop, but it fits a new collection, a pre-sale, seasonal orders or event tickets.',
-		},
-		fits: {
-			pt: ['loja ou marca', 'coleção nova', 'pré-venda', 'evento com ingresso'],
-			en: ['shop or brand', 'new collection', 'pre-sale', 'ticketed event'],
-		},
-		examples: [{ key: 'moda', label: { pt: 'drop de moda', en: 'fashion drop' } }],
-		sections: {
-			pt: ['Faixa de avisos', 'Hero + contagem regressiva', 'Vitrine (6 produtos)', 'Lookbook', 'História', 'Newsletter', 'Rodapé'],
-			en: ['Announcement ticker', 'Hero + countdown', 'Storefront (6 products)', 'Lookbook', 'Story', 'Newsletter', 'Footer'],
-		},
-		priceFrom: 4800,
-		days: 3,
-		demoLocale: 'en',
-		grad: 'linear-gradient(135deg,#DCFCE7,#B8F5CB)',
 	},
 ];
 

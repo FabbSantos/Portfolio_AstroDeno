@@ -46,6 +46,8 @@ const widths = (w: number) => [...[768, 1280, 1920, 2400].filter((x) => x < w), 
 <style>
 	.hero-photo {
 		margin: 0;
+		/* Explicit width: with `width: auto`, `max-height` would transfer through the aspect ratio and shrink the photo. */
+		width: 100%;
 		aspect-ratio: 2.4 / 1;
 		max-height: 72svh;
 		overflow: hidden;

@@ -29,6 +29,8 @@ salvia/
 
 Newsreader (títulos) e Hanken Grotesk (texto), via `@fontsource-variable`. O scaffold adiciona os dois pacotes ao `package.json` do cliente. O tema deve usar `radius` perto de 2 e um `accent` discreto: o botão é escuro (`ink`), o accent aparece em detalhes.
 
+A página fecha escura: localização e rodapé sentam no `ink` (classe `.on-ink` em `styles.css`, que troca os tokens localmente), e o hero ocupa a primeira tela inteira, com a foto larga preenchendo o que sobra abaixo do texto.
+
 ## Config
 
 Base (core): `brand`, `theme`, `seo`, `contact`, `analytics`, `legal`, `nav`. Strings **md** aceitam `**texto**` (itálico na cor de destaque), `==texto==` (marca-texto) e `\n`. Todo bloco com `title` aceita `lead?` e tem título padrão.

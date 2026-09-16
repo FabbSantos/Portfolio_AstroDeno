@@ -223,12 +223,15 @@ const showLabel = en ? 'Show' : 'Mostrar';
 		height: 100%;
 		object-fit: cover;
 	}
+	/* Three shades, independent of the photo: top (topbar), a wide left-to-right
+	   band behind the copy, and the bottom (filmstrip). Any picture reads. */
 	.hero-shade {
 		position: absolute;
 		inset: 0;
 		background:
-			linear-gradient(180deg, color-mix(in srgb, #000 42%, transparent) 0%, transparent 32%),
-			linear-gradient(180deg, transparent 38%, color-mix(in srgb, #000 22%, transparent) 62%, color-mix(in srgb, #000 74%, transparent) 100%);
+			linear-gradient(180deg, color-mix(in srgb, #000 46%, transparent) 0%, transparent 30%),
+			linear-gradient(90deg, color-mix(in srgb, #000 74%, transparent) 0%, color-mix(in srgb, #000 58%, transparent) 28%, color-mix(in srgb, #000 22%, transparent) 58%, transparent 78%),
+			linear-gradient(180deg, transparent 36%, color-mix(in srgb, #000 30%, transparent) 62%, color-mix(in srgb, #000 78%, transparent) 100%);
 	}
 
 	.hero-inner {
@@ -249,6 +252,10 @@ const showLabel = en ? 'Show' : 'Mostrar';
 	.hero-copy {
 		grid-area: copy;
 		max-width: 720px;
+		/* A soft halo under the letters, for the light patches the shade does not cover. */
+		text-shadow:
+			0 1px 2px color-mix(in srgb, #000 45%, transparent),
+			0 2px 28px color-mix(in srgb, #000 40%, transparent);
 	}
 	.hero-copy .eyebrow {
 		color: color-mix(in srgb, #fff 82%, transparent);
@@ -435,7 +442,7 @@ const showLabel = en ? 'Show' : 'Mostrar';
 		}
 		.hero-shade {
 			background:
-				linear-gradient(180deg, color-mix(in srgb, #000 40%, transparent) 0%, color-mix(in srgb, #000 22%, transparent) 30%, color-mix(in srgb, #000 30%, transparent) 55%, color-mix(in srgb, #000 78%, transparent) 100%);
+				linear-gradient(180deg, color-mix(in srgb, #000 50%, transparent) 0%, color-mix(in srgb, #000 36%, transparent) 30%, color-mix(in srgb, #000 48%, transparent) 55%, color-mix(in srgb, #000 84%, transparent) 100%);
 		}
 		.hero-form {
 			padding: 24px 22px 20px;
