@@ -1,4 +1,9 @@
 ---
+/**
+ * Hero, left-aligned: a release line in mono (the "pill"), the title in wide
+ * Archivo, the lead, two calls to action and the proof line. The product frame
+ * follows right under it (sections/Product.astro).
+ */
 import type { StratusConfig } from '../schema';
 import { md } from './_md';
 
@@ -7,102 +12,143 @@ interface Props {
 }
 const { hero } = Astro.props.config;
 
-// '★★★★★ **4.9** on G2 …' → stars get their own styled span.
+// '★★★★★ **4.9** on G2 …' → the star run becomes a mono rating, the rest is the text.
 const proofMatch = hero.socialProof ? /^([★☆]+)\s*([\s\S]*)$/.exec(hero.socialProof) : null;
-const proofStars = proofMatch?.[1] ?? '';
+const stars = proofMatch?.[1] ?? '';
 const proofText = proofMatch ? (proofMatch[2] ?? '') : (hero.socialProof ?? '');
+const rating = stars ? `${(stars.match(/★/g) ?? []).length}/${stars.length}` : '';
 ---
 
 <section class='hero' aria-labelledby='hero-title'>
-	{
-		hero.pill &&
-			(hero.pill.href ? (
-				<a href={hero.pill.href} class='pill'>
-					{hero.pill.tag && <span class='pill-tag'>{hero.pill.tag}</span>}
-					{hero.pill.text} <span class='arr'>→</span>
-				</a>
-			) : (
-				<span class='pill'>
-					{hero.pill.tag && <span class='pill-tag'>{hero.pill.tag}</span>}
-					{hero.pill.text}
-				</span>
-			))
-	}
-	<h1 id='hero-title' set:html={md(hero.title)} />
-	<p class='lead' set:html={md(hero.lead)} />
-	<div class='cta-row'>
-		<a href={hero.primary.href} class='btn-acc lg'>{hero.primary.label}</a>
+	<div class='wrap'>
 		{
-			hero.secondary && (
-				<a href={hero.secondary.href} class='btn-ghost lg'>
-					{hero.secondary.label}
-				</a>
-			)
+			hero.pill &&
+				(hero.pill.href ? (
+					<a href={hero.pill.href} class='release'>
+						{hero.pill.tag && <span class='release-tag'>{hero.pill.tag}</span>}
+						<span class='release-text'>{hero.pill.text}</span>
+						<span class='release-arr' aria-hidden='true'>
+							→
+						</span>
+					</a>
+				) : (
+					<p class='release'>
+						{hero.pill.tag && <span class='release-tag'>{hero.pill.tag}</span>}
+						<span class='release-text'>{hero.pill.text}</span>
+					</p>
+				))
 		}
+		<div class='hero-grid'>
+			<h1 id='hero-title' class='display' set:html={md(hero.title)} />
+			<div class='hero-side'>
+				<p class='lead' set:html={md(hero.lead)} />
+				<div class='cta-row'>
+					<a href={hero.primary.href} class='btn btn--lg'>{hero.primary.label}</a>
+					{
+						hero.secondary && (
+							<a href={hero.secondary.href} class='link'>
+								{hero.secondary.label}
+							</a>
+						)
+					}
+				</div>
+				{
+					hero.socialProof && (
+						<p class='proof'>
+							{rating && <span class='proof-rating'>{rating}</span>}
+							<Fragment set:html={md(proofText)} />
+						</p>
+					)
+				}
+			</div>
+		</div>
 	</div>
-	{
-		hero.socialProof && (
-			<p class='proof'>
-				{proofStars && <span class='proof-stars'>{proofStars}</span>}
-				<Fragment set:html={md(proofText)} />
-			</p>
-		)
-	}
 </section>
 
 <style>
 	.hero {
-		max-width: 1100px;
-		margin: 0 auto;
-		padding: 80px 32px 60px;
-		text-align: center;
+		padding-top: clamp(40px, 6vw, 72px);
+		padding-bottom: clamp(32px, 4vw, 48px);
 	}
-	.pill {
+	.release {
 		display: inline-flex;
 		align-items: center;
-		gap: 10px;
-		padding: 6px 14px 6px 6px;
-		background: var(--accent-soft);
-		color: var(--accent-text);
-		border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
-		border-radius: 999px;
+		gap: 14px;
+		margin-bottom: clamp(28px, 4vw, 44px);
+		padding: 8px 12px 8px 8px;
+		border: 1px solid var(--line);
 		font-family: var(--mono);
 		font-size: 12px;
-		font-weight: 600;
-		margin-bottom: 28px;
+		color: var(--ink-2);
+		transition: border-color 0.2s;
 	}
-	.pill-tag {
+	a.release:hover {
+		border-color: var(--ink);
+	}
+	.release-tag {
+		padding: 3px 7px;
 		background: var(--accent-text);
 		color: #fff;
-		padding: 3px 8px;
-		border-radius: 999px;
 		font-size: 10px;
-		letter-spacing: 0.06em;
+		letter-spacing: 0.1em;
+	}
+	.release-arr {
+		color: var(--ink-3);
+		transition: transform 0.3s var(--ease);
+	}
+	a.release:hover .release-arr {
+		transform: translateX(4px);
+	}
+	.hero-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+		gap: clamp(32px, 5vw, 72px);
+		align-items: end;
 	}
 	.hero h1 {
-		font-size: clamp(48px, 7.5vw, 96px);
-		font-weight: 800;
-		letter-spacing: -0.045em;
-		line-height: 0.96;
-		max-width: 16ch;
-		margin: 0 auto;
+		font-size: clamp(48px, 7.2vw, 108px);
+		max-width: 12ch;
 	}
-	.hero .lead {
-		margin: 28px auto 0;
-		max-width: 56ch;
-		font-size: clamp(17px, 1.6vw, 21px);
+	.lead {
+		font-size: clamp(17px, 1.4vw, 19px);
 		line-height: 1.55;
 		color: var(--ink-2);
+		max-width: 46ch;
+	}
+	.cta-row {
+		display: flex;
+		align-items: center;
+		gap: 22px;
+		flex-wrap: wrap;
+		margin-top: 28px;
 	}
 	.proof {
-		margin-top: 32px;
+		margin-top: 24px;
 		font-family: var(--mono);
-		font-size: 13px;
+		font-size: 12px;
+		letter-spacing: 0.02em;
 		color: var(--ink-3);
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		flex-wrap: wrap;
 	}
-	.proof-stars {
-		color: var(--accent-text);
-		letter-spacing: 2px;
-		margin-right: 8px;
+	.proof :global(strong) {
+		color: var(--ink);
+		font-weight: 600;
+	}
+	.proof-rating {
+		padding: 3px 7px;
+		border: 1px solid var(--line);
+		color: var(--ink);
+	}
+	@media (max-width: 900px) {
+		.hero-grid {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 24px;
+		}
+		.hero h1 {
+			font-size: clamp(44px, 12vw, 72px);
+		}
 	}
 </style>

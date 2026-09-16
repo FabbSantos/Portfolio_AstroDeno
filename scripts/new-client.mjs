@@ -93,7 +93,7 @@ const FORM_HOOKS = {
 
 /** Packages a template imports beyond the starter's (usually its own fonts). */
 const TEMPLATE_DEPS = {
-	atelier: { '@fontsource-variable/fraunces': '^5.3.0', '@fontsource-variable/figtree': '^5.3.0' },
+	stratus: { '@fontsource-variable/archivo': '^5.3.0' },
 	mirante: { '@fontsource-variable/cormorant': '^5.3.0', '@fontsource-variable/instrument-sans': '^5.3.0' },
 	salvia: { '@fontsource-variable/hanken-grotesk': '^5.3.0', '@fontsource-variable/newsreader': '^5.3.0' },
 	pimenta: { '@fontsource-variable/big-shoulders-display': '^5.3.0', '@fontsource-variable/schibsted-grotesk': '^5.3.0' },
