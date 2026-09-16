@@ -1,35 +1,228 @@
 /* ==========================================================================
-   Stratus — rules shared by more than one section (wrapper, brand, buttons,
-   section heads). Everything else is scoped inside sections/*.astro.
-   Tokens come from core/ThemeVars.astro; no literal colours except #fff/#000.
+   Stratus — rules shared by more than one section. Everything else lives in
+   sections/*.astro. Colours come only from the core ThemeVars tokens.
+
+   Direction: a spec sheet. One grotesk (Archivo) that runs wide in titles and
+   normal in text, mono for figures and labels, hairlines instead of cards,
+   corner marks on the frames, one signal colour used sparingly. Square corners.
    ========================================================================== */
 .tpl-stratus {
-	/* Stratus uses a slightly lighter accent wash than the core default (12%). */
-	--accent-soft: color-mix(in srgb, var(--accent) 10%, transparent);
-	/* Corner radii derived from theme.radius (10px → 18 / 20 / 14 / 32). */
-	--r-card: calc(var(--radius) + 8px);
-	--r-price: calc(var(--radius) + 10px);
-	--r-faq: calc(var(--radius) + 4px);
-	--r-cta: calc(var(--radius) * 3 + 2px);
-
+	--text: 'Archivo Variable', 'Archivo', -apple-system, 'Segoe UI', system-ui, sans-serif;
+	--sans: var(--text);
+	--wrap: 1280px;
+	--pad-x: clamp(20px, 4vw, 48px);
+	--line: color-mix(in srgb, var(--ink) 14%, transparent);
+	--line-soft: color-mix(in srgb, var(--ink) 8%, transparent);
+	--line-on-dark: color-mix(in srgb, #fff 20%, transparent);
+	--ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--tb-h: 64px;
 	background: var(--bg);
 	color: var(--ink);
-	font-family: var(--sans);
+	font-family: var(--text);
+	font-size: 16px;
+	line-height: 1.55;
 	min-height: 100vh;
 }
 
-/* `**text**` inside a heading = accent highlight (see sections/_md.ts). */
-.tpl-stratus :is(h1, h2, h3) strong {
-	color: var(--accent-display);
-	font-weight: inherit;
+.tpl-stratus .wrap {
+	max-width: var(--wrap);
+	margin-inline: auto;
+	padding-inline: var(--pad-x);
+}
+.tpl-stratus .sec {
+	padding-block: clamp(72px, 9vw, 120px);
 }
 
-/* Brand (topbar + footer) */
-.tpl-stratus .brand {
+/* Wide grotesk for titles; `**text**` inside them gets wider and heavier, not a colour */
+.tpl-stratus .display {
+	font-family: var(--text);
+	font-variation-settings: 'wdth' 112;
+	font-weight: 700;
+	letter-spacing: -0.03em;
+	line-height: 0.98;
+	text-wrap: balance;
+}
+.tpl-stratus :is(h1, h2, h3) strong {
+	font-variation-settings: 'wdth' 125;
+	font-weight: 800;
+	color: inherit;
+}
+.tpl-stratus p strong {
+	font-weight: 600;
+	color: var(--ink);
+}
+
+/* Mono labels */
+.tpl-stratus .label {
+	font-family: var(--mono);
+	font-size: 11px;
+	font-weight: 500;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--ink-3);
+}
+.tpl-stratus .eyebrow {
 	display: inline-flex;
 	align-items: center;
+	gap: 10px;
+	font-family: var(--mono);
+	font-size: 12px;
+	font-weight: 500;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--accent-text);
+}
+.tpl-stratus .eyebrow::before {
+	content: '';
+	width: 18px;
+	height: 1px;
+	background: var(--accent-text);
+}
+
+/* Section head: eyebrow, wide title, optional lead */
+.tpl-stratus .sec-head {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 34ch);
+	column-gap: 48px;
+	row-gap: 16px;
+	align-items: end;
+	margin-bottom: clamp(36px, 5vw, 56px);
+}
+.tpl-stratus .sec-head .eyebrow {
+	grid-column: 1 / -1;
+}
+.tpl-stratus .sec-head h2 {
+	font-size: clamp(38px, 5vw, 72px);
+	max-width: 16ch;
+}
+.tpl-stratus .sec-head .sec-l {
+	font-size: 16px;
+	line-height: 1.55;
+	color: var(--ink-2);
+	padding-bottom: 0.3em;
+}
+
+/* Hairline frame with corner marks (product shot, feature grid, table) */
+.tpl-stratus .frame {
+	position: relative;
+	border: 1px solid var(--line);
+}
+.tpl-stratus .frame::before,
+.tpl-stratus .frame::after,
+.tpl-stratus .frame > .mark::before,
+.tpl-stratus .frame > .mark::after {
+	content: '';
+	position: absolute;
+	width: 9px;
+	height: 9px;
+	border: 0 solid var(--ink);
+	pointer-events: none;
+}
+.tpl-stratus .frame::before {
+	top: -1px;
+	left: -1px;
+	border-top-width: 1px;
+	border-left-width: 1px;
+}
+.tpl-stratus .frame::after {
+	top: -1px;
+	right: -1px;
+	border-top-width: 1px;
+	border-right-width: 1px;
+}
+.tpl-stratus .frame > .mark::before {
+	bottom: -1px;
+	left: -1px;
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+}
+.tpl-stratus .frame > .mark::after {
+	bottom: -1px;
+	right: -1px;
+	border-bottom-width: 1px;
+	border-right-width: 1px;
+}
+
+/* Buttons: ink block, outline, and an underlined link */
+.tpl-stratus .btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	min-height: 48px;
+	padding: 0 22px;
+	background: var(--ink);
+	color: var(--bg);
+	font-family: var(--text);
+	font-size: 15px;
+	font-weight: 600;
+	letter-spacing: 0;
+	white-space: nowrap;
+	border: 1px solid var(--ink);
+	transition:
+		background 0.2s,
+		color 0.2s,
+		border-color 0.2s;
+}
+.tpl-stratus .btn:hover {
+	background: var(--accent-text);
+	border-color: var(--accent-text);
+	color: #fff;
+}
+.tpl-stratus .btn--line {
+	background: transparent;
+	color: var(--ink);
+	border-color: var(--line);
+}
+.tpl-stratus .btn--line:hover {
+	background: var(--ink);
+	border-color: var(--ink);
+	color: var(--bg);
+}
+.tpl-stratus .btn--paper {
+	background: var(--bg);
+	color: var(--ink);
+	border-color: var(--bg);
+}
+.tpl-stratus .btn--paper:hover {
+	background: var(--accent-on-dark);
+	border-color: var(--accent-on-dark);
+	color: var(--ink);
+}
+.tpl-stratus .btn--lg {
+	min-height: 54px;
+	padding: 0 26px;
+	font-size: 16px;
+}
+.tpl-stratus .btn--full {
+	width: 100%;
+}
+.tpl-stratus .link {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	min-height: 44px;
+	font-size: 15px;
+	font-weight: 600;
+	color: var(--ink);
+	text-decoration: underline;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 6px;
+	text-decoration-color: var(--line);
+	transition: text-decoration-color 0.2s;
+}
+.tpl-stratus .link:hover {
+	text-decoration-color: var(--accent-text);
+}
+
+/* Brand (topbar + footer): wide grotesk, the dot in the accent */
+.tpl-stratus .brand {
+	display: inline-flex;
+	align-items: baseline;
+	font-family: var(--text);
+	font-variation-settings: 'wdth' 118;
 	font-weight: 800;
-	font-size: 18px;
+	font-size: 20px;
 	letter-spacing: -0.02em;
 	color: var(--ink);
 }
@@ -37,82 +230,111 @@
 	color: var(--accent-text);
 }
 .tpl-stratus .brand-logo {
-	height: 28px;
+	height: 26px;
 	width: auto;
 }
 
-/* Buttons */
-.tpl-stratus .btn-acc,
-.tpl-stratus .btn-ghost {
-	display: inline-flex;
-	align-items: center;
-	gap: 8px;
-	padding: 10px 18px;
-	border-radius: 999px;
-	font-size: 14px;
-	font-weight: 600;
-	transition: all 0.2s;
-	border: 1px solid transparent;
+/* Core LeadForm (final CTA), skinned: hairline fields, ink button */
+.tpl-stratus .lead-form.lead-form .lf-field label {
+	font-family: var(--mono);
+	font-size: 11px;
+	font-weight: 500;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--ink-3);
 }
-.tpl-stratus .btn-acc {
-	background: var(--ink);
-	color: #fff;
-}
-.tpl-stratus .btn-acc:hover {
-	background: var(--accent-text);
-	transform: translateY(-1px);
-}
-.tpl-stratus .btn-ghost {
-	border-color: var(--rule-2);
+.tpl-stratus .lead-form.lead-form .lf-field input,
+.tpl-stratus .lead-form.lead-form .lf-field select,
+.tpl-stratus .lead-form.lead-form .lf-field textarea {
+	font-family: var(--text);
+	font-size: 16px;
+	min-height: 48px;
+	padding: 10px 14px;
+	border: 1px solid var(--line);
+	border-radius: 0;
+	background: var(--bg);
 	color: var(--ink);
+	transition: border-color 0.2s;
 }
-.tpl-stratus .btn-ghost:hover {
-	background: var(--ink);
-	color: #fff;
+.tpl-stratus .lead-form.lead-form .lf-field input:focus,
+.tpl-stratus .lead-form.lead-form .lf-field select:focus,
+.tpl-stratus .lead-form.lead-form .lf-field textarea:focus {
+	outline: none;
 	border-color: var(--ink);
+	box-shadow: inset 0 0 0 1px var(--ink);
 }
-.tpl-stratus .btn-acc.lg,
-.tpl-stratus .btn-ghost.lg {
-	padding: 14px 26px;
+.tpl-stratus .lead-form.lead-form .lf-submit {
+	min-height: 48px;
+	padding: 0 22px;
+	border-radius: 0;
+	border: 1px solid var(--ink);
+	background: var(--ink);
+	color: var(--bg);
+	font-family: var(--text);
 	font-size: 15px;
+	font-weight: 600;
+	transition:
+		background 0.2s,
+		color 0.2s;
 }
-.tpl-stratus .btn-acc.full,
-.tpl-stratus .btn-ghost.full {
-	width: 100%;
-	justify-content: center;
+.tpl-stratus .lead-form.lead-form .lf-submit:hover {
+	background: var(--accent-text);
+	border-color: var(--accent-text);
+	color: #fff;
+	transform: none;
 }
-.tpl-stratus .cta-row {
-	display: flex;
-	gap: 12px;
-	justify-content: center;
-	margin-top: 32px;
-	flex-wrap: wrap;
-}
-
-/* Section heads (features / pricing / faq) */
-.tpl-stratus .sec-h {
-	text-align: center;
-	max-width: 720px;
-	margin: 0 auto 56px;
-}
-.tpl-stratus .eyebrow {
+.tpl-stratus .lead-form.lead-form .lf-status,
+.tpl-stratus .lead-form.lead-form .lf-foot {
 	font-family: var(--mono);
 	font-size: 12px;
-	font-weight: 600;
-	letter-spacing: 0.14em;
-	color: var(--accent-text);
-	display: block;
-	margin-bottom: 16px;
 }
-.tpl-stratus .sec-h h2 {
-	font-size: clamp(36px, 5vw, 64px);
+
+/* Core MobileNav (below 900px), restyled */
+.tpl-stratus .mnav.mnav {
+	background: color-mix(in srgb, var(--bg) 94%, transparent);
+	border-bottom: 1px solid var(--line);
+}
+.tpl-stratus .mnav .mnav-inner {
+	padding-inline: var(--pad-x);
+	min-height: var(--tb-h);
+}
+.tpl-stratus .mnav .mnav-brand {
+	font-variation-settings: 'wdth' 118;
 	font-weight: 800;
-	letter-spacing: -0.035em;
-	line-height: 1.05;
+	font-size: 20px;
+	letter-spacing: -0.02em;
 }
-.tpl-stratus .sec-l {
-	margin-top: 16px;
-	font-size: 17px;
-	color: var(--ink-2);
-	line-height: 1.55;
+.tpl-stratus .mnav .mnav-cta {
+	border-radius: 0;
+	background: var(--ink);
+	color: var(--bg);
+	font-weight: 600;
+}
+.tpl-stratus .mnav .mnav-panel a,
+.tpl-stratus .mnav .mnav-toggle,
+.tpl-stratus .mnav .mnav-bar {
+	border-radius: 0;
+}
+
+.tpl-stratus .visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+	.tpl-stratus .sec-head {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.tpl-stratus *,
+	.tpl-stratus *::before,
+	.tpl-stratus *::after {
+		transition-duration: 0.01ms !important;
+		animation-duration: 0.01ms !important;
+	}
 }

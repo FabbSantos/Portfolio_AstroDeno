@@ -3,7 +3,7 @@
  * object per section. Every user-facing string lives here; the sections
  * render only what this config says.
  *
- * "rich" strings accept `**bold**` (→ accent colour inside headings,
+ * "rich" strings accept `**bold**` (→ wider and heavier inside headings,
  * <strong> in body text) and `\n` (→ line break). See sections/_md.ts.
  */
 import { z } from 'astro/zod';
@@ -49,11 +49,13 @@ export const stratusSchema = baseSiteSchema.extend({
 		socialProof: z.string().optional(),
 	}),
 
-	/** Product shot inside a browser frame; without `image` a CSS dashboard mock is drawn from `kpis`. Omit to hide. */
+	/** Product shot in a hairline frame; without `image` a CSS dashboard mock is drawn from `kpis`. Omit to hide. */
 	product: z
 		.object({
 			image: image.nullable().default(null),
 			alt: z.string().optional(),
+			/** Mono line on the frame's bar, e.g. 'app.stratus.io · v3.0'. Defaults to the brand name. */
+			meta: z.string().optional(),
 			kpis: z
 				.array(z.object({ value: z.string().min(1), label: z.string().optional() }))
 				.max(4)
@@ -77,11 +79,12 @@ export const stratusSchema = baseSiteSchema.extend({
 	features: z.object({
 		eyebrow: z.string().optional(),
 		title: rich,
+		lead: rich.optional(),
 		items: z
 			.array(
 				z.object({
-					/** Emoji or 1–2 characters. */
-					icon: z.string().min(1).max(4),
+					/** Optional glyph (1–2 characters) shown next to the index. */
+					icon: z.string().min(1).max(4).optional(),
 					title: z.string().min(1),
 					desc: rich,
 					/** Optional per-card icon tint (hex); defaults to the accent. */
@@ -97,12 +100,35 @@ export const stratusSchema = baseSiteSchema.extend({
 			eyebrow: z.string().optional(),
 			title: rich,
 			lead: rich.optional(),
+			/** Monthly/annual switch; needs `priceAnnual` on the plans. */
+			toggle: z
+				.object({
+					label: z.string().min(1).default('Billing'),
+					monthly: z.string().min(1),
+					annual: z.string().min(1),
+					/** Small tag on the annual option, e.g. '-20%'. */
+					note: z.string().optional(),
+				})
+				.optional(),
+			/**
+			 * Comparison rows, one value per plan (a string, or true/false for a check).
+			 * Without it, every plan bullet becomes a row ticked for the plans that list it.
+			 */
+			compare: z
+				.object({
+					rows: z.array(z.object({ label: z.string().min(1), values: z.array(z.union([z.string(), z.boolean()])).min(1) })).min(1),
+				})
+				.optional(),
+			/** Small print under the table. */
+			foot: z.string().optional(),
 			plans: z
 				.array(
 					z.object({
 						name: z.string().min(1),
 						price: z.string().min(1),
-						/** e.g. '/mo' — shown small after the price. */
+						/** Shown when the annual option of `toggle` is selected. */
+						priceAnnual: z.string().optional(),
+						/** e.g. 'per month' — shown small under the price. */
 						period: z.string().optional(),
 						desc: z.string().min(1),
 						cta: link,
