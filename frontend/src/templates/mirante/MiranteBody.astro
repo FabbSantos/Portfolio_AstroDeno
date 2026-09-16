@@ -3,7 +3,14 @@
  * Mirante — everything between <body> and </body>, minus the floating
  * WhatsApp button / LGPD bar (core Page adds those). Used by MirantePage
  * (client sites) and by the portfolio demo (inside DemoLayout).
+ *
+ * Fonts are the template's own: Cormorant for titles and big figures,
+ * Instrument Sans for text (JetBrains Mono from the core for labels). The
+ * scaffold adds both packages to the client's package.json.
  */
+import '@fontsource-variable/cormorant';
+import '@fontsource-variable/cormorant/wght-italic.css';
+import '@fontsource-variable/instrument-sans';
 import './styles.css';
 import type { MiranteConfig } from './schema';
 import Topbar from './sections/Topbar.astro';

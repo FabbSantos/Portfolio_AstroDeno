@@ -6,10 +6,11 @@
 import DemoLayout from '../../../layouts/DemoLayout.astro';
 import ThemeVars from '../../../templates/core/ThemeVars.astro';
 import MiranteBody from '../../../templates/mirante/MiranteBody.astro';
+import { MIRANTE_PRELOAD } from '../../../templates/mirante/fonts';
 import demo from '../../../templates/mirante/demo.config';
 ---
 
-<DemoLayout slug='mirante' title={demo.seo.title} description={demo.seo.description} locale='pt' themeColor={demo.theme.bg}>
+<DemoLayout slug='mirante' title={demo.seo.title} description={demo.seo.description} locale='pt' themeColor={demo.theme.ink} preloadFonts={false} preload={MIRANTE_PRELOAD}>
 	<ThemeVars theme={demo.theme} />
 	<MiranteBody config={demo} />
 </DemoLayout>

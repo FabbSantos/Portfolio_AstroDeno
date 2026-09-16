@@ -93,6 +93,7 @@ const FORM_HOOKS = {
 
 /** Packages a template imports beyond the starter's (usually its own fonts). */
 const TEMPLATE_DEPS = {
+	mirante: { '@fontsource-variable/cormorant': '^5.3.0', '@fontsource-variable/instrument-sans': '^5.3.0' },
 	salvia: { '@fontsource-variable/hanken-grotesk': '^5.3.0', '@fontsource-variable/newsreader': '^5.3.0' },
 	pimenta: { '@fontsource-variable/big-shoulders-display': '^5.3.0', '@fontsource-variable/schibsted-grotesk': '^5.3.0' },
 };
@@ -116,7 +117,8 @@ const IMAGE_SIZES = [
 	[/larga|paisagem/i, '2000×900 paisagem (JPG, ≤ 400 KB)'],
 	[/servico/i, '800×1000 retrato (JPG, ≤ 250 KB)'],
 	[/recepcao|sala|consultorio|espaco/i, '1200×1500 retrato (JPG, ≤ 400 KB)'],
-	[/fachada|vista|decorado|lazer|hero/i, '1600×1000 (JPG, ≤ 400 KB)'],
+	[/fachada|vista|decorado|lazer/i, '2400×1500 paisagem (JPG, ≤ 450 KB)'],
+	[/hero/i, '1600×1000 (JPG, ≤ 400 KB)'],
 ];
 const IMAGE_SIZE_DEFAULT = '1600×1000 (JPG, ≤ 400 KB)';
 
