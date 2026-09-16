@@ -1,5 +1,5 @@
 /**
- * Editorial picks for the home FeaturedPanel (the ink panel in the hero). Images are imported
+ * Editorial picks for the home FeaturedDeck (the fan of cards in the hero). Images are imported
  * from src/assets so astro:assets optimizes them (webp, srcset, immutable cache).
  *
  * Order matters: scene 0 is the LCP image and the first thing a visitor sees.
