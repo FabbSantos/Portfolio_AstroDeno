@@ -159,8 +159,8 @@ export const templates: TemplateMeta[] = [
 		},
 		examples: [{ key: 'saas', label: { pt: 'SaaS B2B', en: 'B2B SaaS' } }],
 		sections: {
-			pt: ['Hero + CTA principal', 'Imagem do produto', 'Logos de clientes', '6 recursos', 'Planos (3 colunas)', 'Perguntas frequentes', 'CTA final', 'Rodapé'],
-			en: ['Hero + main CTA', 'Product shot', 'Client logos', '6 features', 'Plans (3 columns)', 'FAQ', 'Final CTA', 'Footer'],
+			pt: ['Hero + CTA principal', 'Tela do produto em moldura', 'Logos de clientes', 'Recursos em grade', 'Planos em tabela comparativa', 'Perguntas frequentes', 'CTA final', 'Rodapé'],
+			en: ['Hero + main CTA', 'Product shot in a frame', 'Client logos', 'Feature grid', 'Plans as a comparison table', 'FAQ', 'Final CTA', 'Footer'],
 		},
 		priceFrom: 4200,
 		days: 3,

@@ -1,8 +1,7 @@
 ---
 /**
- * Desktop topbar (brand · nav · sign-in · CTA) ≥ 900px; below that the core
- * MobileNav takes over (44px hamburger, inert panel, Escape). Only one of the
- * two is displayed at any width.
+ * Desktop topbar (brand · nav · sign-in · CTA) ≥ 900px, a hairline under it;
+ * below that the core MobileNav takes over. Only one of the two is displayed.
  */
 import { Image } from 'astro:assets';
 import MobileNav from '../../core/MobileNav.astro';
@@ -17,11 +16,11 @@ const mobileNav = header.signIn ? [...nav, header.signIn] : nav;
 ---
 
 <header class='tb'>
-	<div class='tb-inner'>
+	<div class='tb-inner wrap'>
 		<a href={header.brandHref} class='brand'>
 			{
 				brand.logo ? (
-					<Image class='brand-logo' src={brand.logo} alt={brand.name} height={28} densities={[1, 2]} format='webp' loading='eager' quality='high' />
+					<Image class='brand-logo' src={brand.logo} alt={brand.name} height={26} densities={[1, 2]} format='webp' loading='eager' quality='high' />
 				) : (
 					<>
 						{brand.name}
@@ -41,7 +40,7 @@ const mobileNav = header.signIn ? [...nav, header.signIn] : nav;
 					</a>
 				)
 			}
-			<a href={header.cta.href} class='btn-acc'>{header.cta.label}</a>
+			<a href={header.cta.href} class='btn'>{header.cta.label}</a>
 		</div>
 	</div>
 </header>
@@ -54,15 +53,13 @@ const mobileNav = header.signIn ? [...nav, header.signIn] : nav;
 		position: sticky;
 		top: 0;
 		z-index: 40;
-		background: color-mix(in srgb, var(--bg) 85%, transparent);
-		backdrop-filter: saturate(180%) blur(14px);
-		-webkit-backdrop-filter: saturate(180%) blur(14px);
-		border-bottom: 1px solid var(--rule);
+		background: color-mix(in srgb, var(--bg) 92%, transparent);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+		border-bottom: 1px solid var(--line);
 	}
 	.tb-inner {
-		max-width: 1240px;
-		margin: 0 auto;
-		padding: 16px 32px;
+		height: var(--tb-h);
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
@@ -72,36 +69,36 @@ const mobileNav = header.signIn ? [...nav, header.signIn] : nav;
 		display: flex;
 		gap: 28px;
 		font-size: 14px;
+		font-weight: 500;
 		color: var(--ink-2);
 	}
 	.tb-nav a:hover {
 		color: var(--ink);
+		text-decoration: underline;
+		text-underline-offset: 6px;
+		text-decoration-thickness: 1px;
 	}
 	.tb-actions {
 		display: flex;
-		gap: 14px;
+		gap: 18px;
 		align-items: center;
+	}
+	.tb-actions .btn {
+		min-height: 40px;
+		padding: 0 16px;
+		font-size: 14px;
 	}
 	.tb-link {
 		font-size: 14px;
+		font-weight: 500;
 		color: var(--ink-2);
 	}
 	.tb-link:hover {
 		color: var(--ink);
 	}
 
-	/* Mobile: core MobileNav, restyled to the Stratus look */
 	.tb-mobile {
 		display: none;
-	}
-	.tb-mobile :global(.mnav-brand) {
-		font-weight: 800;
-		font-size: 18px;
-		letter-spacing: -0.02em;
-	}
-	.tb-mobile :global(.mnav-cta) {
-		border-radius: 999px;
-		background: var(--ink);
 	}
 	@media (max-width: 899.98px) {
 		.tb {

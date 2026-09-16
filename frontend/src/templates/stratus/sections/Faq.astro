@@ -1,4 +1,5 @@
 ---
+/** FAQ as a numbered accordion on hairlines: index in mono, the question, a "+" that turns into "×". */
 import type { StratusConfig } from '../schema';
 import { md } from './_md';
 
@@ -6,22 +7,29 @@ interface Props {
 	config: StratusConfig;
 }
 const { faq } = Astro.props.config;
+const num = (i: number) => String(i + 1).padStart(2, '0');
 ---
 
 {
 	faq && (
-		<section class='faq' id='faq' aria-labelledby='faq-title'>
-			<div class='sec-h'>
-				{faq.eyebrow && <span class='eyebrow'>{faq.eyebrow}</span>}
-				<h2 id='faq-title' set:html={md(faq.title)} />
-			</div>
-			<div class='faq-list'>
-				{faq.items.map((item) => (
-					<details data-accordion>
-						<summary>{item.q}</summary>
-						<p set:html={md(item.a)} />
-					</details>
-				))}
+		<section class='faq sec' id='faq' aria-labelledby='faq-title'>
+			<div class='wrap faq-grid'>
+				<div class='faq-head'>
+					{faq.eyebrow && <p class='eyebrow'>{faq.eyebrow}</p>}
+					<h2 id='faq-title' class='display' set:html={md(faq.title)} />
+				</div>
+				<div class='faq-list'>
+					{faq.items.map((item, i) => (
+						<details data-accordion>
+							<summary>
+								<span class='q-n'>{num(i)}</span>
+								<span class='q-t'>{item.q}</span>
+								<span class='q-x' aria-hidden='true' />
+							</summary>
+							<p set:html={md(item.a)} />
+						</details>
+					))}
+				</div>
 			</div>
 		</section>
 	)
@@ -33,53 +41,105 @@ const { faq } = Astro.props.config;
 </script>
 
 <style>
-	.faq {
-		max-width: 800px;
-		margin: 0 auto;
-		padding: 80px 32px;
+	.faq-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+		gap: clamp(32px, 5vw, 80px);
+		align-items: start;
+	}
+	.faq-head {
+		position: sticky;
+		top: calc(var(--tb-h) + 24px);
+		display: grid;
+		gap: 16px;
+	}
+	.faq-head h2 {
+		font-size: clamp(38px, 4.6vw, 64px);
 	}
 	.faq-list {
-		display: flex;
-		flex-direction: column;
-		gap: 4px;
+		border-top: 1px solid var(--line);
 	}
 	.faq details {
-		padding: 22px 24px;
-		border: 1px solid var(--rule);
-		border-radius: var(--r-faq);
-		background: var(--bg-3);
-		transition: border-color 0.2s;
-	}
-	.faq details[open]:not(.is-closing) {
-		border-color: var(--accent);
+		border-bottom: 1px solid var(--line);
 	}
 	.faq summary {
 		cursor: pointer;
 		list-style: none;
+		display: grid;
+		grid-template-columns: 44px minmax(0, 1fr) 28px;
+		align-items: baseline;
+		gap: 14px;
+		padding: 22px 0;
+		font-size: 19px;
 		font-weight: 600;
-		font-size: 16px;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: 16px;
+		letter-spacing: -0.01em;
+		line-height: 1.3;
 	}
 	.faq summary::-webkit-details-marker {
 		display: none;
 	}
-	.faq summary::after {
-		content: '+';
-		font-size: 22px;
-		color: var(--accent-text);
-		font-weight: 400;
-		transition: transform 0.25s;
+	.faq summary:focus-visible {
+		outline: 2px solid var(--ink);
+		outline-offset: 4px;
 	}
-	.faq details[open]:not(.is-closing) summary::after {
+	.q-n {
+		font-family: var(--mono);
+		font-size: 12px;
+		font-weight: 500;
+		color: var(--ink-3);
+	}
+	.q-x {
+		position: relative;
+		width: 16px;
+		height: 16px;
+		align-self: center;
+		justify-self: end;
+	}
+	.q-x::before,
+	.q-x::after {
+		content: '';
+		position: absolute;
+		background: var(--ink);
+		transition: transform 0.3s var(--ease);
+	}
+	.q-x::before {
+		left: 7px;
+		top: 0;
+		width: 1.5px;
+		height: 16px;
+	}
+	.q-x::after {
+		top: 7px;
+		left: 0;
+		width: 16px;
+		height: 1.5px;
+	}
+	.faq details[open]:not(.is-closing) .q-x {
 		transform: rotate(45deg);
 	}
+	.faq details[open]:not(.is-closing) .q-n {
+		color: var(--accent-text);
+	}
 	.faq p {
-		margin-top: 14px;
-		font-size: 15px;
+		padding: 0 0 24px 58px;
+		font-size: 16px;
 		line-height: 1.6;
 		color: var(--ink-2);
+		max-width: 60ch;
+	}
+	@media (max-width: 900px) {
+		.faq-grid {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		.faq-head {
+			position: static;
+		}
+		.faq summary {
+			grid-template-columns: 34px minmax(0, 1fr) 24px;
+			font-size: 17px;
+		}
+		.faq p {
+			padding-left: 48px;
+		}
 	}
 </style>

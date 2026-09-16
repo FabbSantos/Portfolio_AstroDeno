@@ -1,136 +1,355 @@
 ---
+/**
+ * Pricing as a comparison table: one column per plan (name, price, CTA on
+ * top), then one row per `pricing.compare.rows` entry with a value or a
+ * check per plan; the featured plan's column is tinted with a signal rule on
+ * top. Plans without `compare` fall back to their `bullets` as rows.
+ * An optional monthly/annual toggle swaps `price` and `priceAnnual`.
+ * Below 900px each plan becomes a hairline block with its own list.
+ */
 import type { StratusConfig } from '../schema';
 import { md } from './_md';
 
 interface Props {
 	config: StratusConfig;
 }
-const { pricing } = Astro.props.config;
+const { pricing, brand } = Astro.props.config;
+const en = brand.locale === 'en';
+
+type Cell = string | boolean;
+const rows: { label: string; values: Cell[] }[] = pricing
+	? pricing.compare?.rows ??
+		// Fallback: every bullet becomes a row, ticked for the plans that list it.
+		[...new Set(pricing.plans.flatMap((p) => p.bullets))].map((b) => ({ label: b, values: pricing.plans.map((p) => p.bullets.includes(b)) }))
+	: [];
+const hasAnnual = !!pricing?.toggle && pricing.plans.some((p) => p.priceAnnual);
+const yesLabel = en ? 'Included' : 'Incluído';
+const noLabel = en ? 'Not included' : 'Não incluído';
 ---
 
 {
 	pricing && (
-		<section class='pricing' id='pricing' aria-labelledby='pricing-title'>
-			<div class='sec-h'>
-				{pricing.eyebrow && <span class='eyebrow'>{pricing.eyebrow}</span>}
-				<h2 id='pricing-title' set:html={md(pricing.title)} />
-				{pricing.lead && <p class='sec-l' set:html={md(pricing.lead)} />}
-			</div>
-			<div class='price-grid'>
-				{pricing.plans.map((p) => (
-					<article class:list={['price-card', { mid: p.featured }]}>
-						{p.badge && <div class='pc-badge'>{p.badge}</div>}
-						<h3 class='pc-name'>{p.name}</h3>
-						<div class='pc-price'>
-							{p.price}
-							{p.period && <span>{p.period}</span>}
-						</div>
-						<p class='pc-d'>{p.desc}</p>
-						<a href={p.cta.href} class:list={[p.featured ? 'btn-acc' : 'btn-ghost', 'full']}>
-							{p.cta.label}
-						</a>
-						{p.bullets.length > 0 && (
-							<ul>
-								{p.bullets.map((b) => (
-									<li>{b}</li>
+		<section class='pricing sec' id='pricing' aria-labelledby='pricing-title'>
+			<div class='wrap'>
+				<div class='sec-head'>
+					{pricing.eyebrow && <p class='eyebrow'>{pricing.eyebrow}</p>}
+					<h2 id='pricing-title' class='display' set:html={md(pricing.title)} />
+					{pricing.lead && <p class='sec-l' set:html={md(pricing.lead)} />}
+				</div>
+
+				{hasAnnual && pricing.toggle && (
+					<div class='toggle' role='group' aria-label={pricing.toggle.label} data-price-toggle>
+						<button type='button' class='tg is-on' aria-pressed='true' data-period='monthly'>
+							{pricing.toggle.monthly}
+						</button>
+						<button type='button' class='tg' aria-pressed='false' data-period='annual'>
+							{pricing.toggle.annual}
+							{pricing.toggle.note && <span class='tg-note'>{pricing.toggle.note}</span>}
+						</button>
+					</div>
+				)}
+
+				<div class='frame table-frame' data-pricing>
+					<span class='mark' aria-hidden='true' />
+					<table class='cmp' style={`--plans:${pricing.plans.length}`}>
+						<thead>
+							<tr>
+								<th scope='col' class='cmp-corner'>
+									<span class='label'>{en ? 'Plan' : 'Plano'}</span>
+								</th>
+								{pricing.plans.map((p) => (
+									<th scope='col' class:list={['cmp-plan', { 'is-featured': p.featured }]}>
+										<span class='cmp-name'>
+											{p.name}
+											{p.badge && <span class='cmp-badge'>{p.badge}</span>}
+										</span>
+										<span class='cmp-price' data-monthly={p.price} data-annual={p.priceAnnual ?? p.price}>
+											{p.price}
+										</span>
+										{p.period && <span class='cmp-period'>{p.period}</span>}
+										<span class='cmp-desc'>{p.desc}</span>
+										<a href={p.cta.href} class:list={['btn', 'btn--full', { 'btn--line': !p.featured }]}>
+											{p.cta.label}
+										</a>
+									</th>
 								))}
-							</ul>
-						)}
-					</article>
-				))}
+							</tr>
+						</thead>
+						<tbody>
+							{rows.map((r) => (
+								<tr>
+									<th scope='row'>{r.label}</th>
+									{r.values.map((v, i) => (
+										<td class:list={{ 'is-featured': pricing.plans[i]?.featured }}>
+											{typeof v === 'boolean' ? (
+												v ? (
+													<span class='yes'>
+														<span aria-hidden='true'>●</span>
+														<span class='visually-hidden'>{yesLabel}</span>
+													</span>
+												) : (
+													<span class='no'>
+														<span aria-hidden='true'>–</span>
+														<span class='visually-hidden'>{noLabel}</span>
+													</span>
+												)
+											) : (
+												v
+											)}
+										</td>
+									))}
+								</tr>
+							))}
+						</tbody>
+					</table>
+
+					{/* Phones: one block per plan with its own list */}
+					<ul class='stack'>
+						{pricing.plans.map((p, i) => (
+							<li class:list={['stack-plan', { 'is-featured': p.featured }]}>
+								<span class='cmp-name'>
+									{p.name}
+									{p.badge && <span class='cmp-badge'>{p.badge}</span>}
+								</span>
+								<span class='cmp-price' data-monthly={p.price} data-annual={p.priceAnnual ?? p.price}>
+									{p.price}
+								</span>
+								{p.period && <span class='cmp-period'>{p.period}</span>}
+								<span class='cmp-desc'>{p.desc}</span>
+								<a href={p.cta.href} class:list={['btn', 'btn--full', { 'btn--line': !p.featured }]}>
+									{p.cta.label}
+								</a>
+								<ul class='stack-list'>
+									{rows
+										.filter((r) => r.values[i] !== false)
+										.map((r) => (
+											<li>
+												<span>{r.label}</span>
+												{typeof r.values[i] === 'string' && <span class='stack-v'>{r.values[i]}</span>}
+											</li>
+										))}
+								</ul>
+							</li>
+						))}
+					</ul>
+				</div>
+				{pricing.foot && <p class='foot'>{pricing.foot}</p>}
 			</div>
 		</section>
 	)
 }
 
+<script>
+	document.querySelectorAll<HTMLElement>('[data-price-toggle]').forEach((tg) => {
+		const root = tg.parentElement;
+		const prices = [...(root?.querySelectorAll<HTMLElement>('.cmp-price') ?? [])];
+		tg.querySelectorAll<HTMLButtonElement>('[data-period]').forEach((b) => {
+			b.addEventListener('click', () => {
+				const period = b.dataset.period === 'annual' ? 'annual' : 'monthly';
+				tg.querySelectorAll<HTMLButtonElement>('[data-period]').forEach((x) => {
+					const on = x === b;
+					x.classList.toggle('is-on', on);
+					x.setAttribute('aria-pressed', String(on));
+				});
+				prices.forEach((p) => {
+					p.textContent = p.dataset[period] ?? p.textContent;
+				});
+			});
+		});
+	});
+</script>
+
 <style>
-	.pricing {
-		max-width: 1240px;
-		margin: 0 auto;
-		padding: 80px 32px 100px;
+	.toggle {
+		display: inline-flex;
+		border: 1px solid var(--line);
+		margin-bottom: 20px;
 	}
-	.price-grid {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 20px;
+	.tg {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		min-height: 40px;
+		padding: 0 16px;
+		font-size: 14px;
+		font-weight: 600;
+		color: var(--ink-2);
+		transition:
+			background 0.2s,
+			color 0.2s;
 	}
-	.price-card {
-		padding: 36px 32px;
-		background: var(--bg-3);
-		border: 1px solid var(--rule);
-		border-radius: var(--r-price);
-		display: flex;
-		flex-direction: column;
-		gap: 14px;
-		position: relative;
+	.tg + .tg {
+		border-left: 1px solid var(--line);
 	}
-	.price-card.mid {
-		border-color: var(--accent);
-		box-shadow:
-			0 30px 80px -30px color-mix(in srgb, var(--accent) 35%, transparent),
-			0 0 0 1px var(--accent);
-		transform: translateY(-8px);
+	.tg.is-on {
+		background: var(--ink);
+		color: var(--bg);
 	}
-	.pc-badge {
-		position: absolute;
-		top: -12px;
-		left: 50%;
-		transform: translateX(-50%);
-		background: var(--accent-text);
-		color: #fff;
+	.tg-note {
 		font-family: var(--mono);
 		font-size: 10px;
-		font-weight: 700;
-		letter-spacing: 0.12em;
-		padding: 5px 12px;
-		border-radius: 999px;
-		white-space: nowrap;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		padding: 2px 6px;
+		border: 1px solid currentColor;
+		opacity: 0.8;
 	}
-	.pc-name {
+
+	.table-frame {
+		background: var(--bg);
+	}
+	.cmp {
+		width: 100%;
+		border-collapse: collapse;
+		table-layout: fixed;
+	}
+	.cmp th,
+	.cmp td {
+		text-align: left;
+		vertical-align: top;
+		padding: 14px 20px;
+		border-bottom: 1px solid var(--line);
+		border-left: 1px solid var(--line);
+		font-size: 15px;
+	}
+	.cmp th:first-child,
+	.cmp td:first-child {
+		border-left: 0;
+	}
+	.cmp tbody tr:last-child th,
+	.cmp tbody tr:last-child td {
+		border-bottom: 0;
+	}
+	.cmp thead th {
+		padding: 24px 20px 26px;
+		vertical-align: top;
+	}
+	.cmp-corner {
+		vertical-align: bottom;
+	}
+	.cmp tbody th {
+		font-weight: 500;
+		color: var(--ink-2);
+	}
+	.cmp tbody td {
 		font-family: var(--mono);
 		font-size: 13px;
-		font-weight: 400;
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
-		color: var(--ink-3);
+		color: var(--ink);
+		font-variant-numeric: tabular-nums;
 	}
-	.pc-price {
-		font-size: 44px;
-		font-weight: 800;
-		letter-spacing: -0.035em;
-		line-height: 1;
+	.cmp-plan {
+		display: table-cell;
 	}
-	.pc-price span {
-		font-size: 16px;
-		font-weight: 500;
-		color: var(--ink-3);
-		margin-left: 4px;
+	.cmp-plan > *,
+	.stack-plan > * {
+		display: block;
 	}
-	.pc-d {
-		font-size: 14px;
-		color: var(--ink-2);
-		line-height: 1.5;
-	}
-	.price-card ul {
-		list-style: none;
-		display: flex;
-		flex-direction: column;
+	.cmp-name {
+		display: flex !important;
+		align-items: center;
 		gap: 10px;
+		font-family: var(--mono);
+		font-size: 12px;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--ink-3);
+	}
+	.cmp-badge {
+		padding: 3px 7px;
+		background: var(--accent-text);
+		color: #fff;
+		font-size: 10px;
+		letter-spacing: 0.08em;
+	}
+	.cmp-price {
+		margin-top: 16px;
+		font-family: var(--text);
+		font-variation-settings: 'wdth' 112;
+		font-size: clamp(32px, 3vw, 44px);
+		font-weight: 700;
+		letter-spacing: -0.03em;
+		line-height: 1;
+		color: var(--ink);
+	}
+	.cmp-period {
+		font-family: var(--mono);
+		font-size: 12px;
+		color: var(--ink-3);
+		margin-top: 6px;
+	}
+	.cmp-desc {
+		margin-top: 12px;
 		font-size: 14px;
-		margin-top: 4px;
+		font-weight: 400;
+		line-height: 1.5;
+		color: var(--ink-2);
+		min-height: 3lh;
+	}
+	.cmp-plan .btn,
+	.stack-plan .btn {
+		margin-top: 18px;
+	}
+	/* Featured column: tint plus a signal rule on top */
+	.is-featured {
+		background: color-mix(in srgb, var(--accent) 6%, var(--bg));
+	}
+	th.is-featured {
+		box-shadow: inset 0 2px 0 var(--accent-text);
+	}
+	.yes {
+		color: var(--accent-text);
+	}
+	.no {
+		color: var(--ink-4);
+	}
+	.foot {
+		margin-top: 16px;
+		font-family: var(--mono);
+		font-size: 11px;
+		line-height: 1.6;
+		color: var(--ink-3);
+	}
+
+	/* Phone stack */
+	.stack {
+		display: none;
+		list-style: none;
+	}
+	.stack-plan {
+		padding: 24px 20px 26px;
+		border-bottom: 1px solid var(--line);
+	}
+	.stack-plan:last-child {
+		border-bottom: 0;
+	}
+	.stack-plan.is-featured {
+		box-shadow: inset 0 2px 0 var(--accent-text);
+	}
+	.stack-list {
+		list-style: none;
+		margin-top: 18px;
+		border-top: 1px solid var(--line-soft);
+	}
+	.stack-list li {
+		display: flex;
+		justify-content: space-between;
+		gap: 16px;
+		padding: 10px 0;
+		border-bottom: 1px solid var(--line-soft);
+		font-size: 14px;
 		color: var(--ink-2);
 	}
-	.price-card li::before {
-		content: '✓ ';
-		color: var(--accent-text);
-		font-weight: 700;
+	.stack-v {
+		font-family: var(--mono);
+		font-size: 12px;
+		color: var(--ink);
 	}
-	@media (max-width: 900px) {
-		.price-grid {
-			grid-template-columns: 1fr;
+	@media (max-width: 899.98px) {
+		.cmp {
+			display: none;
 		}
-		.price-card.mid {
-			transform: none;
+		.stack {
+			display: block;
 		}
 	}
 </style>
