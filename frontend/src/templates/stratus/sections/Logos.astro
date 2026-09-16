@@ -1,4 +1,5 @@
 ---
+/** Logo strip between two hairlines: a mono kicker, then the wordmarks or logo images in one row. */
 import { Image } from 'astro:assets';
 import type { StratusConfig } from '../schema';
 
@@ -11,19 +12,17 @@ const { logos } = Astro.props.config;
 {
 	logos.items.length > 0 && (
 		<section class='logos' aria-labelledby={logos.title ? 'logos-title' : undefined}>
-			{logos.title && (
-				<h2 class='logos-l' id='logos-title'>
-					{logos.title}
-				</h2>
-			)}
-			<div class='logos-row'>
-				{logos.items.map((l) =>
-					l.image ? (
-						<Image class='logo-img' src={l.image} alt={l.name} height={28} densities={[1, 2]} format='webp' loading='lazy' decoding='async' quality='high' />
-					) : (
-						<span class='logo-wm'>{l.name}</span>
-					),
+			<div class='wrap logos-in'>
+				{logos.title && (
+					<h2 class='label' id='logos-title'>
+						{logos.title}
+					</h2>
 				)}
+				<ul class='logos-row'>
+					{logos.items.map((l) => (
+						<li>{l.image ? <Image class='logo-img' src={l.image} alt={l.name} height={24} densities={[1, 2]} format='webp' loading='lazy' decoding='async' quality='high' /> : <span class='logo-wm'>{l.name}</span>}</li>
+					))}
+				</ul>
 			</div>
 		</section>
 	)
@@ -31,44 +30,66 @@ const { logos } = Astro.props.config;
 
 <style>
 	.logos {
-		max-width: 1100px;
-		margin: 0 auto;
-		padding: 60px 32px 80px;
-		text-align: center;
+		border-top: 1px solid var(--line);
+		border-bottom: 1px solid var(--line);
 	}
-	.logos-l {
-		font-family: var(--mono);
-		font-size: 12px;
-		font-weight: 400;
-		letter-spacing: 0.15em;
-		text-transform: uppercase;
-		color: var(--ink-3);
-		margin-bottom: 28px;
+	.logos-in {
+		display: flex;
+		align-items: center;
+		gap: 32px;
+		padding-block: 22px;
+	}
+	.logos .label {
+		flex: none;
+		margin: 0;
 	}
 	.logos-row {
+		list-style: none;
 		display: flex;
-		justify-content: center;
 		align-items: center;
-		gap: 48px;
+		justify-content: space-between;
+		gap: 24px 40px;
 		flex-wrap: wrap;
+		flex: 1;
 	}
 	.logo-wm {
-		font-family: 'Georgia', serif;
-		font-size: 22px;
-		font-style: italic;
-		/* muted, but still AA: wordmarks are text */
+		font-family: var(--text);
+		font-variation-settings: 'wdth' 118;
+		font-weight: 700;
+		font-size: 17px;
+		letter-spacing: 0.02em;
+		text-transform: uppercase;
 		color: var(--ink-3);
-		letter-spacing: -0.02em;
+		transition: color 0.2s;
+	}
+	li:hover .logo-wm {
+		color: var(--ink);
 	}
 	.logo-img {
-		height: 28px;
+		height: 24px;
 		width: auto;
-		opacity: 0.55;
+		opacity: 0.6;
 		filter: grayscale(1);
-		transition: opacity 0.2s, filter 0.2s;
+		transition:
+			opacity 0.2s,
+			filter 0.2s;
 	}
 	.logo-img:hover {
 		opacity: 1;
 		filter: none;
+	}
+	@media (max-width: 900px) {
+		.logos-in {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 16px;
+		}
+		.logos-row {
+			justify-content: flex-start;
+			gap: 14px 28px;
+		}
+		.logo-wm {
+			font-size: 15px;
+		}
 	}
 </style>

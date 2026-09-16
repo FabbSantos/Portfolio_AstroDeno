@@ -1,72 +1,287 @@
 /* ==========================================================================
    Atelier — rules shared by more than one section. Everything else lives in
    sections/*.astro. Colours come only from the core ThemeVars tokens.
+
+   Direction: a design magazine. A soft serif with personality for titles and
+   big figures, a plain grotesk for text, warm paper, one deep colour used as
+   a full block, a second quiet colour for underlines. Hairlines, square
+   corners, photos that run wide. No cards, no shadows, no JavaScript beyond
+   the core mobile nav.
    ========================================================================== */
 .tpl-atelier {
+	--display: 'Fraunces Variable', 'Fraunces', Georgia, 'Times New Roman', serif;
+	--text: 'Figtree Variable', 'Figtree', -apple-system, 'Segoe UI', system-ui, sans-serif;
+	--sans: var(--text);
+	--mono: var(--text);
+	--wrap: 1320px;
+	--pad-x: clamp(20px, 4vw, 56px);
+	--line: color-mix(in srgb, var(--ink) 16%, transparent);
+	--line-soft: color-mix(in srgb, var(--ink) 9%, transparent);
+	--line-on-dark: color-mix(in srgb, #fff 22%, transparent);
+	--ease: cubic-bezier(0.22, 1, 0.36, 1);
 	background: var(--bg);
 	color: var(--ink);
-	font-family: var(--sans);
+	font-family: var(--text);
+	font-size: 17px;
+	line-height: 1.55;
 	min-height: 100vh;
 }
 
-/* md(): **text** */
-.tpl-atelier .hl {
-	color: var(--accent-display);
-	font-weight: inherit;
+.tpl-atelier .wrap {
+	max-width: var(--wrap);
+	margin-inline: auto;
+	padding-inline: var(--pad-x);
 }
-/* md(): ==text== */
-.tpl-atelier .em {
-	font-style: normal;
-	font-weight: 800;
-	background: linear-gradient(120deg, transparent 0 60%, var(--accent-soft) 60% 100%);
-	padding: 0 4px;
+.tpl-atelier .sec {
+	padding-block: clamp(80px, 10vw, 140px);
 }
 
+/* Serif display */
+.tpl-atelier .display {
+	font-family: var(--display);
+	font-weight: 500;
+	letter-spacing: -0.02em;
+	line-height: 1;
+	text-wrap: balance;
+}
+/* md(): **text** → italic; ==text== → italic with an underline in the second colour */
+.tpl-atelier .hl {
+	font-style: italic;
+	font-weight: 400;
+	color: inherit;
+}
+.tpl-atelier .em {
+	font-style: italic;
+	font-weight: 400;
+	color: inherit;
+	text-decoration: underline;
+	text-decoration-thickness: 0.06em;
+	text-underline-offset: 0.12em;
+	text-decoration-color: var(--accent-2);
+}
+
+/* Small caps label (tracked grotesk, no mono) */
 .tpl-atelier .eyebrow {
-	font-family: var(--mono);
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	font-family: var(--text);
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--ink-3);
+}
+.tpl-atelier .eyebrow::before {
+	content: '';
+	width: 22px;
+	height: 1px;
+	background: var(--accent-text);
+}
+
+/* Section head: eyebrow, then serif title with an optional lead beside it */
+.tpl-atelier .sec-head {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 32ch);
+	column-gap: 48px;
+	row-gap: 20px;
+	align-items: end;
+	margin-bottom: clamp(40px, 5vw, 64px);
+}
+.tpl-atelier .sec-head .eyebrow {
+	grid-column: 1 / -1;
+}
+.tpl-atelier .sec-head h2 {
+	font-size: clamp(44px, 6vw, 92px);
+	max-width: 14ch;
+}
+.tpl-atelier .sec-head .sec-l {
+	font-size: 17px;
+	line-height: 1.55;
+	color: var(--ink-2);
+	padding-bottom: 0.4em;
+}
+
+/* Links: underlined grotesk; buttons: ink block */
+.tpl-atelier .link {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	min-height: 44px;
+	font-size: 16px;
+	font-weight: 600;
+	color: var(--ink);
+	text-decoration: underline;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 6px;
+	text-decoration-color: var(--accent-text);
+	transition: text-decoration-color 0.2s;
+}
+.tpl-atelier .link:hover {
+	text-decoration-color: var(--ink);
+}
+.tpl-atelier .btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	min-height: 52px;
+	padding: 0 24px;
+	background: var(--ink);
+	color: var(--bg);
+	font-family: var(--text);
+	font-size: 15px;
+	font-weight: 600;
+	white-space: nowrap;
+	transition:
+		background 0.2s,
+		color 0.2s;
+}
+.tpl-atelier .btn:hover {
+	background: var(--accent-text);
+	color: #fff;
+}
+
+/* Core LeadForm (contact), skinned: hairline under each field */
+.tpl-atelier .lead-form.lead-form .lf-body {
+	gap: 22px 24px;
+}
+.tpl-atelier .lead-form.lead-form .lf-field label {
+	font-family: var(--text);
 	font-size: 12px;
 	font-weight: 600;
 	letter-spacing: 0.12em;
-	color: var(--accent-text);
 	text-transform: uppercase;
-	display: block;
-	margin-bottom: 24px;
+	color: var(--ink-3);
 }
-
-/* Section heads (Work, Process) */
-.tpl-atelier .sec-h {
-	max-width: 760px;
-	margin: 0 auto 64px;
-	text-align: center;
-}
-.tpl-atelier .sec-h.left {
-	margin-left: 0;
-	text-align: left;
-}
-.tpl-atelier .sec-h h2 {
-	font-size: clamp(36px, 5vw, 64px);
-	font-weight: 800;
-	letter-spacing: -0.035em;
-	line-height: 1.05;
-}
-.tpl-atelier .sec-h .eyebrow {
-	display: block;
-	margin-bottom: 18px;
-}
-.tpl-atelier .sec-l {
-	margin-top: 16px;
-	font-size: 17px;
-	color: var(--ink-2);
-	line-height: 1.55;
-	max-width: 60ch;
-}
-
-/* Mono underlined link (archive, manifesto) */
-.tpl-atelier .link {
-	font-family: var(--mono);
-	font-size: 14px;
+.tpl-atelier .lead-form.lead-form .lf-req {
 	color: var(--accent-text);
+}
+.tpl-atelier .lead-form.lead-form .lf-field input,
+.tpl-atelier .lead-form.lead-form .lf-field select,
+.tpl-atelier .lead-form.lead-form .lf-field textarea {
+	font-family: var(--text);
+	font-size: 16px;
+	padding: 10px 0;
+	border: 0;
+	border-bottom: 1px solid var(--line);
+	border-radius: 0;
+	background: transparent;
+	color: var(--ink);
+	transition: border-color 0.2s;
+}
+.tpl-atelier .lead-form.lead-form .lf-field textarea {
+	min-height: 0;
+}
+.tpl-atelier .lead-form.lead-form .lf-field input:focus,
+.tpl-atelier .lead-form.lead-form .lf-field select:focus,
+.tpl-atelier .lead-form.lead-form .lf-field textarea:focus {
+	outline: none;
+	border-bottom-color: var(--ink);
+	box-shadow: 0 1px 0 0 var(--ink);
+}
+.tpl-atelier .lead-form.lead-form .lf-submit {
+	min-height: 52px;
+	padding: 0 24px;
+	border-radius: 0;
+	border: 0;
+	background: var(--ink);
+	color: var(--bg);
+	font-family: var(--text);
+	font-size: 15px;
 	font-weight: 600;
-	border-bottom: 1px solid var(--accent);
-	padding-bottom: 2px;
+	transition:
+		background 0.2s,
+		color 0.2s;
+}
+.tpl-atelier .lead-form.lead-form .lf-submit:hover {
+	background: var(--accent-text);
+	color: #fff;
+	transform: none;
+}
+.tpl-atelier .lead-form.lead-form .lf-status,
+.tpl-atelier .lead-form.lead-form .lf-foot {
+	font-size: 13px;
+	color: var(--ink-3);
+}
+
+/* Core MobileNav, restyled (Atelier uses it at every width) */
+.tpl-atelier .mnav.mnav {
+	background: color-mix(in srgb, var(--bg) 94%, transparent);
+	border-bottom: 1px solid var(--line-soft);
+}
+.tpl-atelier .mnav .mnav-inner {
+	max-width: var(--wrap);
+	padding-inline: var(--pad-x);
+	min-height: 72px;
+}
+.tpl-atelier .mnav .mnav-brand {
+	font-family: var(--display);
+	font-size: 28px;
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	line-height: 1;
+}
+.tpl-atelier .mnav .mnav-brand::after {
+	content: var(--mark, '');
+	margin-left: 8px;
+	font-family: var(--text);
+	font-size: 11px;
+	color: var(--accent-text);
+	vertical-align: 0.35em;
+}
+.tpl-atelier .mnav .mnav-links {
+	gap: 30px;
+	font-size: 15px;
+	font-weight: 500;
+	color: var(--ink-2);
+}
+.tpl-atelier .mnav .mnav-links a:hover {
+	color: var(--ink);
+	text-decoration: underline;
+	text-underline-offset: 6px;
+	text-decoration-thickness: 1px;
+}
+.tpl-atelier .mnav .mnav-cta {
+	min-height: 0;
+	padding: 0;
+	border-radius: 0;
+	background: transparent;
+	color: var(--ink);
+	font-size: 15px;
+	font-weight: 600;
+	text-decoration: underline;
+	text-underline-offset: 6px;
+	text-decoration-thickness: 1px;
+	text-decoration-color: var(--accent-text);
+}
+.tpl-atelier .mnav .mnav-cta:hover {
+	background: transparent;
+	color: var(--accent-text);
+}
+.tpl-atelier .mnav .mnav-panel a {
+	border-radius: 0;
+	font-weight: 500;
+}
+.tpl-atelier .mnav .mnav-panel .mnav-cta {
+	justify-content: flex-start;
+	min-height: 48px;
+	padding: 0 8px;
+}
+.tpl-atelier .mnav .mnav-toggle,
+.tpl-atelier .mnav .mnav-bar {
+	border-radius: 0;
+}
+
+@media (max-width: 900px) {
+	.tpl-atelier .sec-head {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.tpl-atelier *,
+	.tpl-atelier *::before,
+	.tpl-atelier *::after {
+		transition-duration: 0.01ms !important;
+	}
 }

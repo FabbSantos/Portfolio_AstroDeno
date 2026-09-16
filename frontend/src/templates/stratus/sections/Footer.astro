@@ -1,4 +1,5 @@
 ---
+/** Footer on paper: brand and tagline, link columns with mono headings, then a mono legal row. */
 import { Image } from 'astro:assets';
 import type { StratusConfig } from '../schema';
 
@@ -10,110 +11,108 @@ const copyright = footer.copyright ?? `© ${new Date().getFullYear()} ${legal.co
 ---
 
 <footer class='ft'>
-	<div class='ft-inner' style={`--cols:${footer.columns.length}`}>
-		<div class='ft-brand'>
-			<a href={header.brandHref} class='brand'>
-				{
-					brand.logo ? (
-						<Image class='brand-logo' src={brand.logo} alt={brand.name} height={28} densities={[1, 2]} format='webp' loading='lazy' decoding='async' quality='high' />
-					) : (
-						<>
-							{brand.name}
-							{header.brandDot && <span class='dot'>.</span>}
-						</>
-					)
-				}
-			</a>
-			{brand.tagline && <p>{brand.tagline}</p>}
+	<div class='wrap'>
+		<div class='ft-inner' style={`--cols:${footer.columns.length}`}>
+			<div class='ft-brand'>
+				<a href={header.brandHref} class='brand'>
+					{
+						brand.logo ? (
+							<Image class='brand-logo' src={brand.logo} alt={brand.name} height={26} densities={[1, 2]} format='webp' loading='lazy' decoding='async' quality='high' />
+						) : (
+							<>
+								{brand.name}
+								{header.brandDot && <span class='dot'>.</span>}
+							</>
+						)
+					}
+				</a>
+				{brand.tagline && <p>{brand.tagline}</p>}
+			</div>
+			{
+				footer.columns.map((col) => (
+					<nav class='ft-col' aria-label={col.h}>
+						<h3 class='label'>{col.h}</h3>
+						{col.links.map((l) => (
+							<a href={l.href}>{l.label}</a>
+						))}
+					</nav>
+				))
+			}
 		</div>
-		{
-			footer.columns.map((col) => (
-				<nav class='ft-col' aria-label={col.h}>
-					<h3>{col.h}</h3>
-					{col.links.map((l) => (
-						<a href={l.href}>{l.label}</a>
-					))}
-				</nav>
-			))
-		}
-	</div>
-	<div class='ft-bot'>
-		<span>{copyright}</span>
-		{
-			footer.legalLinks.length > 0 && (
-				<span class='ft-links'>
-					{footer.legalLinks.map((l) => (
-						<a href={l.href}>{l.label}</a>
-					))}
-				</span>
-			)
-		}
+		<div class='ft-bot'>
+			<span>{copyright}</span>
+			{
+				footer.legalLinks.length > 0 && (
+					<span class='ft-links'>
+						{footer.legalLinks.map((l) => (
+							<a href={l.href}>{l.label}</a>
+						))}
+					</span>
+				)
+			}
+		</div>
 	</div>
 </footer>
 
 <style>
 	.ft {
-		background: var(--ink);
-		color: color-mix(in srgb, #fff 75%, transparent);
-		padding: 80px 32px 32px;
+		border-top: 1px solid var(--line);
+		padding-block: clamp(56px, 7vw, 88px) 28px;
 	}
 	.ft-inner {
-		max-width: 1240px;
-		margin: 0 auto;
 		display: grid;
-		grid-template-columns: 2fr repeat(var(--cols, 3), 1fr);
+		grid-template-columns: minmax(0, 2fr) repeat(var(--cols, 3), minmax(0, 1fr));
 		gap: 40px;
-	}
-	.ft-brand :global(.brand) {
-		color: #fff;
-		font-size: 22px;
-	}
-	.ft-brand :global(.brand-logo) {
-		filter: brightness(0) invert(1);
 	}
 	.ft-brand p {
 		margin-top: 12px;
 		font-size: 14px;
-		color: color-mix(in srgb, #fff 50%, transparent);
+		color: var(--ink-3);
 		max-width: 28ch;
 	}
 	.ft-col h3 {
-		color: #fff;
-		font-size: 13px;
-		font-family: var(--mono);
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		margin-bottom: 16px;
+		margin-bottom: 14px;
 	}
 	.ft-col a {
 		display: block;
-		font-size: 14px;
-		color: color-mix(in srgb, #fff 60%, transparent);
-		padding: 4px 0;
+		font-size: 15px;
+		color: var(--ink-2);
+		padding: 5px 0;
 		transition: color 0.2s;
 	}
 	.ft-col a:hover {
-		color: var(--accent-on-dark);
+		color: var(--ink);
+		text-decoration: underline;
+		text-underline-offset: 4px;
+		text-decoration-thickness: 1px;
 	}
 	.ft-bot {
-		max-width: 1240px;
-		margin: 60px auto 0;
-		padding-top: 24px;
-		border-top: 1px solid color-mix(in srgb, #fff 10%, transparent);
-		font-size: 13px;
+		margin-top: 56px;
+		padding-top: 20px;
+		border-top: 1px solid var(--line-soft);
 		display: flex;
 		justify-content: space-between;
 		flex-wrap: wrap;
-		gap: 16px;
-		color: color-mix(in srgb, #fff 60%, transparent);
+		gap: 12px 24px;
+		font-family: var(--mono);
+		font-size: 11px;
+		letter-spacing: 0.02em;
+		color: var(--ink-3);
 	}
 	.ft-links a {
-		color: color-mix(in srgb, #fff 60%, transparent);
 		margin-left: 18px;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+	.ft-links a:hover {
+		color: var(--ink);
 	}
 	@media (max-width: 780px) {
 		.ft-inner {
-			grid-template-columns: 1fr 1fr;
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		}
+		.ft-brand {
+			grid-column: 1 / -1;
 		}
 	}
 </style>

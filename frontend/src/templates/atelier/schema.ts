@@ -4,7 +4,7 @@
  *
  * Extends the core site schema with one slice per section. Strings marked
  * "md" accept the mini-markdown of `sections/_md.ts`:
- *   **text** → accent colour · ==text== → highlighter · newline → <br>
+ *   **text** → italic · ==text== → italic underlined in the second colour · newline → <br>
  */
 import { z } from 'astro/zod';
 import { baseSiteSchema, defineSite, hex, image } from '../core/schema';
@@ -30,7 +30,7 @@ const caseItem = z.object({
 	year: z.string().min(1),
 	/** Case-study / external URL. Without it the card is not a link. */
 	href: z.string().min(1).optional(),
-	/** 5:4 photo (1200×900). `null` → tinted gradient placeholder. */
+	/** 4:3 photo (1600×1200). `null` → tinted placeholder. */
 	image: image.nullable().default(null),
 	/** Alt text for the photo; defaults to `client`. */
 	alt: z.string().optional(),
@@ -53,6 +53,9 @@ export const atelierSchema = baseSiteSchema.extend({
 		eyebrow: z.string().min(1),
 		/** md */
 		title: z.string().min(1),
+		/** Wide photo (2400×1200) that opens the page above the title; the LCP. Omit for a text-only hero. */
+		image: image.optional(),
+		imageAlt: z.string().optional(),
 		meta: z.array(z.object({ label: z.string().min(1), value: z.string().min(1) })).default([]),
 	}),
 	work: z.object({

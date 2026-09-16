@@ -1,4 +1,5 @@
 ---
+/** The studio, on a block of the deep colour: copy on the left, the numbers in a hairline grid on the right. */
 import type { AtelierConfig } from '../schema';
 import { md } from './_md';
 
@@ -8,12 +9,12 @@ interface Props {
 const { studio } = Astro.props.config;
 ---
 
-<section class='studio' id='studio' aria-labelledby='studio-title'>
-	<div class='studio-grid'>
+<section class='studio sec' id='studio' aria-labelledby='studio-title'>
+	<div class='wrap studio-grid'>
 		<div class='studio-copy'>
-			<span class='eyebrow'>{studio.eyebrow}</span>
-			<h2 id='studio-title' set:html={md(studio.title)} />
-			{studio.paragraphs.map((p) => <p>{p}</p>)}
+			<p class='eyebrow'>{studio.eyebrow}</p>
+			<h2 id='studio-title' class='display' set:html={md(studio.title)} />
+			<div class='studio-text'>{studio.paragraphs.map((p) => <p>{p}</p>)}</div>
 			{
 				studio.link && (
 					<a href={studio.link.href} class='link'>
@@ -27,8 +28,8 @@ const { studio } = Astro.props.config;
 				<dl class='studio-stats'>
 					{studio.stats.map((s) => (
 						<div>
-							<dt>{s.v}</dt>
-							<dd>{s.l}</dd>
+							<dd class='display'>{s.v}</dd>
+							<dt>{s.l}</dt>
 						</div>
 					))}
 				</dl>
@@ -39,61 +40,82 @@ const { studio } = Astro.props.config;
 
 <style>
 	.studio {
-		background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, var(--bg)), color-mix(in srgb, var(--accent) 16%, var(--bg)));
-		padding: 120px 32px;
-		border-radius: 32px;
-		max-width: 1240px;
-		margin: 0 auto 100px;
+		background: var(--accent-text);
+		color: #fff;
+	}
+	.studio .eyebrow {
+		color: color-mix(in srgb, #fff 72%, transparent);
+	}
+	.studio .eyebrow::before {
+		background: color-mix(in srgb, #fff 72%, transparent);
 	}
 	.studio-grid {
 		display: grid;
-		grid-template-columns: 1.2fr 1fr;
-		gap: 64px;
-		max-width: 1100px;
-		margin: 0 auto;
-		align-items: center;
+		grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+		gap: clamp(40px, 6vw, 96px);
+		align-items: start;
 	}
-	.studio-copy h2 {
-		font-size: clamp(40px, 5.5vw, 72px);
-		font-weight: 800;
-		letter-spacing: -0.035em;
-		line-height: 1.02;
-		margin: 12px 0 24px;
+	.studio-copy {
+		display: grid;
+		gap: 24px;
+		justify-items: start;
 	}
-	.studio-copy p {
+	.studio h2 {
+		font-size: clamp(48px, 6vw, 96px);
+		max-width: 12ch;
+	}
+	.studio-text {
+		display: grid;
+		gap: 16px;
+		max-width: 52ch;
+	}
+	.studio-text p {
 		font-size: 17px;
-		color: var(--ink-2);
-		line-height: 1.7;
-		margin-bottom: 16px;
+		line-height: 1.65;
+		color: color-mix(in srgb, #fff 88%, transparent);
+	}
+	.studio .link {
+		color: #fff;
+		text-decoration-color: color-mix(in srgb, #fff 50%, transparent);
+	}
+	.studio .link:hover {
+		text-decoration-color: #fff;
 	}
 	.studio-stats {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 28px 32px;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		border-top: 1px solid var(--line-on-dark);
+		border-left: 1px solid var(--line-on-dark);
+		margin-top: 0.4em;
 	}
 	.studio-stats div {
-		padding-top: 14px;
-		border-top: 2px solid var(--accent);
-	}
-	.studio-stats dt {
-		font-size: 44px;
-		font-weight: 800;
-		letter-spacing: -0.04em;
-		line-height: 1;
-		color: var(--ink);
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		padding: 28px 24px 26px;
+		border-right: 1px solid var(--line-on-dark);
+		border-bottom: 1px solid var(--line-on-dark);
 	}
 	.studio-stats dd {
-		font-family: var(--mono);
-		font-size: 12px;
-		letter-spacing: 0.08em;
-		color: var(--ink-3);
-		margin-top: 8px;
-		text-transform: uppercase;
+		font-size: clamp(48px, 5vw, 80px);
+		line-height: 1;
+		font-variant-numeric: tabular-nums;
 	}
-	@media (max-width: 780px) {
+	.studio-stats dt {
+		font-size: 13px;
+		font-weight: 600;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: color-mix(in srgb, #fff 72%, transparent);
+	}
+	@media (max-width: 900px) {
 		.studio-grid {
-			grid-template-columns: 1fr;
-			gap: 40px;
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+	@media (max-width: 480px) {
+		.studio-stats {
+			grid-template-columns: minmax(0, 1fr);
 		}
 	}
 </style>

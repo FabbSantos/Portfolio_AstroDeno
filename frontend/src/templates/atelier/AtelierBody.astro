@@ -3,6 +3,10 @@
  * Atelier — everything between <main> and </main>. Used by the portfolio demo
  * (DemoLayout + ThemeVars + this) and by AtelierPage (core Page + this).
  */
+// Weight-axis builds only (37 KB + 46 KB italic): the optical-size build is twice that.
+import '@fontsource-variable/fraunces/wght.css';
+import '@fontsource-variable/fraunces/wght-italic.css';
+import '@fontsource-variable/figtree';
 import './styles.css';
 import type { AtelierConfig } from './schema';
 import Topbar from './sections/Topbar.astro';

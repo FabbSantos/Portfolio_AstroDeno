@@ -6,6 +6,7 @@
  */
 import Page from '../core/Page.astro';
 import AtelierBody from './AtelierBody.astro';
+import { ATELIER_PRELOAD } from './fonts';
 import type { AtelierConfig } from './schema';
 
 interface Props {
@@ -15,7 +16,7 @@ interface Props {
 const { config, noindex = false } = Astro.props;
 ---
 
-<Page site={config} class='page-atelier' noindex={noindex}>
+<Page site={config} class='page-atelier' noindex={noindex} preloadFonts={false} preload={ATELIER_PRELOAD}>
 	<main id='main-content'>
 		<AtelierBody config={config} />
 	</main>

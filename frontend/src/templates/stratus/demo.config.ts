@@ -10,7 +10,7 @@ export default defineStratus({
 		tagline: 'Analytics, without the friction.',
 		locale: 'en',
 	},
-	theme: { accent: '#ff5c3d', bg: '#fffaf7', ink: '#1a1a1c', radius: 10 },
+	theme: { accent: '#0e7c86', bg: '#f6f6f4', bg2: '#ececea', ink: '#101214', radius: 0 },
 	seo: {
 		title: 'Stratus Planos: template demo',
 		description: 'Demo of the Stratus template: B2B SaaS landing by Fab Bahiense. Placeholder data.',
@@ -35,46 +35,55 @@ export default defineStratus({
 	},
 
 	hero: {
-		pill: { tag: 'NEW', text: 'Stratus 3.0 is here: anomaly detection out of the box', href: '#' },
+		pill: { tag: 'v3.0', text: 'Anomaly detection now ships out of the box', href: '#' },
 		title: 'Analytics,\n**without the friction.**',
-		lead: 'The first analytics platform that configures itself. Plug your stack in 60 seconds. 14‑day trial, no credit card, no sales call.',
+		lead: 'The first analytics platform that configures itself. Plug your stack in 60 seconds. 14-day trial, no credit card, no sales call.',
 		primary: { label: 'Start free for 14 days', href: '#cta' },
-		secondary: { label: '▶ Watch 90s demo', href: '#' },
+		secondary: { label: 'Watch the 90s demo', href: '#' },
 		socialProof: '★★★★★ **4.9** on G2 · trusted by 600+ engineering teams',
 	},
 
 	product: {
 		image: null,
-		kpis: [{ value: '+24.6%' }, { value: '89,204' }, { value: '1.4s' }, { value: '3.2k' }],
+		meta: 'app.stratus.io · overview · last 30 days',
+		kpis: [
+			{ value: '+24.6%', label: 'conversion' },
+			{ value: '89,204', label: 'sessions' },
+			{ value: '1.4s', label: 'p95 load' },
+			{ value: '3.2k', label: 'events / min' },
+		],
 	},
 
 	logos: {
-		title: 'Powering analytics at fast-moving companies',
+		title: 'Trusted by',
 		items: [{ name: 'Nimbus' }, { name: 'Forma' }, { name: 'Lattice' }, { name: 'Aperture' }, { name: 'Vector' }, { name: 'Quadra' }],
 	},
 
 	features: {
-		eyebrow: '// FEATURES',
+		eyebrow: 'Features',
 		title: "Everything you need.\n**Nothing you don't.**",
+		lead: 'Six things the platform does on day one, without a workshop, a consultant or a 40-page setup guide.',
 		items: [
-			{ icon: '⚡', title: 'Setup in 60 seconds', desc: 'Drop in a single snippet. Auto-detects pages, events and conversions on first load.' },
-			{ icon: '🔒', title: 'Compliant by default', desc: 'SOC 2 Type II, GDPR, LGPD. Data stays in the region you choose, no exceptions.' },
-			{ icon: '🛰', title: 'Anomaly detection', desc: 'Statistical models alert you before customers do. Zero config, zero false positives.' },
-			{ icon: '🧩', title: 'Plays well with others', desc: 'Native SDKs for Node, Python, Go, Rust. Webhooks for everything else.' },
-			{ icon: '📈', title: 'Built for scale', desc: 'Handles 50M events per minute on a single tenant. Your traffic spike is our Tuesday.' },
-			{ icon: '💬', title: 'Real humans on Slack', desc: 'Shared channel with our engineers. P1 incidents answered in under 5 minutes.' },
+			{ title: 'Setup in 60 seconds', desc: 'Drop in a single snippet. Auto-detects pages, events and conversions on first load.' },
+			{ title: 'Compliant by default', desc: 'SOC 2 Type II, GDPR, LGPD. Data stays in the region you choose, no exceptions.' },
+			{ title: 'Anomaly detection', desc: 'Statistical models alert you before customers do. Zero config, zero false positives.' },
+			{ title: 'Plays well with others', desc: 'Native SDKs for Node, Python, Go, Rust. Webhooks for everything else.' },
+			{ title: 'Built for scale', desc: 'Handles 50M events per minute on a single tenant. Your traffic spike is our Tuesday.' },
+			{ title: 'Real humans on Slack', desc: 'Shared channel with our engineers. P1 incidents answered in under 5 minutes.' },
 		],
 	},
 
 	pricing: {
-		eyebrow: '// PRICING',
+		eyebrow: 'Pricing',
 		title: 'Simple, **honest pricing.**',
 		lead: '14-day free trial on every plan. Annual saves 20%. No setup fees, ever.',
+		toggle: { label: 'Billing period', monthly: 'Monthly', annual: 'Annual', note: '-20%' },
 		plans: [
 			{
 				name: 'Starter',
 				price: '$29',
-				period: '/mo',
+				priceAnnual: '$23',
+				period: 'per month',
 				desc: 'For solo founders and small teams getting going.',
 				cta: { label: 'Start free trial', href: '#' },
 				bullets: ['1M events/month', '30-day retention', '5 dashboards', 'Email support'],
@@ -82,12 +91,13 @@ export default defineStratus({
 			{
 				name: 'Growth',
 				price: '$129',
-				period: '/mo',
+				priceAnnual: '$103',
+				period: 'per month',
 				desc: 'For startups serious about understanding their users.',
 				cta: { label: 'Start free trial', href: '#' },
 				bullets: ['25M events/month', '1-year retention', 'Unlimited dashboards', 'Anomaly detection', 'Shared Slack channel'],
 				featured: true,
-				badge: 'MOST POPULAR',
+				badge: 'Most popular',
 			},
 			{
 				name: 'Scale',
@@ -97,10 +107,23 @@ export default defineStratus({
 				bullets: ['Unlimited events', 'Custom retention', 'SSO/SAML · audit logs', '99.99% SLA', 'Dedicated engineer'],
 			},
 		],
+		compare: {
+			rows: [
+				{ label: 'Events per month', values: ['1M', '25M', 'Unlimited'] },
+				{ label: 'Data retention', values: ['30 days', '1 year', 'Custom'] },
+				{ label: 'Dashboards', values: ['5', 'Unlimited', 'Unlimited'] },
+				{ label: 'Anomaly detection', values: [false, true, true] },
+				{ label: 'Shared Slack channel', values: [false, true, true] },
+				{ label: 'SSO / SAML and audit logs', values: [false, false, true] },
+				{ label: 'Uptime SLA', values: ['99.9%', '99.9%', '99.99%'] },
+				{ label: 'Support', values: ['Email', 'Slack', 'Dedicated engineer'] },
+			],
+		},
+		foot: 'Prices in USD, before tax. Annual plans are billed once a year. Cancel anytime; export everything as Parquet or CSV.',
 	},
 
 	faq: {
-		eyebrow: '// QUESTIONS',
+		eyebrow: 'Questions',
 		title: 'The honest **FAQ.**',
 		items: [
 			{
