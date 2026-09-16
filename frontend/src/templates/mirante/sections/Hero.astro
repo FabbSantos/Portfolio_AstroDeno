@@ -223,12 +223,14 @@ const showLabel = en ? 'Show' : 'Mostrar';
 		height: 100%;
 		object-fit: cover;
 	}
+	/* Three shades so white copy reads on any photo: top (topbar), left (title and sub), bottom (strip and form) */
 	.hero-shade {
 		position: absolute;
 		inset: 0;
 		background:
 			linear-gradient(180deg, color-mix(in srgb, #000 42%, transparent) 0%, transparent 32%),
-			linear-gradient(180deg, transparent 38%, color-mix(in srgb, #000 22%, transparent) 62%, color-mix(in srgb, #000 74%, transparent) 100%);
+			linear-gradient(90deg, color-mix(in srgb, #000 62%, transparent) 0%, color-mix(in srgb, #000 40%, transparent) 38%, transparent 68%),
+			linear-gradient(180deg, transparent 30%, color-mix(in srgb, #000 30%, transparent) 58%, color-mix(in srgb, #000 82%, transparent) 100%);
 	}
 
 	.hero-inner {
@@ -251,7 +253,7 @@ const showLabel = en ? 'Show' : 'Mostrar';
 		max-width: 720px;
 	}
 	.hero-copy .eyebrow {
-		color: color-mix(in srgb, #fff 82%, transparent);
+		color: color-mix(in srgb, #fff 92%, transparent);
 	}
 	/* The pulse animates only transform and opacity on a ring (a box-shadow animation repainted the hero every frame). */
 	.live-dot {
@@ -290,7 +292,7 @@ const showLabel = en ? 'Show' : 'Mostrar';
 		font-size: 18px;
 		line-height: 1.55;
 		max-width: 46ch;
-		color: color-mix(in srgb, #fff 84%, transparent);
+		color: #fff;
 	}
 	.hero .sub :global(strong) {
 		color: #fff;
