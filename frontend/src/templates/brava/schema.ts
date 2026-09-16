@@ -61,7 +61,7 @@ export const bravaSchema = baseSiteSchema.extend({
 		lines: z.array(z.string().min(1)).min(1).max(4),
 		sub: z.string().min(1),
 		cta: link,
-		/** Exactly 3 portrait images: the first spans both rows. */
+		/** Exactly 3 portrait photos (1200×1500): the first is the big one (the LCP), the other two stack beside it. */
 		tiles: z.array(z.object({ image, alt: z.string().min(1), tint: hex.optional() })).length(3),
 	}),
 
@@ -92,11 +92,11 @@ export const bravaSchema = baseSiteSchema.extend({
 	}),
 
 	lookbook: z.object({
-		/** Visually hidden heading for the section. */
+		/** Section heading, shown big beside the panel. */
 		title: z.string().min(1),
 		eyebrow: z.string().min(1),
 		caption: z.string().min(1),
-		/** Exactly 4: #1 spans both rows on the left, #4 spans the full width below. */
+		/** Exactly 4 portrait photos (1200×1500), shown one at a time in the panel; `caption` labels the slide. */
 		tiles: z.array(tile).length(4),
 	}),
 

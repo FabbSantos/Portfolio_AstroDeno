@@ -5,6 +5,10 @@
  * a client site renders it through BravaPage (core Page adds Head,
  * ThemeVars, WhatsAppFab and LgpdNotice).
  */
+// Weight-axis builds only (26 KB + 30 KB italic); the optical-size build is twice that.
+import '@fontsource-variable/bodoni-moda/wght.css';
+import '@fontsource-variable/bodoni-moda/wght-italic.css';
+import '@fontsource-variable/manrope';
 import './styles.css';
 import type { BravaConfig } from './schema';
 import Ticker from './sections/Ticker.astro';

@@ -1,7 +1,7 @@
 ---
 /**
- * Desktop topbar (nav · brand · actions) ≥ 781px; the core MobileNav
- * (brand + 44px hamburger) takes over below that.
+ * Desktop topbar (nav · brand centred in Didone · actions) ≥ 781px, on a
+ * hairline; the core MobileNav takes over below that (restyled in styles.css).
  */
 import MobileNav from '../../core/MobileNav.astro';
 import type { BravaConfig } from '../schema';
@@ -18,8 +18,8 @@ const mobileNav = [...nav, ...topbar.links, ...(cart.show ? [{ label: cartLabel,
 ---
 
 <header class='tb'>
-	<div class='tb-inner'>
-		<nav class='tb-nav left' aria-label='Menu'>
+	<div class='tb-inner wrap'>
+		<nav class='tb-nav' aria-label='Menu'>
 			{nav.map((l) => <a href={l.href}>{l.label}</a>)}
 		</nav>
 		<a href={topbar.brandHref} class='brand'>{brand.name}</a>
@@ -44,73 +44,62 @@ const mobileNav = [...nav, ...topbar.links, ...(cart.show ? [{ label: cartLabel,
 		position: sticky;
 		top: 0;
 		z-index: 40;
-		background: var(--topbar);
-		backdrop-filter: blur(14px);
-		-webkit-backdrop-filter: blur(14px);
-		border-bottom: 1px solid var(--rule);
+		background: color-mix(in srgb, var(--bg) 92%, transparent);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+		border-bottom: 1px solid var(--line);
 	}
 	.tb-inner {
-		max-width: 1240px;
-		margin: 0 auto;
-		padding: 18px 32px;
+		min-height: 68px;
 		display: grid;
 		grid-template-columns: 1fr auto 1fr;
 		align-items: center;
 		gap: 24px;
 	}
-	.tb-nav {
-		display: flex;
-		gap: 24px;
-		font-family: var(--mono);
-		font-size: 12px;
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
-		color: var(--ink-2);
-	}
-	.tb-nav.left a:hover {
-		color: var(--accent-text);
-	}
+	.tb-nav,
 	.tb-actions {
 		display: flex;
-		justify-content: flex-end;
-		gap: 18px;
-		font-family: var(--mono);
+		gap: 26px;
 		font-size: 12px;
+		font-weight: 600;
+		letter-spacing: 0.14em;
 		text-transform: uppercase;
-		letter-spacing: 0.08em;
 		color: var(--ink-2);
+	}
+	.tb-actions {
+		justify-content: flex-end;
+	}
+	.tb-nav a:hover,
+	.tb-actions a:hover {
+		color: var(--ink);
+		text-decoration: underline;
+		text-underline-offset: 6px;
+		text-decoration-thickness: 1px;
 	}
 	.cart {
 		display: inline-flex;
 		align-items: center;
-		gap: 6px;
+		gap: 8px;
 	}
 	.cart-c {
-		background: var(--accent-text);
+		display: inline-grid;
+		place-items: center;
+		min-width: 18px;
+		height: 18px;
+		padding: 0 5px;
+		background: var(--accent);
 		color: #fff;
-		padding: 2px 7px;
-		border-radius: 999px;
 		font-size: 10px;
+		letter-spacing: 0;
+	}
+	:global(.tb-mobile) {
+		display: none;
 	}
 	@media (max-width: 780px) {
 		.tb {
 			display: none;
 		}
-	}
-</style>
-
-<style is:global>
-	/* Core MobileNav: only below the desktop breakpoint, brand styled like .brand */
-	.tpl-brava .mnav.tb-mobile {
-		display: none;
-	}
-	.tpl-brava .tb-mobile .mnav-brand {
-		font-weight: 900;
-		font-size: 22px;
-		letter-spacing: -0.02em;
-	}
-	@media (max-width: 780px) {
-		.tpl-brava .mnav.tb-mobile {
+		:global(.tb-mobile) {
 			display: block;
 		}
 	}

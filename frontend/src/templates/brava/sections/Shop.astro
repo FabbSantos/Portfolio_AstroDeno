@@ -1,5 +1,9 @@
 ---
-/** Product grid. Cards link to `href` when given; image or tinted gradient. */
+/**
+ * The drop: products without cards. Portrait photo, a paper chip for the tag,
+ * the name in Didone with the price beside it. Sold-out pieces dim and get
+ * their name struck. Products link to `href` when given.
+ */
 import { Image } from 'astro:assets';
 import type { BravaConfig } from '../schema';
 import { md } from './_md';
@@ -11,146 +15,146 @@ const { config } = Astro.props;
 const { shop } = config;
 ---
 
-<section class='shop' id='shop' aria-labelledby='shop-title'>
-	<div class='shop-h'>
-		<span class='eyebrow'>{shop.eyebrow}</span>
-		<h2 id='shop-title' set:html={md(shop.title)} />
-	</div>
-	<div class='prod-grid'>
-		{
-			shop.products.map((p) => {
-				const Card = p.href ? 'a' : 'div';
-				return (
-					<Card href={p.href} class:list={['prod', { 'is-sold': p.sold }]} style={p.tint ? `--tint:${p.tint}` : undefined}>
-						<div class='prod-img'>
-							{p.image && (
-								<Image
-									src={p.image}
-									alt={p.alt ?? p.name}
-									widths={[400, 800]}
-									sizes='(max-width: 780px) 50vw, 33vw'
-									format='webp'
-									loading='lazy'
-									decoding='async'
-									quality='high'
-								/>
-							)}
-							{p.tag && <span class='p-tag'>{p.tag}</span>}
-							{p.sold && <span class='p-sold'>{shop.soldLabel}</span>}
-						</div>
-						<div class='prod-meta'>
-							<span class='p-n'>{p.n}</span>
-							<div>
-								<h3>{p.name}</h3>
-								<p>{p.price}</p>
-							</div>
-						</div>
-					</Card>
-				);
-			})
-		}
+<section class='shop sec' id='shop' aria-labelledby='shop-title'>
+	<div class='wrap'>
+		<div class='sec-head'>
+			<p class='eyebrow'>{shop.eyebrow}</p>
+			<h2 id='shop-title' class='display' set:html={md(shop.title)} />
+			<p class='shop-count'>{String(shop.products.length).padStart(2, '0')}</p>
+		</div>
+		<ul class='prod-grid'>
+			{
+				shop.products.map((p) => {
+					const Card = p.href ? 'a' : 'div';
+					return (
+						<li>
+							<Card href={p.href} class:list={['prod', { 'is-sold': p.sold }]} style={p.tint ? `--tint:${p.tint}` : undefined}>
+								<div class='prod-img'>
+									{p.image && <Image src={p.image} alt={p.alt ?? p.name} widths={[400, 640, 800]} sizes='(max-width: 780px) 50vw, 30vw' format='webp' quality={74} loading='lazy' decoding='async' />}
+									{p.tag && <span class='p-tag'>{p.tag}</span>}
+									{p.sold && <span class='p-sold'>{shop.soldLabel}</span>}
+								</div>
+								<div class='prod-meta'>
+									<span class='p-n'>{p.n}</span>
+									<h3 class='p-name'>{p.name}</h3>
+									<span class='p-price'>{p.price}</span>
+								</div>
+							</Card>
+						</li>
+					);
+				})
+			}
+		</ul>
 	</div>
 </section>
 
 <style>
-	.shop {
-		max-width: 1240px;
-		margin: 0 auto;
-		padding: 80px 32px;
-	}
-	.shop-h {
-		margin-bottom: 40px;
-	}
-	.shop-h h2 {
-		font-size: clamp(40px, 6vw, 80px);
-		font-weight: 900;
-		letter-spacing: -0.04em;
-		line-height: 1;
+	.shop-count {
+		font-family: var(--display);
+		font-size: clamp(44px, 6vw, 96px);
+		font-weight: 400;
+		font-style: italic;
+		line-height: 0.98;
+		color: var(--ink-3);
 	}
 	.prod-grid {
+		list-style: none;
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 28px 20px;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 40px 24px;
 	}
 	.prod {
-		display: flex;
-		flex-direction: column;
-		gap: 12px;
-		transition: transform 0.3s;
-	}
-	.prod:hover {
-		transform: translateY(-4px);
+		display: grid;
+		gap: 14px;
+		color: var(--ink);
 	}
 	.prod-img {
-		aspect-ratio: 4 / 5;
-		background: linear-gradient(
-			135deg,
-			color-mix(in srgb, var(--tint, var(--accent)) 8%, #fff),
-			color-mix(in srgb, var(--tint, var(--accent)) 22%, #fff)
-		);
-		border-radius: 4px;
 		position: relative;
+		aspect-ratio: 4 / 5;
 		overflow: hidden;
+		background: color-mix(in srgb, var(--tint, var(--bg-2)) 100%, transparent);
 	}
 	.prod-img :global(img) {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
+		transition:
+			transform 0.9s var(--ease),
+			opacity 0.4s;
 	}
-	.prod.is-sold .prod-img {
-		filter: grayscale(1) opacity(0.6);
+	a.prod:hover .prod-img :global(img) {
+		transform: scale(1.04);
 	}
-	.p-tag {
-		position: absolute;
-		top: 12px;
-		left: 12px;
-		background: var(--ink);
-		color: #fff;
-		font-family: var(--mono);
-		font-size: 10px;
-		font-weight: 700;
-		padding: 4px 8px;
-		letter-spacing: 0.08em;
+	.prod.is-sold .prod-img :global(img) {
+		opacity: 0.45;
+		filter: grayscale(1);
 	}
+	.p-tag,
 	.p-sold {
 		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%) rotate(-6deg);
+		left: 12px;
+		top: 12px;
+		padding: 5px 9px;
 		background: var(--ink);
-		color: #fff;
-		font-family: var(--mono);
+		color: var(--bg);
+		font-size: 10px;
 		font-weight: 700;
-		font-size: 14px;
-		letter-spacing: 0.1em;
-		padding: 6px 14px;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+	}
+	.p-sold {
+		top: auto;
+		left: 50%;
+		bottom: 16px;
+		transform: translateX(-50%);
+		background: var(--accent);
+		color: #fff;
 	}
 	.prod-meta {
-		display: flex;
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr) auto;
+		align-items: baseline;
 		gap: 12px;
-		align-items: flex-start;
+		padding-top: 12px;
+		border-top: 1px solid var(--line-soft);
 	}
 	.p-n {
-		font-family: var(--mono);
 		font-size: 11px;
-		color: var(--ink-3);
-		padding-top: 4px;
-	}
-	.prod-meta h3 {
-		font-size: 17px;
-		font-weight: 700;
-		letter-spacing: -0.01em;
-	}
-	.prod-meta p {
-		font-family: var(--mono);
-		font-size: 14px;
-		color: var(--accent-text);
 		font-weight: 600;
-		margin-top: 4px;
+		letter-spacing: 0.14em;
+		color: var(--ink-3);
+	}
+	.p-name {
+		font-family: var(--display);
+		font-size: 24px;
+		font-weight: 500;
+		letter-spacing: 0;
+		line-height: 1.1;
+	}
+	.prod.is-sold .p-name {
+		text-decoration: line-through;
+		text-decoration-thickness: 1px;
+		color: var(--ink-3);
+	}
+	.p-price {
+		font-size: 14px;
+		font-weight: 600;
+		font-variant-numeric: tabular-nums;
+		color: var(--ink-2);
 	}
 	@media (max-width: 780px) {
 		.prod-grid {
-			grid-template-columns: 1fr 1fr;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 28px 14px;
+		}
+		.p-name {
+			font-size: 20px;
+		}
+		.prod-meta {
+			grid-template-columns: minmax(0, 1fr) auto;
+		}
+		.p-n {
+			display: none;
 		}
 	}
 </style>

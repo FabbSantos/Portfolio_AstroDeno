@@ -93,7 +93,7 @@ const FORM_HOOKS = {
 
 /** Packages a template imports beyond the starter's (usually its own fonts). */
 const TEMPLATE_DEPS = {
-	stratus: { '@fontsource-variable/archivo': '^5.3.0' },
+	brava: { '@fontsource-variable/bodoni-moda': '^5.3.0', '@fontsource-variable/manrope': '^5.3.0' },
 	mirante: { '@fontsource-variable/cormorant': '^5.3.0', '@fontsource-variable/instrument-sans': '^5.3.0' },
 	salvia: { '@fontsource-variable/hanken-grotesk': '^5.3.0', '@fontsource-variable/newsreader': '^5.3.0' },
 	pimenta: { '@fontsource-variable/big-shoulders-display': '^5.3.0', '@fontsource-variable/schibsted-grotesk': '^5.3.0' },
@@ -116,7 +116,9 @@ const IMAGE_SIZES = [
 	[/cozinha|balcao/i, '800×1000 retrato (JPG, ≤ 250 KB)'],
 	[/planta/i, '1200px de largura (PNG ou JPG, fundo branco)'],
 	[/mapa/i, '1200×800 (PNG ou JPG)'],
-	[/case|product|produto|lookbook/i, '1200×900 (JPG, ≤ 300 KB)'],
+	[/hero-\d/i, '1200×1500 retrato (4:5, JPG, ≤ 250 KB)'],
+	[/lookbook/i, '1200×1500 retrato (4:5, JPG, ≤ 250 KB)'],
+	[/product|produto/i, '1000×1250 retrato (4:5, JPG, ≤ 200 KB)'],
 	[/larga|paisagem/i, '2000×900 paisagem (JPG, ≤ 400 KB)'],
 	[/servico/i, '800×1000 retrato (JPG, ≤ 250 KB)'],
 	[/recepcao|sala|consultorio|espaco/i, '1200×1500 retrato (JPG, ≤ 400 KB)'],

@@ -1,6 +1,6 @@
 {
 	"measuredAt": "2026-09-16",
-	"source": "http://localhost:4407",
+	"source": "http://localhost:4410",
 	"lighthouse": "13.4.1",
 	"runs": 3,
 	"templates": {
@@ -33,11 +33,11 @@
 			"measuredAt": "2026-09-16"
 		},
 		"brava": {
-			"mobile": 92,
+			"mobile": 95,
 			"desktop": 100,
 			"accessibility": 100,
 			"bestPractices": 100,
-			"measuredAt": "2026-09-14"
+			"measuredAt": "2026-09-16"
 		},
 		"pimenta": {
 			"mobile": 99,
