@@ -1,8 +1,9 @@
 ---
 /**
- * Case grid. Each card is an <article>; when `href` is set the client name is
- * a stretched link covering the whole card. Photo when `image`, otherwise a
- * tinted gradient placeholder (`tint`, defaults to the accent).
+ * Selected work as a magazine grid: rows of two tiles with alternating spans
+ * (wide + narrow, then narrow + wide), the caption on a paper chip over the
+ * photo and an arrow when the case links out. Photo when `image`, otherwise a
+ * tinted placeholder (`tint`, defaults to the second colour).
  */
 import { Image } from 'astro:assets';
 import type { AtelierConfig } from '../schema';
@@ -12,179 +13,188 @@ interface Props {
 	config: AtelierConfig;
 }
 const { work } = Astro.props.config;
+const widths = (w: number) => [...[640, 960, 1280].filter((x) => x < w), w];
+/** Column span pattern per row: 7/5, 5/7, 7/5 … */
+const wide = (i: number) => (Math.floor(i / 2) % 2 === 0 ? i % 2 === 0 : i % 2 === 1);
 ---
 
-<section class='work' id='work' aria-labelledby='work-title'>
-	<div class='sec-h'>
-		<span class='eyebrow'>{work.eyebrow}</span>
-		<h2 id='work-title' set:html={md(work.title)} />
-	</div>
-	<div class='case-grid'>
-		{
-			work.cases.map((c) => (
-				<article class='case' style={c.tint ? `--tint: ${c.tint}` : undefined}>
-					{c.image ? (
-						<Image
-							class='case-thumb'
-							src={c.image}
-							alt={c.alt ?? c.client}
-							widths={[480, 720, 960, 1200]}
-							sizes='(max-width: 780px) calc(100vw - 64px), 572px'
-							format='webp'
-							loading='lazy'
-							decoding='async'
-							quality='high'
-						/>
-					) : (
-						<div class='case-thumb case-thumb--tint' aria-hidden='true' />
-					)}
-					<div class='case-meta'>
-						<span class='c-n'>{c.n}</span>
-						<div class='c-info'>
-							<h3>
-								{c.href ? (
-									<a class='c-link' href={c.href}>
-										{c.client}
-									</a>
+<section class='work sec' id='work' aria-labelledby='work-title'>
+	<div class='wrap'>
+		<div class='sec-head'>
+			<p class='eyebrow'>{work.eyebrow}</p>
+			<h2 id='work-title' class='display' set:html={md(work.title)} />
+		</div>
+		<ul class='cases'>
+			{
+				work.cases.map((c, i) => (
+					<li class:list={['case', wide(i) ? 'is-wide' : 'is-narrow']} style={c.tint ? `--tint:${c.tint}` : undefined}>
+						<article class='case-in'>
+							<div class='case-media'>
+								{c.image ? (
+									<Image src={c.image} alt={c.alt ?? c.client} widths={widths(c.image.width)} sizes={wide(i) ? '(max-width: 780px) calc(100vw - 40px), 58vw' : '(max-width: 780px) calc(100vw - 40px), 42vw'} format='webp' quality={76} loading='lazy' decoding='async' />
 								) : (
-									c.client
+									<div class='case-tint' aria-hidden='true' />
 								)}
-							</h3>
-							<p>
-								<span>{c.tag}</span>
-								<span class='sep'>·</span>
-								<span>{c.year}</span>
-							</p>
-						</div>
-						<span class='c-arr' aria-hidden='true'>
-							↗
-						</span>
-					</div>
-				</article>
-			))
+							</div>
+							<div class='case-cap'>
+								<span class='c-n'>{c.n}</span>
+								<h3 class='c-client'>
+									{c.href ? (
+										<a class='c-link' href={c.href}>
+											{c.client}
+										</a>
+									) : (
+										c.client
+									)}
+								</h3>
+								<span class='c-meta'>
+									{c.tag} · {c.year}
+								</span>
+							</div>
+							{c.href && (
+								<span class='case-arr' aria-hidden='true'>
+									↗
+								</span>
+							)}
+						</article>
+					</li>
+				))
+			}
+		</ul>
+		{
+			work.archive && (
+				<div class='work-foot'>
+					<a href={work.archive.href} class='link'>
+						{work.archive.label}
+					</a>
+				</div>
+			)
 		}
 	</div>
-	{
-		work.archive && (
-			<div class='work-foot'>
-				<a href={work.archive.href} class='link'>
-					{work.archive.label}
-				</a>
-			</div>
-		)
-	}
 </section>
 
 <style>
-	.work {
-		max-width: 1240px;
-		margin: 0 auto;
-		padding: 100px 32px;
-	}
-	.case-grid {
+	.cases {
+		list-style: none;
 		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 40px 32px;
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		gap: clamp(12px, 1.6vw, 22px);
 	}
-	.case {
+	.case.is-wide {
+		grid-column: span 7;
+	}
+	.case.is-narrow {
+		grid-column: span 5;
+	}
+	.case-in {
 		position: relative;
-		display: flex;
-		flex-direction: column;
-		gap: 20px;
-		transition: transform 0.35s var(--ease-out-expo);
+		height: 100%;
+		min-height: clamp(260px, 32vw, 480px);
+		overflow: hidden;
+		background: var(--bg-2);
 	}
-	.case:hover {
-		transform: translateY(-6px);
+	.case-media {
+		position: absolute;
+		inset: 0;
 	}
-	/* Stretched link: the whole card is clickable, the link name is the client. */
+	.case-media :global(img),
+	.case-tint {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		transition: transform 0.9s var(--ease);
+	}
+	.case-tint {
+		background: linear-gradient(135deg, var(--tint, var(--accent-2)), color-mix(in srgb, var(--tint, var(--accent-2)) 60%, var(--bg)));
+	}
+	.case-in:hover .case-media :global(img) {
+		transform: scale(1.03);
+	}
+	/* Caption chip on paper */
+	.case-cap {
+		position: absolute;
+		left: 14px;
+		bottom: 14px;
+		max-width: calc(100% - 28px);
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr);
+		column-gap: 12px;
+		align-items: baseline;
+		padding: 12px 16px 12px 14px;
+		background: var(--bg);
+		color: var(--ink);
+	}
+	.c-n {
+		font-family: var(--display);
+		font-size: 15px;
+		font-weight: 500;
+		color: var(--accent-text);
+	}
+	.c-client {
+		font-family: var(--display);
+		font-size: 22px;
+		font-weight: 500;
+		letter-spacing: -0.01em;
+		line-height: 1.1;
+	}
+	.c-meta {
+		grid-column: 2;
+		margin-top: 4px;
+		font-size: 13px;
+		color: var(--ink-3);
+	}
+	/* Stretched link: the whole tile is clickable */
 	.c-link::after {
 		content: '';
 		position: absolute;
 		inset: 0;
 	}
-	.case:has(.c-link:focus-visible) {
-		outline: 2px solid var(--accent-2);
-		outline-offset: 6px;
-		border-radius: 16px;
-	}
 	.c-link:focus-visible {
 		outline: none;
 	}
-	.case-thumb {
-		width: 100%;
-		height: auto;
-		aspect-ratio: 5 / 4;
-		object-fit: cover;
-		border-radius: 16px;
-		position: relative;
-		overflow: hidden;
+	.case-in:has(.c-link:focus-visible) {
+		outline: 2px solid var(--ink);
+		outline-offset: 3px;
 	}
-	.case-thumb--tint {
-		--tint-base: var(--tint, color-mix(in srgb, var(--accent) 26%, var(--bg-3)));
-		background: linear-gradient(135deg, color-mix(in srgb, var(--tint-base) 55%, var(--bg-3)), var(--tint-base));
-	}
-	.case-thumb--tint::before {
-		content: '';
+	.case-arr {
 		position: absolute;
-		inset: 30% 25% auto auto;
-		width: 50px;
-		height: 50px;
-		border-radius: 50%;
-		background: var(--accent);
-		opacity: 0.4;
-		filter: blur(8px);
-	}
-	.case-thumb--tint::after {
-		content: '';
-		position: absolute;
-		inset: auto 20% 25% 20%;
-		height: 40%;
-		background: linear-gradient(180deg, transparent, var(--rule));
-		border-radius: 8px;
-	}
-	.case-meta {
+		right: 14px;
+		bottom: 14px;
+		width: 44px;
+		height: 44px;
 		display: grid;
-		grid-template-columns: auto 1fr auto;
-		gap: 16px;
-		align-items: center;
-	}
-	.c-n {
-		font-family: var(--mono);
-		font-size: 13px;
-		color: var(--ink-3);
-	}
-	.c-info h3 {
+		place-items: center;
+		background: var(--bg);
+		color: var(--ink);
+		font-family: var(--display);
 		font-size: 22px;
-		font-weight: 700;
-		letter-spacing: -0.015em;
-	}
-	.c-info p {
-		font-size: 13px;
-		color: var(--ink-3);
-		margin-top: 4px;
-	}
-	.c-info .sep {
-		margin: 0 8px;
-		opacity: 0.4;
-	}
-	.c-arr {
-		font-size: 22px;
-		color: var(--ink-3);
 		transition:
+			background 0.25s,
 			color 0.25s,
-			transform 0.25s;
+			transform 0.4s var(--ease);
 	}
-	.case:hover .c-arr {
-		color: var(--accent-text);
-		transform: translate(4px, -4px);
+	.case-in:hover .case-arr {
+		background: var(--accent-text);
+		color: #fff;
+		transform: translate(2px, -2px);
 	}
 	.work-foot {
-		margin-top: 48px;
-		text-align: center;
+		margin-top: 36px;
 	}
 	@media (max-width: 780px) {
-		.case-grid {
-			grid-template-columns: 1fr;
+		.cases {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		.case.is-wide,
+		.case.is-narrow {
+			grid-column: auto;
+		}
+		.case-in {
+			min-height: 0;
+			aspect-ratio: 4 / 3;
+		}
+		.c-client {
+			font-size: 19px;
 		}
 	}
 </style>

@@ -93,6 +93,7 @@ const FORM_HOOKS = {
 
 /** Packages a template imports beyond the starter's (usually its own fonts). */
 const TEMPLATE_DEPS = {
+	atelier: { '@fontsource-variable/fraunces': '^5.3.0', '@fontsource-variable/figtree': '^5.3.0' },
 	mirante: { '@fontsource-variable/cormorant': '^5.3.0', '@fontsource-variable/instrument-sans': '^5.3.0' },
 	salvia: { '@fontsource-variable/hanken-grotesk': '^5.3.0', '@fontsource-variable/newsreader': '^5.3.0' },
 	pimenta: { '@fontsource-variable/big-shoulders-display': '^5.3.0', '@fontsource-variable/schibsted-grotesk': '^5.3.0' },
@@ -107,6 +108,8 @@ const BINARY_EXT = new Set(['.png', '.jpg', '.jpeg', '.webp', '.avif', '.gif', '
 /** Recommended image sizes, matched against the file name (first match wins). */
 const IMAGE_SIZES = [
 	[/logo/i, 'SVG (ou PNG 512px, fundo transparente)'],
+	[/estudio|studio/i, '2400×1200 paisagem (JPG, ≤ 400 KB)'],
+	[/^case-/i, '1600×1200 (4:3, JPG, ≤ 300 KB)'],
 	[/\bog\b|^og[-_.]|[-_]og\./i, '1200×630 (JPG/PNG, ≤ 300 KB)'],
 	[/hero\.|prato-hero/i, '1200×1200 quadrada, prato ou xícara vista de cima (JPG, ≤ 300 KB)'],
 	[/destaque/i, '900×1200 retrato (JPG, ≤ 250 KB)'],

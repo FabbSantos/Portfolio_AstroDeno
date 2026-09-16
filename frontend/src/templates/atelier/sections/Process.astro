@@ -1,4 +1,5 @@
 ---
+/** Process: the steps side by side on one hairline, each with its number in serif; only typography. */
 import type { AtelierConfig } from '../schema';
 import { md } from './_md';
 
@@ -8,83 +9,110 @@ interface Props {
 const { process } = Astro.props.config;
 ---
 
-<section class='process' id='process' aria-labelledby='process-title'>
-	<div class='sec-h left'>
-		<span class='eyebrow'>{process.eyebrow}</span>
-		<h2 id='process-title' set:html={md(process.title)} />
-		{process.lead && <p class='sec-l'>{process.lead}</p>}
-	</div>
-	<div class='steps'>
-		{
-			process.steps.map((s) => (
-				<article class='step'>
-					<span class='s-n' aria-hidden='true'>
-						{s.n}
-					</span>
-					<div class='s-body'>
+<section class='process sec' id='process' aria-labelledby='process-title'>
+	<div class='wrap'>
+		<div class='sec-head'>
+			<p class='eyebrow'>{process.eyebrow}</p>
+			<h2 id='process-title' class='display' set:html={md(process.title)} />
+			{process.lead && <p class='sec-l'>{process.lead}</p>}
+		</div>
+		<ol class='steps' style={`--n:${process.steps.length}`}>
+			{
+				process.steps.map((s) => (
+					<li class='step'>
+						<span class='s-n display' aria-hidden='true'>
+							{s.n}
+						</span>
 						<h3>{s.t}</h3>
 						<p>{s.d}</p>
-					</div>
-				</article>
-			))
-		}
+					</li>
+				))
+			}
+		</ol>
 	</div>
 </section>
 
 <style>
-	.process {
-		max-width: 1240px;
-		margin: 0 auto;
-		padding: 100px 32px;
-	}
 	.steps {
+		list-style: none;
 		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 8px;
+		grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr));
+		border-top: 1px solid var(--line);
 	}
 	.step {
-		padding: 36px 32px;
-		display: flex;
-		gap: 24px;
-		align-items: flex-start;
-		border-top: 1px solid var(--rule);
+		position: relative;
+		padding: 28px 28px 8px 0;
 	}
-	.step:nth-child(1),
-	.step:nth-child(2) {
-		border-top: none;
+	.step + .step {
+		padding-left: 28px;
+		border-left: 1px solid var(--line-soft);
+	}
+	/* A dot where the step meets the rule */
+	.step::before {
+		content: '';
+		position: absolute;
+		top: -4px;
+		left: 0;
+		width: 7px;
+		height: 7px;
+		border-radius: 50%;
+		background: var(--accent-text);
+	}
+	.step + .step::before {
+		left: 28px;
 	}
 	.s-n {
-		font-family: var(--mono);
-		font-size: 56px;
-		font-weight: 300;
+		display: block;
+		font-size: clamp(48px, 5vw, 72px);
 		line-height: 1;
-		color: var(--accent-text);
-		opacity: 0.8;
+		color: var(--ink);
 	}
-	.s-body h3 {
-		font-size: 24px;
-		font-weight: 700;
-		letter-spacing: -0.015em;
-		margin-bottom: 8px;
+	.step h3 {
+		margin-top: 22px;
+		font-family: var(--display);
+		font-size: 26px;
+		font-weight: 500;
+		letter-spacing: -0.01em;
+		line-height: 1.1;
 	}
-	.s-body p {
+	.step p {
+		margin-top: 12px;
 		font-size: 15px;
-		color: var(--ink-2);
 		line-height: 1.6;
+		color: var(--ink-2);
+		max-width: 30ch;
 	}
-	@media (max-width: 780px) {
+	@media (max-width: 900px) {
 		.steps {
-			grid-template-columns: 1fr;
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+			row-gap: 32px;
 		}
-		.step {
-			border-top: 1px solid var(--rule);
-			padding: 28px 0;
+		.step:nth-child(2n + 1) {
+			padding-left: 0;
+			border-left: 0;
 		}
-		.step:nth-child(1) {
-			border-top: none;
+		.step:nth-child(2n + 1)::before {
+			left: 0;
 		}
-		.step:nth-child(2) {
-			border-top: 1px solid var(--rule);
+		.step:nth-child(n + 3) {
+			border-top: 1px solid var(--line);
+		}
+	}
+	@media (max-width: 540px) {
+		.steps {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		.step,
+		.step + .step {
+			padding-left: 0;
+			border-left: 0;
+			border-top: 1px solid var(--line);
+		}
+		.step:first-child {
+			border-top: 0;
+		}
+		.step + .step::before {
+			left: 0;
 		}
 	}
 </style>
