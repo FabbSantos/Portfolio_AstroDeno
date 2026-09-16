@@ -6,10 +6,11 @@
 import DemoLayout from '../../../layouts/DemoLayout.astro';
 import ThemeVars from '../../../templates/core/ThemeVars.astro';
 import BravaBody from '../../../templates/brava/BravaBody.astro';
+import { BRAVA_PRELOAD } from '../../../templates/brava/fonts';
 import demo from '../../../templates/brava/demo.config';
 ---
 
-<DemoLayout slug='brava' title={demo.seo.title} description={demo.seo.description} locale='en' themeColor={demo.theme.bg}>
+<DemoLayout slug='brava' title={demo.seo.title} description={demo.seo.description} locale='en' themeColor={demo.theme.bg} preloadFonts={false} preload={BRAVA_PRELOAD}>
 	<ThemeVars theme={demo.theme} />
 	<BravaBody config={demo} />
 </DemoLayout>

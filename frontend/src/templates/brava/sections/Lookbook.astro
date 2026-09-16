@@ -1,5 +1,12 @@
 ---
-/** Lookbook: 4 tiles (1 tall left, 2 small right, 1 wide below) + caption. */
+/**
+ * Lookbook as a split panel: copy, the slide index and the list of captions
+ * on the left; on the right one portrait at a time with a slow zoom, a
+ * progress bar per slide and previous/next. A CSS animation is the timer:
+ * `animationend` advances; the strip holds while the pointer or focus is
+ * inside, the tab is hidden or the panel is offscreen, and never advances
+ * under reduced motion. Keyboard: arrows on the panel.
+ */
 import { Image } from 'astro:assets';
 import type { BravaConfig } from '../schema';
 
@@ -7,97 +14,307 @@ interface Props {
 	config: BravaConfig;
 }
 const { config } = Astro.props;
-const { lookbook } = config;
-
-const layout = [
-	{ widths: [640, 1000], sizes: '(max-width: 780px) 66vw, 780px' },
-	{ widths: [400, 800], sizes: '(max-width: 780px) 33vw, 380px' },
-	{ widths: [400, 800], sizes: '(max-width: 780px) 33vw, 380px' },
-	{ widths: [800, 1000], sizes: '(max-width: 780px) 100vw, 1180px' },
-];
+const { lookbook, brand } = config;
+const en = brand.locale === 'en';
+const pad = (n: number) => String(n).padStart(2, '0');
+const prevLabel = en ? 'Previous photo' : 'Foto anterior';
+const nextLabel = en ? 'Next photo' : 'Próxima foto';
+const goLabel = en ? 'Show photo' : 'Mostrar foto';
 ---
 
-<section class='lookbook' id='lookbook' aria-labelledby='lookbook-title'>
-	<h2 id='lookbook-title' class='sr-only'>{lookbook.title}</h2>
-	<div class='lb-grid'>
-		{
-			lookbook.tiles.map((t, i) => (
-				<figure class={`lb lb-${i + 1}`}>
-					<Image
-						src={t.image}
-						alt={t.alt}
-						widths={layout[i]?.widths}
-						sizes={layout[i]?.sizes}
-						format='webp'
-						loading='lazy'
-						decoding='async'
-						quality='high'
-					/>
-					{t.caption && <figcaption>{t.caption}</figcaption>}
-				</figure>
-			))
-		}
+<section class='lookbook sec' id='lookbook' aria-labelledby='lookbook-title' data-lookbook>
+	<div class='wrap lb-grid'>
+		<div class='lb-text'>
+			<p class='eyebrow'>{lookbook.eyebrow}</p>
+			<h2 id='lookbook-title' class='display'>{lookbook.title}</h2>
+			<p class='lb-index' aria-live='polite'>
+				<span data-lb-cur>01</span> / {pad(lookbook.tiles.length)}
+			</p>
+			<ol class='lb-caps'>
+				{
+					lookbook.tiles.map((t, i) => (
+						<li class:list={['lb-cap', { 'is-on': i === 0 }]} data-lb-cap={i}>
+							<button type='button' data-lb-go={i} aria-label={`${goLabel} ${pad(i + 1)}`}>
+								{t.caption ?? t.alt}
+							</button>
+						</li>
+					))
+				}
+			</ol>
+			<p class='lb-caption'>{lookbook.caption}</p>
+			<div class='lb-nav'>
+				<button type='button' class='lb-btn' data-lb-prev aria-label={prevLabel}>
+					←
+				</button>
+				<button type='button' class='lb-btn' data-lb-next aria-label={nextLabel}>
+					→
+				</button>
+			</div>
+		</div>
+		<div class='lb-stage' tabindex='0' aria-label={lookbook.title} data-lb-stage>
+			{
+				lookbook.tiles.map((t, i) => (
+					<figure class:list={['lb-slide', { 'is-on': i === 0 }]} data-lb-slide={i}>
+						<Image src={t.image} alt={t.alt} widths={[640, 960, 1200]} sizes='(max-width: 900px) calc(100vw - 40px), 46vw' format='webp' quality={74} loading='lazy' decoding='async' />
+					</figure>
+				))
+			}
+			<div class='lb-progress' aria-hidden='true'>
+				{
+					lookbook.tiles.map((_, i) => (
+						<span class='lb-seg'>
+							<span class='lb-fill' data-lb-fill={i} />
+						</span>
+					))
+				}
+			</div>
+		</div>
 	</div>
-	<p class='lb-caption'>
-		<span class='eyebrow'>{lookbook.eyebrow}</span>
-		{lookbook.caption}
-	</p>
 </section>
 
+<script>
+	document.querySelectorAll<HTMLElement>('[data-lookbook]').forEach((root) => {
+		const slides = [...root.querySelectorAll<HTMLElement>('[data-lb-slide]')];
+		const caps = [...root.querySelectorAll<HTMLElement>('[data-lb-cap]')];
+		const fills = [...root.querySelectorAll<HTMLElement>('[data-lb-fill]')];
+		const cur = root.querySelector<HTMLElement>('[data-lb-cur]');
+		const stage = root.querySelector<HTMLElement>('[data-lb-stage]');
+		if (slides.length < 2 || !stage) return;
+		const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+		let i = 0;
+
+		const holds = new Set<string>();
+		const hold = (why: string, on: boolean) => {
+			if (on) holds.add(why);
+			else holds.delete(why);
+			root.toggleAttribute('data-paused', holds.size > 0);
+		};
+
+		const show = (n: number) => {
+			i = (n + slides.length) % slides.length;
+			slides.forEach((s, k) => s.classList.toggle('is-on', k === i));
+			caps.forEach((c, k) => c.classList.toggle('is-on', k === i));
+			if (cur) cur.textContent = String(i + 1).padStart(2, '0');
+			fills.forEach((f, k) => {
+				f.classList.remove('is-running', 'is-done');
+				if (k < i) f.classList.add('is-done');
+				if (k === i && !reduced.matches) requestAnimationFrame(() => requestAnimationFrame(() => f.classList.add('is-running')));
+			});
+		};
+
+		root.querySelectorAll<HTMLButtonElement>('[data-lb-go]').forEach((b) => b.addEventListener('click', () => show(Number(b.dataset.lbGo))));
+		root.querySelector('[data-lb-prev]')?.addEventListener('click', () => show(i - 1));
+		root.querySelector('[data-lb-next]')?.addEventListener('click', () => show(i + 1));
+		stage.addEventListener('keydown', (e) => {
+			if (e.key === 'ArrowRight') show(i + 1);
+			if (e.key === 'ArrowLeft') show(i - 1);
+		});
+		root.addEventListener('animationend', (e) => {
+			if ((e.target as HTMLElement).classList.contains('lb-fill')) show(i + 1);
+		});
+
+		stage.addEventListener('pointerenter', () => hold('hover', true));
+		stage.addEventListener('pointerleave', () => hold('hover', false));
+		root.addEventListener('focusin', (e) => {
+			if ((e.target as Element).matches(':focus-visible')) hold('focus', true);
+		});
+		root.addEventListener('focusout', () => {
+			requestAnimationFrame(() => {
+				if (!root.contains(document.activeElement)) hold('focus', false);
+			});
+		});
+		document.addEventListener('visibilitychange', () => hold('hidden', document.hidden));
+		new IntersectionObserver(([entry]) => hold('offscreen', !entry?.isIntersecting), { threshold: 0.2 }).observe(stage);
+
+		show(0);
+	});
+</script>
+
 <style>
-	.lookbook {
-		max-width: 1240px;
-		margin: 60px auto 0;
-		padding: 0 32px;
-	}
 	.lb-grid {
 		display: grid;
-		grid-template-columns: 2fr 1fr;
-		grid-template-rows: 240px 240px;
-		gap: 12px;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		gap: clamp(32px, 5vw, 80px);
+		align-items: center;
 	}
-	.lb {
+	.lb-text {
+		display: grid;
+		gap: 22px;
+		justify-items: start;
+	}
+	.lb-text h2 {
+		font-size: clamp(48px, 6vw, 96px);
+	}
+	.lb-index {
+		font-family: var(--display);
+		font-style: italic;
+		font-size: 22px;
+		color: var(--ink-3);
+	}
+	.lb-caps {
+		list-style: none;
+		display: grid;
+		border-top: 1px solid var(--line);
+		width: 100%;
+		max-width: 440px;
+	}
+	.lb-cap button {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		width: 100%;
+		min-height: 48px;
+		padding: 10px 0;
+		border-bottom: 1px solid var(--line-soft);
+		text-align: left;
+		font-size: 15px;
+		color: var(--ink-3);
+		transition: color 0.25s;
+	}
+	.lb-cap button::before {
+		content: '';
+		width: 0;
+		height: 1px;
+		background: var(--acc);
+		transition: width 0.4s var(--ease);
+	}
+	.lb-cap.is-on button {
+		color: var(--ink);
+	}
+	.lb-cap.is-on button::before {
+		width: 22px;
+	}
+	.lb-cap button:hover {
+		color: var(--ink);
+	}
+	.lb-cap button:focus-visible {
+		outline: 2px solid var(--ink);
+		outline-offset: 2px;
+	}
+	.lb-caption {
+		font-size: 14px;
+		color: var(--ink-3);
+		max-width: 44ch;
+	}
+	.lb-nav {
+		display: flex;
+		gap: 8px;
+	}
+	.lb-btn {
+		width: 48px;
+		height: 48px;
+		display: grid;
+		place-items: center;
+		border: 1px solid var(--line);
+		font-family: var(--display);
+		font-size: 22px;
+		color: var(--ink);
+		transition:
+			background 0.25s,
+			color 0.25s,
+			border-color 0.25s;
+	}
+	.lb-btn:hover {
+		background: var(--ink);
+		color: var(--bg);
+		border-color: var(--ink);
+	}
+	.lb-btn:focus-visible {
+		outline: 2px solid var(--ink);
+		outline-offset: 3px;
+	}
+
+	.lb-stage {
 		position: relative;
+		aspect-ratio: 4 / 5;
 		overflow: hidden;
-		background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, #fff), color-mix(in srgb, var(--accent) 45%, #fff));
+		background: var(--bg-2);
 	}
-	.lb :global(img) {
+	.lb-stage:focus-visible {
+		outline: 2px solid var(--ink);
+		outline-offset: 4px;
+	}
+	.lb-slide {
+		position: absolute;
+		inset: 0;
+		margin: 0;
+		opacity: 0;
+		visibility: hidden;
+		transition:
+			opacity 0.9s var(--ease),
+			visibility 0s 0.9s;
+	}
+	.lb-slide.is-on {
+		opacity: 1;
+		visibility: visible;
+		transition-delay: 0s;
+	}
+	.lb-slide :global(img) {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
+		transform: scale(1);
 	}
-	.lb figcaption {
+	/* Slow zoom only on the slide that is showing while the timer runs */
+	.lb-slide.is-on :global(img) {
+		animation: brava-zoom 7s linear forwards;
+	}
+	[data-paused] .lb-slide.is-on :global(img) {
+		animation-play-state: paused;
+	}
+	@keyframes brava-zoom {
+		to {
+			transform: scale(1.06);
+		}
+	}
+	.lb-progress {
 		position: absolute;
-		left: 12px;
-		bottom: 12px;
-		padding: 4px 8px;
-		background: var(--ink);
-		color: #fff;
-		font-family: var(--mono);
-		font-size: 10px;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-	}
-	.lb-1 {
-		grid-row: 1 / 3;
-		background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 85%, #000), color-mix(in srgb, var(--accent) 70%, #000));
-	}
-	.lb-4 {
-		grid-column: 1 / 3;
-		grid-row: auto;
-	}
-	.lb-caption {
-		margin-top: 18px;
-		font-family: var(--mono);
-		font-size: 12px;
-		color: var(--ink-3);
+		left: 16px;
+		right: 16px;
+		bottom: 16px;
 		display: flex;
-		gap: 16px;
-		align-items: center;
-		flex-wrap: wrap;
+		gap: 6px;
 	}
-	.lb-caption .eyebrow {
-		margin-bottom: 0;
-		color: var(--accent-text);
+	.lb-seg {
+		flex: 1;
+		height: 2px;
+		background: color-mix(in srgb, #fff 30%, transparent);
+		overflow: hidden;
+	}
+	.lb-fill {
+		display: block;
+		height: 100%;
+		width: 100%;
+		background: #fff;
+		transform: scaleX(0);
+		transform-origin: left;
+	}
+	.lb-fill.is-done {
+		transform: scaleX(1);
+	}
+	.lb-fill.is-running {
+		animation: brava-fill 7s linear forwards;
+	}
+	[data-paused] .lb-fill.is-running {
+		animation-play-state: paused;
+	}
+	@keyframes brava-fill {
+		to {
+			transform: scaleX(1);
+		}
+	}
+	@media (max-width: 900px) {
+		.lb-grid {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		.lb-stage {
+			order: -1;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.lb-slide.is-on :global(img),
+		.lb-fill.is-running {
+			animation: none;
+		}
 	}
 </style>
