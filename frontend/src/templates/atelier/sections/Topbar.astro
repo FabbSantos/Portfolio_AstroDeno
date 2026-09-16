@@ -1,8 +1,9 @@
 ---
 /**
- * Sticky topbar = core MobileNav restyled for Atelier (brand + mark, mono
- * underlined CTA, links centred). The mark is injected via a CSS string
- * variable so the brand stays a single accessible link.
+ * Sticky topbar = core MobileNav restyled for Atelier (serif brand with the
+ * mark, links, underlined CTA). The mark is injected via a CSS string
+ * variable so the brand stays a single accessible link. Styles live in
+ * ../styles.css (.tpl-atelier .mnav …).
  */
 import MobileNav from '../../core/MobileNav.astro';
 import type { AtelierConfig } from '../schema';
@@ -18,53 +19,9 @@ const { topbar, brand, nav } = Astro.props.config;
 </div>
 
 <style>
-	.tb :global(.mnav) {
+	.tb {
+		position: sticky;
+		top: 0;
 		z-index: 40;
-		backdrop-filter: saturate(180%) blur(14px);
-		-webkit-backdrop-filter: saturate(180%) blur(14px);
-	}
-	.tb :global(.mnav-inner) {
-		max-width: 1240px;
-		min-height: 0;
-		padding: 20px 32px;
-		justify-content: space-between;
-		gap: 24px;
-	}
-	.tb :global(.mnav-brand) {
-		font-size: 18px;
-		letter-spacing: -0.02em;
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		color: var(--ink);
-	}
-	.tb :global(.mnav-brand::after) {
-		content: var(--mark);
-		color: var(--accent-text);
-		font-size: 14px;
-	}
-	.tb :global(.mnav-links) {
-		margin-left: 0;
-		gap: 28px;
-		font-size: 14px;
-	}
-	.tb :global(.mnav-links a:hover) {
-		color: var(--accent-text);
-	}
-	.tb :global(.mnav-inner > .mnav-cta) {
-		min-height: 0;
-		padding: 0 0 2px;
-		border-radius: 0;
-		background: none;
-		font-family: var(--mono);
-		font-size: 13px;
-		font-weight: 600;
-		color: var(--ink);
-		border-bottom: 2px solid var(--accent);
-	}
-	@media (max-width: 899px) {
-		.tb :global(.mnav-inner) {
-			padding: 10px 20px;
-		}
 	}
 </style>

@@ -1,4 +1,10 @@
 ---
+/**
+ * Editorial hero: the wide photo opens the page (eager, the LCP), then the
+ * eyebrow and the meta list on the left and the serif title on the right.
+ * Without `hero.image` the section starts with the text.
+ */
+import { Image } from 'astro:assets';
 import type { AtelierConfig } from '../schema';
 import { md } from './_md';
 
@@ -6,58 +12,104 @@ interface Props {
 	config: AtelierConfig;
 }
 const { hero } = Astro.props.config;
+const widths = (w: number) => [...[768, 1280, 1920, 2400].filter((x) => x < w), w];
 ---
 
-<section class='hero' aria-labelledby='hero-title'>
-	<p class='eyebrow'>{hero.eyebrow}</p>
-	<h1 id='hero-title' set:html={md(hero.title)} />
+<section class='hero' id='top' aria-labelledby='hero-title'>
 	{
-		hero.meta.length > 0 && (
-			<div class='hero-meta'>
-				{hero.meta.map((m) => (
-					<div>
-						<span class='eyebrow'>{m.label}</span>
-						<p>{m.value}</p>
-					</div>
-				))}
-			</div>
+		hero.image && (
+			<figure class='hero-photo'>
+				<Image src={hero.image} alt={hero.imageAlt ?? ''} widths={widths(hero.image.width)} sizes='100vw' format='webp' quality={72} loading='eager' fetchpriority='high' decoding='async' />
+			</figure>
 		)
 	}
+	<div class='wrap hero-grid'>
+		<div class='hero-side'>
+			<p class='eyebrow'>{hero.eyebrow}</p>
+			{
+				hero.meta.length > 0 && (
+					<dl class='hero-meta'>
+						{hero.meta.map((m) => (
+							<div>
+								<dt>{m.label}</dt>
+								<dd>{m.value}</dd>
+							</div>
+						))}
+					</dl>
+				)
+			}
+		</div>
+		<h1 id='hero-title' class='display' set:html={md(hero.title)} />
+	</div>
 </section>
 
 <style>
-	.hero {
-		max-width: 1240px;
-		margin: 0 auto;
-		padding: 120px 32px 100px;
+	.hero-photo {
+		margin: 0;
+		aspect-ratio: 2.4 / 1;
+		max-height: 72svh;
+		overflow: hidden;
+		background: var(--bg-2);
+	}
+	.hero-photo :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+	.hero-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 2.2fr);
+		gap: clamp(32px, 5vw, 80px);
+		align-items: start;
+		padding-block: clamp(40px, 5vw, 72px) clamp(56px, 7vw, 96px);
 	}
 	.hero h1 {
-		font-size: clamp(48px, 8vw, 124px);
-		font-weight: 800;
-		letter-spacing: -0.04em;
-		line-height: 0.96;
+		font-size: clamp(48px, 6.6vw, 104px);
 		max-width: 14ch;
 	}
-	.hero-meta {
-		margin-top: 80px;
-		padding-top: 28px;
-		border-top: 1px solid var(--rule);
+	.hero-side {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
-		gap: 40px;
+		gap: 28px;
+		padding-top: 0.6em;
 	}
-	.hero-meta div .eyebrow {
+	.hero-meta {
+		display: grid;
+		gap: 14px;
+	}
+	.hero-meta div {
+		padding-top: 12px;
+		border-top: 1px solid var(--line);
+	}
+	.hero-meta dt {
+		font-size: 12px;
+		font-weight: 600;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
 		color: var(--ink-3);
-		margin-bottom: 8px;
 	}
-	.hero-meta div p {
-		font-size: 15px;
-		color: var(--ink-2);
+	.hero-meta dd {
+		margin-top: 4px;
+		font-size: 16px;
+		color: var(--ink);
 	}
-	@media (max-width: 780px) {
+	@media (max-width: 900px) {
+		.hero-photo {
+			aspect-ratio: 4 / 3;
+			max-height: 60svh;
+		}
+		.hero-grid {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 32px;
+		}
+		.hero h1 {
+			order: -1;
+			font-size: clamp(44px, 11vw, 72px);
+		}
+		.hero-side {
+			padding-top: 0;
+		}
 		.hero-meta {
-			grid-template-columns: 1fr;
-			gap: 24px;
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 		}
 	}
 </style>

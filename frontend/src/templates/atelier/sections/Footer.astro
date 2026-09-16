@@ -1,4 +1,5 @@
 ---
+/** Footer: the line and legal notes on a hairline, then the studio name set giant across the bottom. */
 import type { AtelierConfig } from '../schema';
 
 interface Props {
@@ -9,10 +10,10 @@ const privacyLabel = brand.locale === 'en' ? 'Privacy' : 'Privacidade';
 ---
 
 <footer class='ft'>
-	<div class='ft-inner'>
-		<a href={topbar.brandHref} class='brand'>
+	<div class='wrap ft-top'>
+		<a href={topbar.brandHref} class='ft-brand'>
 			{brand.name}
-			{topbar.mark && <span class='dot' aria-hidden='true'>{topbar.mark}</span>}
+			{topbar.mark && <span class='ft-mark' aria-hidden='true'>{topbar.mark}</span>}
 		</a>
 		<div class='ft-lines'>
 			<p>{footer.line}</p>
@@ -26,52 +27,60 @@ const privacyLabel = brand.locale === 'en' ? 'Privacy' : 'Privacidade';
 			}
 		</div>
 	</div>
+	<p class='ft-word display' aria-hidden='true'>{brand.name}</p>
 </footer>
 
 <style>
 	.ft {
-		padding: 32px;
-		border-top: 1px solid var(--rule);
+		border-top: 1px solid var(--line);
+		padding-top: 40px;
+		overflow: hidden;
 	}
-	.ft-inner {
-		max-width: 1240px;
-		margin: 0 auto;
+	.ft-top {
 		display: flex;
 		justify-content: space-between;
-		align-items: center;
+		align-items: flex-start;
+		gap: 24px;
 		flex-wrap: wrap;
-		gap: 14px;
 	}
-	.brand {
-		font-weight: 700;
-		font-size: 18px;
+	.ft-brand {
+		font-family: var(--display);
+		font-size: 26px;
+		font-weight: 600;
 		letter-spacing: -0.02em;
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		color: var(--ink);
 	}
-	.brand .dot {
+	.ft-mark {
+		margin-left: 8px;
+		font-family: var(--text);
+		font-size: 11px;
 		color: var(--accent-text);
-		font-size: 14px;
+		vertical-align: 0.35em;
 	}
 	.ft-lines {
-		display: grid;
-		gap: 4px;
 		text-align: right;
-	}
-	.ft p {
-		font-size: 12px;
-		font-family: var(--mono);
+		font-size: 13px;
+		line-height: 1.7;
 		color: var(--ink-3);
 	}
-	.ft a:not(.brand) {
-		border-bottom: 1px solid currentColor;
+	.ft-lines a {
+		text-decoration: underline;
+		text-underline-offset: 3px;
 	}
-	.ft a:not(.brand):hover {
-		color: var(--accent-text);
+	.ft-lines a:hover {
+		color: var(--ink);
 	}
-	@media (max-width: 600px) {
+	.ft-word {
+		margin: 24px 0 -0.16em;
+		padding-inline: var(--pad-x);
+		font-size: clamp(88px, 18vw, 280px);
+		font-weight: 500;
+		line-height: 0.9;
+		letter-spacing: -0.04em;
+		white-space: nowrap;
+		color: var(--ink);
+		user-select: none;
+	}
+	@media (max-width: 640px) {
 		.ft-lines {
 			text-align: left;
 		}

@@ -108,6 +108,8 @@ const BINARY_EXT = new Set(['.png', '.jpg', '.jpeg', '.webp', '.avif', '.gif', '
 /** Recommended image sizes, matched against the file name (first match wins). */
 const IMAGE_SIZES = [
 	[/logo/i, 'SVG (ou PNG 512px, fundo transparente)'],
+	[/estudio|studio/i, '2400×1200 paisagem (JPG, ≤ 400 KB)'],
+	[/^case-/i, '1600×1200 (4:3, JPG, ≤ 300 KB)'],
 	[/\bog\b|^og[-_.]|[-_]og\./i, '1200×630 (JPG/PNG, ≤ 300 KB)'],
 	[/hero\.|prato-hero/i, '1200×1200 quadrada, prato ou xícara vista de cima (JPG, ≤ 300 KB)'],
 	[/destaque/i, '900×1200 retrato (JPG, ≤ 250 KB)'],

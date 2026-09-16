@@ -1,7 +1,8 @@
 ---
 /**
- * Closing section: e-mail first (mailto from `contact.email`), optional
- * LeadForm (`contact.inquiry`, wired to `contact.form.provider`), socials.
+ * Closing section, centred: eyebrow, serif title, the e-mail set huge as the
+ * main link (mailto from `contact.email`), the optional LeadForm
+ * (`contact.inquiry`, wired to `contact.form.provider`), then the socials.
  */
 import LeadForm from '../../core/LeadForm.astro';
 import type { AtelierConfig } from '../schema';
@@ -14,91 +15,92 @@ const { config } = Astro.props;
 const { contact } = config;
 ---
 
-<section class='contact' id='contact' aria-labelledby='contact-title'>
-	<span class='eyebrow'>{contact.eyebrow}</span>
-	<h2 id='contact-title' set:html={md(contact.title)} />
-	{contact.sub && <p class='c-sub'>{contact.sub}</p>}
-	<a href={`mailto:${contact.email}`} class='c-mail'>{contact.email} →</a>
-	{
-		contact.inquiry && (
-			<LeadForm
-				site={config}
-				id='atelier-inquiry'
-				variant='full'
-				fields={contact.inquiry.fields}
-				cta={contact.inquiry.cta}
-				foot={contact.inquiry.foot}
-				class='c-form'
-				source='atelier-contact'
-			/>
-		)
-	}
-	{
-		contact.socials.length > 0 && (
-			<p class='c-foot'>
-				{contact.socialsLead}{' '}
-				{contact.socials.map((s, i) => (
-					<>
-						{i > 0 && ' · '}
-						<a href={s.href} rel='noopener'>
-							{s.label}
-						</a>
-					</>
-				))}
-			</p>
-		)
-	}
+<section class='contact sec' id='contact' aria-labelledby='contact-title'>
+	<div class='wrap contact-in'>
+		<p class='eyebrow'>{contact.eyebrow}</p>
+		<h2 id='contact-title' class='display' set:html={md(contact.title)} />
+		{contact.sub && <p class='c-sub'>{contact.sub}</p>}
+		<a href={`mailto:${contact.email}`} class='c-mail display'>{contact.email}</a>
+		{
+			contact.inquiry && (
+				<div class='c-form'>
+					<LeadForm site={config} id='atelier-inquiry' variant='full' fields={contact.inquiry.fields} cta={contact.inquiry.cta} foot={contact.inquiry.foot} source='atelier-contact' />
+				</div>
+			)
+		}
+		{
+			contact.socials.length > 0 && (
+				<p class='c-foot'>
+					{contact.socialsLead}{' '}
+					{contact.socials.map((s, i) => (
+						<>
+							{i > 0 && ' · '}
+							<a href={s.href} rel='noopener'>
+								{s.label}
+							</a>
+						</>
+					))}
+				</p>
+			)
+		}
+	</div>
 </section>
 
 <style>
-	.contact {
-		max-width: 880px;
-		margin: 0 auto;
-		padding: 120px 32px;
+	.contact-in {
+		display: grid;
+		justify-items: center;
 		text-align: center;
+		gap: 22px;
+	}
+	.contact .eyebrow::before {
+		display: none;
 	}
 	.contact h2 {
-		font-size: clamp(40px, 6vw, 80px);
-		font-weight: 800;
-		letter-spacing: -0.04em;
-		line-height: 1.05;
+		font-size: clamp(44px, 6vw, 92px);
 		max-width: 16ch;
-		margin: 14px auto 0;
 	}
 	.c-sub {
-		margin: 28px auto;
 		font-size: 17px;
+		line-height: 1.6;
 		color: var(--ink-2);
-		max-width: 50ch;
-		line-height: 1.55;
+		max-width: 48ch;
 	}
 	.c-mail {
-		font-size: clamp(22px, 3vw, 32px);
-		font-weight: 700;
+		margin-top: 18px;
+		font-size: clamp(28px, 4.6vw, 64px);
+		font-style: italic;
+		font-weight: 400;
+		letter-spacing: -0.01em;
 		color: var(--accent-text);
-		letter-spacing: -0.02em;
-		display: inline-block;
-		border-bottom: 2px solid var(--accent);
-		padding-bottom: 4px;
+		text-decoration: underline;
+		text-decoration-thickness: 0.04em;
+		text-underline-offset: 0.16em;
+		text-decoration-color: var(--accent-2);
 		overflow-wrap: anywhere;
+		transition: text-decoration-color 0.25s;
+	}
+	.c-mail:hover {
+		text-decoration-color: var(--accent-text);
 	}
 	.c-form {
-		max-width: 620px;
-		margin: 48px auto 0;
+		width: min(100%, 640px);
+		margin-top: 24px;
 		text-align: left;
 	}
 	.c-foot {
-		margin-top: 56px;
-		font-family: var(--mono);
-		font-size: 13px;
+		margin-top: 16px;
+		font-size: 15px;
 		color: var(--ink-3);
 	}
 	.c-foot a {
 		color: var(--ink);
-		margin: 0 4px;
-		border-bottom: 1px solid currentColor;
+		text-decoration: underline;
+		text-underline-offset: 4px;
+		text-decoration-thickness: 1px;
+		text-decoration-color: var(--line);
 	}
 	.c-foot a:hover {
-		color: var(--accent-text);
+		text-decoration-color: var(--ink);
 	}
 </style>
