@@ -1,8 +1,9 @@
 ---
 /**
- * Home hero — copy on the left, DeviceShowcase on the right; stacked and
- * centered below 1024px. This component OWNS the two-column layout, so no
- * page-level :global overrides are needed.
+ * Home hero — copy on the left, the FeaturedPanel (ink panel bleeding to the
+ * right edge of the viewport) on the right; stacked and centered below 1024px.
+ * This component OWNS the two-column layout, so no page-level :global
+ * overrides are needed.
  *
  * The h1 is the sales headline (not the name); the name lives in the sub.
  *
@@ -11,7 +12,7 @@
  * buttons use the global .btn primitives (lift + shine) and the WhatsApp CTA
  * carries a slow pulsing ring. Everything animates transform/opacity only.
  */
-import DeviceShowcase from './DeviceShowcase.astro';
+import FeaturedPanel from './FeaturedPanel.astro';
 import { SITE, whatsappUrl } from '../../data/site';
 import { fmt, localeOf, localePath, pick, useT } from '../../i18n';
 
@@ -81,7 +82,7 @@ const proof = fmt(t.hero.proof, {
 	</div>
 
 	<div class='hero-showcase'>
-		<DeviceShowcase />
+		<FeaturedPanel />
 	</div>
 </section>
 
@@ -106,6 +107,9 @@ const proof = fmt(t.hero.proof, {
 		position: relative;
 		z-index: 1;
 		min-width: 0;
+		align-self: stretch;
+		display: grid;
+		align-items: center;
 	}
 
 	/* ---- colour field ---- */
