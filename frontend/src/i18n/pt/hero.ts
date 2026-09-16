@@ -1,4 +1,4 @@
-/** Home hero + the featured-projects rotator (DeviceShowcase). */
+/** Home hero + the featured-projects panel (FeaturedPanel). */
 export const hero = {
 	/** The h1 is the headline; `headlineAccent` is the trailing phrase rendered with `.hl`. */
 	headline: 'Precisa de um site, um sistema ou uma IA no seu produto?',

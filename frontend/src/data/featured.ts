@@ -1,5 +1,5 @@
 /**
- * Editorial picks for the home DeviceShowcase rotator. Images are imported
+ * Editorial picks for the home FeaturedPanel (the ink panel in the hero). Images are imported
  * from src/assets so astro:assets optimizes them (webp, srcset, immutable cache).
  *
  * Order matters: scene 0 is the LCP image and the first thing a visitor sees.
@@ -18,15 +18,13 @@ export interface FeaturedProject {
 	badge: Bi;
 	title: string;
 	desc: Bi;
-	/** Text for the browser-mock URL bar. Use a real host or a neutral label —
+	/** Small mono line under the screenshot. Use a real host or a neutral label,
 	 *  never a domain you don't own. */
 	urlLabel: Bi;
 	/** Optional link. External links open in a new tab; internal ones are locale-prefixed. */
 	href?: string;
 	image: ImageMetadata;
 	alt: Bi;
-	/** Stronger overlay when the screenshot has its own headline competing with the text. */
-	dim?: boolean;
 	tint?: 't0' | 't1' | 't2';
 }
 
@@ -82,7 +80,6 @@ export const featured: FeaturedProject[] = [
 		href: 'https://conx.com.br/filadelfo/',
 		image: filadelfo,
 		alt: { pt: 'Site do Filadelfo Vila Nova Conceição', en: 'Filadelfo Vila Nova Conceição website' },
-		dim: true,
 	},
 	{
 		id: 'vila-olimpia',
@@ -96,7 +93,6 @@ export const featured: FeaturedProject[] = [
 		href: 'https://vilaolimpiabypassarelli.com.br/',
 		image: vilaolimpia,
 		alt: { pt: 'Site do Vila Olímpia by Passareli', en: 'Vila Olímpia by Passareli website' },
-		dim: true,
 	},
 	{
 		id: 'mirante',
