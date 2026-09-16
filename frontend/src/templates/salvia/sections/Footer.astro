@@ -22,7 +22,7 @@ const hasContact = Boolean(phoneHref || contact.email || waHref);
 const legalTitle = footer.technicalLeadLabel ?? (footer.technicalLead ? (en ? 'Medical director' : 'Responsável técnico') : en ? 'Company' : 'Empresa');
 ---
 
-<footer class='foot'>
+<footer class='foot on-ink'>
 	<div class='wrap cols'>
 		<div>
 			<h3>{en ? 'Address' : 'Endereço'}</h3>
@@ -69,7 +69,7 @@ const legalTitle = footer.technicalLeadLabel ?? (footer.technicalLead ? (en ? 'M
 <style>
 	.foot {
 		overflow: hidden;
-		padding-top: clamp(64px, 8vw, 104px);
+		padding-top: clamp(56px, 7vw, 88px);
 		border-top: 1px solid var(--line);
 	}
 	.cols {

@@ -4,7 +4,8 @@
 
    Direction: editorial and quiet. Serif titles at regular weight, hairlines
    instead of cards, near-square corners (theme.radius ≈ 2), one dark button.
-   Secondary text uses --ink-2 only, so the page reads in two tones.
+   Secondary text uses --ink-2 only, so the page reads in two tones. The page
+   closes dark: location and footer sit on ink (`.on-ink`).
    ========================================================================== */
 .tpl-salvia {
 	--serif: 'Newsreader Variable', 'Newsreader', Georgia, 'Times New Roman', serif;
@@ -13,6 +14,9 @@
 	--pad-x: clamp(20px, 4vw, 48px);
 	--line: color-mix(in srgb, var(--ink) 16%, transparent);
 	--ease: cubic-bezier(0.76, 0, 0.24, 1);
+	/* Kept from the theme so a section can swap ink and paper (see .on-ink). */
+	--paper: var(--bg);
+	--night: var(--ink);
 	background: var(--bg);
 	color: var(--ink);
 	font-family: var(--grot);
@@ -176,6 +180,22 @@
 .tpl-salvia .mnav .mnav-panel .mnav-cta {
 	background: var(--ink);
 	color: var(--bg);
+}
+
+/* Dark close (location + footer): ink becomes the ground, paper the text.
+   Tokens are swapped locally, so every rule inside keeps reading var(--ink). */
+.tpl-salvia .on-ink {
+	--ink: var(--paper);
+	--ink-2: color-mix(in srgb, var(--paper) 72%, var(--night));
+	--bg: var(--night);
+	--bg-2: color-mix(in srgb, var(--paper) 8%, var(--night));
+	--line: color-mix(in srgb, var(--paper) 18%, transparent);
+	/* The light accent reads on ink: dots, underlines and focus rings pick it up. */
+	--accent: var(--accent-on-dark);
+	--accent-text: var(--accent-on-dark);
+	--accent-soft: color-mix(in srgb, var(--accent-on-dark) 28%, transparent);
+	background: var(--night);
+	color: var(--ink);
 }
 
 .tpl-salvia .visually-hidden {

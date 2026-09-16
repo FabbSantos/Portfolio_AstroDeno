@@ -3,6 +3,7 @@
  * Location (#onde): the address set large in serif with directions and links on
  * the left; the week's hours on the right as a menu-style list with dotted
  * leaders. Today's row and the open/closed line are filled in by SalviaBody.
+ * Sits on ink (with the footer) as the page's dark close: see `.on-ink` in styles.css.
  */
 import type { SalviaConfig } from '../schema';
 import { hoursTable, OPEN_STRINGS } from '../hours';
@@ -22,7 +23,7 @@ const waHref = contact.whatsapp ? `https://wa.me/${contact.whatsapp.number}?text
 const en = locale === 'en';
 ---
 
-<section class='sec location' id='onde' aria-labelledby='salvia-location-title'>
+<section class='sec location on-ink' id='onde' aria-labelledby='salvia-location-title'>
 	<div class='wrap'>
 		<header class='sec-head'>
 			<h2 id='salvia-location-title' set:html={md(location.title)} />
@@ -97,7 +98,7 @@ const en = locale === 'en';
 
 <style>
 	.location {
-		border-top: 1px solid var(--line);
+		padding-bottom: clamp(56px, 7vw, 96px);
 	}
 	.grid {
 		display: grid;
