@@ -25,4 +25,8 @@ export const common: Shape<typeof ptShape> = {
 	nda: 'NDA',
 	offline: 'site offline',
 	back: 'Back',
+	theme: {
+		toDark: 'Turn the light off (dark mode)',
+		toLight: 'Turn the light on (light mode)',
+	},
 };

@@ -1,0 +1,290 @@
+---
+/**
+ * Theme switch as a pull cord: a string hangs from the top edge of the page
+ * with a small bulb at the end. Pull it (drag down past ~22px, or click / tap /
+ * Enter) and the light goes out: dark mode. Pull again to light it back up.
+ *
+ * The cord stretches with the pointer (transform only), snaps back on a
+ * spring, and the bulb glows warm in light mode and goes dim in dark mode.
+ * The choice is stored in localStorage('theme'); Layout.astro applies it
+ * before paint. Without a stored choice the site follows the OS.
+ *
+ * Reduced motion: no sway, no spring; the click still toggles.
+ */
+import { localeOf, useT } from '../../i18n';
+
+const locale = localeOf(Astro);
+const t = useT(locale);
+---
+
+<button type='button' class='cord' id='light-cord' data-label-dark={t.common.theme.toDark} data-label-light={t.common.theme.toLight} aria-label={t.common.theme.toDark} aria-pressed='false'>
+	<span class='cord-line' aria-hidden='true'></span>
+	<span class='cord-knob' aria-hidden='true'>
+		<span class='cord-glow'></span>
+		<span class='cord-bulb'></span>
+	</span>
+</button>
+
+<style>
+	.cord {
+		/* Geometry: the string starts above the viewport so it reads as coming from the top edge. */
+		--cord-top: -72px;
+		--cord-len: 64px;
+		--pull: 0px;
+		position: relative;
+		width: 36px;
+		height: 38px;
+		margin-left: 4px;
+		padding: 0;
+		border: 0;
+		background: none;
+		cursor: grab;
+		touch-action: none;
+		-webkit-tap-highlight-color: transparent;
+		transform-origin: 50% var(--cord-top);
+	}
+	.cord.is-dragging {
+		cursor: grabbing;
+	}
+	.cord:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 4px;
+		border-radius: 999px;
+	}
+	.cord-line {
+		position: absolute;
+		left: 50%;
+		top: var(--cord-top);
+		width: 2px;
+		height: calc(var(--cord-len) - var(--cord-top));
+		margin-left: -1px;
+		background: linear-gradient(to bottom, var(--ink-4), var(--ink-3));
+		transform-origin: top;
+		transform: scaleY(calc(1 + var(--pull) / (var(--cord-len) - var(--cord-top))));
+	}
+	.cord-knob {
+		position: absolute;
+		left: 50%;
+		top: var(--cord-len);
+		width: 16px;
+		height: 16px;
+		margin-left: -8px;
+		transform: translateY(var(--pull));
+	}
+	.cord-bulb {
+		position: absolute;
+		inset: 0;
+		border-radius: 50%;
+		background: radial-gradient(circle at 35% 32%, #fff8cf 0%, #ffd23f 45%, #f4a300 100%);
+		box-shadow:
+			0 0 0 1px rgba(200, 140, 0, 0.35),
+			0 2px 4px rgba(26, 26, 28, 0.25);
+		transition:
+			background 0.45s,
+			box-shadow 0.45s;
+	}
+	.cord-glow {
+		position: absolute;
+		inset: -12px;
+		border-radius: 50%;
+		background: radial-gradient(circle, rgba(255, 210, 63, 0.55) 0%, rgba(255, 210, 63, 0.18) 45%, transparent 70%);
+		transition:
+			opacity 0.45s,
+			transform 0.45s var(--ease-out-expo);
+	}
+	/* Light off: the bulb goes cold and the glow disappears. */
+	:global(:root[data-theme='dark']) .cord-bulb {
+		background: radial-gradient(circle at 35% 32%, #4a4a52 0%, #2c2c32 60%, #202024 100%);
+		box-shadow:
+			0 0 0 1px rgba(255, 255, 255, 0.14),
+			0 2px 4px rgba(0, 0, 0, 0.5);
+	}
+	:global(:root[data-theme='dark']) .cord-glow {
+		opacity: 0;
+		transform: scale(0.6);
+	}
+	@media (prefers-color-scheme: dark) {
+		:global(:root:not([data-theme='light'])) .cord-bulb {
+			background: radial-gradient(circle at 35% 32%, #4a4a52 0%, #2c2c32 60%, #202024 100%);
+			box-shadow:
+				0 0 0 1px rgba(255, 255, 255, 0.14),
+				0 2px 4px rgba(0, 0, 0, 0.5);
+		}
+		:global(:root:not([data-theme='light'])) .cord-glow {
+			opacity: 0;
+			transform: scale(0.6);
+		}
+	}
+
+	/* Idle sway on hover; a pull (click / keyboard) and the spring back after a drag. */
+	.cord:hover:not(.is-dragging):not(.is-pulling):not(.is-snapping) {
+		animation: cordSway 1.6s ease-in-out infinite;
+	}
+	@keyframes cordSway {
+		0%,
+		100% {
+			transform: rotate(0deg);
+		}
+		50% {
+			transform: rotate(2.5deg);
+		}
+	}
+	.cord.is-pulling .cord-line,
+	.cord.is-pulling .cord-knob,
+	.cord.is-snapping .cord-line,
+	.cord.is-snapping .cord-knob {
+		transition: none;
+	}
+	.cord.is-pulling {
+		animation: cordPull 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+	}
+	.cord.is-snapping {
+		animation: cordSnap 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+	}
+	@keyframes cordPull {
+		0% {
+			--pull: 0px;
+		}
+		30% {
+			--pull: 30px;
+		}
+		100% {
+			--pull: 0px;
+		}
+	}
+	@keyframes cordSnap {
+		0% {
+			--pull: var(--from, 30px);
+		}
+		100% {
+			--pull: 0px;
+		}
+	}
+	@property --pull {
+		syntax: '<length>';
+		inherits: true;
+		initial-value: 0px;
+	}
+	/* The knob and line follow --pull without their own easing while dragging. */
+	.cord:not(.is-dragging):not(.is-pulling):not(.is-snapping) .cord-line,
+	.cord:not(.is-dragging):not(.is-pulling):not(.is-snapping) .cord-knob {
+		transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+	}
+
+	@media (max-width: 780px) {
+		.cord {
+			width: 30px;
+			margin-left: 0;
+			--cord-len: 58px;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.cord:hover,
+		.cord.is-pulling,
+		.cord.is-snapping {
+			animation: none;
+		}
+		.cord-line,
+		.cord-knob,
+		.cord-glow,
+		.cord-bulb {
+			transition: none;
+		}
+	}
+</style>
+
+<script>
+	const cord = document.getElementById('light-cord');
+	if (cord) {
+		const root = document.documentElement;
+		const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+		const media = window.matchMedia('(prefers-color-scheme: dark)');
+		const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		const MAX = 60;
+		const THRESHOLD = 22;
+
+		const isDark = () => {
+			const t = root.getAttribute('data-theme');
+			return t ? t === 'dark' : media.matches;
+		};
+		const reflect = () => {
+			const dark = isDark();
+			cord.setAttribute('aria-pressed', String(dark));
+			cord.setAttribute('aria-label', (dark ? cord.dataset.labelLight : cord.dataset.labelDark) ?? '');
+			if (meta) meta.content = dark ? '#101012' : '#FBFBFD';
+		};
+		const setTheme = (dark: boolean) => {
+			root.setAttribute('data-theme', dark ? 'dark' : 'light');
+			try {
+				localStorage.setItem('theme', dark ? 'dark' : 'light');
+			} catch {
+				/* private mode */
+			}
+			reflect();
+		};
+		const toggle = () => setTheme(!isDark());
+
+		// Click / keyboard: play the pull and switch at the bottom of it.
+		const pull = () => {
+			if (reduced) return toggle();
+			cord.classList.remove('is-snapping');
+			cord.classList.add('is-pulling');
+			setTimeout(toggle, 200);
+			cord.addEventListener('animationend', () => cord.classList.remove('is-pulling'), { once: true });
+		};
+
+		// Drag: the cord follows the pointer; past the threshold it switches on release.
+		let startY = 0;
+		let dragging = false;
+		let current = 0;
+		cord.addEventListener('pointerdown', (e) => {
+			if (e.button !== 0) return;
+			startY = e.clientY;
+			dragging = true;
+			current = 0;
+			cord.setPointerCapture(e.pointerId);
+			cord.classList.remove('is-pulling', 'is-snapping');
+			cord.classList.add('is-dragging');
+		});
+		cord.addEventListener('pointermove', (e) => {
+			if (!dragging) return;
+			current = Math.max(0, Math.min(MAX, e.clientY - startY));
+			// Past the natural length the cord resists: softer travel.
+			const eased = current > 40 ? 40 + (current - 40) * 0.45 : current;
+			cord.style.setProperty('--pull', `${eased}px`);
+		});
+		const release = (e: PointerEvent) => {
+			if (!dragging) return;
+			dragging = false;
+			cord.classList.remove('is-dragging');
+			try {
+				cord.releasePointerCapture(e.pointerId);
+			} catch {
+				/* already released */
+			}
+			const pulled = current >= THRESHOLD;
+			if (current < 4) {
+				// A tap, not a drag: the scripted pull.
+				cord.style.removeProperty('--pull');
+				pull();
+				return;
+			}
+			cord.style.setProperty('--from', getComputedStyle(cord).getPropertyValue('--pull') || `${current}px`);
+			cord.style.removeProperty('--pull');
+			if (!reduced) {
+				cord.classList.add('is-snapping');
+				cord.addEventListener('animationend', () => cord.classList.remove('is-snapping'), { once: true });
+			}
+			if (pulled) toggle();
+		};
+		cord.addEventListener('pointerup', release);
+		cord.addEventListener('pointercancel', release);
+		// The pointer handlers own the interaction; keyboard activation still comes through click.
+		cord.addEventListener('click', (e) => {
+			if (e.detail === 0) pull();
+		});
+
+		media.addEventListener('change', reflect);
+		reflect();
+	}
+</script>
