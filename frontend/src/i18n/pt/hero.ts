@@ -1,4 +1,4 @@
-/** Home hero + the featured-projects panel (FeaturedPanel). */
+/** Home hero + the featured-projects deck (FeaturedDeck). */
 export const hero = {
 	/** The h1 is the headline; `headlineAccent` is the trailing phrase rendered with `.hl`. */
 	headline: 'Precisa de um site, um sistema ou uma IA no seu produto?',
