@@ -11,6 +11,7 @@ export const hero: Shape<typeof ptShape> = {
 		label: 'Featured projects',
 		slide: 'Project {n} of {total}',
 		goTo: 'Show {title}',
+		open: 'Open {title}',
 		prev: 'Previous project',
 		next: 'Next project',
 		pause: 'Pause auto-rotation',

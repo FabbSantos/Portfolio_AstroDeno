@@ -1,4 +1,4 @@
-/** Home hero + the featured-projects deck (FeaturedDeck). */
+/** Home hero + the featured-projects flow (FeaturedFlow). */
 export const hero = {
 	/** The h1 is the headline; `headlineAccent` is the trailing phrase rendered with `.hl`. */
 	headline: 'Precisa de um site, um sistema ou uma IA no seu produto?',
@@ -11,6 +11,7 @@ export const hero = {
 		label: 'Projetos em destaque',
 		slide: 'Projeto {n} de {total}',
 		goTo: 'Mostrar {title}',
+		open: 'Abrir {title}',
 		prev: 'Projeto anterior',
 		next: 'Próximo projeto',
 		pause: 'Pausar rotação automática',
