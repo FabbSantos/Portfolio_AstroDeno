@@ -72,7 +72,7 @@ const demo = demoPath(tpl.slug);
 const style = `${hueVars(tpl.kind)};--frame-pct:${framePct};--pan-dur:${panDur}`;
 ---
 
-<article class:list={['tpl-card', wide && 'is-wide', cls]} data-card data-kind={tpl.kind} style={style}>
+<article class:list={['tpl-card', wide && 'is-wide', cls]} data-card data-hue data-kind={tpl.kind} style={style}>
 	<span class='tpl-ring' aria-hidden='true'></span>
 
 	<div class='tpl-frame' style={`background:${tpl.grad}`}>
@@ -305,7 +305,7 @@ const style = `${hueVars(tpl.kind)};--frame-pct:${framePct};--pan-dur:${panDur}`
 		transform-origin: top left;
 		border: 0;
 		pointer-events: none;
-		background: #fff;
+		background: var(--bg-3);
 	}
 	/* Soft bottom fade so the labels read; lifts on hover to show the page clean. */
 	.tpl-frame::after {

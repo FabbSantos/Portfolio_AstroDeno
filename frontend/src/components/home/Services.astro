@@ -633,7 +633,7 @@ const ICONS: Record<ServiceIcon, string> = {
 	.svc-shot {
 		aspect-ratio: 16 / 10;
 		overflow: hidden;
-		background: #fff;
+		background: var(--bg-3);
 	}
 	.svc-shot img {
 		width: 100%;
@@ -655,13 +655,13 @@ const ICONS: Record<ServiceIcon, string> = {
 		transform-origin: top left;
 		border: 0;
 		pointer-events: none;
-		background: #fff;
+		background: var(--bg-3);
 	}
 	.svc-shot-ph {
 		display: block;
 		width: 100%;
 		height: 100%;
-		background: linear-gradient(135deg, color-mix(in srgb, var(--hue) 16%, #fff), color-mix(in srgb, var(--hue) 5%, #fff));
+		background: linear-gradient(135deg, color-mix(in srgb, var(--hue) 16%, var(--bg-3)), color-mix(in srgb, var(--hue) 5%, var(--bg-3)));
 	}
 
 	.svc-side {

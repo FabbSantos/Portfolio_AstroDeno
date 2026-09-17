@@ -100,8 +100,15 @@ const jsonLd = {
 		<meta name='theme-color' content='#FBFBFD' />
 		<meta name='generator' content={Astro.generator} />
 
-		<!-- JS gate for scroll-reveal (content stays visible without JS) -->
-		<script is:inline>document.documentElement.classList.add('js');</script>
+		<!-- JS gate for scroll-reveal (content stays visible without JS) + the stored theme,
+		     applied before the first paint so a dark visitor never sees a light flash. -->
+		<script is:inline>
+			document.documentElement.classList.add('js');
+			try {
+				const t = localStorage.getItem('theme');
+				if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+			} catch {}
+		</script>
 
 		<!-- Vercel Web Analytics + Speed Insights: drop beacons when this document is
 		     embedded in an iframe (template previews), so a home visit counts once. -->

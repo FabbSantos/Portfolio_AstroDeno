@@ -37,11 +37,11 @@ const value = Math.max(0, Math.min(100, score));
 <style>
 	.gauge {
 		--good: #0cce6b;
-		--good-text: #007a33;
+		--good-text: var(--ok-text);
 		--average: #ffa400;
-		--average-text: #b25400;
+		--average-text: var(--warn-text);
 		--poor: #ff4e42;
-		--poor-text: #c7221f;
+		--poor-text: var(--bad-text);
 		position: relative;
 		display: inline-grid;
 		place-items: center;

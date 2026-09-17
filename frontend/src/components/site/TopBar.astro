@@ -10,6 +10,7 @@
  * - Mobile menu: opacity + transform + visibility (transition-safe) — no body
  *   scroll lock, the page stays scrollable behind the dropdown.
  */
+import LightCord from './LightCord.astro';
 import { SITE } from '../../data/site';
 import { LANG_TAG, altLocale, localeOf, localePath, switchPath, useT } from '../../i18n';
 
@@ -84,6 +85,8 @@ const CODE: Record<typeof locale, string> = { pt: 'PT', en: 'EN' };
 				}
 			</div>
 
+			<LightCord />
+
 			<button
 				class='nav-toggle'
 				id='nav-toggle'
@@ -104,7 +107,7 @@ const CODE: Record<typeof locale, string> = { pt: 'PT', en: 'EN' };
 		top: 0;
 		z-index: 50;
 		padding: 20px 32px;
-		background: rgba(251, 251, 253, 0);
+		background: color-mix(in srgb, var(--bg) 0%, transparent);
 		backdrop-filter: saturate(180%) blur(0);
 		-webkit-backdrop-filter: saturate(180%) blur(0);
 		border-bottom: 1px solid transparent;
@@ -115,7 +118,7 @@ const CODE: Record<typeof locale, string> = { pt: 'PT', en: 'EN' };
 			padding 0.3s;
 	}
 	.topbar.is-scrolled {
-		background: rgba(251, 251, 253, 0.85);
+		background: color-mix(in srgb, var(--bg) 85%, transparent);
 		backdrop-filter: saturate(180%) blur(14px);
 		-webkit-backdrop-filter: saturate(180%) blur(14px);
 		border-bottom-color: var(--rule);
@@ -220,7 +223,7 @@ const CODE: Record<typeof locale, string> = { pt: 'PT', en: 'EN' };
 		padding: 0 18px;
 		border-radius: 999px;
 		background: var(--ink);
-		color: #fff;
+		color: var(--on-ink);
 		font-size: 14px;
 		font-weight: 600;
 		white-space: nowrap;
@@ -233,6 +236,7 @@ const CODE: Record<typeof locale, string> = { pt: 'PT', en: 'EN' };
 	.top-cta:hover,
 	.top-cta:focus-visible {
 		background: var(--accent);
+		color: #fff;
 		transform: translateY(-1px);
 		box-shadow: 0 10px 24px -12px rgba(255, 89, 100, 0.65);
 	}
@@ -291,7 +295,7 @@ const CODE: Record<typeof locale, string> = { pt: 'PT', en: 'EN' };
 		background: var(--bg-2);
 	}
 	.lang-option.is-current {
-		color: #fff;
+		color: var(--on-ink);
 		background: var(--ink);
 	}
 
@@ -390,7 +394,7 @@ const CODE: Record<typeof locale, string> = { pt: 'PT', en: 'EN' };
 			align-items: stretch;
 			gap: 0;
 			padding: 8px 20px 20px;
-			background: rgba(251, 251, 253, 0.96);
+			background: color-mix(in srgb, var(--bg) 96%, transparent);
 			backdrop-filter: saturate(180%) blur(14px);
 			-webkit-backdrop-filter: saturate(180%) blur(14px);
 			border-bottom: 1px solid var(--rule);

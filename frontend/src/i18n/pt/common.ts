@@ -22,4 +22,8 @@ export const common = {
 	nda: 'NDA',
 	offline: 'site offline',
 	back: 'Voltar',
+	theme: {
+		toDark: 'Apagar a luz (modo escuro)',
+		toLight: 'Acender a luz (modo claro)',
+	},
 } as const;

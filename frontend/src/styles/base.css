@@ -53,6 +53,13 @@
 	--hue-green-text: #14793a;
 	--rule: rgba(26, 26, 28, 0.07);
 	--rule-2: rgba(26, 26, 28, 0.14);
+	/* Text on an --ink surface (buttons, pills): white in light, page-dark in dark. */
+	--on-ink: #ffffff;
+	/* Semantic text (Lighthouse gauges, status): AA on --bg in both themes. */
+	--ok-text: #007a33;
+	--warn-text: #b25400;
+	--bad-text: #c7221f;
+	color-scheme: light;
 	--sans: 'Inter Variable', 'Inter', 'Inter Fallback', -apple-system, system-ui, sans-serif;
 	--mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
 
@@ -65,6 +72,231 @@
 	--fs-h2: clamp(36px, 5vw, 64px); /* section heads / CTAs */
 	--fs-h3: clamp(28px, 3.5vw, 44px);
 	--fs-lead: clamp(16px, 1.5vw, 19px);
+}
+
+/* Dark theme: an explicit choice (LightCord) or the OS preference when nothing
+   is stored. Template demos opt out with data-theme="light" on <html>. */
+:root[data-theme='dark'] {
+	--bg: #101012;
+	--bg-2: #18181c;
+	--bg-3: #1e1e23;
+	--ink: #f2f2f4;
+	--ink-2: #b8b8bf;
+	--ink-3: #9d9da5;
+	--ink-4: #3e3e46;
+	--accent-text: #ff8189;
+	--accent-soft: rgba(255, 89, 100, 0.16);
+	--accent-2-soft: rgba(124, 58, 237, 0.22);
+	--hue-coral-soft: rgba(255, 89, 100, 0.18);
+	--hue-violet-soft: rgba(124, 58, 237, 0.22);
+	--hue-sky-soft: rgba(14, 165, 233, 0.18);
+	--hue-amber-soft: rgba(245, 158, 11, 0.18);
+	--hue-green-soft: rgba(22, 163, 74, 0.2);
+	--hue-coral-text: #ff8189;
+	--hue-violet-text: #b8a2ff;
+	--hue-sky-text: #6cc9ff;
+	--hue-amber-text: #fbbf24;
+	--hue-green-text: #4ade80;
+	--rule: rgba(255, 255, 255, 0.08);
+	--rule-2: rgba(255, 255, 255, 0.16);
+	--on-ink: #101012;
+	--ok-text: #4ade80;
+	--warn-text: #fbbf24;
+	--bad-text: #ff7b73;
+	color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme='light']) {
+		--bg: #101012;
+		--bg-2: #18181c;
+		--bg-3: #1e1e23;
+		--ink: #f2f2f4;
+		--ink-2: #b8b8bf;
+		--ink-3: #9d9da5;
+		--ink-4: #3e3e46;
+		--accent-text: #ff8189;
+		--accent-soft: rgba(255, 89, 100, 0.16);
+		--accent-2-soft: rgba(124, 58, 237, 0.22);
+		--hue-coral-soft: rgba(255, 89, 100, 0.18);
+		--hue-violet-soft: rgba(124, 58, 237, 0.22);
+		--hue-sky-soft: rgba(14, 165, 233, 0.18);
+		--hue-amber-soft: rgba(245, 158, 11, 0.18);
+		--hue-green-soft: rgba(22, 163, 74, 0.2);
+		--hue-coral-text: #ff8189;
+		--hue-violet-text: #b8a2ff;
+		--hue-sky-text: #6cc9ff;
+		--hue-amber-text: #fbbf24;
+		--hue-green-text: #4ade80;
+		--rule: rgba(255, 255, 255, 0.08);
+		--rule-2: rgba(255, 255, 255, 0.16);
+		--on-ink: #101012;
+		--ok-text: #4ade80;
+		--warn-text: #fbbf24;
+		--bad-text: #ff7b73;
+		color-scheme: dark;
+	}
+}
+/* Per-template hue (components/templates/hues.ts sets both variants inline). */
+[data-hue] {
+	--hue-text: var(--hue-text-l);
+}
+:root[data-theme='dark'] [data-hue] {
+	--hue-text: var(--hue-text-d);
+}
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme='light']) [data-hue] {
+		--hue-text: var(--hue-text-d);
+	}
+}
+
+/* Dark theme: an explicit choice (LightCord) or the OS preference when nothing
+   is stored. Template demos opt out with data-theme="light" on <html>. */
+:root[data-theme='dark'] {
+	--bg: #101012;
+	--bg-2: #18181c;
+	--bg-3: #1e1e23;
+	--ink: #f2f2f4;
+	--ink-2: #b8b8bf;
+	--ink-3: #9d9da5;
+	--ink-4: #3e3e46;
+	--accent-text: #ff8189;
+	--accent-soft: rgba(255, 89, 100, 0.16);
+	--accent-2-soft: rgba(124, 58, 237, 0.22);
+	--hue-coral-soft: rgba(255, 89, 100, 0.18);
+	--hue-violet-soft: rgba(124, 58, 237, 0.22);
+	--hue-sky-soft: rgba(14, 165, 233, 0.18);
+	--hue-amber-soft: rgba(245, 158, 11, 0.18);
+	--hue-green-soft: rgba(22, 163, 74, 0.2);
+	--hue-coral-text: #ff8189;
+	--hue-violet-text: #b8a2ff;
+	--hue-sky-text: #6cc9ff;
+	--hue-amber-text: #fbbf24;
+	--hue-green-text: #4ade80;
+	--rule: rgba(255, 255, 255, 0.08);
+	--rule-2: rgba(255, 255, 255, 0.16);
+	--on-ink: #101012;
+	--ok-text: #4ade80;
+	--warn-text: #fbbf24;
+	--bad-text: #ff7b73;
+	color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme='light']) {
+		--bg: #101012;
+		--bg-2: #18181c;
+		--bg-3: #1e1e23;
+		--ink: #f2f2f4;
+		--ink-2: #b8b8bf;
+		--ink-3: #9d9da5;
+		--ink-4: #3e3e46;
+		--accent-text: #ff8189;
+		--accent-soft: rgba(255, 89, 100, 0.16);
+		--accent-2-soft: rgba(124, 58, 237, 0.22);
+		--hue-coral-soft: rgba(255, 89, 100, 0.18);
+		--hue-violet-soft: rgba(124, 58, 237, 0.22);
+		--hue-sky-soft: rgba(14, 165, 233, 0.18);
+		--hue-amber-soft: rgba(245, 158, 11, 0.18);
+		--hue-green-soft: rgba(22, 163, 74, 0.2);
+		--hue-coral-text: #ff8189;
+		--hue-violet-text: #b8a2ff;
+		--hue-sky-text: #6cc9ff;
+		--hue-amber-text: #fbbf24;
+		--hue-green-text: #4ade80;
+		--rule: rgba(255, 255, 255, 0.08);
+		--rule-2: rgba(255, 255, 255, 0.16);
+		--on-ink: #101012;
+		--ok-text: #4ade80;
+		--warn-text: #fbbf24;
+		--bad-text: #ff7b73;
+		color-scheme: dark;
+	}
+}
+/* Per-template hue (components/templates/hues.ts sets both variants inline). */
+[data-hue] {
+	--hue-text: var(--hue-text-l);
+}
+:root[data-theme='dark'] [data-hue] {
+	--hue-text: var(--hue-text-d);
+}
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme='light']) [data-hue] {
+		--hue-text: var(--hue-text-d);
+	}
+}
+
+/* Dark theme: an explicit choice (LightCord) or the OS preference when nothing
+   is stored. Template demos opt out with data-theme="light" on <html>. */
+:root[data-theme='dark'] {
+	--bg: #101012;
+	--bg-2: #18181c;
+	--bg-3: #1e1e23;
+	--ink: #f2f2f4;
+	--ink-2: #b8b8bf;
+	--ink-3: #9d9da5;
+	--ink-4: #3e3e46;
+	--accent-text: #ff8189;
+	--accent-soft: rgba(255, 89, 100, 0.16);
+	--accent-2-soft: rgba(124, 58, 237, 0.22);
+	--hue-coral-soft: rgba(255, 89, 100, 0.18);
+	--hue-violet-soft: rgba(124, 58, 237, 0.22);
+	--hue-sky-soft: rgba(14, 165, 233, 0.18);
+	--hue-amber-soft: rgba(245, 158, 11, 0.18);
+	--hue-green-soft: rgba(22, 163, 74, 0.2);
+	--hue-coral-text: #ff8189;
+	--hue-violet-text: #b8a2ff;
+	--hue-sky-text: #6cc9ff;
+	--hue-amber-text: #fbbf24;
+	--hue-green-text: #4ade80;
+	--rule: rgba(255, 255, 255, 0.08);
+	--rule-2: rgba(255, 255, 255, 0.16);
+	--on-ink: #101012;
+	--ok-text: #4ade80;
+	--warn-text: #fbbf24;
+	--bad-text: #ff7b73;
+	color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme='light']) {
+		--bg: #101012;
+		--bg-2: #18181c;
+		--bg-3: #1e1e23;
+		--ink: #f2f2f4;
+		--ink-2: #b8b8bf;
+		--ink-3: #9d9da5;
+		--ink-4: #3e3e46;
+		--accent-text: #ff8189;
+		--accent-soft: rgba(255, 89, 100, 0.16);
+		--accent-2-soft: rgba(124, 58, 237, 0.22);
+		--hue-coral-soft: rgba(255, 89, 100, 0.18);
+		--hue-violet-soft: rgba(124, 58, 237, 0.22);
+		--hue-sky-soft: rgba(14, 165, 233, 0.18);
+		--hue-amber-soft: rgba(245, 158, 11, 0.18);
+		--hue-green-soft: rgba(22, 163, 74, 0.2);
+		--hue-coral-text: #ff8189;
+		--hue-violet-text: #b8a2ff;
+		--hue-sky-text: #6cc9ff;
+		--hue-amber-text: #fbbf24;
+		--hue-green-text: #4ade80;
+		--rule: rgba(255, 255, 255, 0.08);
+		--rule-2: rgba(255, 255, 255, 0.16);
+		--on-ink: #101012;
+		--ok-text: #4ade80;
+		--warn-text: #fbbf24;
+		--bad-text: #ff7b73;
+		color-scheme: dark;
+	}
+}
+/* Per-template hue (components/templates/hues.ts sets both variants inline). */
+[data-hue] {
+	--hue-text: var(--hue-text-l);
+}
+:root[data-theme='dark'] [data-hue] {
+	--hue-text: var(--hue-text-d);
+}
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme='light']) [data-hue] {
+		--hue-text: var(--hue-text-d);
+	}
 }
 
 * {
@@ -81,6 +313,15 @@ html,
 body {
 	background: var(--bg);
 	color: var(--ink);
+	transition:
+		background-color 0.35s,
+		color 0.35s;
+	transition:
+		background-color 0.35s,
+		color 0.35s;
+	transition:
+		background-color 0.35s,
+		color 0.35s;
 	font-family: var(--sans);
 	font-size: 17px;
 	line-height: 1.47;
