@@ -1,7 +1,7 @@
 ---
 /**
- * Home hero — copy on the left, the FeaturedDeck (a fan of project cards) on
- * the right; stacked and centered below 1024px.
+ * Home hero — copy on the left, the FeaturedFlow (two drifting columns of
+ * project cards) on the right; stacked and centered below 1024px.
  * This component OWNS the two-column layout, so no page-level :global
  * overrides are needed.
  *
@@ -12,7 +12,7 @@
  * buttons use the global .btn primitives (lift + shine) and the WhatsApp CTA
  * carries a slow pulsing ring. Everything animates transform/opacity only.
  */
-import FeaturedDeck from './FeaturedDeck.astro';
+import FeaturedFlow from './FeaturedFlow.astro';
 import { SITE, whatsappUrl } from '../../data/site';
 import { fmt, localeOf, localePath, pick, useT } from '../../i18n';
 
@@ -82,7 +82,7 @@ const proof = fmt(t.hero.proof, {
 	</div>
 
 	<div class='hero-showcase'>
-		<FeaturedDeck />
+		<FeaturedFlow />
 	</div>
 </section>
 

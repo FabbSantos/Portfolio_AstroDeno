@@ -1,0 +1,452 @@
+---
+/**
+ * Featured-projects flow for the home hero (after 21st.dev 20151 "Vertical
+ * Marquee", 23344 "Diagonal Marquee" and 26568 "Vertical Marquee 03"): two
+ * columns of project cards drifting slowly in opposite directions, the whole
+ * set tilted a few degrees, top and bottom edges fading into the page. Each
+ * card is the screenshot in a light frame with the project name under it.
+ *
+ * Motion is one CSS animation per column on `transform` only. Hovering or
+ * focusing a column pauses it and lifts the card; the visible pause/play
+ * control and a hidden tab pause both; off screen the columns stop
+ * (IntersectionObserver). Reduced motion shows a still two-by-three grid.
+ *
+ * The first card of each column is rendered eagerly (the first one is the
+ * LCP image); the rest, including the loop copies, sit in a <template> and
+ * are mounted after `load`, and only then do the columns start moving.
+ * Below 1024px the flow is one horizontal row.
+ */
+import { Image } from 'astro:assets';
+import { featured } from '../../data/featured';
+import { fmt, localeOf, localePath, pick, useT } from '../../i18n';
+
+const locale = localeOf(Astro);
+const t = useT(locale);
+
+const items = featured.slice(0, 6);
+const pad = (n: number) => String(n).padStart(2, '0');
+/** Column A takes the even items, column B the odd ones. */
+const cols = [items.filter((_, i) => i % 2 === 0), items.filter((_, i) => i % 2 === 1)];
+const indexOf = (id: string) => items.findIndex((x) => x.id === id);
+---
+
+<div class='flow' id='showcase' role='region' aria-label={t.hero.showcase.label}>
+	<div class='flow-stage'>
+		<div class='flow-tilt'>
+			{
+				cols.map((col, c) => (
+					<div class:list={['flow-col', c === 0 ? 'is-up' : 'is-down']} data-flow-col>
+						<div class='flow-track' data-flow-track>
+							{[0, 1].map((copy) =>
+								col.map((p, k) => {
+									const i = indexOf(p.id);
+									const eager = copy === 0 && k === 0;
+									const external = !!p.href && /^https?:\/\//.test(p.href);
+									const href = p.href ? (external ? p.href : localePath(locale, p.href)) : undefined;
+									const Tag = href && copy === 0 ? 'a' : 'div';
+									const card = (
+										<Tag
+											class='fcard'
+											href={href && copy === 0 ? href : undefined}
+											target={external && copy === 0 ? '_blank' : undefined}
+											rel={external && copy === 0 ? 'noopener' : undefined}
+											aria-hidden={copy === 1 ? 'true' : undefined}
+											aria-label={href && copy === 0 ? fmt(t.hero.showcase.open, { title: p.title }) : undefined}
+										>
+											<span class='fcard-shot'>
+												<Image
+													src={p.image}
+													alt={copy === 0 ? pick(p.alt, locale) : ''}
+													widths={[480, 720, 960]}
+													sizes='(max-width: 1024px) 70vw, 20vw'
+													format='webp'
+													quality='high'
+													loading='eager'
+													fetchpriority={eager && c === 0 ? 'high' : 'low'}
+													decoding='async'
+												/>
+											</span>
+											<span class='fcard-meta'>
+												<span class='fcard-i'>{pad(i + 1)}</span>
+												<span class='fcard-name'>{p.title}</span>
+												<span class='fcard-badge'>{pick(p.badge, locale)}</span>
+												{href && copy === 0 && (
+													<span class='fcard-arr' aria-hidden='true'>
+														{external ? '↗' : '→'}
+													</span>
+												)}
+											</span>
+										</Tag>
+									);
+									return eager ? card : <template data-flow-deferred>{card}</template>;
+								}),
+							)}
+						</div>
+					</div>
+				))
+			}
+		</div>
+	</div>
+
+	<button
+		type='button'
+		class='flow-toggle'
+		data-flow-toggle
+		data-label-pause={t.hero.showcase.pause}
+		data-label-play={t.hero.showcase.play}
+		aria-label={t.hero.showcase.pause}
+		aria-pressed='false'
+	>
+		<svg class='ic-pause' width='14' height='14' viewBox='0 0 18 18' aria-hidden='true' focusable='false'>
+			<rect x='4' y='3' width='3.5' height='12' rx='1' fill='currentColor' />
+			<rect x='10.5' y='3' width='3.5' height='12' rx='1' fill='currentColor' />
+		</svg>
+		<svg class='ic-play' width='14' height='14' viewBox='0 0 18 18' aria-hidden='true' focusable='false'>
+			<path d='M5 3.5v11l9-5.5z' fill='currentColor' />
+		</svg>
+	</button>
+</div>
+
+<style>
+	.flow {
+		--flow-h: clamp(440px, 62vh, 600px);
+		--flow-gap: 18px;
+		--flow-t-a: 46s;
+		--flow-t-b: 58s;
+		position: relative;
+		/* Rises in with the copy stagger; no opacity, the LCP image is inside. */
+		animation: flowIn 1.1s var(--ease-out-expo) 0.2s both;
+	}
+	@keyframes flowIn {
+		from {
+			transform: translateY(28px);
+		}
+	}
+
+	.flow-stage {
+		position: relative;
+		height: var(--flow-h);
+		overflow: hidden;
+		/* All four edges melt into the page (the tilted set runs past the sides). */
+		-webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 14%, #000 86%, transparent 100%), linear-gradient(to right, transparent 0, #000 10%, #000 90%, transparent 100%);
+		-webkit-mask-composite: source-in;
+		mask-image: linear-gradient(to bottom, transparent 0, #000 14%, #000 86%, transparent 100%), linear-gradient(to right, transparent 0, #000 10%, #000 90%, transparent 100%);
+		mask-composite: intersect;
+	}
+	/* The whole set leans; scaled up so the tilt never shows the stage corners. */
+	.flow-tilt {
+		position: absolute;
+		inset: 0;
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: var(--flow-gap);
+		transform: rotate(-6deg) scale(1.14);
+		transform-origin: 50% 50%;
+	}
+	.flow-col {
+		position: relative;
+		min-width: 0;
+	}
+	.flow-track {
+		display: grid;
+		gap: var(--flow-gap);
+		will-change: transform;
+	}
+	/* Column B starts one half up, so it drifts down into place while A drifts up. */
+	.is-down .flow-track {
+		transform: translateY(-50%);
+	}
+	.flow.is-live .is-up .flow-track {
+		animation: flowUp var(--flow-t-a) linear infinite;
+	}
+	.flow.is-live .is-down .flow-track {
+		animation: flowDown var(--flow-t-b) linear infinite;
+	}
+	@keyframes flowUp {
+		to {
+			transform: translateY(-50%);
+		}
+	}
+	@keyframes flowDown {
+		from {
+			transform: translateY(-50%);
+		}
+		to {
+			transform: translateY(0);
+		}
+	}
+	/* Pause: the hovered / focused column, the whole flow by the button, a hidden or off-screen tab. */
+	/* Specificity above the `animation` shorthand rules, which would reset play-state. */
+	.flow .flow-col:hover .flow-track,
+	.flow .flow-col:focus-within .flow-track,
+	.flow.is-paused .flow-col .flow-track,
+	.flow.is-off .flow-col .flow-track {
+		animation-play-state: paused;
+	}
+
+	/* ---- card ---- */
+	.fcard {
+		display: grid;
+		gap: 10px;
+		padding: 8px 8px 10px;
+		border-radius: 14px;
+		background: var(--bg-3);
+		box-shadow:
+			0 24px 60px -28px rgba(26, 26, 28, 0.35),
+			0 0 0 1px rgba(26, 26, 28, 0.09);
+		color: var(--ink);
+		text-decoration: none;
+		transition:
+			transform 0.6s var(--ease-out-expo),
+			box-shadow 0.6s var(--ease-out-expo);
+	}
+	a.fcard:hover,
+	a.fcard:focus-visible {
+		transform: translateY(-6px);
+		box-shadow:
+			0 34px 70px -28px rgba(26, 26, 28, 0.45),
+			0 0 0 1px rgba(26, 26, 28, 0.12);
+	}
+	a.fcard:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 3px;
+	}
+	.fcard-shot {
+		display: block;
+		aspect-ratio: 16 / 10;
+		border-radius: 8px;
+		overflow: hidden;
+		background: var(--bg-2);
+	}
+	.fcard-shot :global(img) {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: top center;
+	}
+	.fcard-meta {
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr) auto;
+		column-gap: 8px;
+		align-items: baseline;
+		padding: 0 4px;
+	}
+	.fcard-i {
+		font-family: var(--mono);
+		font-size: 10.5px;
+		letter-spacing: 0.06em;
+		color: var(--accent-text);
+	}
+	.fcard-name {
+		font-size: 14px;
+		font-weight: 700;
+		letter-spacing: -0.015em;
+		line-height: 1.2;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.fcard-badge {
+		grid-column: 2;
+		font-family: var(--mono);
+		font-size: 10px;
+		letter-spacing: 0.04em;
+		color: var(--ink-3);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.fcard-arr {
+		grid-row: 1 / span 2;
+		align-self: center;
+		font-size: 14px;
+		color: var(--ink-3);
+		transition: transform 0.35s var(--ease-out-expo);
+	}
+	a.fcard:hover .fcard-arr {
+		transform: translate(2px, -2px);
+		color: var(--ink);
+	}
+
+	/* ---- pause / play ---- */
+	.flow-toggle {
+		position: absolute;
+		right: 4px;
+		bottom: 4px;
+		width: 36px;
+		height: 36px;
+		border: 1px solid var(--rule-2);
+		border-radius: 50%;
+		background: var(--bg-3);
+		display: grid;
+		place-items: center;
+		color: var(--ink-2);
+		cursor: pointer;
+		transition:
+			color 0.2s,
+			background 0.2s;
+	}
+	.flow-toggle:hover {
+		color: var(--ink);
+		background: var(--bg-2);
+	}
+	.flow-toggle:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 2px;
+	}
+	.ic-play {
+		display: none;
+	}
+	.flow.is-paused .ic-pause {
+		display: none;
+	}
+	.flow.is-paused .ic-play {
+		display: block;
+	}
+
+	/* ---- one horizontal row (≤ 1024px) ---- */
+	@media (max-width: 1024px) {
+		.flow {
+			--flow-h: 250px;
+			--flow-gap: 14px;
+			/* Bleed to the screen edges: the row runs under the page padding. */
+			margin: 0 -24px;
+		}
+		.flow-stage {
+			-webkit-mask-image: linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%);
+			-webkit-mask-composite: source-over;
+			mask-image: linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%);
+			mask-composite: add;
+		}
+		.flow-tilt {
+			display: block;
+			transform: none;
+		}
+		.flow-col {
+			position: absolute;
+			left: 0;
+			right: 0;
+		}
+		.is-up {
+			top: 0;
+		}
+		/* Column B stacks under A only when there is room; on the row it is hidden. */
+		.is-down {
+			display: none;
+		}
+		.flow-track {
+			display: flex;
+			width: max-content;
+			padding: 6px 24px;
+		}
+		.fcard {
+			width: min(68vw, 300px);
+		}
+		.flow.is-live .is-up .flow-track {
+			animation: flowLeft 40s linear infinite;
+		}
+		@keyframes flowLeft {
+			to {
+				transform: translateX(-50%);
+			}
+		}
+		.flow-toggle {
+			right: 28px;
+			bottom: 8px;
+		}
+	}
+	@media (max-width: 600px) {
+		.flow {
+			margin: 0 -20px;
+		}
+		.flow-track {
+			padding: 6px 20px;
+		}
+		.flow-toggle {
+			right: 24px;
+		}
+	}
+
+	/* ---- reduced motion: a still grid, no tilt ---- */
+	@media (prefers-reduced-motion: reduce) {
+		.flow {
+			animation: none;
+		}
+		.flow-stage {
+			height: auto;
+			-webkit-mask-image: none;
+			mask-image: none;
+		}
+		.flow-tilt {
+			position: static;
+			transform: none;
+		}
+		.flow-col {
+			position: static;
+		}
+		.is-down {
+			display: block;
+		}
+		.flow-track,
+		.is-down .flow-track,
+		.flow.is-live .is-up .flow-track,
+		.flow.is-live .is-down .flow-track {
+			display: grid;
+			width: auto;
+			padding: 0;
+			transform: none;
+			animation: none;
+		}
+		/* Loop copies are not needed when nothing moves. */
+		.flow-track > [aria-hidden='true'] {
+			display: none;
+		}
+		.fcard {
+			transition: none;
+		}
+		.flow-toggle {
+			display: none;
+		}
+	}
+</style>
+
+<script>
+	const root = document.getElementById('showcase');
+	if (root) {
+		const toggle = root.querySelector<HTMLButtonElement>('[data-flow-toggle]');
+		let paused = false;
+
+		// The remaining cards (and the loop copies) mount after load; only then the columns move.
+		const mountDeferred = () => {
+			root.querySelectorAll<HTMLTemplateElement>('template[data-flow-deferred]').forEach((tpl) => tpl.replaceWith(tpl.content));
+			root.classList.add('is-live');
+		};
+		if (document.readyState === 'complete') mountDeferred();
+		else window.addEventListener('load', mountDeferred, { once: true });
+
+		const setPaused = (p: boolean) => {
+			paused = p;
+			root.classList.toggle('is-paused', p);
+			if (toggle) {
+				toggle.setAttribute('aria-pressed', String(p));
+				toggle.setAttribute('aria-label', (p ? toggle.dataset.labelPlay : toggle.dataset.labelPause) ?? '');
+			}
+		};
+		toggle?.addEventListener('click', () => setPaused(!paused));
+
+		// Hidden tab or scrolled away: stop the animations so they cost nothing.
+		const off = () => root.classList.toggle('is-off', document.hidden || !visible);
+		let visible = true;
+		document.addEventListener('visibilitychange', off);
+		if ('IntersectionObserver' in window) {
+			new IntersectionObserver(
+				(entries) => {
+					visible = entries.some((e) => e.isIntersecting);
+					off();
+				},
+				{ rootMargin: '80px' },
+			).observe(root);
+		}
+	}
+</script>
