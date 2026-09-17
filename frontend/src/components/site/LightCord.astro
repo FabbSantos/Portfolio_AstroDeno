@@ -1,15 +1,18 @@
 ---
 /**
- * Theme switch as a pull cord: a string hangs from the top edge of the page
- * with a small bulb at the end. Pull it (drag down past ~22px, or click / tap /
- * Enter) and the light goes out: dark mode. Pull again to light it back up.
+ * Theme switch as a pull cord with real physics: a string hangs from the top
+ * edge of the viewport (fixed, right side, in its own lane beside the header)
+ * with a bulb at the end. It is a damped pendulum with a spring along the
+ * string: drag it anywhere and it follows the pointer; let go and it swings
+ * and bounces on its own until it settles. It never snaps back to a keyframe.
  *
- * The cord stretches with the pointer (transform only), snaps back on a
- * spring, and the bulb glows warm in light mode and goes dim in dark mode.
+ * Pulling the bulb down past ~22px and releasing toggles the theme: the light
+ * goes out (dark) or comes back on (light). A tap, click, Enter or Space gives
+ * the cord a scripted tug that does the same. Hovering just nudges it.
+ *
  * The choice is stored in localStorage('theme'); Layout.astro applies it
  * before paint. Without a stored choice the site follows the OS.
- *
- * Reduced motion: no sway, no spring; the click still toggles.
+ * Reduced motion: no swing, no nudge; the tug is instant.
  */
 import { localeOf, useT } from '../../i18n';
 
@@ -18,58 +21,70 @@ const t = useT(locale);
 ---
 
 <button type='button' class='cord' id='light-cord' data-label-dark={t.common.theme.toDark} data-label-light={t.common.theme.toLight} aria-label={t.common.theme.toDark} aria-pressed='false'>
-	<span class='cord-line' aria-hidden='true'></span>
-	<span class='cord-knob' aria-hidden='true'>
-		<span class='cord-glow'></span>
-		<span class='cord-bulb'></span>
+	<span class='cord-arm' data-cord-arm aria-hidden='true'>
+		<span class='cord-line' data-cord-line></span>
+		<span class='cord-knob' data-cord-knob>
+			<span class='cord-glow'></span>
+			<span class='cord-bulb'></span>
+		</span>
 	</span>
 </button>
 
 <style>
 	.cord {
-		/* Geometry: the string starts above the viewport so it reads as coming from the top edge. */
-		--cord-top: -72px;
-		--cord-len: 64px;
-		--pull: 0px;
-		position: relative;
-		width: 36px;
-		height: 38px;
-		margin-left: 4px;
+		/* String length; the script reads it. */
+		--L: 112px;
+		position: fixed;
+		top: 0;
+		right: 24px;
+		z-index: 60;
+		width: 44px;
+		height: calc(var(--L) + 44px);
 		padding: 0;
 		border: 0;
 		background: none;
 		cursor: grab;
 		touch-action: none;
 		-webkit-tap-highlight-color: transparent;
-		transform-origin: 50% var(--cord-top);
 	}
 	.cord.is-dragging {
 		cursor: grabbing;
 	}
 	.cord:focus-visible {
-		outline: 2px solid var(--accent);
-		outline-offset: 4px;
-		border-radius: 999px;
+		outline: none;
+	}
+	.cord:focus-visible .cord-bulb {
+		box-shadow:
+			0 0 0 3px var(--bg),
+			0 0 0 5px var(--accent);
+	}
+	/* The arm rotates around the anchor at the top edge of the screen. */
+	.cord-arm {
+		position: absolute;
+		left: 50%;
+		top: -2px;
+		width: 0;
+		height: var(--L);
+		transform-origin: 50% 0;
+		will-change: transform;
 	}
 	.cord-line {
 		position: absolute;
-		left: 50%;
-		top: var(--cord-top);
+		left: -1px;
+		top: 0;
 		width: 2px;
-		height: calc(var(--cord-len) - var(--cord-top));
-		margin-left: -1px;
-		background: linear-gradient(to bottom, var(--ink-4), var(--ink-3));
+		height: var(--L);
+		background: linear-gradient(to bottom, color-mix(in srgb, var(--ink) 25%, transparent), color-mix(in srgb, var(--ink) 55%, transparent));
 		transform-origin: top;
-		transform: scaleY(calc(1 + var(--pull) / (var(--cord-len) - var(--cord-top))));
+		will-change: transform;
 	}
 	.cord-knob {
 		position: absolute;
-		left: 50%;
-		top: var(--cord-len);
-		width: 16px;
-		height: 16px;
-		margin-left: -8px;
-		transform: translateY(var(--pull));
+		left: -9px;
+		top: calc(var(--L) - 2px);
+		width: 18px;
+		height: 18px;
+		will-change: transform;
 	}
 	.cord-bulb {
 		position: absolute;
@@ -78,26 +93,26 @@ const t = useT(locale);
 		background: radial-gradient(circle at 35% 32%, #fff8cf 0%, #ffd23f 45%, #f4a300 100%);
 		box-shadow:
 			0 0 0 1px rgba(200, 140, 0, 0.35),
-			0 2px 4px rgba(26, 26, 28, 0.25);
+			0 2px 4px rgba(0, 0, 0, 0.3);
 		transition:
 			background 0.45s,
 			box-shadow 0.45s;
 	}
 	.cord-glow {
 		position: absolute;
-		inset: -12px;
+		inset: -14px;
 		border-radius: 50%;
-		background: radial-gradient(circle, rgba(255, 210, 63, 0.55) 0%, rgba(255, 210, 63, 0.18) 45%, transparent 70%);
+		background: radial-gradient(circle, rgba(255, 210, 63, 0.6) 0%, rgba(255, 210, 63, 0.2) 45%, transparent 70%);
 		transition:
 			opacity 0.45s,
 			transform 0.45s var(--ease-out-expo);
 	}
 	/* Light off: the bulb goes cold and the glow disappears. */
 	:global(:root[data-theme='dark']) .cord-bulb {
-		background: radial-gradient(circle at 35% 32%, #4a4a52 0%, #2c2c32 60%, #202024 100%);
+		background: radial-gradient(circle at 35% 32%, #4a4a4a 0%, #2a2a2a 60%, #1c1c1c 100%);
 		box-shadow:
-			0 0 0 1px rgba(255, 255, 255, 0.14),
-			0 2px 4px rgba(0, 0, 0, 0.5);
+			0 0 0 1px rgba(255, 255, 255, 0.16),
+			0 2px 4px rgba(0, 0, 0, 0.6);
 	}
 	:global(:root[data-theme='dark']) .cord-glow {
 		opacity: 0;
@@ -105,104 +120,65 @@ const t = useT(locale);
 	}
 	@media (prefers-color-scheme: dark) {
 		:global(:root:not([data-theme='light'])) .cord-bulb {
-			background: radial-gradient(circle at 35% 32%, #4a4a52 0%, #2c2c32 60%, #202024 100%);
+			background: radial-gradient(circle at 35% 32%, #4a4a4a 0%, #2a2a2a 60%, #1c1c1c 100%);
 			box-shadow:
-				0 0 0 1px rgba(255, 255, 255, 0.14),
-				0 2px 4px rgba(0, 0, 0, 0.5);
+				0 0 0 1px rgba(255, 255, 255, 0.16),
+				0 2px 4px rgba(0, 0, 0, 0.6);
 		}
 		:global(:root:not([data-theme='light'])) .cord-glow {
 			opacity: 0;
 			transform: scale(0.6);
 		}
 	}
-
-	/* Idle sway on hover; a pull (click / keyboard) and the spring back after a drag. */
-	.cord:hover:not(.is-dragging):not(.is-pulling):not(.is-snapping) {
-		animation: cordSway 1.6s ease-in-out infinite;
+	/* A short flash when the light comes on. */
+	.cord.is-flash .cord-glow {
+		animation: cordFlash 0.6s ease-out;
 	}
-	@keyframes cordSway {
-		0%,
-		100% {
-			transform: rotate(0deg);
-		}
-		50% {
-			transform: rotate(2.5deg);
-		}
-	}
-	.cord.is-pulling .cord-line,
-	.cord.is-pulling .cord-knob,
-	.cord.is-snapping .cord-line,
-	.cord.is-snapping .cord-knob {
-		transition: none;
-	}
-	.cord.is-pulling {
-		animation: cordPull 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-	}
-	.cord.is-snapping {
-		animation: cordSnap 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-	}
-	@keyframes cordPull {
+	@keyframes cordFlash {
 		0% {
-			--pull: 0px;
+			transform: scale(0.6);
+			opacity: 0;
 		}
-		30% {
-			--pull: 30px;
-		}
-		100% {
-			--pull: 0px;
-		}
-	}
-	@keyframes cordSnap {
-		0% {
-			--pull: var(--from, 30px);
+		40% {
+			transform: scale(1.5);
+			opacity: 1;
 		}
 		100% {
-			--pull: 0px;
+			transform: scale(1);
+			opacity: 1;
 		}
-	}
-	@property --pull {
-		syntax: '<length>';
-		inherits: true;
-		initial-value: 0px;
-	}
-	/* The knob and line follow --pull without their own easing while dragging. */
-	.cord:not(.is-dragging):not(.is-pulling):not(.is-snapping) .cord-line,
-	.cord:not(.is-dragging):not(.is-pulling):not(.is-snapping) .cord-knob {
-		transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 	}
 
 	@media (max-width: 780px) {
 		.cord {
-			width: 30px;
-			margin-left: 0;
-			--cord-len: 58px;
+			--L: 84px;
+			right: 8px;
+			width: 40px;
 		}
 	}
 	@media (prefers-reduced-motion: reduce) {
-		.cord:hover,
-		.cord.is-pulling,
-		.cord.is-snapping {
-			animation: none;
-		}
-		.cord-line,
-		.cord-knob,
-		.cord-glow,
-		.cord-bulb {
+		.cord-bulb,
+		.cord-glow {
 			transition: none;
+		}
+		.cord.is-flash .cord-glow {
+			animation: none;
 		}
 	}
 </style>
 
 <script>
 	const cord = document.getElementById('light-cord');
-	if (cord) {
+	const arm = cord?.querySelector<HTMLElement>('[data-cord-arm]');
+	const line = cord?.querySelector<HTMLElement>('[data-cord-line]');
+	const knob = cord?.querySelector<HTMLElement>('[data-cord-knob]');
+	if (cord && arm && line && knob) {
 		const root = document.documentElement;
 		const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
 		const media = window.matchMedia('(prefers-color-scheme: dark)');
 		const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-		const MAX = 60;
-		const THRESHOLD = 22;
 
+		/* ---- theme ---- */
 		const isDark = () => {
 			const t = root.getAttribute('data-theme');
 			return t ? t === 'dark' : media.matches;
@@ -211,7 +187,7 @@ const t = useT(locale);
 			const dark = isDark();
 			cord.setAttribute('aria-pressed', String(dark));
 			cord.setAttribute('aria-label', (dark ? cord.dataset.labelLight : cord.dataset.labelDark) ?? '');
-			if (meta) meta.content = dark ? '#101012' : '#FBFBFD';
+			if (meta) meta.content = dark ? '#000000' : '#FBFBFD';
 		};
 		const setTheme = (dark: boolean) => {
 			root.setAttribute('data-theme', dark ? 'dark' : 'light');
@@ -220,38 +196,106 @@ const t = useT(locale);
 			} catch {
 				/* private mode */
 			}
+			if (!dark && !reduced) {
+				cord.classList.remove('is-flash');
+				void cord.offsetWidth;
+				cord.classList.add('is-flash');
+			}
 			reflect();
 		};
 		const toggle = () => setTheme(!isDark());
 
-		// Click / keyboard: play the pull and switch at the bottom of it.
-		const pull = () => {
-			if (reduced) return toggle();
-			cord.classList.remove('is-snapping');
-			cord.classList.add('is-pulling');
-			setTimeout(toggle, 200);
-			cord.addEventListener('animationend', () => cord.classList.remove('is-pulling'), { once: true });
+		/* ---- physics: a damped pendulum (angle) with a spring along the string (stretch) ---- */
+		const L = () => parseFloat(getComputedStyle(cord).getPropertyValue('--L')) || 112;
+		const G = 2400; // px/s², sets the swing period for a string ~100 px long
+		const DAMP = 1.4; // angular damping
+		const K = 230; // spring stiffness along the string
+		const C = 13; // spring damping
+		const MAX_ANGLE = 1.25; // rad
+		const MAX_STRETCH = 84;
+		const THRESHOLD = 22;
+		let th = 0; // angle, 0 = hanging straight down, positive = to the right
+		let w = 0; // angular velocity
+		let s = 0; // stretch in px
+		let sv = 0; // stretch velocity
+		let raf = 0;
+		let last = 0;
+		let dragging = false;
+
+		const render = () => {
+			arm.style.transform = `rotate(${th}rad)`;
+			line.style.transform = `scaleY(${1 + s / L()})`;
+			knob.style.transform = `translateY(${s}px)`;
+		};
+		const settled = () => Math.abs(w) < 0.02 && Math.abs(th) < 0.003 && Math.abs(s) < 0.3 && Math.abs(sv) < 1;
+		const step = (now: number) => {
+			raf = 0;
+			const dt = Math.min(0.032, (now - last) / 1000 || 0.016);
+			last = now;
+			if (!dragging) {
+				const len = L() + s;
+				const a = (-G / len) * Math.sin(th) - DAMP * w;
+				w += a * dt;
+				th += w * dt;
+				sv += (-K * s - C * sv) * dt;
+				s += sv * dt;
+				if (settled()) {
+					th = 0;
+					w = 0;
+					s = 0;
+					sv = 0;
+					render();
+					return;
+				}
+			}
+			render();
+			raf = requestAnimationFrame(step);
+		};
+		const run = () => {
+			if (reduced) return render();
+			if (!raf) {
+				last = performance.now();
+				raf = requestAnimationFrame(step);
+			}
 		};
 
-		// Drag: the cord follows the pointer; past the threshold it switches on release.
-		let startY = 0;
-		let dragging = false;
-		let current = 0;
+		/* ---- pointer: the bulb follows the hand, then the string is let go ---- */
+		let prevTh = 0;
+		let prevT = 0;
+		let moved = 0;
+		const anchor = () => {
+			const r = cord.getBoundingClientRect();
+			return { x: r.left + r.width / 2, y: r.top };
+		};
 		cord.addEventListener('pointerdown', (e) => {
 			if (e.button !== 0) return;
-			startY = e.clientY;
 			dragging = true;
-			current = 0;
+			moved = 0;
 			cord.setPointerCapture(e.pointerId);
-			cord.classList.remove('is-pulling', 'is-snapping');
 			cord.classList.add('is-dragging');
+			prevTh = th;
+			prevT = performance.now();
+			run();
 		});
 		cord.addEventListener('pointermove', (e) => {
 			if (!dragging) return;
-			current = Math.max(0, Math.min(MAX, e.clientY - startY));
-			// Past the natural length the cord resists: softer travel.
-			const eased = current > 40 ? 40 + (current - 40) * 0.45 : current;
-			cord.style.setProperty('--pull', `${eased}px`);
+			const a = anchor();
+			const dx = e.clientX - a.x;
+			const dy = Math.max(8, e.clientY - a.y);
+			th = Math.max(-MAX_ANGLE, Math.min(MAX_ANGLE, Math.atan2(dx, dy)));
+			const d = Math.hypot(dx, dy) - L();
+			// Past the natural length the string resists.
+			s = d <= 0 ? Math.max(-6, d * 0.3) : d <= 40 ? d : Math.min(MAX_STRETCH, 40 + (d - 40) * 0.45);
+			moved = Math.max(moved, Math.abs(dx) + Math.abs(dy - L()));
+			const now = performance.now();
+			const dt = (now - prevT) / 1000;
+			if (dt > 0.008) {
+				w = (th - prevTh) / dt;
+				prevTh = th;
+				prevT = now;
+			}
+			sv = 0;
+			render();
 		});
 		const release = (e: PointerEvent) => {
 			if (!dragging) return;
@@ -262,29 +306,45 @@ const t = useT(locale);
 			} catch {
 				/* already released */
 			}
-			const pulled = current >= THRESHOLD;
-			if (current < 4) {
-				// A tap, not a drag: the scripted pull.
-				cord.style.removeProperty('--pull');
-				pull();
-				return;
+			if (moved < 6) {
+				// A tap: a scripted tug.
+				s = 34;
+				sv = 0;
+				toggle();
+			} else if (s >= THRESHOLD) {
+				toggle();
 			}
-			cord.style.setProperty('--from', getComputedStyle(cord).getPropertyValue('--pull') || `${current}px`);
-			cord.style.removeProperty('--pull');
-			if (!reduced) {
-				cord.classList.add('is-snapping');
-				cord.addEventListener('animationend', () => cord.classList.remove('is-snapping'), { once: true });
-			}
-			if (pulled) toggle();
+			// Let go: the spring pulls the stretch back, the pendulum keeps the momentum.
+			w = Math.max(-6, Math.min(6, w));
+			run();
 		};
 		cord.addEventListener('pointerup', release);
 		cord.addEventListener('pointercancel', release);
-		// The pointer handlers own the interaction; keyboard activation still comes through click.
+
+		// Hovering brushes the cord: a small push, and it swings on its own.
+		cord.addEventListener('pointerenter', (e) => {
+			if (dragging || reduced || e.pointerType !== 'mouse') return;
+			const a = anchor();
+			w += e.clientX < a.x ? 1.4 : -1.4;
+			run();
+		});
+
+		// Keyboard activation (Enter / Space) comes through click with detail 0.
 		cord.addEventListener('click', (e) => {
-			if (e.detail === 0) pull();
+			if (e.detail !== 0) return;
+			s = 34;
+			sv = 0;
+			toggle();
+			run();
 		});
 
 		media.addEventListener('change', reflect);
+		document.addEventListener('visibilitychange', () => {
+			if (document.hidden && raf) {
+				cancelAnimationFrame(raf);
+				raf = 0;
+			} else if (!document.hidden && !settled()) run();
+		});
 		reflect();
 	}
 </script>

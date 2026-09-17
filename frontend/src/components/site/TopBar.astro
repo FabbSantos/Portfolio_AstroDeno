@@ -10,7 +10,6 @@
  * - Mobile menu: opacity + transform + visibility (transition-safe) — no body
  *   scroll lock, the page stays scrollable behind the dropdown.
  */
-import LightCord from './LightCord.astro';
 import { SITE } from '../../data/site';
 import { LANG_TAG, altLocale, localeOf, localePath, switchPath, useT } from '../../i18n';
 
@@ -85,8 +84,6 @@ const CODE: Record<typeof locale, string> = { pt: 'PT', en: 'EN' };
 				}
 			</div>
 
-			<LightCord />
-
 			<button
 				class='nav-toggle'
 				id='nav-toggle'
@@ -128,6 +125,8 @@ const CODE: Record<typeof locale, string> = { pt: 'PT', en: 'EN' };
 		max-width: var(--maxw);
 		margin: 0 auto;
 		width: 100%;
+		/* Lane for the light cord (fixed at the right edge) while the margin is narrower than it. */
+		padding-right: var(--cord-lane, 0px);
 		display: flex;
 		align-items: center;
 		gap: 28px;
@@ -331,7 +330,15 @@ const CODE: Record<typeof locale, string> = { pt: 'PT', en: 'EN' };
 		transform: translateY(-3.5px) rotate(-45deg);
 	}
 
+	@media (max-width: 1420px) {
+		.inner {
+			--cord-lane: 56px;
+		}
+	}
 	@media (max-width: 780px) {
+		.inner {
+			--cord-lane: 40px;
+		}
 		.topbar {
 			padding: 12px 20px;
 		}

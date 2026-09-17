@@ -77,13 +77,13 @@
 /* Dark theme: an explicit choice (LightCord) or the OS preference when nothing
    is stored. Template demos opt out with data-theme="light" on <html>. */
 :root[data-theme='dark'] {
-	--bg: #101012;
-	--bg-2: #18181c;
-	--bg-3: #1e1e23;
-	--ink: #f2f2f4;
-	--ink-2: #b8b8bf;
-	--ink-3: #9d9da5;
-	--ink-4: #3e3e46;
+	--bg: #000000;
+	--bg-2: #0e0e0e;
+	--bg-3: #151515;
+	--ink: #f5f5f5;
+	--ink-2: #b4b4b4;
+	--ink-3: #8f8f8f;
+	--ink-4: #2e2e2e;
 	--accent-text: #ff8189;
 	--accent-soft: rgba(255, 89, 100, 0.16);
 	--accent-2-soft: rgba(124, 58, 237, 0.22);
@@ -97,9 +97,9 @@
 	--hue-sky-text: #6cc9ff;
 	--hue-amber-text: #fbbf24;
 	--hue-green-text: #4ade80;
-	--rule: rgba(255, 255, 255, 0.08);
-	--rule-2: rgba(255, 255, 255, 0.16);
-	--on-ink: #101012;
+	--rule: rgba(255, 255, 255, 0.1);
+	--rule-2: rgba(255, 255, 255, 0.18);
+	--on-ink: #000000;
 	--ok-text: #4ade80;
 	--warn-text: #fbbf24;
 	--bad-text: #ff7b73;
@@ -107,13 +107,13 @@
 }
 @media (prefers-color-scheme: dark) {
 	:root:not([data-theme='light']) {
-		--bg: #101012;
-		--bg-2: #18181c;
-		--bg-3: #1e1e23;
-		--ink: #f2f2f4;
-		--ink-2: #b8b8bf;
-		--ink-3: #9d9da5;
-		--ink-4: #3e3e46;
+		--bg: #000000;
+		--bg-2: #0e0e0e;
+		--bg-3: #151515;
+		--ink: #f5f5f5;
+		--ink-2: #b4b4b4;
+		--ink-3: #8f8f8f;
+		--ink-4: #2e2e2e;
 		--accent-text: #ff8189;
 		--accent-soft: rgba(255, 89, 100, 0.16);
 		--accent-2-soft: rgba(124, 58, 237, 0.22);
@@ -127,9 +127,9 @@
 		--hue-sky-text: #6cc9ff;
 		--hue-amber-text: #fbbf24;
 		--hue-green-text: #4ade80;
-		--rule: rgba(255, 255, 255, 0.08);
-		--rule-2: rgba(255, 255, 255, 0.16);
-		--on-ink: #101012;
+		--rule: rgba(255, 255, 255, 0.1);
+		--rule-2: rgba(255, 255, 255, 0.18);
+		--on-ink: #000000;
 		--ok-text: #4ade80;
 		--warn-text: #fbbf24;
 		--bad-text: #ff7b73;
@@ -152,13 +152,13 @@
 /* Dark theme: an explicit choice (LightCord) or the OS preference when nothing
    is stored. Template demos opt out with data-theme="light" on <html>. */
 :root[data-theme='dark'] {
-	--bg: #101012;
-	--bg-2: #18181c;
-	--bg-3: #1e1e23;
-	--ink: #f2f2f4;
-	--ink-2: #b8b8bf;
-	--ink-3: #9d9da5;
-	--ink-4: #3e3e46;
+	--bg: #000000;
+	--bg-2: #0e0e0e;
+	--bg-3: #151515;
+	--ink: #f5f5f5;
+	--ink-2: #b4b4b4;
+	--ink-3: #8f8f8f;
+	--ink-4: #2e2e2e;
 	--accent-text: #ff8189;
 	--accent-soft: rgba(255, 89, 100, 0.16);
 	--accent-2-soft: rgba(124, 58, 237, 0.22);
@@ -172,9 +172,9 @@
 	--hue-sky-text: #6cc9ff;
 	--hue-amber-text: #fbbf24;
 	--hue-green-text: #4ade80;
-	--rule: rgba(255, 255, 255, 0.08);
-	--rule-2: rgba(255, 255, 255, 0.16);
-	--on-ink: #101012;
+	--rule: rgba(255, 255, 255, 0.1);
+	--rule-2: rgba(255, 255, 255, 0.18);
+	--on-ink: #000000;
 	--ok-text: #4ade80;
 	--warn-text: #fbbf24;
 	--bad-text: #ff7b73;
@@ -182,13 +182,13 @@
 }
 @media (prefers-color-scheme: dark) {
 	:root:not([data-theme='light']) {
-		--bg: #101012;
-		--bg-2: #18181c;
-		--bg-3: #1e1e23;
-		--ink: #f2f2f4;
-		--ink-2: #b8b8bf;
-		--ink-3: #9d9da5;
-		--ink-4: #3e3e46;
+		--bg: #000000;
+		--bg-2: #0e0e0e;
+		--bg-3: #151515;
+		--ink: #f5f5f5;
+		--ink-2: #b4b4b4;
+		--ink-3: #8f8f8f;
+		--ink-4: #2e2e2e;
 		--accent-text: #ff8189;
 		--accent-soft: rgba(255, 89, 100, 0.16);
 		--accent-2-soft: rgba(124, 58, 237, 0.22);
@@ -202,9 +202,9 @@
 		--hue-sky-text: #6cc9ff;
 		--hue-amber-text: #fbbf24;
 		--hue-green-text: #4ade80;
-		--rule: rgba(255, 255, 255, 0.08);
-		--rule-2: rgba(255, 255, 255, 0.16);
-		--on-ink: #101012;
+		--rule: rgba(255, 255, 255, 0.1);
+		--rule-2: rgba(255, 255, 255, 0.18);
+		--on-ink: #000000;
 		--ok-text: #4ade80;
 		--warn-text: #fbbf24;
 		--bad-text: #ff7b73;
@@ -227,13 +227,13 @@
 /* Dark theme: an explicit choice (LightCord) or the OS preference when nothing
    is stored. Template demos opt out with data-theme="light" on <html>. */
 :root[data-theme='dark'] {
-	--bg: #101012;
-	--bg-2: #18181c;
-	--bg-3: #1e1e23;
-	--ink: #f2f2f4;
-	--ink-2: #b8b8bf;
-	--ink-3: #9d9da5;
-	--ink-4: #3e3e46;
+	--bg: #000000;
+	--bg-2: #0e0e0e;
+	--bg-3: #151515;
+	--ink: #f5f5f5;
+	--ink-2: #b4b4b4;
+	--ink-3: #8f8f8f;
+	--ink-4: #2e2e2e;
 	--accent-text: #ff8189;
 	--accent-soft: rgba(255, 89, 100, 0.16);
 	--accent-2-soft: rgba(124, 58, 237, 0.22);
@@ -247,9 +247,9 @@
 	--hue-sky-text: #6cc9ff;
 	--hue-amber-text: #fbbf24;
 	--hue-green-text: #4ade80;
-	--rule: rgba(255, 255, 255, 0.08);
-	--rule-2: rgba(255, 255, 255, 0.16);
-	--on-ink: #101012;
+	--rule: rgba(255, 255, 255, 0.1);
+	--rule-2: rgba(255, 255, 255, 0.18);
+	--on-ink: #000000;
 	--ok-text: #4ade80;
 	--warn-text: #fbbf24;
 	--bad-text: #ff7b73;
@@ -257,13 +257,13 @@
 }
 @media (prefers-color-scheme: dark) {
 	:root:not([data-theme='light']) {
-		--bg: #101012;
-		--bg-2: #18181c;
-		--bg-3: #1e1e23;
-		--ink: #f2f2f4;
-		--ink-2: #b8b8bf;
-		--ink-3: #9d9da5;
-		--ink-4: #3e3e46;
+		--bg: #000000;
+		--bg-2: #0e0e0e;
+		--bg-3: #151515;
+		--ink: #f5f5f5;
+		--ink-2: #b4b4b4;
+		--ink-3: #8f8f8f;
+		--ink-4: #2e2e2e;
 		--accent-text: #ff8189;
 		--accent-soft: rgba(255, 89, 100, 0.16);
 		--accent-2-soft: rgba(124, 58, 237, 0.22);
@@ -277,9 +277,9 @@
 		--hue-sky-text: #6cc9ff;
 		--hue-amber-text: #fbbf24;
 		--hue-green-text: #4ade80;
-		--rule: rgba(255, 255, 255, 0.08);
-		--rule-2: rgba(255, 255, 255, 0.16);
-		--on-ink: #101012;
+		--rule: rgba(255, 255, 255, 0.1);
+		--rule-2: rgba(255, 255, 255, 0.18);
+		--on-ink: #000000;
 		--ok-text: #4ade80;
 		--warn-text: #fbbf24;
 		--bad-text: #ff7b73;
