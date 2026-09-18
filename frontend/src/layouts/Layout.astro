@@ -12,7 +12,6 @@ import '../styles/base.css';
 import '../styles/site.css';
 import SpeedInsights from '@vercel/speed-insights/astro';
 import WhatsAppFab from '../components/site/WhatsAppFab.astro';
-import LightCord from '../components/site/LightCord.astro';
 import { SITE } from '../data/site';
 import { fullName, templates } from '../data/templates';
 import { LOCALES, LANG_TAG, OG_LOCALE, localeOf, localePath, stripLocale, useT } from '../i18n';
@@ -156,7 +155,6 @@ const jsonLd = {
 		<a href='#main-content' class='skip-link'>{t.common.skip}</a>
 		<slot />
 		<WhatsAppFab />
-		<LightCord />
 		<SpeedInsights />
 		<script>
 			import { initSite } from '../scripts/site';
