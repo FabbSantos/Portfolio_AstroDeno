@@ -2,6 +2,25 @@
    site.css — portfolio design-system primitives (NOT loaded by template demos)
    ========================================================================== */
 
+/* Theme change (components/site/ThemeToggle.astro): the new theme grows from the
+   button in a circle. --tw-x / --tw-y are set on <html> right before the transition. */
+::view-transition-old(root),
+::view-transition-new(root) {
+	animation: none;
+	mix-blend-mode: normal;
+}
+::view-transition-new(root) {
+	animation: theme-wipe 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes theme-wipe {
+	from {
+		clip-path: circle(0 at var(--tw-x, 100%) var(--tw-y, 0));
+	}
+	to {
+		clip-path: circle(150% at var(--tw-x, 100%) var(--tw-y, 0));
+	}
+}
+
 /* Skip link (a11y) */
 .skip-link {
 	position: absolute;

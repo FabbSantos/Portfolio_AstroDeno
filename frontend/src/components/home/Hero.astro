@@ -339,6 +339,16 @@ const proof = fmt(t.hero.proof, {
 		}
 	}
 
+	/* On dark the colour field reads as neon; the flow's cards carry the hero instead. */
+	:global(:root[data-theme='dark']) .hero-field {
+		display: none;
+	}
+	@media (prefers-color-scheme: dark) {
+		:global(:root:not([data-theme='light'])) .hero-field {
+			display: none;
+		}
+	}
+
 	@media (prefers-reduced-motion: reduce) {
 		.hero-eyebrow,
 		.hero-title,
