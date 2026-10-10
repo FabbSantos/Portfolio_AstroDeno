@@ -451,4 +451,51 @@ const CODE: Record<typeof locale, string> = { pt: 'PT', en: 'EN' };
 			transform: none;
 		}
 	}
+
+	/* Narrow phones (most Androids are 360px wide): brand + contact + theme toggle +
+	   menu button must fit in one row, or the menu button is pushed off screen. */
+	@media (max-width: 430px) {
+		.topbar,
+		.topbar.is-scrolled {
+			padding-inline: 16px;
+		}
+		.inner {
+			gap: 8px;
+		}
+		.tools {
+			gap: 6px;
+		}
+		.brand {
+			font-size: 16px;
+		}
+		.top-cta {
+			min-height: 36px;
+			padding: 0 12px;
+			font-size: 13px;
+		}
+		.tools :global(.tt) {
+			width: 36px;
+			height: 36px;
+		}
+		.nav-toggle {
+			width: 40px;
+			height: 40px;
+		}
+	}
+	@media (max-width: 350px) {
+		.topbar,
+		.topbar.is-scrolled {
+			padding-inline: 12px;
+		}
+		.brand {
+			font-size: 15px;
+		}
+		.top-cta {
+			padding: 0 10px;
+			font-size: 12.5px;
+		}
+		.tools {
+			gap: 4px;
+		}
+	}
 </style>
