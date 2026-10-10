@@ -54,6 +54,14 @@
 	width: 18px;
 	height: 18px;
 }
+.previa .btn--paper {
+	background: var(--bg);
+	color: var(--ink);
+}
+.previa .btn--paper:hover {
+	background: #fff;
+	color: var(--ink);
+}
 .previa .btn--line {
 	background: transparent;
 	color: var(--ink);

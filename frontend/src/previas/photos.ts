@@ -5,6 +5,8 @@
  *
  *   hero.(jpg|jpeg|png|webp)          portrait, beside the name
  *   servicos.(jpg|…)                  portrait, beside the services list
+ *   cuidado.(jpg|…)                   portrait, beside the "how I work" steps
+ *   faixa.(jpg|…)                     wide landscape, the booking band
  *   trabalho-1.jpg … trabalho-N.jpg   the work carousel, in numeric order
  */
 import { existsSync, readdirSync } from 'node:fs';
@@ -21,6 +23,8 @@ export interface PreviaPhoto {
 export interface PreviaPhotos {
 	hero: PreviaPhoto | null;
 	services: PreviaPhoto | null;
+	care: PreviaPhoto | null;
+	band: PreviaPhoto | null;
 	work: PreviaPhoto[];
 }
 
@@ -38,7 +42,7 @@ async function photo(dir: string, slug: string, file: string | undefined): Promi
 
 export async function previaPhotos(slug: string): Promise<PreviaPhotos> {
 	const dir = join(process.cwd(), 'public', 'previas', slug);
-	if (!existsSync(dir)) return { hero: null, services: null, work: [] };
+	if (!existsSync(dir)) return { hero: null, services: null, care: null, band: null, work: [] };
 	const files = readdirSync(dir).filter((f) => EXT.test(f));
 	const num = (f: string) => Number(f.match(/(\d+)/)?.[1] ?? 0);
 	const workFiles = files.filter((f) => /^trabalho-\d+\./i.test(f)).sort((a, b) => num(a) - num(b));
@@ -53,6 +57,16 @@ export async function previaPhotos(slug: string): Promise<PreviaPhotos> {
 			dir,
 			slug,
 			files.find((f) => /^servicos\./i.test(f)),
+		),
+		care: await photo(
+			dir,
+			slug,
+			files.find((f) => /^cuidado./i.test(f)),
+		),
+		band: await photo(
+			dir,
+			slug,
+			files.find((f) => /^faixa./i.test(f)),
 		),
 		work,
 	};

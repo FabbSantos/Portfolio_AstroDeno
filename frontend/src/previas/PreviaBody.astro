@@ -21,6 +21,8 @@ import { previaPhotos } from './photos';
 import Hero from './sections/Hero.astro';
 import Ticker from './sections/Ticker.astro';
 import Work from './sections/Work.astro';
+import Care from './sections/Care.astro';
+import Band from './sections/Band.astro';
 import Services from './sections/Services.astro';
 import Reviews from './sections/Reviews.astro';
 import Location from './sections/Location.astro';
@@ -49,8 +51,10 @@ const fabSite = { contact: { whatsapp: { number: data.whatsapp.number, message: 
 	<Hero data={data} photo={photos.hero} photo2={photos.work[0] ?? null} />
 	<Ticker items={data.services} />
 	{photos.work.length > 0 && <Work label={data.labels.work} name={data.name} photos={photos.work} />}
+	{data.care && <Care care={data.care} photo={photos.care} name={data.name} />}
 	<Services label={data.labels.services} items={data.services} photo={photos.services} swap={photos.work.slice(1)} name={data.name} />
 	<Reviews label={data.labels.reviews} rating={data.rating} quotes={data.reviews} />
+	{photos.band && <Band data={data} photo={photos.band} />}
 	<Location data={data} />
 	<Footer data={data} />
 	<WhatsAppFab site={fabSite} />

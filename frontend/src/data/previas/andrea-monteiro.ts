@@ -5,8 +5,9 @@
  * Só o conteúdo que a cliente / o briefing deu. Nada inventado.
  *
  * Fotos: as reais da cliente, em public/previas/andrea-monteiro/
- * (hero.jpg opcional e trabalho-1.jpg … trabalho-6.jpg, em retrato).
- * Sem arquivos na pasta, a página sai sem as fotos.
+ * hero.jpg, servicos.jpg, cuidado.jpg e trabalho-1.jpg … trabalho-6.jpg em
+ * retrato; faixa.jpg em paisagem larga. Hoje são placeholders: troque os
+ * arquivos mantendo os nomes. Arquivo que faltar some do layout.
  */
 import type { PreviaData, PreviaTheme } from './types';
 
@@ -38,6 +39,15 @@ const previa: PreviaData = {
 	labels: { work: 'Trabalhos', services: 'Serviços', reviews: 'Avaliações', hours: 'Horários' },
 
 	services: ['Corte feminino e masculino', 'Coloração e mechas', 'Tratamentos e hidratação', 'Escova e finalização'],
+	care: {
+		title: 'Como eu cuido do seu cabelo',
+		steps: [
+			{ t: 'Escuta', d: 'Antes da tesoura, a conversa.' },
+			{ t: 'Diagnóstico', d: 'Cada tipo de cabelo pede um cuidado.' },
+			{ t: 'Transformação', d: 'Corte, cor ou tratamento, explicado passo a passo.' },
+			{ t: 'Cuidado em casa', d: 'Você sai sabendo como manter.' },
+		],
+	},
 	reviews: ['Sou cliente há 26 anos.', 'Frequento o Studio há mais de 25 anos.', 'Dá atenção, explica cada detalhe do serviço.'],
 
 	location: {

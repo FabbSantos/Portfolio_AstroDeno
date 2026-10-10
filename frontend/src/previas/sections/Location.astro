@@ -16,6 +16,7 @@ const { data } = Astro.props;
 const { location, whatsapp, labels } = data;
 const a = location.address;
 const rows = hoursTable(location.hours, 'pt-BR');
+const mapsEmbed = `https://www.google.com/maps?q=${encodeURIComponent(`${a.street}, ${a.district}, ${a.city} - ${a.state}`)}&output=embed`;
 const status = JSON.stringify({ hours: location.hours, tz: location.timezone, strings: OPEN_STRINGS['pt-BR'] });
 ---
 
@@ -53,6 +54,9 @@ const status = JSON.stringify({ hours: location.hours, tz: location.timezone, st
 					</a>
 				</div>
 			</div>
+		</div>
+		<div class='map'>
+			<iframe src={mapsEmbed} title={`${labels.hours}: ${a.street}, ${a.district}`} loading='lazy' referrerpolicy='no-referrer-when-downgrade' />
 		</div>
 	</div>
 </section>
@@ -116,7 +120,26 @@ const status = JSON.stringify({ hours: location.hours, tz: location.timezone, st
 		background: var(--accent-text);
 		vertical-align: 0.12em;
 	}
+	.map {
+		margin-top: clamp(40px, 5vw, 72px);
+		/* Explicit width: with `width: auto`, a min-height would push the width through the aspect ratio. */
+		width: 100%;
+		aspect-ratio: 21 / 9;
+		overflow: hidden;
+		background: var(--bg-2);
+	}
+	.map iframe {
+		display: block;
+		width: 100%;
+		height: 100%;
+		border: 0;
+		/* Tone the map down to sit with the paper. */
+		filter: grayscale(0.35) sepia(0.12);
+	}
 	@media (max-width: 900px) {
+		.map {
+			aspect-ratio: 4 / 3;
+		}
 		.loc-grid {
 			grid-template-columns: minmax(0, 1fr);
 		}

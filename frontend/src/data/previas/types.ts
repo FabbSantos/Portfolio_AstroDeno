@@ -45,6 +45,8 @@ export interface PreviaData {
 	/** One-word section labels. */
 	labels: { work: string; services: string; reviews: string; hours: string };
 	services: string[];
+	/** How the professional works: a title and steps (a word and its sentence). Optional. */
+	care?: { title: string; steps: { t: string; d: string }[] };
 	/** Review texts, exactly as written by the clients. */
 	reviews: string[];
 	location: {
