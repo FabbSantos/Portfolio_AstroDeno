@@ -1,0 +1,27 @@
+---
+/**
+ * Client previews: /previas/<slug>, one page per data file in src/data/previas.
+ * noindex + nofollow (PreviaLayout) and filtered out of the sitemap (astro.config).
+ */
+import PreviaLayout from '../../previas/PreviaLayout.astro';
+import PreviaBody from '../../previas/PreviaBody.astro';
+import ThemeVars from '../../templates/core/ThemeVars.astro';
+// Upright Fraunces only (the display face); previews use no italic.
+import display from '@fontsource-variable/fraunces/files/fraunces-latin-wght-normal.woff2?url';
+import { previas } from '../../data/previas';
+import type { PreviaData } from '../../data/previas/types';
+
+export function getStaticPaths() {
+	return previas.map((data) => ({ params: { slug: data.slug }, props: { data } }));
+}
+
+interface Props {
+	data: PreviaData;
+}
+const { data } = Astro.props;
+---
+
+<PreviaLayout title={data.seo.title} description={data.seo.description} themeColor={data.theme.bg} preload={[display]}>
+	<ThemeVars theme={data.theme} />
+	<PreviaBody data={data} />
+</PreviaLayout>

@@ -1,0 +1,69 @@
+---
+/**
+ * Work grid: the client's photos (public/previas/<slug>/trabalho-N.*) in
+ * portrait 4:5, three columns with the middle one dropped a little, two on
+ * phones. Photos only. Rendered only when there are photos.
+ */
+import { Image } from 'astro:assets';
+import type { PreviaPhoto } from '../photos';
+
+interface Props {
+	label: string;
+	/** Business name, for the alt text. */
+	name: string;
+	photos: PreviaPhoto[];
+}
+const { label, name, photos } = Astro.props;
+---
+
+<section class='work sec' id='trabalhos' aria-labelledby='work-title'>
+	<div class='wrap'>
+		<h2 id='work-title' class='display sec-title'>{label}</h2>
+		<ul class='shots'>
+			{
+				photos.map((p, i) => (
+					<li class='shot'>
+						<Image src={p.src} alt={`${label} ${i + 1}, ${name}`} width={p.width} height={p.height} widths={[320, 480, 640, 800]} sizes='(max-width: 780px) calc(50vw - 26px), 30vw' quality={72} loading='lazy' decoding='async' />
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</section>
+
+<style>
+	.shots {
+		list-style: none;
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: clamp(14px, 2vw, 28px);
+		padding-bottom: clamp(24px, 5vw, 72px);
+	}
+	.shot {
+		aspect-ratio: 4 / 5;
+		overflow: hidden;
+		background: var(--bg-2);
+	}
+	/* Editorial stagger: the middle column sits lower. */
+	.shot:nth-child(3n + 2) {
+		transform: translateY(clamp(24px, 5vw, 72px));
+	}
+	.shot :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+	@media (max-width: 780px) {
+		.shots {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 12px;
+			padding-bottom: 28px;
+		}
+		.shot:nth-child(3n + 2) {
+			transform: none;
+		}
+		.shot:nth-child(2n) {
+			transform: translateY(28px);
+		}
+	}
+</style>

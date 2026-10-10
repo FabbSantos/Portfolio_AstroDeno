@@ -1,0 +1,103 @@
+---
+/**
+ * Body of a client preview: Atelier's type and paper (its fonts and
+ * styles.css, the core topbar) with the Sálvia functions (WhatsApp booking,
+ * opening hours with a live "aberto agora" status computed in the business's
+ * time zone by core/hours.ts).
+ *
+ * House rules for previews: only the client's own text and photos; section
+ * labels are one word; upright type (no italic or coloured accent words, no
+ * uppercase eyebrows, no numbered process, no decorative giant name).
+ */
+import '@fontsource-variable/fraunces/wght.css';
+import '@fontsource-variable/figtree';
+import '../templates/atelier/styles.css';
+import './previa.css';
+import MobileNav from '../templates/core/MobileNav.astro';
+import WhatsAppFab from '../templates/core/WhatsAppFab.astro';
+import type { BaseSite } from '../templates/core/schema';
+import { whatsappHref, type PreviaData } from '../data/previas/types';
+import { previaPhotos } from './photos';
+import Hero from './sections/Hero.astro';
+import Work from './sections/Work.astro';
+import Services from './sections/Services.astro';
+import Reviews from './sections/Reviews.astro';
+import Location from './sections/Location.astro';
+import Footer from './sections/Footer.astro';
+
+interface Props {
+	data: PreviaData;
+}
+const { data } = Astro.props;
+const wa = whatsappHref(data.whatsapp);
+const photos = await previaPhotos(data.slug);
+const nav = [
+	...(photos.work.length ? [{ label: data.labels.work, href: '#trabalhos' }] : []),
+	{ label: data.labels.services, href: '#servicos' },
+	{ label: data.labels.reviews, href: '#avaliacoes' },
+	{ label: data.labels.hours, href: '#horarios' },
+];
+// The core floating button reads the site config shape.
+const fabSite = { contact: { whatsapp: { number: data.whatsapp.number, message: data.whatsapp.message } }, brand: { locale: 'pt-BR' } } as unknown as BaseSite;
+---
+
+<div class='tpl tpl-atelier previa' id='top'>
+	<div class='tb'>
+		<MobileNav brand={data.name} brandHref='#top' nav={nav} cta={{ label: data.whatsapp.short, href: wa }} id='previa-nav' />
+	</div>
+	<Hero data={data} photo={photos.hero} />
+	{photos.work.length > 0 && <Work label={data.labels.work} name={data.name} photos={photos.work} />}
+	<Services label={data.labels.services} items={data.services} />
+	<Reviews label={data.labels.reviews} rating={data.rating} quotes={data.reviews} />
+	<Location data={data} />
+	<Footer data={data} />
+	<WhatsAppFab site={fabSite} />
+</div>
+
+<style>
+	.tb {
+		position: sticky;
+		top: var(--previa-ribbon, 0px);
+		z-index: 40;
+	}
+</style>
+
+<script>
+	import { openStatus, type OpenStrings, type Slot } from '../templates/core/hours';
+
+	interface StatusData {
+		hours: Slot[];
+		tz: string;
+		strings: OpenStrings;
+	}
+
+	// "Aberto agora · fecha às 17h" in the business's time zone, refreshed every minute.
+	const paint = () => {
+		document.querySelectorAll<HTMLElement>('[data-open-status]').forEach((el) => {
+			try {
+				const data = JSON.parse(el.dataset.openStatus ?? '') as StatusData;
+				const status = openStatus(data.hours, data.tz, 'pt-BR', data.strings);
+				const text = el.querySelector('[data-open-text]');
+				if (!status || !text) return;
+				text.textContent = status.text;
+				el.classList.add('is-known');
+				el.classList.toggle('is-open', status.open);
+				el.classList.toggle('is-closed', !status.open);
+			} catch {
+				/* unknown time zone or bad data: keep the static hours */
+			}
+		});
+	};
+	paint();
+	setInterval(paint, 60_000);
+
+	// Mark today's row in the weekly hours.
+	document.querySelectorAll<HTMLElement>('[data-hours-tz]').forEach((week) => {
+		try {
+			const day = new Intl.DateTimeFormat('en-US', { timeZone: week.dataset.hoursTz, weekday: 'short' }).format(new Date()).slice(0, 3).toLowerCase();
+			week.querySelector(`[data-day="${day}"]`)?.classList.add('is-today');
+		} catch {
+			/* unknown time zone */
+		}
+	});
+</script>

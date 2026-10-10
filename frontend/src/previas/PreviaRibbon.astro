@@ -1,0 +1,43 @@
+---
+/** Thin fixed strip at the top of every preview: who made it, with a link home. */
+import { SITE } from '../data/site';
+
+const host = new URL(SITE.url).host.replace(/^www\./, '');
+---
+
+<aside class='previa-ribbon' aria-label='Sobre esta prévia'>
+	<span>Prévia feita por</span>
+	<a href={SITE.url} target='_blank' rel='noopener'>{host}</a>
+</aside>
+
+<style>
+	.previa-ribbon {
+		position: fixed;
+		inset: 0 0 auto 0;
+		z-index: 1000;
+		height: var(--previa-ribbon, 30px);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
+		background: #1a1a1c;
+		color: rgba(255, 255, 255, 0.78);
+		font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+		font-size: 12px;
+		letter-spacing: 0.02em;
+		line-height: 1;
+	}
+	.previa-ribbon a {
+		display: inline-flex;
+		align-items: center;
+		min-height: var(--previa-ribbon, 30px);
+		color: #fff;
+		font-weight: 600;
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 3px;
+	}
+	.previa-ribbon a:hover {
+		text-decoration-thickness: 2px;
+	}
+</style>

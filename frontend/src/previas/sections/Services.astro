@@ -1,0 +1,47 @@
+---
+/** Services as a typographic list on hairlines: the one-word label on the left, the names in serif on the right. */
+interface Props {
+	label: string;
+	items: string[];
+}
+const { label, items } = Astro.props;
+---
+
+<section class='services sec' id='servicos' aria-labelledby='services-title'>
+	<div class='wrap svc-grid'>
+		<h2 id='services-title' class='display sec-title'>{label}</h2>
+		<ul class='svc-list'>
+			{items.map((name) => <li class='display'>{name}</li>)}
+		</ul>
+	</div>
+</section>
+
+<style>
+	.services {
+		background: var(--bg-2);
+	}
+	.svc-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+		gap: clamp(24px, 6vw, 96px);
+		align-items: start;
+	}
+	.svc-grid :global(.sec-title) {
+		margin-bottom: 0;
+	}
+	.svc-list {
+		list-style: none;
+		border-top: 1px solid var(--line);
+	}
+	.svc-list li {
+		padding-block: clamp(20px, 2.6vw, 32px);
+		border-bottom: 1px solid var(--line);
+		font-size: clamp(26px, 3.2vw, 44px);
+		line-height: 1.08;
+	}
+	@media (max-width: 900px) {
+		.svc-grid {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+</style>

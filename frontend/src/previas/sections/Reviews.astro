@@ -1,0 +1,92 @@
+---
+/**
+ * Google reviews on the deep colour block: the one-word label with the rating
+ * beside it, then each quote on its own row, exactly as written. Upright type,
+ * no cards, no numbering.
+ */
+import type { PreviaData } from '../../data/previas/types';
+
+interface Props {
+	label: string;
+	rating: PreviaData['rating'];
+	quotes: string[];
+}
+const { label, rating, quotes } = Astro.props;
+---
+
+<section class='reviews' id='avaliacoes' aria-labelledby='reviews-title'>
+	<div class='wrap'>
+		<div class='rv-head'>
+			<h2 id='reviews-title' class='display'>{label}</h2>
+			<p class='rv-score'>
+				<span class='rv-num display'>{rating.value}</span>
+				<span class='rv-meta'>
+					<span class='rv-stars' aria-hidden='true'>★★★★★</span>
+					<span>{rating.source} · {rating.count}</span>
+				</span>
+			</p>
+		</div>
+		<ul class='rv-list'>
+			{
+				quotes.map((q) => (
+					<li>
+						<blockquote class='display'>“{q}”</blockquote>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</section>
+
+<style>
+	.reviews {
+		background: var(--accent-text);
+		color: #fff;
+		padding-block: clamp(80px, 10vw, 140px);
+	}
+	.rv-head {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: end;
+		justify-content: space-between;
+		gap: 24px 48px;
+		margin-bottom: clamp(32px, 4vw, 56px);
+	}
+	h2 {
+		font-size: clamp(40px, 5.4vw, 80px);
+	}
+	.rv-score {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+	}
+	.rv-num {
+		font-size: clamp(56px, 7vw, 96px);
+		line-height: 0.9;
+	}
+	.rv-meta {
+		display: grid;
+		gap: 2px;
+		font-size: 14px;
+	}
+	.rv-stars {
+		font-size: 18px;
+		letter-spacing: 0.12em;
+		color: var(--accent-2);
+	}
+	.rv-list {
+		list-style: none;
+		border-top: 1px solid var(--line-on-dark);
+	}
+	.rv-list li {
+		padding-block: clamp(24px, 3.4vw, 44px);
+		border-bottom: 1px solid var(--line-on-dark);
+	}
+	blockquote {
+		margin: 0;
+		font-size: clamp(26px, 3.6vw, 54px);
+		font-weight: 400;
+		line-height: 1.12;
+		text-wrap: balance;
+	}
+</style>

@@ -1,0 +1,80 @@
+/* ==========================================================================
+   Client previews: what the preview adds on top of Atelier's styles.css
+   (loaded first). Shared by more than one section; the rest lives in
+   sections/*.astro. Colours come only from the ThemeVars tokens.
+   ========================================================================== */
+
+/* Section title: one upright serif line, nothing above it. */
+.previa .sec-title {
+	font-size: clamp(40px, 5.4vw, 80px);
+	max-width: 16ch;
+	margin-bottom: clamp(32px, 4.4vw, 60px);
+}
+/* Topbar brand without Atelier's mark glyph. */
+.previa .mnav .mnav-brand::after {
+	content: none;
+}
+.previa .mnav .mnav-brand {
+	font-size: clamp(19px, 2.2vw, 26px);
+	white-space: nowrap;
+}
+
+/* "Aberto agora" status (text filled by the script in PreviaBody). */
+.previa .status {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 15px;
+	font-weight: 500;
+	color: var(--ink);
+}
+.previa .status-dot {
+	flex: none;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: var(--ink-3);
+}
+.previa .status.is-open .status-dot {
+	background: #2f8f4e;
+	box-shadow: 0 0 0 5px color-mix(in srgb, #2f8f4e 18%, transparent);
+}
+.previa .status.is-closed .status-dot {
+	background: var(--accent-text);
+}
+
+/* In the hours block there is nothing to say until the script knows whether it is open. */
+.previa .hours .status:not(.is-known) {
+	visibility: hidden;
+}
+
+/* WhatsApp button: the Atelier ink block with the glyph. */
+.previa .btn--wa svg {
+	flex: none;
+	width: 18px;
+	height: 18px;
+}
+.previa .btn--line {
+	background: transparent;
+	color: var(--ink);
+	box-shadow: inset 0 0 0 1px var(--ink);
+}
+.previa .btn--line:hover {
+	background: var(--ink);
+	color: var(--bg);
+}
+
+.previa .sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+}
+
+@media (max-width: 540px) {
+	.previa .btn {
+		width: 100%;
+	}
+}

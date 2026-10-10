@@ -1,0 +1,120 @@
+---
+/**
+ * Hero: the business name, the one line under it, the WhatsApp button, the
+ * Google rating and the live opening status. When the client's hero photo
+ * exists (public/previas/<slug>/hero.*) it sits beside the copy; without it
+ * the copy stands alone. On phones the copy comes first and is the LCP.
+ */
+import { Image } from 'astro:assets';
+import { whatsappHref, type PreviaData } from '../../data/previas/types';
+import { OPEN_STRINGS, hoursSummary } from '../../templates/core/hours';
+import type { PreviaPhoto } from '../photos';
+import WaButton from './WaButton.astro';
+
+interface Props {
+	data: PreviaData;
+	photo: PreviaPhoto | null;
+}
+const { data, photo } = Astro.props;
+const { location, whatsapp, rating } = data;
+const status = JSON.stringify({ hours: location.hours, tz: location.timezone, strings: OPEN_STRINGS['pt-BR'] });
+---
+
+<section class:list={['hero', { 'has-photo': !!photo }]} aria-labelledby='hero-title'>
+	<div class='wrap hero-grid'>
+		<div class='hero-copy'>
+			<h1 id='hero-title' class='display'>{data.name}</h1>
+			<p class='hero-line'>{data.line}</p>
+			<div class='hero-actions'>
+				<WaButton href={whatsappHref(whatsapp)} label={whatsapp.label} />
+				<p class='hero-rating'>
+					<span aria-hidden='true'>★</span>{' '}
+					{rating.value} no {rating.source} · {rating.count}
+				</p>
+			</div>
+			<p class='status' data-open-status={status}>
+				<span class='status-dot' aria-hidden='true'></span>
+				<span data-open-text>{hoursSummary(location.hours, 'pt-BR')}</span>
+			</p>
+		</div>
+		{
+			photo && (
+				<figure class='hero-photo'>
+					<Image src={photo.src} alt={data.name} width={photo.width} height={photo.height} widths={[480, 640, 800, 960]} sizes='(max-width: 900px) calc(100vw - 40px), 42vw' quality={70} loading='eager' fetchpriority='high' decoding='async' />
+				</figure>
+			)
+		}
+	</div>
+</section>
+
+<style>
+	.hero-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: clamp(32px, 6vw, 96px);
+		align-items: center;
+		padding-block: clamp(56px, 9vw, 140px);
+	}
+	.has-photo .hero-grid {
+		grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+		padding-block: clamp(40px, 6vw, 96px);
+	}
+	.hero-copy {
+		display: grid;
+		gap: 24px;
+		justify-items: start;
+	}
+	h1 {
+		font-size: clamp(48px, 8.4vw, 132px);
+		line-height: 0.96;
+		letter-spacing: -0.03em;
+		max-width: 12ch;
+	}
+	.has-photo h1 {
+		font-size: clamp(48px, 6.4vw, 104px);
+	}
+	.hero-line {
+		font-size: clamp(19px, 1.7vw, 24px);
+		line-height: 1.4;
+		color: var(--ink-2);
+	}
+	.hero-actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 14px 22px;
+		margin-top: 8px;
+	}
+	.hero-rating {
+		font-size: 15px;
+		font-weight: 600;
+		color: var(--ink);
+		white-space: nowrap;
+	}
+	.hero-photo {
+		margin: 0;
+		aspect-ratio: 4 / 5;
+		overflow: hidden;
+		background: var(--bg-2);
+	}
+	.hero-photo :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+	@media (max-width: 900px) {
+		.hero-grid,
+		.has-photo .hero-grid {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 36px;
+			padding-block: 36px 56px;
+		}
+		.hero-copy {
+			gap: 20px;
+		}
+		h1,
+		.has-photo h1 {
+			font-size: clamp(46px, 14vw, 84px);
+		}
+	}
+</style>
