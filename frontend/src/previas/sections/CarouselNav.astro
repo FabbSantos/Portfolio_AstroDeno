@@ -1,0 +1,61 @@
+---
+/** Previous / next buttons and the "1 / 6" counter of a carousel (wired by the script in PreviaBody). */
+interface Props {
+	total: number;
+}
+const { total } = Astro.props;
+---
+
+<div class='cnav'>
+	<p class='cnav-count' aria-hidden='true'><span data-carousel-cur>1</span> / {total}</p>
+	<button type='button' class='cnav-btn' data-carousel-prev aria-label='Anterior'>
+		<svg width='20' height='20' viewBox='0 0 20 20' fill='none' aria-hidden='true' focusable='false'>
+			<path d='M12.5 4.5 7 10l5.5 5.5' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'></path>
+		</svg>
+	</button>
+	<button type='button' class='cnav-btn' data-carousel-next aria-label='Próxima'>
+		<svg width='20' height='20' viewBox='0 0 20 20' fill='none' aria-hidden='true' focusable='false'>
+			<path d='m7.5 4.5 5.5 5.5-5.5 5.5' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'></path>
+		</svg>
+	</button>
+</div>
+
+<style>
+	.cnav {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+	.cnav-count {
+		margin-right: 8px;
+		font-size: 15px;
+		white-space: nowrap;
+		font-variant-numeric: tabular-nums;
+	}
+	.cnav-btn {
+		width: 48px;
+		height: 48px;
+		display: grid;
+		place-items: center;
+		border: 0;
+		border-radius: 50%;
+		background: transparent;
+		color: inherit;
+		box-shadow: inset 0 0 0 1px currentColor;
+		cursor: pointer;
+		transition:
+			opacity 0.2s,
+			transform 0.3s var(--ease);
+	}
+	.cnav-btn:hover:not(:disabled) {
+		transform: scale(1.06);
+	}
+	.cnav-btn:disabled {
+		opacity: 0.35;
+		cursor: default;
+	}
+	.cnav-btn:focus-visible {
+		outline: 2px solid currentColor;
+		outline-offset: 3px;
+	}
+</style>

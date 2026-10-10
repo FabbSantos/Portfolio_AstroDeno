@@ -1,0 +1,66 @@
+---
+/**
+ * A band of very large serif words drifting sideways between two hairlines
+ * (the services, in the client's own words). Decorative: the real list is in
+ * the Services section, so this one is hidden from assistive tech.
+ */
+interface Props {
+	items: string[];
+}
+const { items } = Astro.props;
+---
+
+<div class='ticker' aria-hidden='true'>
+	<div class='ticker-track'>
+		{
+			[0, 1].map(() =>
+				items.map((item) => (
+					<span class='ticker-item display'>
+						{item}
+						<i />
+					</span>
+				)),
+			)
+		}
+	</div>
+</div>
+
+<style>
+	.ticker {
+		overflow: hidden;
+		border-block: 1px solid var(--line);
+		padding-block: clamp(18px, 2.4vw, 34px);
+	}
+	.ticker-track {
+		display: flex;
+		width: max-content;
+		animation: ticker 46s linear infinite;
+	}
+	.ticker-item {
+		display: inline-flex;
+		align-items: center;
+		font-size: clamp(40px, 7vw, 112px);
+		line-height: 1;
+		letter-spacing: -0.03em;
+		white-space: nowrap;
+	}
+	/* Separator: a small disc in the accent colour. */
+	.ticker-item i {
+		flex: none;
+		width: 0.16em;
+		height: 0.16em;
+		margin-inline: 0.42em;
+		border-radius: 50%;
+		background: var(--accent-text);
+	}
+	@keyframes ticker {
+		to {
+			transform: translateX(-50%);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.ticker-track {
+			animation: none;
+		}
+	}
+</style>

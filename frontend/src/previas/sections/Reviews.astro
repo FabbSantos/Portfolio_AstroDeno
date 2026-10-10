@@ -1,10 +1,13 @@
 ---
 /**
- * Google reviews on the deep colour block: the one-word label with the rating
- * beside it, then each quote on its own row, exactly as written. Upright type,
- * no cards, no numbering.
+ * Google reviews on the deep colour block, as a carousel: one statement at a
+ * time, set very large, with the five stars over it. It advances on its own
+ * every 6 s (paused on hover, focus, a hidden tab and reduced motion), and
+ * can be swiped or stepped with the buttons. The label and the rating sit on
+ * top. Quotes exactly as written.
  */
 import type { PreviaData } from '../../data/previas/types';
+import CarouselNav from './CarouselNav.astro';
 
 interface Props {
 	label: string;
@@ -14,27 +17,30 @@ interface Props {
 const { label, rating, quotes } = Astro.props;
 ---
 
-<section class='reviews' id='avaliacoes' aria-labelledby='reviews-title'>
+<section class='reviews' id='avaliacoes' aria-labelledby='reviews-title' data-carousel data-carousel-autoplay='6000'>
 	<div class='wrap'>
 		<div class='rv-head'>
 			<h2 id='reviews-title' class='display'>{label}</h2>
 			<p class='rv-score'>
 				<span class='rv-num display'>{rating.value}</span>
-				<span class='rv-meta'>
-					<span class='rv-stars' aria-hidden='true'>★★★★★</span>
-					<span>{rating.source} · {rating.count}</span>
-				</span>
+				<span class='rv-meta'>{rating.source} · {rating.count}</span>
 			</p>
 		</div>
-		<ul class='rv-list'>
+		<ul class='rv-track' data-carousel-track tabindex='0' aria-label={label}>
 			{
 				quotes.map((q) => (
-					<li>
+					<li class='rv-slide'>
+						<p class='rv-stars' aria-hidden='true'>
+							★★★★★
+						</p>
 						<blockquote class='display'>“{q}”</blockquote>
 					</li>
 				))
 			}
 		</ul>
+		<div class='rv-foot'>
+			<CarouselNav total={quotes.length} />
+		</div>
 	</div>
 </section>
 
@@ -42,51 +48,73 @@ const { label, rating, quotes } = Astro.props;
 	.reviews {
 		background: var(--accent-text);
 		color: #fff;
-		padding-block: clamp(80px, 10vw, 140px);
+		padding-block: clamp(72px, 9vw, 128px);
 	}
 	.rv-head {
 		display: flex;
 		flex-wrap: wrap;
-		align-items: end;
+		align-items: baseline;
 		justify-content: space-between;
-		gap: 24px 48px;
-		margin-bottom: clamp(32px, 4vw, 56px);
+		gap: 12px 48px;
+		padding-bottom: clamp(20px, 2.4vw, 32px);
+		border-bottom: 1px solid var(--line-on-dark);
 	}
 	h2 {
 		font-size: clamp(40px, 5.4vw, 80px);
 	}
 	.rv-score {
 		display: flex;
-		align-items: center;
-		gap: 16px;
+		align-items: baseline;
+		gap: 14px;
 	}
 	.rv-num {
-		font-size: clamp(56px, 7vw, 96px);
-		line-height: 0.9;
+		font-size: clamp(40px, 5.4vw, 80px);
+		line-height: 1;
 	}
 	.rv-meta {
+		font-size: 15px;
+	}
+	.rv-track {
+		list-style: none;
+		display: flex;
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		scrollbar-width: none;
+	}
+	.rv-track::-webkit-scrollbar {
+		display: none;
+	}
+	.rv-track:focus-visible {
+		outline: 2px solid #fff;
+		outline-offset: 4px;
+	}
+	.rv-slide {
+		flex: 0 0 100%;
+		scroll-snap-align: start;
 		display: grid;
-		gap: 2px;
-		font-size: 14px;
+		align-content: center;
+		gap: clamp(18px, 2.4vw, 32px);
+		min-height: clamp(260px, 34vw, 460px);
+		padding-block: clamp(32px, 5vw, 72px);
 	}
 	.rv-stars {
-		font-size: 18px;
-		letter-spacing: 0.12em;
+		font-size: clamp(20px, 2vw, 28px);
+		letter-spacing: 0.16em;
 		color: var(--accent-2);
-	}
-	.rv-list {
-		list-style: none;
-		border-top: 1px solid var(--line-on-dark);
-	}
-	.rv-list li {
-		padding-block: clamp(24px, 3.4vw, 44px);
-		border-bottom: 1px solid var(--line-on-dark);
 	}
 	blockquote {
 		margin: 0;
-		font-size: clamp(26px, 3.6vw, 54px);
+		max-width: 18ch;
+		font-size: clamp(40px, 7.2vw, 116px);
 		font-weight: 400;
-		line-height: 1.12;
+		line-height: 1.02;
+		letter-spacing: -0.02em;
 		text-wrap: balance;
+	}
+	.rv-foot {
+		display: flex;
+		justify-content: flex-end;
+		padding-top: clamp(20px, 2.4vw, 32px);
+		border-top: 1px solid var(--line-on-dark);
 	}
 </style>

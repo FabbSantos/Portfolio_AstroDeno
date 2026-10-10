@@ -19,6 +19,7 @@ import type { BaseSite } from '../templates/core/schema';
 import { whatsappHref, type PreviaData } from '../data/previas/types';
 import { previaPhotos } from './photos';
 import Hero from './sections/Hero.astro';
+import Ticker from './sections/Ticker.astro';
 import Work from './sections/Work.astro';
 import Services from './sections/Services.astro';
 import Reviews from './sections/Reviews.astro';
@@ -45,9 +46,10 @@ const fabSite = { contact: { whatsapp: { number: data.whatsapp.number, message: 
 	<div class='tb'>
 		<MobileNav brand={data.name} brandHref='#top' nav={nav} cta={{ label: data.whatsapp.short, href: wa }} id='previa-nav' />
 	</div>
-	<Hero data={data} photo={photos.hero} />
+	<Hero data={data} photo={photos.hero} photo2={photos.work[0] ?? null} />
+	<Ticker items={data.services} />
 	{photos.work.length > 0 && <Work label={data.labels.work} name={data.name} photos={photos.work} />}
-	<Services label={data.labels.services} items={data.services} />
+	<Services label={data.labels.services} items={data.services} photo={photos.services} swap={photos.work.slice(1)} name={data.name} />
 	<Reviews label={data.labels.reviews} rating={data.rating} quotes={data.reviews} />
 	<Location data={data} />
 	<Footer data={data} />
@@ -90,6 +92,106 @@ const fabSite = { contact: { whatsapp: { number: data.whatsapp.number, message: 
 	};
 	paint();
 	setInterval(paint, 60_000);
+
+	// Carousels ([data-carousel]): a scroll-snap track with prev / next buttons and a
+	// "1 / N" counter; mouse drag on desktop (touch scrolls natively); optional
+	// autoplay (data-carousel-autoplay="ms") that loops and pauses on hover, focus,
+	// a hidden tab and reduced motion. Works as a plain scroller without this script.
+	const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((root) => {
+		const track = root.querySelector<HTMLElement>('[data-carousel-track]');
+		if (!track) return;
+		const items = Array.from(track.children) as HTMLElement[];
+		const prev = root.querySelector<HTMLButtonElement>('[data-carousel-prev]');
+		const next = root.querySelector<HTMLButtonElement>('[data-carousel-next]');
+		const cur = root.querySelector<HTMLElement>('[data-carousel-cur]');
+		const autoplay = Number(root.dataset.carouselAutoplay ?? 0);
+		const first = items[0];
+		if (!first) return;
+
+		const left = (i: number) => (items[i]?.offsetLeft ?? 0) - first.offsetLeft;
+		const max = () => track.scrollWidth - track.clientWidth;
+		const index = () => {
+			let best = 0;
+			items.forEach((_, i) => {
+				if (Math.abs(left(i) - track.scrollLeft) < Math.abs(left(best) - track.scrollLeft)) best = i;
+			});
+			return best;
+		};
+		const go = (i: number) => track.scrollTo({ left: Math.min(left(Math.max(0, Math.min(items.length - 1, i))), max()), behavior: reduced ? 'auto' : 'smooth' });
+		const sync = () => {
+			const atEnd = track.scrollLeft >= max() - 2;
+			const i = atEnd ? items.length - 1 : index();
+			if (cur) cur.textContent = String(i + 1);
+			// With autoplay the buttons loop, so they never disable.
+			if (prev) prev.disabled = !autoplay && track.scrollLeft <= 2;
+			if (next) next.disabled = !autoplay && atEnd;
+		};
+		const step = (d: number) => {
+			const atEnd = track.scrollLeft >= max() - 2;
+			if (d > 0 && atEnd) return autoplay ? go(0) : undefined;
+			if (d < 0 && track.scrollLeft <= 2) return autoplay ? go(items.length - 1) : undefined;
+			go(index() + d);
+		};
+		prev?.addEventListener('click', () => step(-1));
+		next?.addEventListener('click', () => step(1));
+
+		let raf = 0;
+		track.addEventListener('scroll', () => {
+			if (!raf)
+				raf = requestAnimationFrame(() => {
+					raf = 0;
+					sync();
+				});
+		});
+		track.addEventListener('keydown', (e) => {
+			if (e.key === 'ArrowRight') step(1);
+			else if (e.key === 'ArrowLeft') step(-1);
+			else return;
+			e.preventDefault();
+		});
+
+		// Mouse drag.
+		let startX = 0;
+		let startLeft = 0;
+		let dragging = false;
+		track.addEventListener('pointerdown', (e) => {
+			if (e.pointerType !== 'mouse' || e.button !== 0) return;
+			dragging = true;
+			startX = e.clientX;
+			startLeft = track.scrollLeft;
+			track.setPointerCapture(e.pointerId);
+		});
+		track.addEventListener('pointermove', (e) => {
+			if (!dragging) return;
+			if (Math.abs(e.clientX - startX) > 4) track.classList.add('is-dragging');
+			track.scrollLeft = startLeft - (e.clientX - startX);
+		});
+		const drop = () => {
+			if (!dragging) return;
+			dragging = false;
+			const moved = track.classList.contains('is-dragging');
+			track.classList.remove('is-dragging');
+			if (moved) go(index());
+		};
+		track.addEventListener('pointerup', drop);
+		track.addEventListener('pointercancel', drop);
+
+		if (autoplay && !reduced && items.length > 1) {
+			let held = false;
+			const hold = () => {
+				held = root.matches(':hover') || !!root.querySelector(':focus-visible');
+			};
+			root.addEventListener('mouseenter', hold);
+			root.addEventListener('mouseleave', hold);
+			root.addEventListener('focusin', hold);
+			root.addEventListener('focusout', () => setTimeout(hold, 0));
+			setInterval(() => {
+				if (!held && !document.hidden && !dragging) step(1);
+			}, autoplay);
+		}
+		sync();
+	});
 
 	// Mark today's row in the weekly hours.
 	document.querySelectorAll<HTMLElement>('[data-hours-tz]').forEach((week) => {
