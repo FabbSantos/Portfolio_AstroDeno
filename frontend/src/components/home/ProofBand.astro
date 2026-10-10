@@ -100,6 +100,12 @@ const stats = [
 		}
 		.n {
 			font-size: 24px;
+			/* Long values ("24 business hours") must wrap inside a half-width column. */
+			white-space: normal;
+			text-wrap: balance;
+		}
+		.stats li {
+			min-width: 0;
 		}
 		.l {
 			font-size: 11px;

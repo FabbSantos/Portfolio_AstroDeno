@@ -47,6 +47,12 @@ const { total } = Astro.props;
 			opacity 0.2s,
 			transform 0.3s var(--ease);
 	}
+	@media (max-width: 420px) {
+		.cnav-btn {
+			width: 44px;
+			height: 44px;
+		}
+	}
 	.cnav-btn:hover:not(:disabled) {
 		transform: scale(1.06);
 	}

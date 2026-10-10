@@ -38,8 +38,9 @@ const { label, name, photos } = Astro.props;
 	.work-head {
 		display: flex;
 		align-items: end;
+		flex-wrap: wrap;
 		justify-content: space-between;
-		gap: 24px;
+		gap: 16px 24px;
 		margin-bottom: clamp(28px, 4vw, 52px);
 	}
 	.work-head :global(.sec-title) {

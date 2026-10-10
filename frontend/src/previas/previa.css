@@ -15,8 +15,15 @@
 	content: none;
 }
 .previa .mnav .mnav-brand {
-	font-size: clamp(19px, 2.2vw, 26px);
+	font-size: clamp(17px, 2.2vw, 26px);
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
 	white-space: nowrap;
+}
+/* Nothing in a preview may widen the page. */
+.previa {
+	overflow-x: clip;
 }
 
 /* "Aberto agora" status (text filled by the script in PreviaBody). */
