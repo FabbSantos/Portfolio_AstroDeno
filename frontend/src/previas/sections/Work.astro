@@ -1,0 +1,109 @@
+---
+/**
+ * Work carousel: the photos (public/previas/<slug>/trabalho-N.*) in portrait
+ * 4:5 on a horizontal track that snaps, bleeds to the right edge of the screen
+ * and can be dragged, swiped or stepped with the buttons. Photos only.
+ * Rendered only when there are photos.
+ */
+import { Image } from 'astro:assets';
+import type { PreviaPhoto } from '../photos';
+import CarouselNav from './CarouselNav.astro';
+
+interface Props {
+	label: string;
+	/** Business name, for the alt text. */
+	name: string;
+	photos: PreviaPhoto[];
+}
+const { label, name, photos } = Astro.props;
+---
+
+<section class='work sec' id='trabalhos' aria-labelledby='work-title' data-carousel>
+	<div class='wrap work-head'>
+		<h2 id='work-title' class='display sec-title'>{label}</h2>
+		<CarouselNav total={photos.length} />
+	</div>
+	<ul class='track' data-carousel-track tabindex='0' aria-label={label}>
+		{
+			photos.map((p, i) => (
+				<li class:list={['shot', i % 3 === 0 ? 'is-arch' : i % 3 === 1 ? 'is-low' : 'is-round']}>
+					<Image src={p.src} alt={`${label} ${i + 1}, ${name}`} width={p.width} height={p.height} widths={[320, 480, 640, 800]} sizes='(max-width: 780px) 72vw, 28vw' quality={72} loading='lazy' decoding='async' draggable='false' />
+				</li>
+			))
+		}
+	</ul>
+</section>
+
+<style>
+	.work-head {
+		display: flex;
+		align-items: end;
+		justify-content: space-between;
+		gap: 24px;
+		margin-bottom: clamp(28px, 4vw, 52px);
+	}
+	.work-head :global(.sec-title) {
+		margin-bottom: 0;
+	}
+	.track {
+		/* Same left edge as the wrap; the right side runs off the screen. */
+		--edge: max(var(--pad-x), calc((100vw - var(--wrap)) / 2 + var(--pad-x)));
+		list-style: none;
+		display: flex;
+		gap: clamp(12px, 1.6vw, 24px);
+		padding-inline: var(--edge);
+		scroll-padding-inline: var(--edge);
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		scrollbar-width: none;
+		cursor: grab;
+	}
+	.track::-webkit-scrollbar {
+		display: none;
+	}
+	.track:focus-visible {
+		outline: 2px solid var(--ink);
+		outline-offset: 4px;
+	}
+	.track:global(.is-dragging) {
+		cursor: grabbing;
+		scroll-snap-type: none;
+	}
+	.shot {
+		flex: 0 0 clamp(240px, 27vw, 400px);
+		aspect-ratio: 4 / 5;
+		overflow: hidden;
+		background: var(--bg-2);
+		scroll-snap-align: start;
+	}
+	/* Three shapes in rotation: an arch, a plain portrait set lower, a soft pill. */
+	.track {
+		align-items: flex-start;
+		padding-bottom: clamp(28px, 4vw, 56px);
+	}
+	.shot.is-arch {
+		border-radius: 999px 999px 0 0;
+	}
+	.shot.is-low {
+		margin-top: clamp(28px, 4vw, 56px);
+		flex-basis: clamp(200px, 22vw, 330px);
+	}
+	.shot.is-round {
+		border-radius: 999px;
+	}
+	.shot :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		user-select: none;
+		-webkit-user-drag: none;
+	}
+	@media (max-width: 780px) {
+		.shot {
+			flex-basis: 68vw;
+		}
+		.shot.is-low {
+			flex-basis: 56vw;
+		}
+	}
+</style>

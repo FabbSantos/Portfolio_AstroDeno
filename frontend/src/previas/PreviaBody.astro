@@ -1,0 +1,209 @@
+---
+/**
+ * Body of a client preview: Atelier's type and paper (its fonts and
+ * styles.css, the core topbar) with the Sálvia functions (WhatsApp booking,
+ * opening hours with a live "aberto agora" status computed in the business's
+ * time zone by core/hours.ts).
+ *
+ * House rules for previews: only the client's own text and photos; section
+ * labels are one word; upright type (no italic or coloured accent words, no
+ * uppercase eyebrows, no numbered process, no decorative giant name).
+ */
+import '@fontsource-variable/fraunces/wght.css';
+import '@fontsource-variable/figtree';
+import '../templates/atelier/styles.css';
+import './previa.css';
+import MobileNav from '../templates/core/MobileNav.astro';
+import WhatsAppFab from '../templates/core/WhatsAppFab.astro';
+import type { BaseSite } from '../templates/core/schema';
+import { whatsappHref, type PreviaData } from '../data/previas/types';
+import { previaPhotos } from './photos';
+import Hero from './sections/Hero.astro';
+import Ticker from './sections/Ticker.astro';
+import Work from './sections/Work.astro';
+import Care from './sections/Care.astro';
+import Band from './sections/Band.astro';
+import Services from './sections/Services.astro';
+import Reviews from './sections/Reviews.astro';
+import Location from './sections/Location.astro';
+import Footer from './sections/Footer.astro';
+
+interface Props {
+	data: PreviaData;
+}
+const { data } = Astro.props;
+const wa = whatsappHref(data.whatsapp);
+const photos = await previaPhotos(data.slug);
+const nav = [
+	...(photos.work.length ? [{ label: data.labels.work, href: '#trabalhos' }] : []),
+	{ label: data.labels.services, href: '#servicos' },
+	{ label: data.labels.reviews, href: '#avaliacoes' },
+	{ label: data.labels.hours, href: '#horarios' },
+];
+// The core floating button reads the site config shape.
+const fabSite = { contact: { whatsapp: { number: data.whatsapp.number, message: data.whatsapp.message } }, brand: { locale: 'pt-BR' } } as unknown as BaseSite;
+---
+
+<div class='tpl tpl-atelier previa' id='top'>
+	<div class='tb'>
+		<MobileNav brand={data.name} brandHref='#top' nav={nav} cta={{ label: data.whatsapp.short, href: wa }} id='previa-nav' />
+	</div>
+	<Hero data={data} photo={photos.hero} photo2={photos.work[0] ?? null} />
+	<Ticker items={data.services} />
+	{photos.work.length > 0 && <Work label={data.labels.work} name={data.name} photos={photos.work} />}
+	{data.care && <Care care={data.care} photo={photos.care} name={data.name} />}
+	<Services label={data.labels.services} items={data.services} photo={photos.services} swap={photos.work.slice(1)} name={data.name} />
+	<Reviews label={data.labels.reviews} rating={data.rating} quotes={data.reviews} />
+	{photos.band && <Band data={data} photo={photos.band} />}
+	<Location data={data} />
+	<Footer data={data} />
+	<WhatsAppFab site={fabSite} />
+</div>
+
+<style>
+	.tb {
+		position: sticky;
+		top: var(--previa-ribbon, 0px);
+		z-index: 40;
+	}
+</style>
+
+<script>
+	import { openStatus, type OpenStrings, type Slot } from '../templates/core/hours';
+
+	interface StatusData {
+		hours: Slot[];
+		tz: string;
+		strings: OpenStrings;
+	}
+
+	// "Aberto agora · fecha às 17h" in the business's time zone, refreshed every minute.
+	const paint = () => {
+		document.querySelectorAll<HTMLElement>('[data-open-status]').forEach((el) => {
+			try {
+				const data = JSON.parse(el.dataset.openStatus ?? '') as StatusData;
+				const status = openStatus(data.hours, data.tz, 'pt-BR', data.strings);
+				const text = el.querySelector('[data-open-text]');
+				if (!status || !text) return;
+				text.textContent = status.text;
+				el.classList.add('is-known');
+				el.classList.toggle('is-open', status.open);
+				el.classList.toggle('is-closed', !status.open);
+			} catch {
+				/* unknown time zone or bad data: keep the static hours */
+			}
+		});
+	};
+	paint();
+	setInterval(paint, 60_000);
+
+	// Carousels ([data-carousel]): a scroll-snap track with prev / next buttons and a
+	// "1 / N" counter; mouse drag on desktop (touch scrolls natively); optional
+	// autoplay (data-carousel-autoplay="ms") that loops and pauses on hover, focus,
+	// a hidden tab and reduced motion. Works as a plain scroller without this script.
+	const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((root) => {
+		const track = root.querySelector<HTMLElement>('[data-carousel-track]');
+		if (!track) return;
+		const items = Array.from(track.children) as HTMLElement[];
+		const prev = root.querySelector<HTMLButtonElement>('[data-carousel-prev]');
+		const next = root.querySelector<HTMLButtonElement>('[data-carousel-next]');
+		const cur = root.querySelector<HTMLElement>('[data-carousel-cur]');
+		const autoplay = Number(root.dataset.carouselAutoplay ?? 0);
+		const first = items[0];
+		if (!first) return;
+
+		const left = (i: number) => (items[i]?.offsetLeft ?? 0) - first.offsetLeft;
+		const max = () => track.scrollWidth - track.clientWidth;
+		const index = () => {
+			let best = 0;
+			items.forEach((_, i) => {
+				if (Math.abs(left(i) - track.scrollLeft) < Math.abs(left(best) - track.scrollLeft)) best = i;
+			});
+			return best;
+		};
+		const go = (i: number) => track.scrollTo({ left: Math.min(left(Math.max(0, Math.min(items.length - 1, i))), max()), behavior: reduced ? 'auto' : 'smooth' });
+		const sync = () => {
+			const atEnd = track.scrollLeft >= max() - 2;
+			const i = atEnd ? items.length - 1 : index();
+			if (cur) cur.textContent = String(i + 1);
+			// With autoplay the buttons loop, so they never disable.
+			if (prev) prev.disabled = !autoplay && track.scrollLeft <= 2;
+			if (next) next.disabled = !autoplay && atEnd;
+		};
+		const step = (d: number) => {
+			const atEnd = track.scrollLeft >= max() - 2;
+			if (d > 0 && atEnd) return autoplay ? go(0) : undefined;
+			if (d < 0 && track.scrollLeft <= 2) return autoplay ? go(items.length - 1) : undefined;
+			go(index() + d);
+		};
+		prev?.addEventListener('click', () => step(-1));
+		next?.addEventListener('click', () => step(1));
+
+		let raf = 0;
+		track.addEventListener('scroll', () => {
+			if (!raf)
+				raf = requestAnimationFrame(() => {
+					raf = 0;
+					sync();
+				});
+		});
+		track.addEventListener('keydown', (e) => {
+			if (e.key === 'ArrowRight') step(1);
+			else if (e.key === 'ArrowLeft') step(-1);
+			else return;
+			e.preventDefault();
+		});
+
+		// Mouse drag.
+		let startX = 0;
+		let startLeft = 0;
+		let dragging = false;
+		track.addEventListener('pointerdown', (e) => {
+			if (e.pointerType !== 'mouse' || e.button !== 0) return;
+			dragging = true;
+			startX = e.clientX;
+			startLeft = track.scrollLeft;
+			track.setPointerCapture(e.pointerId);
+		});
+		track.addEventListener('pointermove', (e) => {
+			if (!dragging) return;
+			if (Math.abs(e.clientX - startX) > 4) track.classList.add('is-dragging');
+			track.scrollLeft = startLeft - (e.clientX - startX);
+		});
+		const drop = () => {
+			if (!dragging) return;
+			dragging = false;
+			const moved = track.classList.contains('is-dragging');
+			track.classList.remove('is-dragging');
+			if (moved) go(index());
+		};
+		track.addEventListener('pointerup', drop);
+		track.addEventListener('pointercancel', drop);
+
+		if (autoplay && !reduced && items.length > 1) {
+			let held = false;
+			const hold = () => {
+				held = root.matches(':hover') || !!root.querySelector(':focus-visible');
+			};
+			root.addEventListener('mouseenter', hold);
+			root.addEventListener('mouseleave', hold);
+			root.addEventListener('focusin', hold);
+			root.addEventListener('focusout', () => setTimeout(hold, 0));
+			setInterval(() => {
+				if (!held && !document.hidden && !dragging) step(1);
+			}, autoplay);
+		}
+		sync();
+	});
+
+	// Mark today's row in the weekly hours.
+	document.querySelectorAll<HTMLElement>('[data-hours-tz]').forEach((week) => {
+		try {
+			const day = new Intl.DateTimeFormat('en-US', { timeZone: week.dataset.hoursTz, weekday: 'short' }).format(new Date()).slice(0, 3).toLowerCase();
+			week.querySelector(`[data-day="${day}"]`)?.classList.add('is-today');
+		} catch {
+			/* unknown time zone */
+		}
+	});
+</script>

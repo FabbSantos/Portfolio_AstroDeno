@@ -1,0 +1,51 @@
+---
+/**
+ * Layout for client previews (/previas/<slug>): tokens + fonts only, like the
+ * template demos. Always `noindex, nofollow` (the page shows a real business
+ * that has not approved it yet) and kept out of the sitemap in astro.config.
+ * A thin fixed ribbon credits the preview; the page is pushed down by its height.
+ */
+import '../styles/base.css';
+import PreviaRibbon from './PreviaRibbon.astro';
+
+interface Props {
+	title: string;
+	description: string;
+	themeColor: string;
+	/** Font files to preload (the display face). */
+	preload?: readonly string[];
+}
+const { title, description, themeColor, preload = [] } = Astro.props;
+---
+
+<!doctype html>
+<html lang='pt-BR' data-theme='light'>
+	<head>
+		<meta charset='UTF-8' />
+		<meta name='viewport' content='width=device-width,initial-scale=1' />
+		<title>{title}</title>
+		<meta name='description' content={description} />
+		<meta name='robots' content='noindex, nofollow' />
+		<meta name='theme-color' content={themeColor} />
+		{preload.map((href) => <link rel='preload' as='font' type='font/woff2' href={href} crossorigin />)}
+		<link rel='icon' type='image/png' sizes='32x32' href='/favicon-32x32.png' />
+	</head>
+	<body>
+		<PreviaRibbon />
+		<main id='main-content'>
+			<slot />
+		</main>
+	</body>
+</html>
+
+<style is:global>
+	:root {
+		--previa-ribbon: 30px;
+	}
+	body {
+		padding-top: var(--previa-ribbon);
+	}
+	html {
+		scroll-padding-top: calc(var(--previa-ribbon) + 84px);
+	}
+</style>

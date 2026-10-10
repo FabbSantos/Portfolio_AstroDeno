@@ -1,5 +1,6 @@
 User-agent: *
 Disallow: /api/
 Disallow: /templates/*/demo
+Disallow: /previas/
 
 Sitemap: https://www.fabbahiense.dev/sitemap-index.xml

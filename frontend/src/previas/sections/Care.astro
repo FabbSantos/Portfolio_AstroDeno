@@ -1,0 +1,105 @@
+---
+/**
+ * How the professional works, in the client's own words: a tall photo that
+ * stays in view on one side while the steps scroll by on the other, each one
+ * a big serif word with its sentence, on hairlines. No numbering.
+ * Rendered only when the data has `care`.
+ */
+import { Image } from 'astro:assets';
+import type { PreviaData } from '../../data/previas/types';
+import type { PreviaPhoto } from '../photos';
+
+interface Props {
+	care: NonNullable<PreviaData['care']>;
+	photo: PreviaPhoto | null;
+	/** Business name, for the alt text. */
+	name: string;
+}
+const { care, photo, name } = Astro.props;
+---
+
+<section class='care sec' id='cuidado' aria-labelledby='care-title'>
+	<div class='wrap'>
+		<h2 id='care-title' class='display sec-title'>{care.title}</h2>
+		<div class:list={['care-grid', { 'has-photo': !!photo }]}>
+			<ul class='care-list'>
+				{
+					care.steps.map((s) => (
+						<li>
+							<h3 class='display'>{s.t}</h3>
+							<p>{s.d}</p>
+						</li>
+					))
+				}
+			</ul>
+			{
+				photo && (
+					<figure class='care-photo'>
+						<Image src={photo.src} alt={name} width={photo.width} height={photo.height} widths={[480, 640, 800, 960]} sizes='(max-width: 900px) calc(100vw - 40px), 38vw' quality={72} loading='lazy' decoding='async' />
+					</figure>
+				)
+			}
+		</div>
+	</div>
+</section>
+
+<style>
+	.care-grid.has-photo {
+		display: grid;
+		grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+		gap: clamp(32px, 7vw, 120px);
+		align-items: start;
+	}
+	.care-list {
+		list-style: none;
+		border-top: 1px solid var(--line);
+	}
+	.care-list li {
+		display: grid;
+		grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+		gap: 12px 32px;
+		align-items: baseline;
+		padding-block: clamp(28px, 4vw, 56px);
+		border-bottom: 1px solid var(--line);
+	}
+	h3 {
+		font-size: clamp(30px, 3vw, 46px);
+		overflow-wrap: anywhere;
+		font-weight: 500;
+		line-height: 1.02;
+		letter-spacing: -0.02em;
+	}
+	.care-list p {
+		font-size: clamp(17px, 1.4vw, 20px);
+		line-height: 1.5;
+		color: var(--ink-2);
+	}
+	.care-photo {
+		position: sticky;
+		top: calc(var(--previa-ribbon, 0px) + 104px);
+		margin: 0;
+		aspect-ratio: 4 / 5;
+		overflow: hidden;
+		border-radius: 999px 999px 0 0;
+		background: var(--bg-2);
+	}
+	.care-photo :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+	@media (max-width: 900px) {
+		.care-grid.has-photo {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		.care-photo {
+			position: static;
+			order: -1;
+			width: 78%;
+			margin-inline: auto;
+		}
+		.care-list li {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+</style>

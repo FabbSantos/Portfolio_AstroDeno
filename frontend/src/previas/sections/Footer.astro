@@ -1,0 +1,31 @@
+---
+/** Footer: one hairline with the business name and where it is. Nothing decorative. */
+import type { PreviaData } from '../../data/previas/types';
+
+interface Props {
+	data: PreviaData;
+}
+const { name, location } = Astro.props.data;
+const a = location.address;
+---
+
+<footer class='ft'>
+	<div class='wrap'>
+		<p>{name} · {a.district}, {a.city}</p>
+	</div>
+</footer>
+
+<style>
+	.ft {
+		padding-block: 28px;
+		border-top: 1px solid var(--line);
+		font-size: 14px;
+		color: var(--ink-2);
+	}
+	/* Room for the floating WhatsApp button on phones. */
+	@media (max-width: 780px) {
+		.ft {
+			padding-bottom: 96px;
+		}
+	}
+</style>

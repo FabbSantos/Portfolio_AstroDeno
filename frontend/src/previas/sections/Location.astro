@@ -1,0 +1,147 @@
+---
+/**
+ * Hours and address, after Sálvia's: the week as a list with dotted leaders,
+ * today's row in bold and the live open / closed line on top (both filled in
+ * by the script in PreviaBody, in the business's zone); beside it the address
+ * with the two buttons (WhatsApp, "Como chegar").
+ */
+import { mapsHref, whatsappHref, type PreviaData } from '../../data/previas/types';
+import { OPEN_STRINGS, hoursTable } from '../../templates/core/hours';
+import WaButton from './WaButton.astro';
+
+interface Props {
+	data: PreviaData;
+}
+const { data } = Astro.props;
+const { location, whatsapp, labels } = data;
+const a = location.address;
+const rows = hoursTable(location.hours, 'pt-BR');
+const mapsEmbed = `https://www.google.com/maps?q=${encodeURIComponent(`${a.street}, ${a.district}, ${a.city} - ${a.state}`)}&output=embed`;
+const status = JSON.stringify({ hours: location.hours, tz: location.timezone, strings: OPEN_STRINGS['pt-BR'] });
+---
+
+<section class='location sec' id='horarios' aria-labelledby='location-title'>
+	<div class='wrap'>
+		<h2 id='location-title' class='display sec-title'>{labels.hours}</h2>
+		<div class='loc-grid'>
+			<div class='hours'>
+				<p class='status' data-open-status={status}>
+					<span class='status-dot' aria-hidden='true'></span>
+					<span data-open-text></span>
+				</p>
+				<ul class='week' data-hours-tz={location.timezone}>
+					{
+						rows.map((r) => (
+							<li data-day={r.day} class:list={{ closed: r.closed }}>
+								<span class='d'>{r.label}</span>
+								<span class='dots' aria-hidden='true' />
+								<span class='t'>{r.value}</span>
+							</li>
+						))
+					}
+				</ul>
+			</div>
+
+			<div class='place'>
+				<address class='display'>
+					{a.street}<br />
+					{a.district}, {a.city}, {a.state}
+				</address>
+				<div class='loc-actions'>
+					<WaButton href={whatsappHref(whatsapp)} label={whatsapp.label} />
+					<a class='btn btn--line' href={mapsHref(a)} target='_blank' rel='noopener noreferrer'>
+						{location.mapsLabel} <span aria-hidden='true'>↗</span>
+					</a>
+				</div>
+			</div>
+		</div>
+		<div class='map'>
+			<iframe src={mapsEmbed} title={`${labels.hours}: ${a.street}, ${a.district}`} loading='lazy' referrerpolicy='no-referrer-when-downgrade' />
+		</div>
+	</div>
+</section>
+
+<style>
+	.loc-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+		gap: clamp(40px, 6vw, 96px);
+		align-items: start;
+	}
+	address {
+		font-style: normal;
+		font-size: clamp(28px, 3.4vw, 48px);
+		line-height: 1.14;
+	}
+	.loc-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+		margin-top: 32px;
+	}
+	.hours .status {
+		min-height: 24px;
+		font-size: 17px;
+	}
+	.week {
+		list-style: none;
+		margin-top: 18px;
+		border-top: 1px solid var(--line);
+		font-variant-numeric: tabular-nums;
+	}
+	.week li {
+		display: flex;
+		align-items: baseline;
+		gap: 10px;
+		padding-block: 12px;
+		border-bottom: 1px solid var(--line-soft);
+		font-size: 17px;
+	}
+	.dots {
+		flex: 1;
+		min-width: 20px;
+		border-bottom: 1px dotted var(--ink-3);
+		transform: translateY(-4px);
+		opacity: 0.55;
+	}
+	.week .closed .t {
+		color: var(--ink-3);
+	}
+	.week li:global(.is-today) {
+		font-weight: 700;
+	}
+	.week li:global(.is-today) .d::before {
+		content: '';
+		display: inline-block;
+		width: 7px;
+		height: 7px;
+		margin-right: 10px;
+		border-radius: 50%;
+		background: var(--accent-text);
+		vertical-align: 0.12em;
+	}
+	.map {
+		margin-top: clamp(40px, 5vw, 72px);
+		/* Explicit width: with `width: auto`, a min-height would push the width through the aspect ratio. */
+		width: 100%;
+		aspect-ratio: 21 / 9;
+		overflow: hidden;
+		background: var(--bg-2);
+	}
+	.map iframe {
+		display: block;
+		width: 100%;
+		height: 100%;
+		border: 0;
+		/* Tone the map down to sit with the paper. */
+		filter: grayscale(0.35) sepia(0.12);
+	}
+	@media (max-width: 900px) {
+		.map {
+			aspect-ratio: 4 / 3;
+		}
+		.loc-grid {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+</style>

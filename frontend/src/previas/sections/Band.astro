@@ -1,0 +1,88 @@
+---
+/**
+ * Full-bleed photo band with the booking call: the name, the one line, the
+ * WhatsApp button and the Google rating over a wide photo with a dark shade.
+ * Rendered only when the band photo exists (public/previas/<slug>/faixa.*).
+ */
+import { Image } from 'astro:assets';
+import { whatsappHref, type PreviaData } from '../../data/previas/types';
+import type { PreviaPhoto } from '../photos';
+import WaButton from './WaButton.astro';
+
+interface Props {
+	data: PreviaData;
+	photo: PreviaPhoto;
+}
+const { data, photo } = Astro.props;
+const { whatsapp, rating } = data;
+---
+
+<section class='band' aria-label={whatsapp.label}>
+	<Image class='band-img' src={photo.src} alt='' width={photo.width} height={photo.height} widths={[640, 960, 1280, 1600, 1920]} sizes='100vw' quality={68} loading='lazy' decoding='async' />
+	<div class='band-shade'></div>
+	<div class='wrap band-in'>
+		<p class='band-name display'>{data.name}</p>
+		<p class='band-line'>{data.line}</p>
+		<div class='band-actions'>
+			<WaButton href={whatsappHref(whatsapp)} label={whatsapp.label} class='btn--paper' />
+			<p class='band-rating'>
+				<span aria-hidden='true'>★</span>{' '}
+				{rating.value} no {rating.source} · {rating.count}
+			</p>
+		</div>
+	</div>
+</section>
+
+<style>
+	.band {
+		position: relative;
+		isolation: isolate;
+		display: grid;
+		align-items: end;
+		min-height: clamp(460px, 62vw, 760px);
+		overflow: hidden;
+		background: var(--ink);
+		color: #fff;
+	}
+	.band :global(.band-img) {
+		position: absolute;
+		inset: 0;
+		z-index: -2;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+	.band-shade {
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		background: linear-gradient(180deg, rgba(0, 0, 0, 0.18) 0%, rgba(0, 0, 0, 0.3) 45%, rgba(0, 0, 0, 0.78) 100%);
+	}
+	.band-in {
+		width: 100%;
+		display: grid;
+		gap: 18px;
+		justify-items: start;
+		padding-block: clamp(40px, 6vw, 88px);
+	}
+	.band-name {
+		font-size: clamp(44px, 7.4vw, 124px);
+		line-height: 0.96;
+		letter-spacing: -0.03em;
+		max-width: 12ch;
+	}
+	.band-line {
+		font-size: clamp(18px, 1.6vw, 23px);
+	}
+	.band-actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 14px 22px;
+		margin-top: 10px;
+	}
+	.band-rating {
+		font-size: 15px;
+		font-weight: 600;
+	}
+</style>

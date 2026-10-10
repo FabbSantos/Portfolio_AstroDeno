@@ -1,0 +1,234 @@
+---
+/**
+ * Hero as a collage: the name very large with the line, the WhatsApp button,
+ * the Google rating and the live status on the left; on the right the portrait
+ * in an arch, a small round photo overlapping its foot and a circular badge
+ * whose text ("Agendar pelo WhatsApp") turns slowly around the WhatsApp glyph.
+ * Photos come from public/previas/<slug>/; without them the copy stands alone.
+ * On phones the copy comes first and is the LCP.
+ */
+import { Image } from 'astro:assets';
+import { whatsappHref, type PreviaData } from '../../data/previas/types';
+import { OPEN_STRINGS, hoursSummary } from '../../templates/core/hours';
+import type { PreviaPhoto } from '../photos';
+import WaButton from './WaButton.astro';
+
+interface Props {
+	data: PreviaData;
+	photo: PreviaPhoto | null;
+	/** Small round photo over the arch. */
+	photo2?: PreviaPhoto | null;
+}
+const { data, photo, photo2 = null } = Astro.props;
+const { location, whatsapp, rating } = data;
+const wa = whatsappHref(whatsapp);
+const status = JSON.stringify({ hours: location.hours, tz: location.timezone, strings: OPEN_STRINGS['pt-BR'] });
+const ring = `${whatsapp.label} · ${whatsapp.label} · `;
+---
+
+<section class:list={['hero', { 'has-photo': !!photo }]} aria-labelledby='hero-title'>
+	<div class='wrap hero-grid'>
+		<div class='hero-copy'>
+			<h1 id='hero-title' class='display'>{data.name}</h1>
+			<p class='hero-line'>{data.line}</p>
+			<div class='hero-actions'>
+				<WaButton href={wa} label={whatsapp.label} />
+				<p class='hero-rating'>
+					<span aria-hidden='true'>★</span>{' '}
+					{rating.value} no {rating.source} · {rating.count}
+				</p>
+			</div>
+			<p class='status' data-open-status={status}>
+				<span class='status-dot' aria-hidden='true'></span>
+				<span data-open-text>{hoursSummary(location.hours, 'pt-BR')}</span>
+			</p>
+		</div>
+		{
+			photo && (
+				<div class='collage'>
+					<figure class='arch'>
+						<Image src={photo.src} alt={data.name} width={photo.width} height={photo.height} widths={[480, 640, 800, 960]} sizes='(max-width: 900px) 78vw, 36vw' quality={70} loading='eager' fetchpriority='high' decoding='async' />
+					</figure>
+					{photo2 && (
+						<figure class='round'>
+							<Image src={photo2.src} alt='' width={photo2.width} height={photo2.height} widths={[256, 320, 480]} sizes='(max-width: 900px) 34vw, 15vw' quality={70} loading='eager' decoding='async' />
+						</figure>
+					)}
+					<a class='ring' href={wa} target='_blank' rel='noopener noreferrer' aria-label={whatsapp.label}>
+						<svg class='ring-text' viewBox='0 0 120 120' aria-hidden='true' focusable='false'>
+							<defs>
+								<path id='ring-path' d='M60,60 m-47,0 a47,47 0 1,1 94,0 a47,47 0 1,1 -94,0' />
+							</defs>
+							<text>
+								<textPath href='#ring-path' textLength='290'>{ring}</textPath>
+							</text>
+						</svg>
+						<svg class='ring-glyph' viewBox='0 0 24 24' aria-hidden='true' fill='currentColor' focusable='false'>
+							<path d='M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z' />
+						</svg>
+					</a>
+				</div>
+			)
+		}
+	</div>
+</section>
+
+<style>
+	.hero {
+		overflow: hidden;
+	}
+	.hero-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: clamp(32px, 5vw, 80px);
+		align-items: center;
+		padding-block: clamp(56px, 9vw, 140px);
+	}
+	.has-photo .hero-grid {
+		grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+		padding-block: clamp(40px, 5vw, 80px) clamp(64px, 8vw, 120px);
+	}
+	.hero-copy {
+		position: relative;
+		z-index: 2;
+		display: grid;
+		gap: 24px;
+		justify-items: start;
+	}
+	h1 {
+		font-size: clamp(48px, 8.4vw, 132px);
+		line-height: 0.94;
+		letter-spacing: -0.035em;
+		max-width: 11ch;
+	}
+	.has-photo h1 {
+		font-size: clamp(52px, 7.4vw, 124px);
+	}
+	.hero-line {
+		font-size: clamp(19px, 1.7vw, 24px);
+		line-height: 1.4;
+		color: var(--ink-2);
+	}
+	.hero-actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 14px 22px;
+		margin-top: 8px;
+	}
+	.hero-rating {
+		font-size: 15px;
+		font-weight: 600;
+		color: var(--ink);
+		white-space: nowrap;
+	}
+
+	/* ---- collage ---- */
+	.collage {
+		position: relative;
+		padding: 0 6% 9% 12%;
+	}
+	/* A flat disc of the second paper tone behind the arch. */
+	.collage::before {
+		content: '';
+		position: absolute;
+		right: -14%;
+		top: 8%;
+		width: 78%;
+		aspect-ratio: 1;
+		border-radius: 50%;
+		background: var(--bg-2);
+	}
+	figure {
+		margin: 0;
+		overflow: hidden;
+		background: var(--bg-2);
+	}
+	figure :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+	.arch {
+		position: relative;
+		aspect-ratio: 3 / 4.1;
+		border-radius: 999px 999px 0 0;
+	}
+	.round {
+		position: absolute;
+		left: 0;
+		bottom: 0;
+		width: 38%;
+		aspect-ratio: 1;
+		border-radius: 50%;
+		box-shadow: 0 0 0 8px var(--bg);
+	}
+	.ring {
+		position: absolute;
+		right: -2%;
+		bottom: 3%;
+		width: clamp(104px, 11vw, 148px);
+		aspect-ratio: 1;
+		display: grid;
+		place-items: center;
+		border-radius: 50%;
+		background: var(--accent-text);
+		color: #fff;
+		transition: transform 0.5s var(--ease);
+	}
+	.ring:hover {
+		transform: scale(1.06);
+	}
+	.ring:focus-visible {
+		outline: 2px solid var(--ink);
+		outline-offset: 4px;
+	}
+	.ring-text {
+		position: absolute;
+		inset: 0;
+		animation: ring-spin 22s linear infinite;
+	}
+	.ring-text text {
+		fill: currentColor;
+		font-family: var(--text);
+		font-size: 10.5px;
+		font-weight: 600;
+		letter-spacing: 0.04em;
+	}
+	.ring-glyph {
+		width: 30%;
+		height: 30%;
+	}
+	@keyframes ring-spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	@media (max-width: 900px) {
+		.hero-grid,
+		.has-photo .hero-grid {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 44px;
+			padding-block: 36px 64px;
+		}
+		.hero-copy {
+			gap: 20px;
+		}
+		h1,
+		.has-photo h1 {
+			font-size: clamp(50px, 15vw, 92px);
+		}
+		.collage {
+			padding: 0 8% 10% 10%;
+		}
+		.round {
+			box-shadow: 0 0 0 6px var(--bg);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.ring-text {
+			animation: none;
+		}
+	}
+</style>
