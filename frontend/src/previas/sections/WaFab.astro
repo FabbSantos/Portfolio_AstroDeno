@@ -2,8 +2,9 @@
 /**
  * Floating WhatsApp button for previews (bottom-right corner), louder than the
  * core one: bigger, with two rings pulsing out of it, the glyph giving a small
- * nudge every few seconds, and the booking label sliding out beside it a few
- * seconds after load (and on hover). Animations are transform/opacity only.
+ * nudge every few seconds, and (desktop only) the booking label sliding out
+ * beside it a few seconds after load and on hover. Phones get the round button
+ * alone, since the label would cover the text. Animations are transform/opacity only.
  * Reduced motion: no rings, no nudge, the label stays put.
  */
 interface Props {
@@ -126,6 +127,20 @@ const { href, label } = Astro.props;
 	.wafab.is-shown .wafab-label {
 		opacity: 1;
 		transform: none;
+	}
+	/* Phones: just the round button. The label would sit over the text. */
+	@media (max-width: 780px) {
+		.wafab {
+			right: 14px;
+			bottom: 14px;
+		}
+		.wafab-label {
+			display: none;
+		}
+		.wafab-btn {
+			width: 58px;
+			height: 58px;
+		}
 	}
 	@media (prefers-reduced-motion: reduce) {
 		.wafab-ring {
