@@ -1,137 +1,298 @@
 ---
 /**
- * Services: the one-word label beside the list of services in large serif on
- * hairlines; under them, when the client has service posts
- * (public/previas/<slug>/servico-N.*), a carousel of those square posts that
- * bleeds to the right edge, with the same controls as the work carousel.
- * The text printed on each post is repeated in its alt text.
+ * Services as an index and a viewer. Left: the one-word label, the general
+ * list in one line, then the client's own services (from her posts) as an
+ * index; the active one opens to show her description and a bar that fills
+ * while it is on. Right: the matching post, large, crossfading. It advances
+ * on its own once on screen, pauses on hover, and any name can be picked.
+ * On phones the post sits above the index.
+ * Posts: public/previas/<slug>/servico-N.*; texts: data.servicePosts.
+ * Without posts, only the label and the list are shown.
  */
 import { Image } from 'astro:assets';
+import type { PreviaData } from '../../data/previas/types';
 import type { PreviaPhoto } from '../photos';
-import CarouselNav from './CarouselNav.astro';
 
 interface Props {
 	label: string;
 	items: string[];
 	posts: PreviaPhoto[];
-	/** Alt text for each post (what is written on it), by position. */
-	postAlts?: string[];
+	texts?: PreviaData['servicePosts'];
 	/** Business name, for alt text fallback. */
 	name: string;
 }
-const { label, items, posts, postAlts = [], name } = Astro.props;
+const { label, items, posts, texts = [], name } = Astro.props;
+const entries = posts.map((p, i) => ({ photo: p, title: texts[i]?.title ?? `${label} ${i + 1}`, text: texts[i]?.text ?? '' }));
 ---
 
-<section class='services sec' id='servicos' aria-labelledby='services-title' data-carousel>
-	<div class='wrap svc-grid'>
-		<div class='svc-head'>
+<section class='services sec' id='servicos' aria-labelledby='services-title' data-svc>
+	<div class:list={['wrap', 'svc-grid', { 'has-posts': entries.length > 0 }]}>
+		<div class='svc-side'>
 			<h2 id='services-title' class='display sec-title'>{label}</h2>
-			{posts.length > 0 && <CarouselNav total={posts.length} />}
+			<p class='svc-line'>{items.join(' · ')}</p>
+			{
+				entries.length > 0 && (
+					<ul class='svc-index' role='tablist' aria-label={label}>
+						{entries.map((e, i) => (
+							<li role='presentation'>
+								<button type='button' class:list={['svc-tab', { 'is-on': i === 0 }]} role='tab' id={`svc-tab-${i}`} aria-selected={i === 0 ? 'true' : 'false'} aria-controls='svc-view' data-svc-tab={i}>
+									<span class='svc-name display'>{e.title}</span>
+									{e.text && (
+										<span class='svc-desc'>
+											<span>{e.text}</span>
+										</span>
+									)}
+									<span class='svc-bar' aria-hidden='true'>
+										<i />
+									</span>
+								</button>
+							</li>
+						))}
+					</ul>
+				)
+			}
 		</div>
-		<ul class='svc-list'>
-			{items.map((item) => <li class='display'>{item}</li>)}
-		</ul>
+		{
+			entries.length > 0 && (
+				<div class='svc-view' id='svc-view' role='tabpanel' aria-live='polite'>
+					{entries.map((e, i) => (
+						<figure class:list={['svc-slide', { 'is-on': i === 0 }]} data-svc-slide={i} aria-hidden={i === 0 ? undefined : 'true'}>
+							<Image src={e.photo.src} alt={e.text ? `${e.title}. ${e.text}` : `${e.title}, ${name}`} width={e.photo.width} height={e.photo.height} widths={[480, 640, 800, 960]} sizes='(max-width: 900px) calc(100vw - 40px), 44vw' quality={78} loading='lazy' decoding='async' />
+						</figure>
+					))}
+				</div>
+			)
+		}
 	</div>
-	{
-		posts.length > 0 && (
-			<ul class='posts' data-carousel-track tabindex='0' aria-label={label}>
-				{posts.map((p, i) => (
-					<li class='post'>
-						<Image src={p.src} alt={postAlts[i] ?? `${label} ${i + 1}, ${name}`} width={p.width} height={p.height} widths={[320, 480, 640, 800]} sizes='(max-width: 780px) 78vw, 30vw' quality={78} loading='lazy' decoding='async' draggable='false' />
-					</li>
-				))}
-			</ul>
-		)
-	}
 </section>
 
 <style>
 	.services {
+		--t: 6s;
 		background: var(--bg-2);
 	}
-	.svc-grid {
+	.svc-grid.has-posts {
 		display: grid;
-		grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-		gap: clamp(24px, 6vw, 96px);
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		gap: clamp(32px, 6vw, 96px);
 		align-items: start;
 	}
-	.svc-head {
-		display: grid;
-		gap: 28px;
-		justify-items: start;
+	.svc-side :global(.sec-title) {
+		margin-bottom: 16px;
 	}
-	.svc-head :global(.sec-title) {
-		margin-bottom: 0;
+	.svc-line {
+		font-size: 17px;
+		line-height: 1.55;
+		color: var(--ink-2);
+		max-width: 44ch;
 	}
-	.svc-list {
+	.svc-index {
 		list-style: none;
+		margin-top: clamp(28px, 3.4vw, 44px);
 		border-top: 1px solid var(--line);
 	}
-	.svc-list li {
-		padding-block: clamp(18px, 2.4vw, 30px);
+	.svc-tab {
+		position: relative;
+		display: grid;
+		width: 100%;
+		padding: 18px 0 20px;
+		border: 0;
 		border-bottom: 1px solid var(--line);
-		font-size: clamp(28px, 3.6vw, 54px);
-		line-height: 1.04;
+		background: none;
+		color: var(--ink);
+		text-align: left;
+		cursor: pointer;
+	}
+	.svc-tab:focus-visible {
+		outline: 2px solid var(--ink);
+		outline-offset: 2px;
+	}
+	.svc-name {
+		font-size: clamp(26px, 2.8vw, 40px);
+		line-height: 1.06;
 		letter-spacing: -0.02em;
+		color: color-mix(in srgb, var(--ink) 72%, var(--bg));
+		transition:
+			color 0.3s,
+			transform 0.5s var(--ease);
+	}
+	.svc-tab:hover .svc-name,
+	.svc-tab.is-on .svc-name {
+		color: var(--ink);
+	}
+	.svc-tab.is-on .svc-name {
+		transform: translateX(10px);
+	}
+	/* Description: closed rows have zero height; the active one opens. */
+	.svc-desc {
+		display: grid;
+		grid-template-rows: 0fr;
+		transition: grid-template-rows 0.6s var(--ease);
+	}
+	.svc-desc > span {
+		overflow: hidden;
+		font-size: 16px;
+		line-height: 1.55;
+		color: var(--ink-2);
+		max-width: 52ch;
+	}
+	.svc-tab.is-on .svc-desc {
+		grid-template-rows: 1fr;
+	}
+	.svc-tab.is-on .svc-desc > span {
+		padding: 12px 0 0 10px;
+	}
+	.svc-bar {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: -1px;
+		height: 2px;
+		overflow: hidden;
+	}
+	.svc-bar i {
+		display: block;
+		height: 100%;
+		background: var(--accent-text);
+		transform: scaleX(0);
+		transform-origin: left;
+	}
+	.services:global(.is-running) .svc-tab.is-on .svc-bar i {
+		animation: svc-fill var(--t) linear both;
+	}
+	.services:global(.is-held) .svc-tab.is-on .svc-bar i {
+		animation-play-state: paused;
+	}
+	@keyframes svc-fill {
+		to {
+			transform: scaleX(1);
+		}
 	}
 
-	/* ---- service posts carousel ---- */
-	.posts {
-		--edge: max(var(--pad-x), calc((100vw - var(--wrap)) / 2 + var(--pad-x)));
-		list-style: none;
-		display: flex;
-		gap: clamp(12px, 1.6vw, 24px);
-		margin-top: clamp(48px, 6vw, 88px);
-		padding-inline: var(--edge);
-		scroll-padding-inline: var(--edge);
-		overflow-x: auto;
-		scroll-snap-type: x mandatory;
-		scrollbar-width: none;
-		cursor: grab;
-	}
-	.posts::-webkit-scrollbar {
-		display: none;
-	}
-	.posts:focus-visible {
-		outline: 2px solid var(--ink);
-		outline-offset: 4px;
-	}
-	.posts:global(.is-dragging) {
-		cursor: grabbing;
-		scroll-snap-type: none;
-	}
-	.post {
-		flex: 0 0 clamp(260px, 30vw, 440px);
+	/* ---- viewer ---- */
+	.svc-view {
+		position: sticky;
+		top: calc(var(--previa-ribbon, 0px) + 100px);
 		aspect-ratio: 1;
+		border-radius: 24px;
 		overflow: hidden;
-		border-radius: 18px;
 		background: var(--ink);
-		scroll-snap-align: start;
-		box-shadow: 0 30px 60px -36px rgba(42, 31, 26, 0.55);
+		box-shadow: 0 40px 70px -40px rgba(42, 31, 26, 0.6);
 	}
-	.post :global(img) {
+	.svc-slide {
+		position: absolute;
+		inset: 0;
+		margin: 0;
+		opacity: 0;
+		transform: scale(1.04);
+		transition:
+			opacity 0.7s ease,
+			transform 1.2s var(--ease);
+	}
+	.svc-slide.is-on {
+		opacity: 1;
+		transform: none;
+	}
+	.svc-slide :global(img) {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		user-select: none;
-		-webkit-user-drag: none;
 	}
+	/* Phones: title, list, the post, then the index under it. */
 	@media (max-width: 900px) {
-		.svc-grid {
-			grid-template-columns: minmax(0, 1fr);
-		}
-		.svc-head {
+		.svc-grid.has-posts {
 			display: flex;
-			flex-wrap: wrap;
-			align-items: end;
-			justify-content: space-between;
-			gap: 16px;
+			flex-direction: column;
+			gap: 0;
 		}
-		.svc-list {
+		.svc-grid.has-posts .svc-side {
+			display: contents;
+		}
+		.svc-side :global(.sec-title) {
+			order: 1;
+		}
+		.svc-line {
 			order: 2;
 		}
-		.post {
-			flex-basis: 78vw;
+		.svc-view {
+			order: 3;
+			position: relative;
+			top: auto;
+			/* Its slides are absolute: without an explicit width it collapses to 0. */
+			width: 100%;
+			margin-top: 28px;
+		}
+		.svc-index {
+			order: 4;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.svc-desc,
+		.svc-slide,
+		.svc-name {
+			transition: none;
+		}
+		.services:global(.is-running) .svc-tab.is-on .svc-bar i {
+			animation: none;
+			transform: scaleX(1);
 		}
 	}
 </style>
+
+<script>
+	document.querySelectorAll<HTMLElement>('[data-svc]').forEach((root) => {
+		const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-svc-tab]'));
+		const slides = Array.from(root.querySelectorAll<HTMLElement>('[data-svc-slide]'));
+		const n = tabs.length;
+		if (n === 0) return;
+		const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		let at = 0;
+		const restart = () => {
+			root.classList.remove('is-running');
+			void root.offsetWidth;
+			if (!reduced && n > 1) root.classList.add('is-running');
+		};
+		const show = (i: number) => {
+			at = (i + n) % n;
+			tabs.forEach((t, k) => {
+				t.classList.toggle('is-on', k === at);
+				t.setAttribute('aria-selected', String(k === at));
+			});
+			slides.forEach((s, k) => {
+				s.classList.toggle('is-on', k === at);
+				if (k === at) s.removeAttribute('aria-hidden');
+				else s.setAttribute('aria-hidden', 'true');
+			});
+			restart();
+		};
+		root.addEventListener('animationend', (e) => {
+			if ((e.target as HTMLElement).closest('.svc-bar')) show(at + 1);
+		});
+		tabs.forEach((t, k) => t.addEventListener('click', () => show(k)));
+		root.addEventListener('keydown', (e) => {
+			if (!(e.target as HTMLElement).closest('[data-svc-tab]')) return;
+			if (e.key === 'ArrowDown' || e.key === 'ArrowRight') show(at + 1);
+			else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') show(at - 1);
+			else return;
+			e.preventDefault();
+			tabs[at]?.focus();
+		});
+		const grid = root.querySelector<HTMLElement>('.svc-grid') ?? root;
+		const hold = () => root.classList.toggle('is-held', grid.matches(':hover') || document.hidden);
+		grid.addEventListener('mouseenter', hold);
+		grid.addEventListener('mouseleave', hold);
+		document.addEventListener('visibilitychange', hold);
+		if ('IntersectionObserver' in window) {
+			const io = new IntersectionObserver(
+				(entries) => {
+					if (entries.some((e) => e.isIntersecting)) {
+						restart();
+						io.disconnect();
+					}
+				},
+				{ threshold: 0.3 },
+			);
+			io.observe(grid);
+		} else restart();
+	});
+</script>
