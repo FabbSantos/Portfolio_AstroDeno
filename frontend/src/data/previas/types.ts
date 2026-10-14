@@ -43,14 +43,12 @@ export interface PreviaData {
 	/** "5,0" and "91 avaliações" on Google. */
 	rating: { value: string; count: string; source: string };
 	/** One-word section labels. */
-	labels: { work: string; services: string; reviews: string; hours: string };
+	labels: { work: string; services: string; reviews: string; hours: string; studio: string };
 	services: string[];
 	/** Words for the drifting band under the hero (the client's own service names). Defaults to `services`. */
 	highlights?: string[];
-	/** How the professional works: a title and steps (a word and its sentence). Optional. */
-	care?: { title: string; steps: { t: string; d: string }[] };
-	/** What is written on each service post image (servico-N), used as its alt text, by position. Optional. */
-	servicePosts?: string[];
+	/** The client's own service posts (servico-N images), by position: the name and her description. Optional. */
+	servicePosts?: { title: string; text: string }[];
 	/** Review texts, exactly as written by the clients. */
 	reviews: string[];
 	location: {

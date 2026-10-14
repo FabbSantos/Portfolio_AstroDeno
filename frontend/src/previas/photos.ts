@@ -4,7 +4,7 @@
  * A missing file just leaves its spot out.
  *
  *   hero.(jpg|jpeg|png|webp)          portrait, the arch beside the name
- *   cuidado.(…)                       the photo beside the "how I work" steps
+ *   studio-1 … studio-N               the studio slider
  *   mural-1 … mural-N                 extra photos for the reviews mural (with the work photos)
  *   trabalho-1 … trabalho-N           the work carousel, in numeric order
  *                                     (trabalho-1 is also the round photo in the hero)
@@ -23,7 +23,7 @@ export interface PreviaPhoto {
 
 export interface PreviaPhotos {
 	hero: PreviaPhoto | null;
-	care: PreviaPhoto | null;
+	studio: PreviaPhoto[];
 	mural: PreviaPhoto[];
 	work: PreviaPhoto[];
 	posts: PreviaPhoto[];
@@ -43,7 +43,7 @@ async function photo(dir: string, slug: string, file: string | undefined): Promi
 
 export async function previaPhotos(slug: string): Promise<PreviaPhotos> {
 	const dir = join(process.cwd(), 'public', 'previas', slug);
-	if (!existsSync(dir)) return { hero: null, care: null, mural: [], work: [], posts: [] };
+	if (!existsSync(dir)) return { hero: null, studio: [], mural: [], work: [], posts: [] };
 	const files = readdirSync(dir).filter((f) => EXT.test(f));
 	const num = (f: string) => Number(f.match(/(\d+)/)?.[1] ?? 0);
 	const one = (name: string) =>
@@ -58,7 +58,7 @@ export async function previaPhotos(slug: string): Promise<PreviaPhotos> {
 	};
 	return {
 		hero: await one('hero'),
-		care: await one('cuidado'),
+		studio: await many('studio'),
 		mural: await many('mural'),
 		work: await many('trabalho'),
 		posts: await many('servico'),
