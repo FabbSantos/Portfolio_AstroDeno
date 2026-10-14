@@ -4,10 +4,11 @@
  *
  * Só o conteúdo que a cliente / o briefing deu. Nada inventado.
  *
- * Fotos: as reais da cliente, em public/previas/andrea-monteiro/
- * hero.jpg, servicos.jpg, cuidado.jpg e trabalho-1.jpg … trabalho-6.jpg em
- * retrato; faixa.jpg em paisagem larga. Hoje são placeholders: troque os
- * arquivos mantendo os nomes. Arquivo que faltar some do layout.
+ * Fotos: as reais da cliente, em public/previas/andrea-monteiro/:
+ * hero (ela no studio), trabalho-1…3 (resultados), cuidado (recepção),
+ * mural-1 (ela na cadeira, no mural de avaliações) e servico-1…6 (posts de
+ * serviço do Instagram).
+ * Arquivo que faltar some do layout.
  */
 import type { PreviaData, PreviaTheme } from './types';
 
@@ -38,6 +39,8 @@ const previa: PreviaData = {
 	rating: { value: '5,0', count: '91 avaliações', source: 'Google' },
 	labels: { work: 'Trabalhos', services: 'Serviços', reviews: 'Avaliações', hours: 'Horários' },
 
+	/** Serviços dos posts dela, na faixa que passa embaixo do hero. */
+	highlights: ['Lifting Cachos', 'Terapia Capilar', 'Lifting Hair', 'Corte Terapêutico', 'Corte Visagista', 'Corte em Cacheado'],
 	services: ['Corte feminino e masculino', 'Coloração e mechas', 'Tratamentos e hidratação', 'Escova e finalização'],
 	care: {
 		title: 'Como eu cuido do seu cabelo',
@@ -48,6 +51,15 @@ const previa: PreviaData = {
 			{ t: 'Cuidado em casa', d: 'Você sai sabendo como manter.' },
 		],
 	},
+	/** Texto escrito em cada post de serviço (servico-1 … servico-6), transcrito para o texto alternativo. */
+	servicePosts: [
+		'Lifting Cachos. Desenvolvido especialmente para cabelos cacheados! Ele é feito a partir de um mapeamento das áreas mais “inchadas” ou com frizz ao redor da cabeça. O tratamento é aplicado de forma localizada, respeitando o formato dos cachos. Resultado: volume controlado onde precisa, sem perder definição.',
+		'Terapia Capilar. Um cuidado profundo e individualizado para o couro cabeludo e os fios. Trabalhamos desde a raiz, tratando oleosidade, queda, caspa, afinamento e ressecamento, com protocolos personalizados e ativos naturais.',
+		'Lifting Hair. Um tratamento intensivo de nutrição e brilho. O lifting sela os fios, recupera o toque macio e combate o ressecamento, deixando o cabelo mais leve, alinhado e com movimento.',
+		'Corte Terapêutico. É um corte suave, feito apenas para “limpar” as pontas, respeitando o crescimento e o tratamento do fio. Ideal para quem está cuidando do cabelo e não quer tirar comprimento, mas precisa manter a saúde capilar em dia.',
+		'Corte Visagista. Corte que trata, não só transforma. Cortar o cabelo vai além da estética. Um bom corte remove pontas danificadas, ajuda no crescimento saudável e valoriza o formato dos fios.',
+		'Corte em Cacheado. O cabelo cacheado precisa de camadas bem distribuídas para ganhar forma, definição e leveza. Um corte em camadas realça o movimento natural, evita o efeito “abajur” e dá aquele acabamento bonito que valoriza cada cacho.',
+	],
 	reviews: ['Sou cliente há 26 anos.', 'Frequento o Studio há mais de 25 anos.', 'Dá atenção, explica cada detalhe do serviço.'],
 
 	location: {

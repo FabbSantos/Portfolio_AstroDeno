@@ -16,7 +16,8 @@ const { data } = Astro.props;
 const { location, whatsapp, labels } = data;
 const a = location.address;
 const rows = hoursTable(location.hours, 'pt-BR');
-const mapsEmbed = `https://www.google.com/maps?q=${encodeURIComponent(`${a.street}, ${a.district}, ${a.city} - ${a.state}`)}&output=embed`;
+// Street number + district + city only: the room number ("sala 102") confuses the geocoder.
+const mapsEmbed = `https://www.google.com/maps?q=${encodeURIComponent(`${a.street.replace(/,\s*sala.*$/i, '')}, ${a.district}, ${a.city}`)}&output=embed`;
 const status = JSON.stringify({ hours: location.hours, tz: location.timezone, strings: OPEN_STRINGS['pt-BR'] });
 ---
 
@@ -133,8 +134,6 @@ const status = JSON.stringify({ hours: location.hours, tz: location.timezone, st
 		width: 100%;
 		height: 100%;
 		border: 0;
-		/* Tone the map down to sit with the paper. */
-		filter: grayscale(0.35) sepia(0.12);
 	}
 	@media (max-width: 900px) {
 		.map {

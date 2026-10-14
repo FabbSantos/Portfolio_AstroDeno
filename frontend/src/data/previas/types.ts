@@ -45,8 +45,12 @@ export interface PreviaData {
 	/** One-word section labels. */
 	labels: { work: string; services: string; reviews: string; hours: string };
 	services: string[];
+	/** Words for the drifting band under the hero (the client's own service names). Defaults to `services`. */
+	highlights?: string[];
 	/** How the professional works: a title and steps (a word and its sentence). Optional. */
 	care?: { title: string; steps: { t: string; d: string }[] };
+	/** What is written on each service post image (servico-N), used as its alt text, by position. Optional. */
+	servicePosts?: string[];
 	/** Review texts, exactly as written by the clients. */
 	reviews: string[];
 	location: {
