@@ -1,138 +1,137 @@
 ---
 /**
- * Services: a portrait in an arch on one side, the one-word label and the
- * names in very large serif on hairlines on the other. Hovering (or focusing)
- * a name swaps the photo in the arch for another of the client's photos, with
- * a crossfade; on touch screens the arch just shows its own photo.
+ * Services: the one-word label beside the list of services in large serif on
+ * hairlines; under them, when the client has service posts
+ * (public/previas/<slug>/servico-N.*), a carousel of those square posts that
+ * bleeds to the right edge, with the same controls as the work carousel.
+ * The text printed on each post is repeated in its alt text.
  */
 import { Image } from 'astro:assets';
 import type { PreviaPhoto } from '../photos';
+import CarouselNav from './CarouselNav.astro';
 
 interface Props {
 	label: string;
 	items: string[];
-	photo: PreviaPhoto | null;
-	/** Photos shown while a name is hovered, one per item (cycled). */
-	swap?: PreviaPhoto[];
-	/** Business name, for the alt text. */
+	posts: PreviaPhoto[];
+	/** Alt text for each post (what is written on it), by position. */
+	postAlts?: string[];
+	/** Business name, for alt text fallback. */
 	name: string;
 }
-const { label, items, photo, swap = [], name } = Astro.props;
-const base = photo ?? swap[0] ?? null;
+const { label, items, posts, postAlts = [], name } = Astro.props;
 ---
 
-<section class='services sec' id='servicos' aria-labelledby='services-title' data-svc>
-	<div class:list={['wrap', 'svc-grid', { 'has-photo': !!base }]}>
-		{
-			base && (
-				<figure class='svc-photo'>
-					<Image src={base.src} alt={`${label}, ${name}`} width={base.width} height={base.height} widths={[480, 640, 800, 960]} sizes='(max-width: 900px) 70vw, 34vw' quality={72} loading='lazy' decoding='async' />
-					{swap.length > 0 &&
-						items.map((_, i) => {
-							const p = swap[i % swap.length] as PreviaPhoto;
-							return <Image class='svc-swap' data-svc-img={i} src={p.src} alt='' width={p.width} height={p.height} widths={[480, 640, 800]} sizes='34vw' quality={72} loading='lazy' decoding='async' />;
-						})}
-				</figure>
-			)
-		}
-		<div class='svc-copy'>
+<section class='services sec' id='servicos' aria-labelledby='services-title' data-carousel>
+	<div class='wrap svc-grid'>
+		<div class='svc-head'>
 			<h2 id='services-title' class='display sec-title'>{label}</h2>
-			<ul class='svc-list'>
-				{
-					items.map((item, i) => (
-						<li class='display' data-svc-item={i} tabindex='0'>
-							{item}
-						</li>
-					))
-				}
-			</ul>
+			{posts.length > 0 && <CarouselNav total={posts.length} />}
 		</div>
+		<ul class='svc-list'>
+			{items.map((item) => <li class='display'>{item}</li>)}
+		</ul>
 	</div>
+	{
+		posts.length > 0 && (
+			<ul class='posts' data-carousel-track tabindex='0' aria-label={label}>
+				{posts.map((p, i) => (
+					<li class='post'>
+						<Image src={p.src} alt={postAlts[i] ?? `${label} ${i + 1}, ${name}`} width={p.width} height={p.height} widths={[320, 480, 640, 800]} sizes='(max-width: 780px) 78vw, 30vw' quality={78} loading='lazy' decoding='async' draggable='false' />
+					</li>
+				))}
+			</ul>
+		)
+	}
 </section>
 
 <style>
 	.services {
 		background: var(--bg-2);
 	}
-	.svc-grid.has-photo {
+	.svc-grid {
 		display: grid;
 		grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-		gap: clamp(32px, 7vw, 120px);
-		align-items: center;
+		gap: clamp(24px, 6vw, 96px);
+		align-items: start;
 	}
-	.svc-photo {
-		position: relative;
-		margin: 0;
-		aspect-ratio: 3 / 4;
-		overflow: hidden;
-		border-radius: 999px 999px 0 0;
-		background: var(--bg);
+	.svc-head {
+		display: grid;
+		gap: 28px;
+		justify-items: start;
 	}
-	.svc-photo :global(img) {
-		position: absolute;
-		inset: 0;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
-	.svc-photo :global(.svc-swap) {
-		opacity: 0;
-		transform: scale(1.05);
-		transition:
-			opacity 0.5s ease,
-			transform 0.9s var(--ease);
-	}
-	.svc-photo :global(.svc-swap.is-on) {
-		opacity: 1;
-		transform: none;
+	.svc-head :global(.sec-title) {
+		margin-bottom: 0;
 	}
 	.svc-list {
 		list-style: none;
 		border-top: 1px solid var(--line);
 	}
 	.svc-list li {
-		padding-block: clamp(18px, 2.6vw, 34px);
+		padding-block: clamp(18px, 2.4vw, 30px);
 		border-bottom: 1px solid var(--line);
-		font-size: clamp(28px, 3.9vw, 60px);
+		font-size: clamp(28px, 3.6vw, 54px);
 		line-height: 1.04;
 		letter-spacing: -0.02em;
-		transition:
-			padding-left 0.5s var(--ease),
-			color 0.3s;
 	}
-	.svc-list li:focus-visible {
+
+	/* ---- service posts carousel ---- */
+	.posts {
+		--edge: max(var(--pad-x), calc((100vw - var(--wrap)) / 2 + var(--pad-x)));
+		list-style: none;
+		display: flex;
+		gap: clamp(12px, 1.6vw, 24px);
+		margin-top: clamp(48px, 6vw, 88px);
+		padding-inline: var(--edge);
+		scroll-padding-inline: var(--edge);
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		scrollbar-width: none;
+		cursor: grab;
+	}
+	.posts::-webkit-scrollbar {
+		display: none;
+	}
+	.posts:focus-visible {
 		outline: 2px solid var(--ink);
-		outline-offset: 2px;
+		outline-offset: 4px;
 	}
-	@media (hover: hover) {
-		.svc-list li:hover,
-		.svc-list li:focus-visible {
-			padding-left: 18px;
-			color: var(--accent-text);
-		}
+	.posts:global(.is-dragging) {
+		cursor: grabbing;
+		scroll-snap-type: none;
+	}
+	.post {
+		flex: 0 0 clamp(260px, 30vw, 440px);
+		aspect-ratio: 1;
+		overflow: hidden;
+		border-radius: 18px;
+		background: var(--ink);
+		scroll-snap-align: start;
+		box-shadow: 0 30px 60px -36px rgba(42, 31, 26, 0.55);
+	}
+	.post :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		user-select: none;
+		-webkit-user-drag: none;
 	}
 	@media (max-width: 900px) {
-		.svc-grid.has-photo {
+		.svc-grid {
 			grid-template-columns: minmax(0, 1fr);
 		}
-		.svc-photo {
-			width: 70%;
+		.svc-head {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: end;
+			justify-content: space-between;
+			gap: 16px;
+		}
+		.svc-list {
+			order: 2;
+		}
+		.post {
+			flex-basis: 78vw;
 		}
 	}
 </style>
-
-<script>
-	// Hover or focus a service name → its photo fades into the arch.
-	document.querySelectorAll<HTMLElement>('[data-svc]').forEach((root) => {
-		const imgs = Array.from(root.querySelectorAll<HTMLElement>('[data-svc-img]'));
-		if (!imgs.length) return;
-		const show = (i: number | null) => imgs.forEach((img) => img.classList.toggle('is-on', img.dataset.svcImg === String(i)));
-		root.querySelectorAll<HTMLElement>('[data-svc-item]').forEach((li) => {
-			const i = Number(li.dataset.svcItem);
-			li.addEventListener('pointerenter', (e) => e.pointerType === 'mouse' && show(i));
-			li.addEventListener('pointerleave', () => show(null));
-			li.addEventListener('focus', () => show(i));
-			li.addEventListener('blur', () => show(null));
-		});
-	});
-</script>

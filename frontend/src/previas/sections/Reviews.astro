@@ -1,73 +1,90 @@
 ---
 /**
- * Google reviews, after the home's Testimonials marquee (components/home/
- * Testimonials.astro): quote cards drifting in two rows that move in opposite
- * directions on the deep colour block. Each card has the big quote mark, the
- * five stars, the client's words and the Google mark. The rows are filled by
- * repeating the quotes; only the first copy is exposed to assistive tech.
- * Hover pauses a row. Reduced motion: no animation, one static wrapped row.
+ * Google reviews as a mural: the client's words on paper notes taped at
+ * slightly different angles, mixed with polaroid-style photos of the salon
+ * and its work, drifting slowly sideways on the deep colour block. Notes come
+ * in three tones (paper, sand, ink) so the row has rhythm. Hover pauses the
+ * drift and straightens the piece under the pointer.
+ *
+ * The quotes are exposed to assistive tech once; the repeated pieces and the
+ * photos (decorative here) are hidden. Reduced motion: no drift, a wrapped wall.
  */
+import { Image } from 'astro:assets';
 import type { PreviaData } from '../../data/previas/types';
+import type { PreviaPhoto } from '../photos';
 
 interface Props {
 	label: string;
 	rating: PreviaData['rating'];
 	quotes: string[];
+	photos: PreviaPhoto[];
 }
-const { label, rating, quotes } = Astro.props;
-// Enough cards to fill a wide screen: the quotes repeated up to at least 6 per row.
-const fill = (list: string[]) => Array.from({ length: Math.max(6, list.length) }, (_, i) => list[i % list.length] as string);
-const rows = [
-	{ items: fill(quotes), reverse: false },
-	{ items: fill([...quotes].reverse()), reverse: true },
-];
+const { label, rating, quotes, photos } = Astro.props;
+
+type Piece = { kind: 'quote'; text: string; tone: 'paper' | 'sand' | 'ink'; first: boolean } | { kind: 'photo'; photo: PreviaPhoto };
+const TONES = ['paper', 'sand', 'ink'] as const;
+// Quote, photo, quote, photo… until both lists are used at least once (and at least 8 pieces).
+const pieces: Piece[] = [];
+const total = Math.max(8, quotes.length * 2, photos.length * 2);
+let q = 0;
+let p = 0;
+for (let i = 0; pieces.length < total; i++) {
+	if (i % 2 === 0 || photos.length === 0) {
+		pieces.push({ kind: 'quote', text: quotes[q % quotes.length] as string, tone: TONES[q % TONES.length] as Piece extends { tone: infer T } ? T : never, first: q < quotes.length });
+		q++;
+	} else {
+		pieces.push({ kind: 'photo', photo: photos[p % photos.length] as PreviaPhoto });
+		p++;
+	}
+}
 ---
 
 <section class='reviews' id='avaliacoes' aria-labelledby='reviews-title'>
 	<div class='wrap rv-head'>
 		<h2 id='reviews-title' class='display'>{label}</h2>
-		<p class='rv-score'>
+		<div class='rv-score'>
 			<span class='rv-num display'>{rating.value}</span>
 			<span class='rv-meta'>
 				<span class='rv-stars' aria-hidden='true'>★★★★★</span>
 				<span>{rating.source} · {rating.count}</span>
 			</span>
-		</p>
+		</div>
 	</div>
 
-	<div class='marquee'>
-		{
-			rows.map((row, r) => (
-				<div class:list={['mq-track', { reverse: row.reverse }]}>
-					{[false, true].map((dup) => (
-						<ul class='mq-row' aria-hidden={dup || r > 0 ? 'true' : undefined}>
-							{row.items.map((q, i) => (
-								<li class='card' aria-hidden={!dup && r === 0 && i >= quotes.length ? 'true' : undefined}>
-									<figure>
-										<span class='q display' aria-hidden='true'>
-											“
-										</span>
-										<blockquote class='display'>{q}</blockquote>
-										<figcaption>
-											<svg class='g' viewBox='0 0 48 48' aria-hidden='true' focusable='false'>
-												<path fill='#EA4335' d='M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z' />
-												<path fill='#4285F4' d='M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z' />
-												<path fill='#FBBC05' d='M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z' />
-												<path fill='#34A853' d='M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z' />
-											</svg>
-											<span class='src'>{rating.source}</span>
-											<span class='stars' aria-hidden='true'>
-												★★★★★
-											</span>
-										</figcaption>
-									</figure>
+	<div class='mural'>
+		<div class='mural-track'>
+			{
+				[false, true].map((dup) => (
+					<ul class='mural-row' aria-hidden={dup ? 'true' : undefined}>
+						{pieces.map((piece, i) =>
+							piece.kind === 'quote' ? (
+								<li class:list={['piece', 'note', `is-${piece.tone}`]} style={`--r:${[-3, 2.4, -1.6, 3.2, -2.4, 1.4][i % 6]}deg`} aria-hidden={!dup && !piece.first ? 'true' : undefined}>
+									<span class='tape' aria-hidden='true' />
+									<span class='note-stars' aria-hidden='true'>
+										★★★★★
+									</span>
+									<blockquote class='display'>“{piece.text}”</blockquote>
+									<span class='note-src'>
+										<svg class='g' viewBox='0 0 48 48' aria-hidden='true' focusable='false'>
+											<path fill='#EA4335' d='M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z' />
+											<path fill='#4285F4' d='M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z' />
+											<path fill='#FBBC05' d='M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z' />
+											<path fill='#34A853' d='M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z' />
+										</svg>
+										{rating.source}
+									</span>
 								</li>
-							))}
-						</ul>
-					))}
-				</div>
-			))
-		}
+							) : (
+								<li class='piece polaroid' style={`--r:${[-3, 2.4, -1.6, 3.2, -2.4, 1.4][i % 6]}deg`} aria-hidden='true'>
+									<span class='tape' />
+									<Image src={piece.photo.src} alt='' width={piece.photo.width} height={piece.photo.height} widths={[320, 480, 640]} sizes='(max-width: 780px) 60vw, 22vw' quality={72} loading='lazy' decoding='async' draggable='false' />
+								</li>
+							),
+						)}
+					</ul>
+				))
+			}
+		</div>
 	</div>
 </section>
 
@@ -75,7 +92,7 @@ const rows = [
 	.reviews {
 		background: var(--accent-text);
 		color: #fff;
-		padding-block: clamp(72px, 9vw, 128px);
+		padding-block: clamp(72px, 9vw, 128px) clamp(56px, 7vw, 104px);
 		overflow: hidden;
 	}
 	.rv-head {
@@ -84,7 +101,7 @@ const rows = [
 		align-items: end;
 		justify-content: space-between;
 		gap: 20px 48px;
-		margin-bottom: clamp(36px, 5vw, 64px);
+		margin-bottom: clamp(32px, 4vw, 56px);
 	}
 	h2 {
 		font-size: clamp(40px, 5.4vw, 80px);
@@ -102,133 +119,168 @@ const rows = [
 		display: grid;
 		gap: 4px;
 		font-size: 15px;
+		font-weight: 600;
 	}
 	.rv-stars {
-		font-size: 20px;
+		font-size: 22px;
 		letter-spacing: 0.14em;
-		color: var(--accent-2);
+		color: #ffd27a;
 	}
 
-	/* ---- marquee (same mechanics as the home's testimonials) ---- */
-	.marquee {
-		--gap: 20px;
-		--fade: 80px;
-		display: grid;
-		gap: var(--gap);
+	/* ---- mural ---- */
+	.mural {
+		--gap: clamp(22px, 2.6vw, 40px);
+		padding-block: 28px;
 		user-select: none;
-		-webkit-mask-image: linear-gradient(to right, transparent, #000 var(--fade), #000 calc(100% - var(--fade)), transparent);
-		mask-image: linear-gradient(to right, transparent, #000 var(--fade), #000 calc(100% - var(--fade)), transparent);
 	}
-	.mq-track {
+	.mural-track {
 		display: flex;
 		gap: var(--gap);
 		width: max-content;
 	}
-	.mq-row {
+	.mural-row {
 		list-style: none;
 		flex-shrink: 0;
 		display: flex;
-		align-items: stretch;
+		align-items: center;
 		gap: var(--gap);
-		animation: rv-slide 56s linear infinite;
+		animation: mural-drift 70s linear infinite;
 	}
-	.mq-track.reverse .mq-row {
-		animation-direction: reverse;
-		animation-duration: 68s;
-	}
-	.mq-track:hover .mq-row {
+	.mural:hover .mural-row {
 		animation-play-state: paused;
 	}
-	@keyframes rv-slide {
+	@keyframes mural-drift {
 		to {
 			transform: translateX(calc(-100% - var(--gap)));
 		}
 	}
 
-	.card {
-		width: clamp(300px, 30vw, 420px);
-		display: flex;
+	.piece {
+		position: relative;
+		flex: none;
+		transform: rotate(var(--r, 0deg));
+		transition: transform 0.6s var(--ease);
 	}
-	.card figure {
-		flex: 1;
-		margin: 0;
-		display: flex;
-		flex-direction: column;
-		padding: 28px 28px 22px;
-		border-radius: 20px;
+	.piece:hover {
+		transform: rotate(0deg) translateY(-8px) scale(1.03);
+	}
+	/* A strip of translucent tape holding each piece. */
+	.tape {
+		position: absolute;
+		top: -12px;
+		left: 50%;
+		z-index: 2;
+		width: 84px;
+		height: 24px;
+		margin-left: -42px;
+		background: rgba(255, 248, 236, 0.62);
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+		transform: rotate(calc(var(--r, 0deg) * -1.6));
+	}
+
+	.note {
+		width: clamp(260px, 24vw, 340px);
+		display: grid;
+		gap: 16px;
+		padding: 34px 26px 22px;
+		border-radius: 4px;
+		box-shadow:
+			0 26px 40px -24px rgba(0, 0, 0, 0.55),
+			0 2px 6px rgba(0, 0, 0, 0.12);
+	}
+	.note.is-paper {
 		background: var(--bg);
 		color: var(--ink);
-		box-shadow: 0 24px 50px -30px rgba(0, 0, 0, 0.55);
-		transition: transform 0.5s var(--ease);
 	}
-	.card figure:hover {
-		transform: translateY(-6px);
+	.note.is-sand {
+		background: var(--accent-2);
+		color: var(--ink);
 	}
-	.q {
-		display: block;
-		height: 38px;
-		font-size: 84px;
-		line-height: 0.9;
+	.note.is-ink {
+		background: var(--ink);
+		color: var(--bg);
+	}
+	.note-stars {
+		font-size: 18px;
+		letter-spacing: 0.12em;
 		color: var(--accent-text);
 	}
+	.note.is-sand .note-stars {
+		color: var(--ink);
+	}
+	.note.is-ink .note-stars {
+		color: #ffd27a;
+	}
 	blockquote {
-		flex: 1;
-		margin: 10px 0 0;
-		font-size: clamp(24px, 2.3vw, 32px);
+		margin: 0;
+		font-size: clamp(25px, 2.3vw, 33px);
 		font-weight: 400;
-		line-height: 1.16;
+		line-height: 1.14;
 		letter-spacing: -0.01em;
 		text-wrap: balance;
 	}
-	figcaption {
-		display: flex;
+	.note-src {
+		display: inline-flex;
 		align-items: center;
-		gap: 10px;
-		margin-top: 26px;
-		padding-top: 16px;
-		border-top: 1px solid var(--line);
+		gap: 8px;
+		padding-top: 14px;
+		border-top: 1px solid currentColor;
 		font-size: 14px;
 		font-weight: 600;
 	}
 	.g {
-		flex: none;
-		width: 22px;
-		height: 22px;
+		width: 18px;
+		height: 18px;
+		padding: 2px;
+		border-radius: 50%;
+		background: #fff;
 	}
-	.stars {
-		margin-left: auto;
-		letter-spacing: 0.12em;
-		color: var(--accent-text);
+
+	.polaroid {
+		width: clamp(200px, 18vw, 260px);
+		padding: 10px 10px 40px;
+		background: #fffaf2;
+		box-shadow:
+			0 26px 40px -24px rgba(0, 0, 0, 0.55),
+			0 2px 6px rgba(0, 0, 0, 0.12);
+	}
+	.polaroid :global(img) {
+		display: block;
+		width: 100%;
+		/* The height attribute would otherwise win over the aspect ratio. */
+		height: auto;
+		aspect-ratio: 4 / 5;
+		object-fit: cover;
+		-webkit-user-drag: none;
 	}
 
 	@media (max-width: 780px) {
-		.marquee {
-			--gap: 14px;
-			--fade: 28px;
+		.mural {
+			--gap: 22px;
 		}
-		.card {
-			width: 280px;
+		.note {
+			width: 260px;
+			padding: 30px 22px 20px;
 		}
-		.card figure {
-			padding: 22px 22px 18px;
+		.polaroid {
+			width: 190px;
+		}
+		.mural-row {
+			animation-duration: 54s;
 		}
 	}
 	@media (prefers-reduced-motion: reduce) {
-		.marquee {
-			-webkit-mask-image: none;
-			mask-image: none;
+		.mural-track {
+			width: auto;
 			padding-inline: var(--pad-x);
 		}
-		.mq-track {
-			width: auto;
-		}
-		.mq-row {
+		.mural-row {
 			animation: none;
 			flex-wrap: wrap;
+			justify-content: center;
+			row-gap: 40px;
 		}
-		.mq-track.reverse,
-		.mq-row[aria-hidden='true'],
-		.card[aria-hidden='true'] {
+		.mural-row[aria-hidden='true'] {
 			display: none;
 		}
 	}

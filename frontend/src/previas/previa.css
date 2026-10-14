@@ -4,6 +4,12 @@
    sections/*.astro. Colours come only from the ThemeVars tokens.
    ========================================================================== */
 
+/* Contrast: secondary text in previews stays close to the ink (no light grey on paper). */
+.previa {
+	--ink-2: color-mix(in srgb, var(--ink) 90%, var(--bg));
+	--ink-3: color-mix(in srgb, var(--ink) 84%, var(--bg));
+}
+
 /* Section title: one upright serif line, nothing above it. */
 .previa .sec-title {
 	font-size: clamp(40px, 5.4vw, 80px);
@@ -69,10 +75,11 @@
 	background: #fff;
 	color: var(--ink);
 }
+/* Secondary button: a solid paper block with an ink edge, never a faint outline. */
 .previa .btn--line {
-	background: transparent;
+	background: var(--bg-3);
 	color: var(--ink);
-	box-shadow: inset 0 0 0 1px var(--ink);
+	box-shadow: inset 0 0 0 1.5px var(--ink);
 }
 .previa .btn--line:hover {
 	background: var(--ink);
@@ -92,4 +99,9 @@
 	.previa .btn {
 		width: 100%;
 	}
+}
+
+/* A carousel whose items all fit on screen has nothing to page through. */
+.previa [data-carousel].is-static .cnav {
+	visibility: hidden;
 }

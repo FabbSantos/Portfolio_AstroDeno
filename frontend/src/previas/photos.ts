@@ -3,11 +3,12 @@
  * Nothing is imported or bundled: replace the files (same names) and rebuild.
  * A missing file just leaves its spot out.
  *
- *   hero.(jpg|jpeg|png|webp)          portrait, beside the name
- *   servicos.(jpg|…)                  portrait, beside the services list
- *   cuidado.(jpg|…)                   portrait, beside the "how I work" steps
- *   faixa.(jpg|…)                     wide landscape, the booking band
- *   trabalho-1.jpg … trabalho-N.jpg   the work carousel, in numeric order
+ *   hero.(jpg|jpeg|png|webp)          portrait, the arch beside the name
+ *   cuidado.(…)                       the photo beside the "how I work" steps
+ *   mural-1 … mural-N                 extra photos for the reviews mural (with the work photos)
+ *   trabalho-1 … trabalho-N           the work carousel, in numeric order
+ *                                     (trabalho-1 is also the round photo in the hero)
+ *   servico-1 … servico-N             square service posts, the services carousel
  */
 import { existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
@@ -22,10 +23,10 @@ export interface PreviaPhoto {
 
 export interface PreviaPhotos {
 	hero: PreviaPhoto | null;
-	services: PreviaPhoto | null;
 	care: PreviaPhoto | null;
-	band: PreviaPhoto | null;
+	mural: PreviaPhoto[];
 	work: PreviaPhoto[];
+	posts: PreviaPhoto[];
 }
 
 const EXT = /\.(jpe?g|png|webp)$/i;
@@ -42,32 +43,24 @@ async function photo(dir: string, slug: string, file: string | undefined): Promi
 
 export async function previaPhotos(slug: string): Promise<PreviaPhotos> {
 	const dir = join(process.cwd(), 'public', 'previas', slug);
-	if (!existsSync(dir)) return { hero: null, services: null, care: null, band: null, work: [] };
+	if (!existsSync(dir)) return { hero: null, care: null, mural: [], work: [], posts: [] };
 	const files = readdirSync(dir).filter((f) => EXT.test(f));
 	const num = (f: string) => Number(f.match(/(\d+)/)?.[1] ?? 0);
-	const workFiles = files.filter((f) => /^trabalho-\d+\./i.test(f)).sort((a, b) => num(a) - num(b));
-	const work = (await Promise.all(workFiles.map((f) => photo(dir, slug, f)))).filter((p): p is PreviaPhoto => p !== null);
+	const one = (name: string) =>
+		photo(
+			dir,
+			slug,
+			files.find((f) => f.toLowerCase().startsWith(`${name}.`)),
+		);
+	const many = async (prefix: string) => {
+		const list = files.filter((f) => new RegExp(`^${prefix}-\\d+\\.`, 'i').test(f)).sort((a, b) => num(a) - num(b));
+		return (await Promise.all(list.map((f) => photo(dir, slug, f)))).filter((p): p is PreviaPhoto => p !== null);
+	};
 	return {
-		hero: await photo(
-			dir,
-			slug,
-			files.find((f) => /^hero\./i.test(f)),
-		),
-		services: await photo(
-			dir,
-			slug,
-			files.find((f) => /^servicos\./i.test(f)),
-		),
-		care: await photo(
-			dir,
-			slug,
-			files.find((f) => /^cuidado./i.test(f)),
-		),
-		band: await photo(
-			dir,
-			slug,
-			files.find((f) => /^faixa./i.test(f)),
-		),
-		work,
+		hero: await one('hero'),
+		care: await one('cuidado'),
+		mural: await many('mural'),
+		work: await many('trabalho'),
+		posts: await many('servico'),
 	};
 }
