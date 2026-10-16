@@ -12,7 +12,8 @@ import { fullName, templates } from '../../data/templates';
  * Env (astro.config `env.schema`, set in Vercel + local `.env`):
  *   RESEND_API_KEY        required — https://resend.com/api-keys
  *   CONTACT_TO            optional — defaults to SITE.leadInbox
- *   TURNSTILE_SECRET_KEY  optional — enables Cloudflare Turnstile verification
+ *   TURNSTILE_SECRET_KEY  optional — enables Cloudflare Turnstile verification;
+ *                         once set, a request without a valid token is refused
  *
  * Responses are always `application/json`, `Cache-Control: no-store`, shaped
  * `{ ok: boolean, code?: string }`. User input is never echoed back.
@@ -318,8 +319,11 @@ export const POST: APIRoute = async ({ request }) => {
 		if (!parsed.ok) return json(400, { ok: false, code: 'INVALID' });
 		const { lead, turnstileToken } = parsed;
 
-		if (TURNSTILE_SECRET_KEY && turnstileToken) {
-			const human = await verifyTurnstile(turnstileToken, ip);
+		// With the secret set, the token is required: a bot posting straight to the
+		// API without one must not skip the check. The form shows the BOT message
+		// with the mailto fallback if the widget never produced a token.
+		if (TURNSTILE_SECRET_KEY) {
+			const human = !!turnstileToken && (await verifyTurnstile(turnstileToken, ip));
 			if (!human) return json(400, { ok: false, code: 'BOT' });
 		}
 
