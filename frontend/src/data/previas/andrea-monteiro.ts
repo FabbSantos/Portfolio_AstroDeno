@@ -1,6 +1,7 @@
 /**
- * Prévia: Andréa Monteiro Coiffeur (hair stylist, Méier, Rio de Janeiro).
- * Página em /previas/andrea-monteiro.
+ * Prévia: F&A Studio Hair, o salão da Andréa Monteiro (hair stylist, Méier, Rio de Janeiro).
+ * Página em /previas/andrea-monteiro (o link já foi enviado: não mudar o slug).
+ * O nome do salão é o que a mensagem automática do WhatsApp dela usa.
  *
  * Só o conteúdo que a cliente / o briefing deu. Nada inventado.
  *
@@ -24,11 +25,11 @@ const previa: PreviaData = {
 	slug: 'andrea-monteiro',
 	theme: palettes.cobre,
 
-	name: 'Andréa Monteiro Coiffeur',
-	line: 'Hair stylist no Méier há mais de 25 anos',
+	name: 'F&A Studio Hair',
+	line: 'Andréa Monteiro, hair stylist no Méier há mais de 25 anos',
 	seo: {
-		title: 'Andréa Monteiro Coiffeur',
-		description: 'Hair stylist no Méier há mais de 25 anos',
+		title: 'F&A Studio Hair',
+		description: 'Andréa Monteiro, hair stylist no Méier há mais de 25 anos',
 	},
 	whatsapp: {
 		number: '5521982849386',
