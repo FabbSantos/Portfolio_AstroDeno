@@ -9,6 +9,8 @@ import ThemeVars from '../../templates/core/ThemeVars.astro';
 // Upright Fraunces only (the display face); previews use no italic.
 import display from '@fontsource-variable/fraunces/files/fraunces-latin-wght-normal.woff2?url';
 import { previas } from '../../data/previas';
+import { previaPhotos } from '../../previas/photos';
+import { ogPanels } from '../../previas/og';
 import type { PreviaData } from '../../data/previas/types';
 
 export function getStaticPaths() {
@@ -19,9 +21,12 @@ interface Props {
 	data: PreviaData;
 }
 const { data } = Astro.props;
+const url = new URL(`/previas/${data.slug}`, Astro.site).href;
+// Same rule as og.jpg.ts: the image exists only when the preview has photos.
+const ogImage = ogPanels(await previaPhotos(data.slug)).length ? new URL(`/previas/${data.slug}/og.jpg`, Astro.site).href : undefined;
 ---
 
-<PreviaLayout title={data.seo.title} description={data.seo.description} themeColor={data.theme.bg} preload={[display]}>
+<PreviaLayout title={data.seo.title} description={data.seo.description} themeColor={data.theme.bg} preload={[display]} url={url} ogImage={ogImage} ogImageAlt={`${data.name}: fotos do trabalho e do espaço`}>
 	<ThemeVars theme={data.theme} />
 	<PreviaBody data={data} />
 </PreviaLayout>
