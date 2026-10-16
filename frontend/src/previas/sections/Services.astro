@@ -1,13 +1,18 @@
 ---
 /**
- * Services as an index and a viewer. Left: the one-word label, the general
- * list in one line, then the client's own services (from her posts) as an
- * index; the active one opens to show her description and a bar that fills
- * while it is on. Right: the matching post, large, crossfading. It advances
- * on its own once on screen, pauses on hover, and any name can be picked.
- * On phones the post sits above the index.
- * Posts: public/previas/<slug>/servico-N.*; texts: data.servicePosts.
- * Without posts, only the label and the list are shown.
+ * Services, from the client's own posts (public/previas/<slug>/servico-N.*,
+ * texts in data.servicePosts), as an index of names that open one at a time.
+ *
+ * Desktop: the index on the left (the open service shows its description and a
+ * bar that fills while it is on) and the matching post large on the right,
+ * crossfading. It advances on its own once on screen and pauses on hover.
+ *
+ * Phones: no side viewer. Each service opens with its own post inside it,
+ * right above its text, and the page scrolls so the opened name sits at the
+ * top (under the ribbon and topbar, via html's scroll-padding-top). No
+ * autoplay there: content moving under a thumb is not a feature.
+ *
+ * Without posts, the section shows the label and the general list.
  */
 import { Image } from 'astro:assets';
 import type { PreviaData } from '../../data/previas/types';
@@ -18,7 +23,7 @@ interface Props {
 	items: string[];
 	posts: PreviaPhoto[];
 	texts?: PreviaData['servicePosts'];
-	/** Business name, for alt text fallback. */
+	/** Business name, for the alt text. */
 	name: string;
 }
 const { label, items, posts, texts = [], name } = Astro.props;
@@ -29,23 +34,26 @@ const entries = posts.map((p, i) => ({ photo: p, title: texts[i]?.title ?? `${la
 	<div class:list={['wrap', 'svc-grid', { 'has-posts': entries.length > 0 }]}>
 		<div class='svc-side'>
 			<h2 id='services-title' class='display sec-title'>{label}</h2>
-			<p class='svc-line'>{items.join(' · ')}</p>
+			{entries.length === 0 && <p class='svc-line'>{items.join(' · ')}</p>}
 			{
 				entries.length > 0 && (
-					<ul class='svc-index' role='tablist' aria-label={label}>
+					<ul class='svc-index'>
 						{entries.map((e, i) => (
-							<li role='presentation'>
-								<button type='button' class:list={['svc-tab', { 'is-on': i === 0 }]} role='tab' id={`svc-tab-${i}`} aria-selected={i === 0 ? 'true' : 'false'} aria-controls='svc-view' data-svc-tab={i}>
+							<li class:list={['svc-item', { 'is-on': i === 0 }]} data-svc-item={i}>
+								<button type='button' class='svc-tab' id={`svc-tab-${i}`} aria-expanded={i === 0 ? 'true' : 'false'} aria-controls={`svc-body-${i}`} data-svc-tab>
 									<span class='svc-name display'>{e.title}</span>
-									{e.text && (
-										<span class='svc-desc'>
-											<span>{e.text}</span>
-										</span>
-									)}
-									<span class='svc-bar' aria-hidden='true'>
-										<i />
-									</span>
 								</button>
+								<div class='svc-body' id={`svc-body-${i}`}>
+									<div class='svc-body-in'>
+										<figure class='svc-mimg'>
+											<Image src={e.photo.src} alt={`${e.title}, ${name}`} width={e.photo.width} height={e.photo.height} widths={[480, 640, 800]} sizes='calc(100vw - 40px)' quality={78} loading='lazy' decoding='async' />
+										</figure>
+										{e.text && <p class='svc-desc'>{e.text}</p>}
+									</div>
+								</div>
+								<span class='svc-bar' aria-hidden='true'>
+									<i />
+								</span>
 							</li>
 						))}
 					</ul>
@@ -54,10 +62,10 @@ const entries = posts.map((p, i) => ({ photo: p, title: texts[i]?.title ?? `${la
 		</div>
 		{
 			entries.length > 0 && (
-				<div class='svc-view' id='svc-view' role='tabpanel' aria-live='polite'>
+				<div class='svc-view'>
 					{entries.map((e, i) => (
-						<figure class:list={['svc-slide', { 'is-on': i === 0 }]} data-svc-slide={i} aria-hidden={i === 0 ? undefined : 'true'}>
-							<Image src={e.photo.src} alt={e.text ? `${e.title}. ${e.text}` : `${e.title}, ${name}`} width={e.photo.width} height={e.photo.height} widths={[480, 640, 800, 960]} sizes='(max-width: 900px) calc(100vw - 40px), 44vw' quality={78} loading='lazy' decoding='async' />
+						<figure class:list={['svc-slide', { 'is-on': i === 0 }]} data-svc-slide aria-hidden={i === 0 ? undefined : 'true'}>
+							<Image src={e.photo.src} alt={`${e.title}, ${name}`} width={e.photo.width} height={e.photo.height} widths={[480, 640, 800, 960]} sizes='44vw' quality={78} loading='lazy' decoding='async' />
 						</figure>
 					))}
 				</div>
@@ -77,9 +85,6 @@ const entries = posts.map((p, i) => ({ photo: p, title: texts[i]?.title ?? `${la
 		gap: clamp(32px, 6vw, 96px);
 		align-items: start;
 	}
-	.svc-side :global(.sec-title) {
-		margin-bottom: 16px;
-	}
 	.svc-line {
 		font-size: 17px;
 		line-height: 1.55;
@@ -88,16 +93,17 @@ const entries = posts.map((p, i) => ({ photo: p, title: texts[i]?.title ?? `${la
 	}
 	.svc-index {
 		list-style: none;
-		margin-top: clamp(28px, 3.4vw, 44px);
 		border-top: 1px solid var(--line);
 	}
-	.svc-tab {
+	.svc-item {
 		position: relative;
-		display: grid;
-		width: 100%;
-		padding: 18px 0 20px;
-		border: 0;
 		border-bottom: 1px solid var(--line);
+	}
+	.svc-tab {
+		display: block;
+		width: 100%;
+		padding: 18px 0;
+		border: 0;
 		background: none;
 		color: var(--ink);
 		text-align: left;
@@ -108,6 +114,7 @@ const entries = posts.map((p, i) => ({ photo: p, title: texts[i]?.title ?? `${la
 		outline-offset: 2px;
 	}
 	.svc-name {
+		display: block;
 		font-size: clamp(26px, 2.8vw, 40px);
 		line-height: 1.06;
 		letter-spacing: -0.02em;
@@ -117,31 +124,42 @@ const entries = posts.map((p, i) => ({ photo: p, title: texts[i]?.title ?? `${la
 			transform 0.5s var(--ease);
 	}
 	.svc-tab:hover .svc-name,
-	.svc-tab.is-on .svc-name {
+	.svc-item.is-on .svc-name {
 		color: var(--ink);
 	}
-	.svc-tab.is-on .svc-name {
+	.svc-item.is-on .svc-name {
 		transform: translateX(10px);
 	}
-	/* Description: closed rows have zero height; the active one opens. */
-	.svc-desc {
+	/* Body (the post on phones + the description): closed rows have zero height. */
+	.svc-body {
 		display: grid;
 		grid-template-rows: 0fr;
 		transition: grid-template-rows 0.6s var(--ease);
 	}
-	.svc-desc > span {
+	.svc-item.is-on .svc-body {
+		grid-template-rows: 1fr;
+	}
+	/* Shut at once (phones, the service closing while another opens). */
+	.svc-item.is-snap .svc-body {
+		transition: none;
+	}
+	.svc-body-in {
+		min-height: 0;
 		overflow: hidden;
+	}
+	.svc-desc {
+		max-width: 52ch;
+		padding: 0 0 22px 10px;
 		font-size: 16px;
 		line-height: 1.55;
 		color: var(--ink-2);
-		max-width: 52ch;
 	}
-	.svc-tab.is-on .svc-desc {
-		grid-template-rows: 1fr;
+	/* The post inside each service is for phones only. */
+	.svc-mimg {
+		display: none;
+		margin: 0;
 	}
-	.svc-tab.is-on .svc-desc > span {
-		padding: 12px 0 0 10px;
-	}
+	/* Time left on the open service, along its foot. */
 	.svc-bar {
 		position: absolute;
 		left: 0;
@@ -157,10 +175,10 @@ const entries = posts.map((p, i) => ({ photo: p, title: texts[i]?.title ?? `${la
 		transform: scaleX(0);
 		transform-origin: left;
 	}
-	.services:global(.is-running) .svc-tab.is-on .svc-bar i {
+	.services:global(.is-running) .svc-item.is-on .svc-bar i {
 		animation: svc-fill var(--t) linear both;
 	}
-	.services:global(.is-held) .svc-tab.is-on .svc-bar i {
+	.services:global(.is-held) .svc-item.is-on .svc-bar i {
 		animation-play-state: paused;
 	}
 	@keyframes svc-fill {
@@ -169,7 +187,7 @@ const entries = posts.map((p, i) => ({ photo: p, title: texts[i]?.title ?? `${la
 		}
 	}
 
-	/* ---- viewer ---- */
+	/* ---- desktop viewer ---- */
 	.svc-view {
 		position: sticky;
 		top: calc(var(--previa-ribbon, 0px) + 100px);
@@ -198,41 +216,43 @@ const entries = posts.map((p, i) => ({ photo: p, title: texts[i]?.title ?? `${la
 		height: 100%;
 		object-fit: cover;
 	}
-	/* Phones: title, list, the post, then the index under it. */
+
+	/* ---- phones: the post inside each service, above its text ---- */
 	@media (max-width: 900px) {
 		.svc-grid.has-posts {
-			display: flex;
-			flex-direction: column;
-			gap: 0;
+			grid-template-columns: minmax(0, 1fr);
 		}
-		.svc-grid.has-posts .svc-side {
-			display: contents;
+		.svc-view,
+		.svc-bar {
+			display: none;
 		}
-		.svc-side :global(.sec-title) {
-			order: 1;
+		.svc-mimg {
+			display: block;
+			aspect-ratio: 1;
+			margin: 2px 0 18px;
+			overflow: hidden;
+			border-radius: 18px;
+			background: var(--ink);
 		}
-		.svc-line {
-			order: 2;
-		}
-		.svc-view {
-			order: 3;
-			position: relative;
-			top: auto;
-			/* Its slides are absolute: without an explicit width it collapses to 0. */
+		.svc-mimg :global(img) {
 			width: 100%;
-			margin-top: 28px;
+			height: 100%;
+			object-fit: cover;
 		}
-		.svc-index {
-			order: 4;
+		.svc-desc {
+			padding-left: 0;
+		}
+		.svc-item.is-on .svc-name {
+			transform: none;
 		}
 	}
 	@media (prefers-reduced-motion: reduce) {
-		.svc-desc,
+		.svc-body,
 		.svc-slide,
 		.svc-name {
 			transition: none;
 		}
-		.services:global(.is-running) .svc-tab.is-on .svc-bar i {
+		.services:global(.is-running) .svc-item.is-on .svc-bar i {
 			animation: none;
 			transform: scaleX(1);
 		}
@@ -241,22 +261,33 @@ const entries = posts.map((p, i) => ({ photo: p, title: texts[i]?.title ?? `${la
 
 <script>
 	document.querySelectorAll<HTMLElement>('[data-svc]').forEach((root) => {
-		const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-svc-tab]'));
+		const items = Array.from(root.querySelectorAll<HTMLElement>('[data-svc-item]'));
 		const slides = Array.from(root.querySelectorAll<HTMLElement>('[data-svc-slide]'));
-		const n = tabs.length;
+		const n = items.length;
 		if (n === 0) return;
 		const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		const phone = window.matchMedia('(max-width: 900px)');
 		let at = 0;
+
 		const restart = () => {
 			root.classList.remove('is-running');
 			void root.offsetWidth;
-			if (!reduced && n > 1) root.classList.add('is-running');
+			// Autoplay drives the desktop viewer only.
+			if (!reduced && !phone.matches && n > 1) root.classList.add('is-running');
 		};
+		/** Open service i (-1 closes all, phones only). */
 		const show = (i: number) => {
-			at = (i + n) % n;
-			tabs.forEach((t, k) => {
-				t.classList.toggle('is-on', k === at);
-				t.setAttribute('aria-selected', String(k === at));
+			at = i < 0 ? -1 : (i + n) % n;
+			items.forEach((el, k) => {
+				const on = k === at;
+				// On phones the one closing shuts at once, so the opened name is already
+				// where it will stay when the page scrolls to it.
+				if (phone.matches && !on && el.classList.contains('is-on')) {
+					el.classList.add('is-snap');
+					requestAnimationFrame(() => requestAnimationFrame(() => el.classList.remove('is-snap')));
+				}
+				el.classList.toggle('is-on', on);
+				el.querySelector('[data-svc-tab]')?.setAttribute('aria-expanded', String(on));
 			});
 			slides.forEach((s, k) => {
 				s.classList.toggle('is-on', k === at);
@@ -268,20 +299,24 @@ const entries = posts.map((p, i) => ({ photo: p, title: texts[i]?.title ?? `${la
 		root.addEventListener('animationend', (e) => {
 			if ((e.target as HTMLElement).closest('.svc-bar')) show(at + 1);
 		});
-		tabs.forEach((t, k) => t.addEventListener('click', () => show(k)));
-		root.addEventListener('keydown', (e) => {
-			if (!(e.target as HTMLElement).closest('[data-svc-tab]')) return;
-			if (e.key === 'ArrowDown' || e.key === 'ArrowRight') show(at + 1);
-			else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') show(at - 1);
-			else return;
-			e.preventDefault();
-			tabs[at]?.focus();
-		});
+		items.forEach((el, k) =>
+			el.querySelector('[data-svc-tab]')?.addEventListener('click', () => {
+				if (!phone.matches) return show(k);
+				// Phones: a tap on the open one closes it; any other opens and comes to the top.
+				if (at === k) return show(-1);
+				show(k);
+				requestAnimationFrame(() => el.scrollIntoView({ block: 'start', behavior: reduced ? 'auto' : 'smooth' }));
+			}),
+		);
 		const grid = root.querySelector<HTMLElement>('.svc-grid') ?? root;
 		const hold = () => root.classList.toggle('is-held', grid.matches(':hover') || document.hidden);
 		grid.addEventListener('mouseenter', hold);
 		grid.addEventListener('mouseleave', hold);
 		document.addEventListener('visibilitychange', hold);
+		phone.addEventListener('change', () => {
+			if (at < 0) show(0);
+			else restart();
+		});
 		if ('IntersectionObserver' in window) {
 			const io = new IntersectionObserver(
 				(entries) => {
