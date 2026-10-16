@@ -6,6 +6,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const sendMock = vi.hoisted(() => vi.fn());
+/** Per-test env: the Turnstile secret is off unless a test turns it on. */
+const env = vi.hoisted(() => ({ turnstileSecret: undefined as string | undefined }));
 
 vi.mock('resend', () => ({
 	Resend: class {
@@ -16,7 +18,9 @@ vi.mock('resend', () => ({
 vi.mock('astro:env/server', () => ({
 	RESEND_API_KEY: 'test',
 	CONTACT_TO: 'x@y.z',
-	TURNSTILE_SECRET_KEY: undefined,
+	get TURNSTILE_SECRET_KEY() {
+		return env.turnstileSecret;
+	},
 }));
 
 import { ALL, POST } from './contact';
@@ -68,6 +72,8 @@ async function bodyOf(res: Response): Promise<{ ok: boolean; code?: string }> {
 }
 
 beforeEach(() => {
+	env.turnstileSecret = undefined;
+	vi.restoreAllMocks();
 	sendMock.mockReset();
 	sendMock.mockResolvedValue({ data: { id: 'email_1' }, error: null });
 });
@@ -230,5 +236,40 @@ describe('POST /api/contact', () => {
 		expect(res.status).toBe(500);
 		expect(await bodyOf(res)).toEqual({ ok: false, code: 'UNEXPECTED' });
 		spy.mockRestore();
+	});
+});
+
+describe('POST /api/contact with Turnstile on', () => {
+	const verify = (success: boolean) => vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify({ success })));
+
+	beforeEach(() => {
+		env.turnstileSecret = 'secret';
+	});
+
+	it('400 BOT when the token is missing, without calling Cloudflare or sending', async () => {
+		const fetchSpy = verify(true);
+		const res = await call(POST, req(lead()));
+		expect(res.status).toBe(400);
+		expect(await bodyOf(res)).toEqual({ ok: false, code: 'BOT' });
+		expect(fetchSpy).not.toHaveBeenCalled();
+		expect(sendMock).not.toHaveBeenCalled();
+	});
+
+	it('400 BOT when Cloudflare rejects the token', async () => {
+		verify(false);
+		const res = await call(POST, req({ ...lead(), turnstileToken: 'fake' }));
+		expect(res.status).toBe(400);
+		expect(await bodyOf(res)).toEqual({ ok: false, code: 'BOT' });
+		expect(sendMock).not.toHaveBeenCalled();
+	});
+
+	it('200 when Cloudflare accepts the token', async () => {
+		const fetchSpy = verify(true);
+		const res = await call(POST, req({ ...lead(), turnstileToken: 'good' }));
+		expect(res.status).toBe(200);
+		expect(await bodyOf(res)).toEqual({ ok: true });
+		expect(fetchSpy).toHaveBeenCalledTimes(1);
+		expect(String(fetchSpy.mock.calls[0]![0])).toContain('challenges.cloudflare.com/turnstile/v0/siteverify');
+		expect(sendMock).toHaveBeenCalledTimes(1);
 	});
 });
