@@ -6,6 +6,9 @@
  *   hero.(jpg|jpeg|png|webp)          portrait, the arch beside the name
  *   hero.(mp4|webm)                   optional video played in the arch over hero.*
  *                                     (hero.* is then its first frame, shown until it plays)
+ *   hero-wide.(mp4|webm) + hero-wide.* optional landscape cut of the hero video and its
+ *                                     first frame, used by the full-width hero on wide screens
+ *   logo.(svg|png|webp)               optional logo, shown in place of the name in the hero
  *   hero-2.(jpg|jpeg|png|webp)        optional small round photo in the hero
  *                                     (without it, trabalho-1 is used)
  *   studio-1 … studio-N               the studio slider
@@ -30,6 +33,11 @@ export interface PreviaPhotos {
 	hero2: PreviaPhoto | null;
 	/** Public URL of the hero video (hero.mp4 / hero.webm), if any. */
 	heroVideo: string | null;
+	/** Landscape version of the hero video for wide screens, and its first frame. */
+	heroWideVideo: string | null;
+	heroWide: PreviaPhoto | null;
+	/** The client's logo (logo.svg preferred). */
+	logo: PreviaPhoto | null;
 	studio: PreviaPhoto[];
 	mural: PreviaPhoto[];
 	work: PreviaPhoto[];
@@ -38,6 +46,8 @@ export interface PreviaPhotos {
 
 const EXT = /\.(jpe?g|png|webp)$/i;
 const VIDEO = /^hero\.(mp4|webm)$/i;
+const WIDE_VIDEO = /^hero-wide\.(mp4|webm)$/i;
+const LOGO = /^logo\.(svg|png|webp)$/i;
 
 async function photo(dir: string, slug: string, file: string | undefined): Promise<PreviaPhoto | null> {
 	if (!file) return null;
@@ -51,10 +61,11 @@ async function photo(dir: string, slug: string, file: string | undefined): Promi
 
 export async function previaPhotos(slug: string): Promise<PreviaPhotos> {
 	const dir = join(process.cwd(), 'public', 'previas', slug);
-	if (!existsSync(dir)) return { hero: null, hero2: null, heroVideo: null, studio: [], mural: [], work: [], posts: [] };
+	if (!existsSync(dir)) return { hero: null, hero2: null, heroVideo: null, heroWideVideo: null, heroWide: null, logo: null, studio: [], mural: [], work: [], posts: [] };
 	const all = readdirSync(dir);
 	const files = all.filter((f) => EXT.test(f));
 	const video = all.find((f) => VIDEO.test(f));
+	const wideVideo = all.find((f) => WIDE_VIDEO.test(f));
 	const num = (f: string) => Number(f.match(/(\d+)/)?.[1] ?? 0);
 	const one = (name: string) =>
 		photo(
@@ -71,6 +82,13 @@ export async function previaPhotos(slug: string): Promise<PreviaPhotos> {
 		hero: await one('hero'),
 		hero2: (await one('hero-2')) ?? work[0] ?? null,
 		heroVideo: video ? `/previas/${slug}/${video}` : null,
+		heroWideVideo: wideVideo ? `/previas/${slug}/${wideVideo}` : null,
+		heroWide: await one('hero-wide'),
+		logo: await photo(
+			dir,
+			slug,
+			all.find((f) => LOGO.test(f)),
+		),
 		studio: await many('studio'),
 		mural: await many('mural'),
 		work,

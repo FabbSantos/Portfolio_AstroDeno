@@ -25,6 +25,14 @@ export interface PreviaData {
 	slug: string;
 	/** Colours applied to the page. Keep the alternatives beside it in the data file. */
 	theme: PreviaTheme;
+	/** Display face for titles: Fraunces (default) or Cormorant (high-contrast, closer to classic beauty logos). */
+	display?: 'fraunces' | 'cormorant';
+	/**
+	 * Hero layout. 'collage' (default): name on the left, photo arch with a round
+	 * photo on the right. 'cover': the hero video (or photo) fills the whole
+	 * hero behind the logo or name, like property listings.
+	 */
+	heroLayout?: 'collage' | 'cover';
 	/** Business name: hero title, topbar, footer. */
 	name: string;
 	/** The one line under the name. */

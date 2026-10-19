@@ -10,6 +10,8 @@
  * uppercase eyebrows, no numbered process, no decorative giant name).
  */
 import '@fontsource-variable/fraunces/wght.css';
+// Only the @font-face rules: the file downloads only on previews that use it (data.display).
+import '@fontsource-variable/cormorant/wght.css';
 import '@fontsource-variable/figtree';
 import '../templates/atelier/styles.css';
 import './previa.css';
@@ -17,6 +19,7 @@ import MobileNav from '../templates/core/MobileNav.astro';
 import { whatsappHref, type PreviaData } from '../data/previas/types';
 import { previaPhotos } from './photos';
 import Hero from './sections/Hero.astro';
+import HeroCover from './sections/HeroCover.astro';
 import Ticker from './sections/Ticker.astro';
 import Work from './sections/Work.astro';
 import Studio from './sections/Studio.astro';
@@ -41,11 +44,17 @@ const nav = [
 ];
 ---
 
-<div class='tpl tpl-atelier previa' id='top'>
+<div class:list={['tpl', 'tpl-atelier', 'previa', `is-${data.display ?? 'fraunces'}`]} id='top'>
 	<div class='tb'>
 		<MobileNav brand={data.name} brandHref='#top' nav={nav} cta={{ label: data.whatsapp.short, href: wa }} id='previa-nav' />
 	</div>
-	<Hero data={data} photo={photos.hero} photo2={photos.hero2} video={photos.heroVideo} />
+	{
+		data.heroLayout === 'cover' ? (
+			<HeroCover data={data} photo={photos.hero} wide={photos.heroWide} video={photos.heroVideo} wideVideo={photos.heroWideVideo} logo={photos.logo} />
+		) : (
+			<Hero data={data} photo={photos.hero} photo2={photos.hero2} video={photos.heroVideo} />
+		)
+	}
 	{data.highlights && data.highlights.length > 0 && <Ticker items={data.highlights} />}
 	{photos.work.length > 0 && <Work label={data.labels.work} name={data.name} photos={photos.work} />}
 	<Services label={data.labels.services} items={data.services} posts={photos.posts} texts={data.servicePosts} name={data.name} />

@@ -1,0 +1,190 @@
+---
+/**
+ * Hero as a full-bleed cover (data.heroLayout = 'cover'), like property
+ * listings: the client's video fills the whole hero behind the logo (or the
+ * name), under a dark shade so the type reads on any frame. Below the logo:
+ * the line, the WhatsApp button, the Google rating and the live status.
+ *
+ * Phones get the vertical video (hero.mp4); wide screens get hero-wide.mp4
+ * (the same footage cut for landscape) when there is one. The first frame
+ * (hero.webp / hero-wide.webp, same <picture>) paints first and is the LCP;
+ * the video is fetched only after the page has loaded, plays only while on
+ * screen and shows once it is actually playing. Reduced motion or
+ * Save-Data: the frame stays. Without photos, the cover is a plain ink block.
+ */
+import { getImage } from 'astro:assets';
+import { whatsappHref, type PreviaData } from '../../data/previas/types';
+import { OPEN_STRINGS, hoursSummary } from '../../templates/core/hours';
+import type { PreviaPhoto } from '../photos';
+import WaButton from './WaButton.astro';
+
+interface Props {
+	data: PreviaData;
+	/** Vertical first frame (hero.*). */
+	photo: PreviaPhoto | null;
+	/** Landscape first frame (hero-wide.*). */
+	wide?: PreviaPhoto | null;
+	video?: string | null;
+	wideVideo?: string | null;
+	logo?: PreviaPhoto | null;
+}
+const { data, photo, wide = null, video = null, wideVideo = null, logo = null } = Astro.props;
+const { location, whatsapp, rating } = data;
+const wa = whatsappHref(whatsapp);
+const status = JSON.stringify({ hours: location.hours, tz: location.timezone, strings: OPEN_STRINGS['pt-BR'] });
+const portrait = photo ? await getImage({ src: photo.src, width: photo.width, height: photo.height, widths: [480, 720], quality: 70 }) : null;
+const landscape = wide ? await getImage({ src: wide.src, width: wide.width, height: wide.height, widths: [960, 1280, 1600], quality: 68 }) : null;
+---
+
+<section class:list={['cover', { 'has-media': !!portrait }]} aria-labelledby='hero-title'>
+	{
+		portrait && photo && (
+			<div class='cover-media' aria-hidden='true'>
+				<picture>
+					{landscape && <source media='(min-width: 901px)' srcset={landscape.srcSet.attribute} sizes='100vw' />}
+					<img src={portrait.src} srcset={portrait.srcSet.attribute} sizes='100vw' alt='' width={photo.width} height={photo.height} loading='eager' fetchpriority='high' decoding='async' />
+				</picture>
+				{video && <video data-cover-video data-src={video} data-src-wide={wideVideo ?? undefined} muted loop playsinline preload='none' tabindex='-1' />}
+			</div>
+		)
+	}
+	<div class='wrap cover-copy'>
+		<h1 id='hero-title'>
+			{logo ? <img class='cover-logo' src={logo.src} alt={data.name} width={logo.width} height={logo.height} decoding='async' /> : <span class='display cover-name'>{data.name}</span>}
+		</h1>
+		<p class='cover-line'>{data.line}</p>
+		<div class='cover-actions'>
+			<WaButton href={wa} label={whatsapp.label} class='btn--paper' />
+			<p class='cover-rating'>
+				<span aria-hidden='true'>★</span>{' '}
+				{rating.value} no {rating.source} · {rating.count}
+			</p>
+		</div>
+		<p class='status' data-open-status={status}>
+			<span class='status-dot' aria-hidden='true'></span>
+			<span data-open-text>{hoursSummary(location.hours, 'pt-BR')}</span>
+		</p>
+	</div>
+</section>
+
+<style>
+	.cover {
+		--on: #fff8ef;
+		position: relative;
+		isolation: isolate;
+		display: grid;
+		align-items: center;
+		/* The first screen under the ribbon and the topbar. */
+		min-height: calc(100svh - var(--previa-ribbon, 0px) - 72px);
+		overflow: hidden;
+		background: var(--ink);
+		color: var(--on);
+	}
+	.cover-media,
+	.cover-media :global(img),
+	.cover-media video {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+	}
+	.cover-media {
+		z-index: -2;
+	}
+	.cover-media :global(img),
+	.cover-media video {
+		object-fit: cover;
+	}
+	.cover-media video {
+		/* The photo under it is its first frame: a short fade only hides the decode. */
+		opacity: 0;
+		transition: opacity 0.3s ease;
+	}
+	.cover-media video.is-playing {
+		opacity: 1;
+	}
+	/* Shade: darker in the middle (where the type sits) and at the foot. */
+	.has-media::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		background:
+			radial-gradient(ellipse 70% 60% at 50% 48%, color-mix(in srgb, var(--ink) 62%, transparent), color-mix(in srgb, var(--ink) 38%, transparent)),
+			linear-gradient(180deg, transparent 55%, color-mix(in srgb, var(--ink) 55%, transparent));
+	}
+
+	.cover-copy {
+		display: grid;
+		justify-items: center;
+		gap: 22px;
+		padding-block: clamp(56px, 8vw, 96px);
+		text-align: center;
+	}
+	h1 {
+		margin: 0;
+		line-height: 0;
+	}
+	.cover-logo {
+		display: block;
+		width: min(560px, 80vw);
+		height: auto;
+		filter: drop-shadow(0 2px 16px rgba(0, 0, 0, 0.35));
+	}
+	.cover-name {
+		font-size: clamp(48px, 8vw, 120px);
+		line-height: 0.96;
+	}
+	.cover-line {
+		font-size: clamp(18px, 1.6vw, 22px);
+		line-height: 1.4;
+	}
+	.cover-actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: center;
+		gap: 14px 22px;
+		margin-top: 8px;
+	}
+	.cover-rating {
+		font-size: 15px;
+		font-weight: 600;
+		white-space: nowrap;
+	}
+	.cover :global(.status) {
+		color: var(--on);
+	}
+	.cover :global(.status.is-closed .status-dot) {
+		background: var(--accent-on-dark);
+	}
+
+	@media (max-width: 540px) {
+		.cover-actions {
+			width: 100%;
+		}
+	}
+</style>
+
+<script>
+	const v = document.querySelector<HTMLVideoElement>('[data-cover-video]');
+	const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
+	if (v?.dataset.src && !reduced && !saveData) {
+		const start = () => {
+			// Same breakpoint as the <picture> source, so the video matches the frame under it.
+			const wide = window.matchMedia('(min-width: 901px)').matches && v.dataset.srcWide;
+			v.src = (wide || v.dataset.src) as string;
+			v.addEventListener('playing', () => v.classList.add('is-playing'), { once: true });
+			// Plays only while on screen.
+			new IntersectionObserver(([e]) => {
+				if (e?.isIntersecting) v.play().catch(() => {});
+				else v.pause();
+			}).observe(v);
+		};
+		// After the page has loaded, so the video never competes with the first paint.
+		const later = () => window.setTimeout(start, 500);
+		if (document.readyState === 'complete') later();
+		else window.addEventListener('load', later, { once: true });
+	}
+</script>

@@ -6,9 +6,15 @@
  *
  * Fotos e vídeo, em public/previas/la-belle-glamour/ (originais guardados fora
  * do projeto, em Downloads/la-belle-glamour-originais):
- * hero.mp4 (montagem em câmera lenta do vídeo do salão) com hero.webp (o
- * primeiro quadro dele), hero-2 (unhas, no círculo do topo), trabalho-1…5
- * (resultados de cabelo), studio-1…3 (a porta, a equipe, a fachada).
+ * hero.mp4 (montagem em câmera lenta do vídeo do salão, vertical, celular) e
+ * hero-wide.mp4 (a mesma montagem em três faixas, computador), cada um com o
+ * primeiro quadro em .webp; logo.svg (a logo dela vetorizada, em dourado
+ * claro pra ficar sobre o vídeo); trabalho-1…5 (resultados de cabelo),
+ * studio-1…3 (a porta, a equipe, a fachada); hero-2 (unhas) só entra no topo
+ * em colagem.
+ *
+ * Fonte: a da logo é paga (não dá pra usar na web); os títulos usam a
+ * Cormorant, a gratuita mais próxima. As letras dela ficam na logo do topo.
  *
  * Serviços: os 8 nomes da arte de serviços dela, sem descrição (a arte não
  * tem). Avaliações: fixas, cada frase uma vez (sem faixa passando).
@@ -26,6 +32,8 @@ export const palettes = {
 const previa: PreviaData = {
 	slug: 'la-belle-glamour',
 	theme: palettes.rosaAntigo,
+	display: 'cormorant',
+	heroLayout: 'cover',
 
 	name: 'La Belle Glamour Concept',
 	line: 'Salão de beleza no Méier',
