@@ -6,6 +6,12 @@
  * whose text ("Agendar pelo WhatsApp") turns slowly around the WhatsApp glyph.
  * Photos come from public/previas/<slug>/; without them the copy stands alone.
  * On phones the copy comes first and is the LCP.
+ *
+ * With a hero video, the arch plays it (muted, looping, slow) over the photo,
+ * which is its first frame: the photo is what loads and paints first, the
+ * video is fetched only after the page has loaded, plays only while on screen
+ * and fades in once it is actually playing. Reduced motion or Save-Data: the
+ * photo stays.
  */
 import { Image } from 'astro:assets';
 import { whatsappHref, type PreviaData } from '../../data/previas/types';
@@ -18,8 +24,10 @@ interface Props {
 	photo: PreviaPhoto | null;
 	/** Small round photo over the arch. */
 	photo2?: PreviaPhoto | null;
+	/** Public URL of a video to play in the arch over `photo`. */
+	video?: string | null;
 }
-const { data, photo, photo2 = null } = Astro.props;
+const { data, photo, photo2 = null, video = null } = Astro.props;
 const { location, whatsapp, rating } = data;
 const wa = whatsappHref(whatsapp);
 const status = JSON.stringify({ hours: location.hours, tz: location.timezone, strings: OPEN_STRINGS['pt-BR'] });
@@ -48,6 +56,7 @@ const ring = `${whatsapp.label} · ${whatsapp.label} · `;
 				<div class='collage'>
 					<figure class='arch'>
 						<Image src={photo.src} alt={data.name} width={photo.width} height={photo.height} widths={[480, 640, 800, 960]} sizes='(max-width: 900px) 78vw, 36vw' quality={70} loading='eager' fetchpriority='high' decoding='async' />
+						{video && <video class='arch-video' data-hero-video data-src={video} muted loop playsinline preload='none' aria-hidden='true' tabindex='-1' />}
 					</figure>
 					{photo2 && (
 						<figure class='round'>
@@ -154,6 +163,18 @@ const ring = `${whatsapp.label} · ${whatsapp.label} · `;
 		aspect-ratio: 3 / 4.1;
 		border-radius: 999px 999px 0 0;
 	}
+	.arch-video {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		opacity: 0;
+		transition: opacity 1.4s ease;
+	}
+	.arch-video.is-playing {
+		opacity: 1;
+	}
 	.round {
 		position: absolute;
 		left: 0;
@@ -232,3 +253,24 @@ const ring = `${whatsapp.label} · ${whatsapp.label} · `;
 		}
 	}
 </style>
+
+<script>
+	const v = document.querySelector<HTMLVideoElement>('[data-hero-video]');
+	const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
+	if (v?.dataset.src && !reduced && !saveData) {
+		const start = () => {
+			v.src = v.dataset.src as string;
+			v.addEventListener('playing', () => v.classList.add('is-playing'), { once: true });
+			// Plays only while on screen.
+			new IntersectionObserver(([e]) => {
+				if (e?.isIntersecting) v.play().catch(() => {});
+				else v.pause();
+			}).observe(v);
+		};
+		// After the page has loaded, so the video never competes with the first paint.
+		const later = () => window.setTimeout(start, 500);
+		if (document.readyState === 'complete') later();
+		else window.addEventListener('load', later, { once: true });
+	}
+</script>

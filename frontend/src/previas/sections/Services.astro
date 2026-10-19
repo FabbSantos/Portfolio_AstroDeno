@@ -12,7 +12,8 @@
  * top (under the ribbon and topbar, via html's scroll-padding-top). No
  * autoplay there: content moving under a thumb is not a feature.
  *
- * Without posts, the section shows the label and the general list.
+ * Without posts (no servico-N photos), the section is the label and the
+ * service names as a ruled list, two columns from tablet width up.
  */
 import { Image } from 'astro:assets';
 import type { PreviaData } from '../../data/previas/types';
@@ -34,7 +35,15 @@ const entries = posts.map((p, i) => ({ photo: p, title: texts[i]?.title ?? `${la
 	<div class:list={['wrap', 'svc-grid', { 'has-posts': entries.length > 0 }]}>
 		<div class='svc-side'>
 			<h2 id='services-title' class='display sec-title'>{label}</h2>
-			{entries.length === 0 && <p class='svc-line'>{items.join(' · ')}</p>}
+			{
+				entries.length === 0 && (
+					<ul class='svc-list'>
+						{items.map((item) => (
+							<li class='display'>{item}</li>
+						))}
+					</ul>
+				)
+			}
 			{
 				entries.length > 0 && (
 					<ul class='svc-index'>
@@ -85,11 +94,24 @@ const entries = posts.map((p, i) => ({ photo: p, title: texts[i]?.title ?? `${la
 		gap: clamp(32px, 6vw, 96px);
 		align-items: start;
 	}
-	.svc-line {
-		font-size: 17px;
-		line-height: 1.55;
-		color: var(--ink-2);
-		max-width: 44ch;
+	.svc-list {
+		list-style: none;
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		column-gap: clamp(32px, 6vw, 96px);
+		border-top: 1px solid var(--line);
+	}
+	.svc-list li {
+		padding-block: 20px;
+		border-bottom: 1px solid var(--line);
+		font-size: clamp(26px, 2.8vw, 40px);
+		line-height: 1.06;
+		letter-spacing: -0.02em;
+	}
+	@media (max-width: 700px) {
+		.svc-list {
+			grid-template-columns: minmax(0, 1fr);
+		}
 	}
 	.svc-index {
 		list-style: none;
