@@ -45,12 +45,12 @@ const nav = [
 	<div class='tb'>
 		<MobileNav brand={data.name} brandHref='#top' nav={nav} cta={{ label: data.whatsapp.short, href: wa }} id='previa-nav' />
 	</div>
-	<Hero data={data} photo={photos.hero} photo2={photos.work[0] ?? null} />
-	<Ticker items={data.highlights ?? data.services} />
+	<Hero data={data} photo={photos.hero} photo2={photos.hero2} video={photos.heroVideo} />
+	{data.highlights && data.highlights.length > 0 && <Ticker items={data.highlights} />}
 	{photos.work.length > 0 && <Work label={data.labels.work} name={data.name} photos={photos.work} />}
 	<Services label={data.labels.services} items={data.services} posts={photos.posts} texts={data.servicePosts} name={data.name} />
 	{photos.studio.length > 1 && <Studio label={data.labels.studio} name={data.name} photos={photos.studio} />}
-	<Reviews label={data.labels.reviews} rating={data.rating} quotes={data.reviews} photos={[...photos.mural, ...photos.work]} />
+	<Reviews label={data.labels.reviews} rating={data.rating} quotes={data.reviews} photos={[...photos.mural, ...photos.work]} still={data.reviewsLayout === 'still'} />
 	<Location data={data} />
 	<Footer data={data} />
 	<WaFab href={wa} label={data.whatsapp.label} />

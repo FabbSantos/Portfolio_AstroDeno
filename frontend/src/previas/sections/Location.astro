@@ -5,7 +5,7 @@
  * by the script in PreviaBody, in the business's zone); beside it the address
  * with the two buttons (WhatsApp, "Como chegar").
  */
-import { mapsHref, whatsappHref, type PreviaData } from '../../data/previas/types';
+import { mapsHref, streetForMaps, whatsappHref, type PreviaData } from '../../data/previas/types';
 import { OPEN_STRINGS, hoursTable } from '../../templates/core/hours';
 import WaButton from './WaButton.astro';
 
@@ -16,8 +16,7 @@ const { data } = Astro.props;
 const { location, whatsapp, labels } = data;
 const a = location.address;
 const rows = hoursTable(location.hours, 'pt-BR');
-// Street number + district + city only: the room number ("sala 102") confuses the geocoder.
-const mapsEmbed = `https://www.google.com/maps?q=${encodeURIComponent(`${a.street.replace(/,\s*sala.*$/i, '')}, ${a.district}, ${a.city}`)}&output=embed`;
+const mapsEmbed = `https://www.google.com/maps?q=${encodeURIComponent(`${streetForMaps(a.street)}, ${a.district}, ${a.city}`)}&output=embed`;
 const status = JSON.stringify({ hours: location.hours, tz: location.timezone, strings: OPEN_STRINGS['pt-BR'] });
 ---
 

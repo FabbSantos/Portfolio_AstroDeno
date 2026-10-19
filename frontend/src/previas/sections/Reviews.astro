@@ -8,6 +8,10 @@
  *
  * The quotes are exposed to assistive tech once; the repeated pieces and the
  * photos (decorative here) are hidden. Reduced motion: no drift, a wrapped wall.
+ *
+ * `still`: no drift and no repeats. Each quote appears once, with one photo
+ * after it, pinned in place (a checkerboard of notes and photos on wide
+ * screens, a scattered column on phones).
  */
 import { Image } from 'astro:assets';
 import type { PreviaData } from '../../data/previas/types';
@@ -18,8 +22,10 @@ interface Props {
 	rating: PreviaData['rating'];
 	quotes: string[];
 	photos: PreviaPhoto[];
+	/** Pin each quote once instead of the drifting row. */
+	still?: boolean;
 }
-const { label, rating, quotes, photos } = Astro.props;
+const { label, rating, quotes, photos, still = false } = Astro.props;
 
 type Piece = { kind: 'quote'; text: string; tone: 'paper' | 'sand' | 'ink'; first: boolean } | { kind: 'photo'; photo: PreviaPhoto };
 const TONES = ['paper', 'sand', 'ink'] as const;
@@ -37,6 +43,13 @@ for (let i = 0; pieces.length < total; i++) {
 		p++;
 	}
 }
+// Still: quote, photo, quote, photo… each quote once, a photo after each while there are photos.
+const stillPieces: Piece[] = quotes.flatMap((text, i) => {
+	const quote: Piece = { kind: 'quote', text, tone: TONES[i % TONES.length] as 'paper' | 'sand' | 'ink', first: true };
+	const photo = photos[i];
+	return photo ? [quote, { kind: 'photo', photo } as Piece] : [quote];
+});
+const rows = still ? [{ dup: false, list: stillPieces }] : [false, true].map((dup) => ({ dup, list: pieces }));
 ---
 
 <section class='reviews' id='avaliacoes' aria-labelledby='reviews-title'>
@@ -51,12 +64,12 @@ for (let i = 0; pieces.length < total; i++) {
 		</div>
 	</div>
 
-	<div class='mural'>
+	<div class:list={['mural', { 'is-still': still }]}>
 		<div class='mural-track'>
 			{
-				[false, true].map((dup) => (
+				rows.map(({ dup, list }) => (
 					<ul class='mural-row' aria-hidden={dup ? 'true' : undefined}>
-						{pieces.map((piece, i) =>
+						{list.map((piece, i) =>
 							piece.kind === 'quote' ? (
 								<li class:list={['piece', 'note', `is-${piece.tone}`]} style={`--r:${[-3, 2.4, -1.6, 3.2, -2.4, 1.4][i % 6]}deg`} aria-hidden={!dup && !piece.first ? 'true' : undefined}>
 									<span class='tape' aria-hidden='true' />
@@ -254,9 +267,49 @@ for (let i = 0; pieces.length < total; i++) {
 		-webkit-user-drag: none;
 	}
 
+	/* ---- still: pinned, each quote once ---- */
+	.mural.is-still .mural-track {
+		width: auto;
+		padding-inline: var(--pad-x);
+	}
+	.mural.is-still .mural-row {
+		width: 100%;
+		max-width: 1080px;
+		margin-inline: auto;
+		display: grid;
+		grid-template-columns: repeat(3, auto);
+		justify-content: center;
+		justify-items: center;
+		row-gap: clamp(36px, 4vw, 56px);
+		animation: none;
+	}
+	.mural.is-still .polaroid {
+		width: clamp(190px, 16vw, 240px);
+	}
+
 	@media (max-width: 780px) {
 		.mural {
 			--gap: 22px;
+		}
+		/* Phones: one column, photos pinned to alternate sides. */
+		.mural.is-still .mural-row {
+			grid-template-columns: minmax(0, 1fr);
+			row-gap: 30px;
+		}
+		.mural.is-still .note {
+			width: min(100%, 320px);
+		}
+		.mural.is-still .polaroid {
+			width: 56%;
+			max-width: 230px;
+		}
+		.mural.is-still .polaroid:nth-child(4n + 2) {
+			justify-self: end;
+			margin-right: 4%;
+		}
+		.mural.is-still .polaroid:nth-child(4n) {
+			justify-self: start;
+			margin-left: 4%;
 		}
 		.note {
 			width: 260px;
