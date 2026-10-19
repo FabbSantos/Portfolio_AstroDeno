@@ -9,6 +9,16 @@
 	--ink-2: color-mix(in srgb, var(--ink) 90%, var(--bg));
 	--ink-3: color-mix(in srgb, var(--ink) 84%, var(--bg));
 }
+/* Display face per preview (data.display). Cormorant is lighter than Fraunces, so it sets a touch heavier. */
+.previa.is-cormorant {
+	--display: 'Cormorant Variable', 'Cormorant', Georgia, 'Times New Roman', serif;
+}
+.previa.is-cormorant .display {
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	/* Its default figures are old-style ("5,0" reads as "5,o"). */
+	font-variant-numeric: lining-nums;
+}
 
 /* Section title: one upright serif line, nothing above it. */
 .previa .sec-title {

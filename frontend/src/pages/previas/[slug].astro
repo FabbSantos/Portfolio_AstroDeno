@@ -6,8 +6,9 @@
 import PreviaLayout from '../../previas/PreviaLayout.astro';
 import PreviaBody from '../../previas/PreviaBody.astro';
 import ThemeVars from '../../templates/core/ThemeVars.astro';
-// Upright Fraunces only (the display face); previews use no italic.
-import display from '@fontsource-variable/fraunces/files/fraunces-latin-wght-normal.woff2?url';
+// Upright display faces only (previews use no italic); the one the preview uses is preloaded.
+import fraunces from '@fontsource-variable/fraunces/files/fraunces-latin-wght-normal.woff2?url';
+import cormorant from '@fontsource-variable/cormorant/files/cormorant-latin-wght-normal.woff2?url';
 import { previas } from '../../data/previas';
 import { previaPhotos } from '../../previas/photos';
 import { ogPanels } from '../../previas/og';
@@ -21,6 +22,7 @@ interface Props {
 	data: PreviaData;
 }
 const { data } = Astro.props;
+const display = data.display === 'cormorant' ? cormorant : fraunces;
 const url = new URL(`/previas/${data.slug}`, Astro.site).href;
 // Same rule as og.jpg.ts: the image exists only when the preview has photos.
 const ogImage = ogPanels(await previaPhotos(data.slug)).length ? new URL(`/previas/${data.slug}/og.jpg`, Astro.site).href : undefined;
