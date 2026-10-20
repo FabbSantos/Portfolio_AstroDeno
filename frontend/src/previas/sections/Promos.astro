@@ -1,0 +1,348 @@
+---
+/**
+ * Promotions (data.promotions), right after the hero on a soft rose block:
+ * the client's own promo posts side by side, each with its name, one sentence
+ * and the price as text under it (all copied from the post). A tap opens the
+ * post full screen, since the small print in the art is hard to read in a
+ * card. Phones swipe through them (the shared [data-carousel] script in
+ * PreviaBody). After `until`, in the business's time zone, the section and
+ * its nav link hide themselves.
+ * Posts: public/previas/<slug>/promo-N.*, matched to the items by position.
+ */
+import { Image, getImage } from 'astro:assets';
+import { whatsappHref, type PreviaData } from '../../data/previas/types';
+import type { PreviaPhoto } from '../photos';
+import CarouselNav from './CarouselNav.astro';
+import WaButton from './WaButton.astro';
+
+interface Props {
+	data: PreviaData;
+	photos: PreviaPhoto[];
+}
+const { data, photos } = Astro.props;
+const promo = data.promotions;
+const items = (promo?.items ?? []).flatMap((it, i) => {
+	const photo = photos[i];
+	return photo ? [{ ...it, photo }] : [];
+});
+const full = await Promise.all(items.map((it) => getImage({ src: it.photo.src, width: it.photo.width, height: it.photo.height, quality: 82 })));
+const srcs = items.map((it, i) => ({ src: full[i]?.src ?? it.photo.src, alt: it.alt }));
+---
+
+{
+	promo && items.length > 0 && (
+		<section class='promos sec' id='promocoes' aria-labelledby='promos-title' data-promos data-until={promo.until} data-tz={data.location.timezone}>
+			<div class='wrap'>
+				<div class='promos-head'>
+					<h2 id='promos-title' class='display sec-title'>
+						{promo.label}
+					</h2>
+					{promo.line && (
+						<p class='promos-line'>
+							<svg viewBox='0 0 24 32' width='18' height='24' aria-hidden='true' focusable='false'>
+								<path d='M12 2c3.3 0 6 2.6 6 5.8 0 2.6-1.4 4.9-3.2 7.4l7 13.3-4.6 1.5L12 20.5 6.8 30l-4.6-1.5 7-13.3C7.4 12.7 6 10.4 6 7.8 6 4.6 8.7 2 12 2Zm0 4c-1.2 0-2 .8-2 1.9 0 1 .7 2.5 2 4.4 1.3-1.9 2-3.4 2-4.4 0-1.1-.8-1.9-2-1.9Z' fill='currentColor' />
+							</svg>
+							{promo.line}
+						</p>
+					)}
+				</div>
+
+				<div class='promos-car' data-carousel>
+					<ul class='promos-track' data-carousel-track tabindex='0' aria-label={promo.label}>
+						{items.map((it, i) => (
+							<li class='promo'>
+								<button type='button' class='promo-img' data-promo-open={i} aria-label={`${it.title}: ampliar`}>
+									<Image src={it.photo.src} alt={it.alt} width={it.photo.width} height={it.photo.height} widths={[320, 480, 640, 800]} sizes='(max-width: 780px) 76vw, 400px' quality={78} loading='lazy' decoding='async' />
+								</button>
+								<h3 class='display promo-title'>{it.title}</h3>
+								{it.detail && <p class='promo-detail'>{it.detail}</p>}
+								<p class='promo-offer'>
+									{it.was && <s>De {it.was}</s>}
+									{' '}
+									<strong>{it.was ? `Por ${it.offer}` : it.offer}</strong>
+								</p>
+							</li>
+						))}
+					</ul>
+					<CarouselNav total={items.length} />
+				</div>
+
+				<div class='promos-cta'>
+					<WaButton href={whatsappHref(data.whatsapp)} label={data.whatsapp.label} />
+				</div>
+			</div>
+
+			<dialog class='plb' data-promo-lb aria-label={promo.label}>
+				<img class='plb-img' data-promo-lb-img alt='' />
+				<button type='button' class='plb-btn plb-close' data-promo-lb-close aria-label='Fechar'>
+					<svg viewBox='0 0 24 24' width='22' height='22' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' aria-hidden='true'>
+						<path d='M6 6l12 12M18 6 6 18' />
+					</svg>
+				</button>
+				{items.length > 1 && (
+					<>
+						<button type='button' class='plb-btn plb-prev' data-promo-lb-prev aria-label='Anterior'>
+							<svg viewBox='0 0 20 20' width='22' height='22' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'>
+								<path d='M12.5 4.5 7 10l5.5 5.5' />
+							</svg>
+						</button>
+						<button type='button' class='plb-btn plb-next' data-promo-lb-next aria-label='Próxima'>
+							<svg viewBox='0 0 20 20' width='22' height='22' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'>
+								<path d='m7.5 4.5 5.5 5.5-5.5 5.5' />
+							</svg>
+						</button>
+					</>
+				)}
+				<template data-promo-srcs>{JSON.stringify(srcs)}</template>
+			</dialog>
+		</section>
+	)
+}
+
+<style>
+	.promos {
+		background: color-mix(in srgb, var(--accent) 14%, var(--bg));
+	}
+	.promos-head {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: end;
+		justify-content: space-between;
+		gap: 12px 32px;
+	}
+	.promos-head :global(.sec-title) {
+		margin-bottom: 0;
+	}
+	.promos-line {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		font-size: 18px;
+		font-weight: 600;
+		color: var(--accent-text);
+	}
+
+	.promos-track {
+		list-style: none;
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: clamp(20px, 3vw, 44px);
+		margin-top: clamp(28px, 4vw, 52px);
+	}
+	.promo {
+		display: grid;
+		align-content: start;
+		gap: 10px;
+		min-width: 0;
+	}
+	.promo-img {
+		display: block;
+		width: 100%;
+		aspect-ratio: 9 / 16;
+		padding: 0;
+		border: 0;
+		border-radius: 18px;
+		overflow: hidden;
+		background: var(--bg-2);
+		box-shadow: 0 30px 50px -30px rgba(59, 42, 46, 0.5);
+		cursor: zoom-in;
+		transition: transform 0.5s var(--ease);
+	}
+	.promo-img:hover {
+		transform: translateY(-4px);
+	}
+	.promo-img:focus-visible {
+		outline: 2px solid var(--ink);
+		outline-offset: 4px;
+	}
+	.promo-img :global(img) {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+	.promo-title {
+		margin-top: 10px;
+		font-size: clamp(24px, 2.2vw, 32px);
+	}
+	.promo-detail {
+		font-size: 15.5px;
+		line-height: 1.5;
+		color: var(--ink-2);
+	}
+	.promo-offer {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 4px 10px;
+		font-size: 17px;
+	}
+	.promo-offer s {
+		color: var(--ink-3);
+	}
+	.promo-offer strong {
+		color: var(--accent-text);
+		font-weight: 700;
+	}
+	.promos-car :global(.cnav) {
+		margin-top: 20px;
+	}
+	.promos-car:global(.is-static) :global(.cnav) {
+		display: none;
+	}
+	.promos-cta {
+		display: flex;
+		justify-content: center;
+		margin-top: clamp(32px, 4vw, 52px);
+	}
+
+	/* Phones: swipe through the posts, the next one peeking in. */
+	@media (max-width: 780px) {
+		.promos-track {
+			display: flex;
+			gap: 16px;
+			margin-inline: calc(var(--pad-x) * -1);
+			padding-inline: var(--pad-x);
+			scroll-padding-inline: var(--pad-x);
+			overflow-x: auto;
+			scroll-snap-type: x mandatory;
+			scrollbar-width: none;
+		}
+		.promos-track::-webkit-scrollbar {
+			display: none;
+		}
+		.promo {
+			flex: 0 0 76%;
+			scroll-snap-align: start;
+		}
+	}
+
+	/* ---- full-screen post ---- */
+	.plb {
+		width: 100vw;
+		height: 100dvh;
+		max-width: none;
+		max-height: none;
+		margin: 0;
+		padding: 0;
+		border: 0;
+		background: rgba(26, 18, 20, 0.94);
+		color: #fff;
+	}
+	.plb[open] {
+		display: grid;
+		place-items: center;
+	}
+	.plb::backdrop {
+		background: rgba(26, 18, 20, 0.6);
+	}
+	.plb-img {
+		max-width: min(94vw, 560px);
+		max-height: 92dvh;
+		border-radius: 12px;
+		object-fit: contain;
+		touch-action: pan-y;
+	}
+	.plb-btn {
+		position: absolute;
+		display: grid;
+		place-items: center;
+		width: 52px;
+		height: 52px;
+		border: 0;
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.16);
+		color: #fff;
+		cursor: pointer;
+	}
+	.plb-btn:hover {
+		background: rgba(255, 255, 255, 0.28);
+	}
+	.plb-btn:focus-visible {
+		outline: 2px solid #fff;
+		outline-offset: 3px;
+	}
+	.plb-close {
+		top: 16px;
+		right: 16px;
+	}
+	.plb-prev,
+	.plb-next {
+		top: 50%;
+		transform: translateY(-50%);
+	}
+	.plb-prev {
+		left: 16px;
+	}
+	.plb-next {
+		right: 16px;
+	}
+	@media (max-width: 780px) {
+		.plb-prev,
+		.plb-next {
+			top: auto;
+			bottom: 14px;
+			transform: none;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.promo-img {
+			transition: none;
+		}
+	}
+</style>
+
+<script>
+	document.querySelectorAll<HTMLElement>('[data-promos]').forEach((root) => {
+		// Past the last day (in the business's zone): hide the section and its nav links.
+		const { until, tz } = root.dataset;
+		if (until && tz) {
+			try {
+				const today = new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+				if (today > until) {
+					root.hidden = true;
+					document.querySelectorAll<HTMLElement>(`a[href="#${root.id}"]`).forEach((a) => (a.style.display = 'none'));
+					return;
+				}
+			} catch {
+				/* unknown zone: keep it */
+			}
+		}
+
+		const lb = root.querySelector<HTMLDialogElement>('[data-promo-lb]');
+		const img = root.querySelector<HTMLImageElement>('[data-promo-lb-img]');
+		if (!lb || !img) return;
+		// textContent, not innerHTML: innerHTML re-escapes the & in the image URLs.
+		const srcs = JSON.parse(root.querySelector<HTMLTemplateElement>('template[data-promo-srcs]')?.content.textContent || '[]') as { src: string; alt: string }[];
+		let at = 0;
+		const paint = (i: number) => {
+			at = (i + srcs.length) % srcs.length;
+			const s = srcs[at];
+			if (!s) return;
+			img.src = s.src;
+			img.alt = s.alt;
+		};
+		root.querySelectorAll<HTMLButtonElement>('[data-promo-open]').forEach((b) =>
+			b.addEventListener('click', () => {
+				paint(Number(b.dataset.promoOpen));
+				lb.showModal();
+			}),
+		);
+		root.querySelector('[data-promo-lb-close]')?.addEventListener('click', () => lb.close());
+		root.querySelector('[data-promo-lb-prev]')?.addEventListener('click', () => paint(at - 1));
+		root.querySelector('[data-promo-lb-next]')?.addEventListener('click', () => paint(at + 1));
+		lb.addEventListener('click', (e) => {
+			if (e.target === lb) lb.close();
+		});
+		lb.addEventListener('keydown', (e) => {
+			if (e.key === 'ArrowRight') paint(at + 1);
+			else if (e.key === 'ArrowLeft') paint(at - 1);
+		});
+		let sx = 0;
+		img.addEventListener('pointerdown', (e) => (sx = e.clientX));
+		img.addEventListener('pointerup', (e) => {
+			const dx = e.clientX - sx;
+			if (Math.abs(dx) > 40) paint(at + (dx < 0 ? 1 : -1));
+		});
+	});
+</script>

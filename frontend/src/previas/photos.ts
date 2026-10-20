@@ -15,6 +15,7 @@
  *   mural-1 … mural-N                 extra photos for the reviews mural (with the work photos)
  *   trabalho-1 … trabalho-N           the work gallery, in numeric order
  *   servico-1 … servico-N             square service posts, the services carousel
+ *   promo-1 … promo-N                 promo posts for data.promotions, in order
  */
 import { existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
@@ -42,6 +43,7 @@ export interface PreviaPhotos {
 	mural: PreviaPhoto[];
 	work: PreviaPhoto[];
 	posts: PreviaPhoto[];
+	promos: PreviaPhoto[];
 }
 
 const EXT = /\.(jpe?g|png|webp)$/i;
@@ -61,7 +63,7 @@ async function photo(dir: string, slug: string, file: string | undefined): Promi
 
 export async function previaPhotos(slug: string): Promise<PreviaPhotos> {
 	const dir = join(process.cwd(), 'public', 'previas', slug);
-	if (!existsSync(dir)) return { hero: null, hero2: null, heroVideo: null, heroWideVideo: null, heroWide: null, logo: null, studio: [], mural: [], work: [], posts: [] };
+	if (!existsSync(dir)) return { hero: null, hero2: null, heroVideo: null, heroWideVideo: null, heroWide: null, logo: null, studio: [], mural: [], work: [], posts: [], promos: [] };
 	const all = readdirSync(dir);
 	const files = all.filter((f) => EXT.test(f));
 	const video = all.find((f) => VIDEO.test(f));
@@ -93,5 +95,6 @@ export async function previaPhotos(slug: string): Promise<PreviaPhotos> {
 		mural: await many('mural'),
 		work,
 		posts: await many('servico'),
+		promos: await many('promo'),
 	};
 }

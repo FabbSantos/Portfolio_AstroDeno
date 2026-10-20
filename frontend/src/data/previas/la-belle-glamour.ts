@@ -18,6 +18,11 @@
  *
  * Serviços: os 8 nomes da arte de serviços dela, sem descrição (a arte não
  * tem). Avaliações: fixas, cada frase uma vez (sem faixa passando).
+ *
+ * Promoções: as três artes de Outubro Rosa dela (promo-1…3, originais em
+ * Downloads/la-belle-glamour-originais/promocoes). Nome, frase e preço de
+ * cada uma copiados da arte; o alt tem tudo o que está escrito nela. A seção
+ * some sozinha depois de 31/10.
  */
 import type { PreviaData, PreviaTheme } from './types';
 
@@ -54,6 +59,33 @@ const previa: PreviaData = {
 	services: ['Cabelos', 'Terapia Capilar', 'Mega Hair', 'Unhas', 'Sobrancelhas', 'Estética', 'Massagens', 'Maquiagem & Penteados'],
 	reviews: ['Melhor salão do Méier.', 'Sou cliente há alguns anos e não troco por outro.', 'Ambiente aconchegante, profissionais competentes e muito simpáticas.'],
 	reviewsLayout: 'still',
+
+	promotions: {
+		label: 'Promoções',
+		line: 'Outubro Rosa',
+		until: '2026-10-31',
+		items: [
+			{
+				title: 'Corte + tratamento',
+				detail: 'Seu tratamento ganha um upgrade: vapor de ozônio.',
+				was: 'R$ 350,00',
+				offer: 'R$ 262,00',
+				alt: 'Corte + tratamento. Ação exclusiva Outubro Rosa. Seu cabelo precisa de força, brilho e reparação? Seu tratamento ganha um upgrade: vapor de ozônio. De R$ 350,00 por R$ 262,00. Por tempo limitado. Feche esta oferta, estoure o balão e ganhe um brinde exclusivo! Balens Brand.',
+			},
+			{
+				title: 'La Belle Abraça o Rosa',
+				detail: 'Ganhe um voucher de 10% off para o próximo atendimento.',
+				offer: '3x de R$ 77,00',
+				alt: 'La Belle Abraça o Rosa. Experiência exclusiva. Seu cabelo está pedindo mais força, brilho e maciez? Sua experiência inclui: 1. Avaliação capilar. 2. Joico K-Pak em quatro passos. 3. Vapor de ozônio. 4. Finalização com escova. 5. Brinde surpresa no balão. 6. Bebida exclusiva de Outubro Rosa. 3x de R$ 77,00. Ganhe um voucher de 10% off para o próximo atendimento. Reserve seu momento: (21) 97294-6068. Méier, Rio de Janeiro.',
+			},
+			{
+				title: 'Pontas renovadas',
+				detail: 'Ao realizar exoplastia capilar ou alinhamento térmico neste mês de outubro.',
+				offer: '25% off no corte',
+				alt: 'Pontas renovadas. Um cuidado a mais. Ao realizar exoplastia capilar ou alinhamento térmico neste mês de outubro, 25% off no corte. Benefício válido para o corte feito no mesmo dia. Agende pelo direct.',
+			},
+		],
+	},
 
 	location: {
 		address: { street: 'R. Dias da Cruz, 188, subsolo, loja I', district: 'Méier', city: 'Rio de Janeiro', state: 'RJ' },

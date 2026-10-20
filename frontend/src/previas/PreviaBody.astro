@@ -25,6 +25,7 @@ import Work from './sections/Work.astro';
 import Studio from './sections/Studio.astro';
 import WaFab from './sections/WaFab.astro';
 import Services from './sections/Services.astro';
+import Promos from './sections/Promos.astro';
 import Reviews from './sections/Reviews.astro';
 import Location from './sections/Location.astro';
 import Footer from './sections/Footer.astro';
@@ -35,7 +36,9 @@ interface Props {
 const { data } = Astro.props;
 const wa = whatsappHref(data.whatsapp);
 const photos = await previaPhotos(data.slug);
+const hasPromos = !!data.promotions && photos.promos.length > 0;
 const nav = [
+	...(hasPromos && data.promotions ? [{ label: data.promotions.label, href: '#promocoes' }] : []),
 	...(photos.work.length ? [{ label: data.labels.work, href: '#trabalhos' }] : []),
 	{ label: data.labels.services, href: '#servicos' },
 	...(photos.studio.length > 1 ? [{ label: data.labels.studio, href: '#studio' }] : []),
@@ -56,6 +59,7 @@ const nav = [
 		)
 	}
 	{data.highlights && data.highlights.length > 0 && <Ticker items={data.highlights} />}
+	{hasPromos && <Promos data={data} photos={photos.promos} />}
 	{photos.work.length > 0 && <Work label={data.labels.work} name={data.name} photos={photos.work} />}
 	<Services label={data.labels.services} items={data.services} posts={photos.posts} texts={data.servicePosts} name={data.name} />
 	{photos.studio.length > 1 && <Studio label={data.labels.studio} name={data.name} photos={photos.studio} />}
@@ -163,31 +167,50 @@ const nav = [
 			e.preventDefault();
 		});
 
-		// Mouse drag.
+		// Mouse drag (only when there is something to scroll). The pointer is captured
+		// once the mouse has really moved, so a plain click still reaches what was
+		// clicked (a promo post, say); the click that ends a drag is swallowed.
 		let startX = 0;
 		let startLeft = 0;
 		let dragging = false;
+		let moved = false;
+		let justDragged = false;
 		track.addEventListener('pointerdown', (e) => {
-			if (e.pointerType !== 'mouse' || e.button !== 0) return;
+			if (e.pointerType !== 'mouse' || e.button !== 0 || max() <= 2) return;
 			dragging = true;
+			moved = false;
 			startX = e.clientX;
 			startLeft = track.scrollLeft;
-			track.setPointerCapture(e.pointerId);
 		});
 		track.addEventListener('pointermove', (e) => {
 			if (!dragging) return;
-			if (Math.abs(e.clientX - startX) > 4) track.classList.add('is-dragging');
-			track.scrollLeft = startLeft - (e.clientX - startX);
+			if (!moved && Math.abs(e.clientX - startX) > 4) {
+				moved = true;
+				track.classList.add('is-dragging');
+				track.setPointerCapture(e.pointerId);
+			}
+			if (moved) track.scrollLeft = startLeft - (e.clientX - startX);
 		});
 		const drop = () => {
 			if (!dragging) return;
 			dragging = false;
-			const moved = track.classList.contains('is-dragging');
 			track.classList.remove('is-dragging');
-			if (moved) go(index());
+			if (!moved) return;
+			go(index());
+			justDragged = true;
+			setTimeout(() => (justDragged = false), 0);
 		};
 		track.addEventListener('pointerup', drop);
 		track.addEventListener('pointercancel', drop);
+		track.addEventListener(
+			'click',
+			(e) => {
+				if (!justDragged) return;
+				e.preventDefault();
+				e.stopPropagation();
+			},
+			true,
+		);
 
 		if (autoplay && !reduced && items.length > 1) {
 			let held = false;

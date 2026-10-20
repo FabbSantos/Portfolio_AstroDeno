@@ -68,6 +68,29 @@ export interface PreviaData {
 	reviewsLayout?: 'drift' | 'still';
 	/** Instagram profile URL, linked in the footer. */
 	instagram?: string;
+	/**
+	 * Current promotions, shown right after the hero: the client's own promo
+	 * posts (promo-N images, by position) with each one's name and price as
+	 * text. Every string is copied from the posts. Hidden after `until`.
+	 */
+	promotions?: {
+		/** One-word section label (also in the nav). */
+		label: string;
+		/** The campaign, under the label (e.g. "Outubro Rosa"). */
+		line?: string;
+		/** Last day the section shows (YYYY-MM-DD, in the business's time zone). */
+		until?: string;
+		items: {
+			title: string;
+			/** One sentence from the post. */
+			detail?: string;
+			/** Old price, shown struck through. */
+			was?: string;
+			offer: string;
+			/** Everything written on the post, for the image's alt text. */
+			alt: string;
+		}[];
+	};
 	location: {
 		address: { street: string; district: string; city: string; state: string };
 		/** IANA zone of the business; "open now" is computed in it, not in the visitor's. */
