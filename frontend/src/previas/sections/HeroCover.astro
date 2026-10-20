@@ -164,6 +164,50 @@ const landscape = wide ? await getImage({ src: wide.src, width: wide.width, heig
 			width: 100%;
 		}
 	}
+
+	/*
+	 * Parallax, tied to the page scroll (no JavaScript, runs off the main
+	 * thread): over the first screen of scrolling the video sinks at about a
+	 * third of the speed and zooms in a little, while the logo and text rise
+	 * and fade, so the next section slides up over the footage. The gap the
+	 * video leaves at its top stays under the sticky topbar. Browsers without
+	 * scroll-driven animations, and reduced motion, keep the still cover.
+	 */
+	@supports (animation-timeline: scroll()) {
+		@media (prefers-reduced-motion: no-preference) {
+			.cover-media {
+				transform-origin: 50% 0;
+				/* Longhands on purpose: the minifier folds a shorthand + timeline into one invalid declaration. */
+				animation-name: cover-sink;
+				animation-timing-function: linear;
+				animation-fill-mode: both;
+				animation-timeline: scroll(root);
+				animation-range: 0 100svh;
+			}
+			.cover-copy {
+				animation-name: cover-rise;
+				animation-timing-function: linear;
+				animation-fill-mode: both;
+				animation-timeline: scroll(root);
+				animation-range: 0 70svh;
+			}
+		}
+	}
+	@keyframes cover-sink {
+		to {
+			transform: translateY(32%) scale(1.08);
+		}
+	}
+	@keyframes cover-rise {
+		/* Fully readable for the first stretch of scrolling. */
+		40% {
+			opacity: 1;
+		}
+		to {
+			transform: translateY(-14svh);
+			opacity: 0;
+		}
+	}
 </style>
 
 <script>
