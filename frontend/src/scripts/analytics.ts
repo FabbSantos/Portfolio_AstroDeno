@@ -8,7 +8,10 @@
  *
  * Funnel: contact_view → form_start → contact_submit (contact_error on failure).
  * Entry points: cta_click and whatsapp_click, each with `where` (section id,
- * topbar, menu, footer, fab…) and `page`.
+ * topbar, menu, footer, fab…) and `page`. Reading: scroll_depth (25/50/75/100).
+ *
+ * The owner's own browsers stay out of every count: opening any page once with
+ * ?eu=1 sets the flags (see components/site/UmamiLoader.astro).
  */
 import { track as vercelTrack } from '@vercel/analytics';
 
@@ -31,8 +34,38 @@ export function trackEvent(name: string, props: Props = {}): void {
 	else (window.__umq ??= []).push([name, props]);
 }
 
+/** Set by ?eu=1 on the owner's own browsers (with Umami's own 'umami.disabled'). */
+export const OWNER_KEY = 'fab-eu';
+
+export function isOwner(): boolean {
+	try {
+		return localStorage.getItem(OWNER_KEY) === '1';
+	} catch {
+		return false;
+	}
+}
+
+/** scroll_depth at 25, 50, 75 and 100% of the page, once each per page view. */
+export function initScrollDepth(): void {
+	const marks = [25, 50, 75, 100];
+	let raf = 0;
+	const check = () => {
+		raf = 0;
+		const doc = document.documentElement;
+		const pct = ((window.scrollY + window.innerHeight) / Math.max(1, doc.scrollHeight)) * 100;
+		while (marks.length && pct >= (marks[0] as number) - 1) {
+			trackEvent('scroll_depth', { pct: marks.shift() as number, page: location.pathname });
+		}
+		if (!marks.length) window.removeEventListener('scroll', onScroll);
+	};
+	const onScroll = () => {
+		if (!raf) raf = requestAnimationFrame(check);
+	};
+	window.addEventListener('scroll', onScroll, { passive: true });
+}
+
 /** Where a link sits: explicit data-cta, else its section id, else the page chrome. */
-function whereOf(el: Element): string {
+export function whereOf(el: Element): string {
 	const explicit = el.closest<HTMLElement>('[data-cta]')?.dataset.cta;
 	if (explicit) return explicit;
 	const section = el.closest('section[id]')?.id;

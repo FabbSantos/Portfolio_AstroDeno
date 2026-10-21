@@ -28,7 +28,7 @@ const url = new URL(`/previas/${data.slug}`, Astro.site).href;
 const ogImage = ogPanels(await previaPhotos(data.slug)).length ? new URL(`/previas/${data.slug}/og.jpg`, Astro.site).href : undefined;
 ---
 
-<PreviaLayout title={data.seo.title} description={data.seo.description} themeColor={data.theme.bg} preload={[display]} url={url} ogImage={ogImage} ogImageAlt={`${data.name}: fotos do trabalho e do espaço`}>
+<PreviaLayout slug={data.slug} title={data.seo.title} description={data.seo.description} themeColor={data.theme.bg} preload={[display]} url={url} ogImage={ogImage} ogImageAlt={`${data.name}: fotos do trabalho e do espaço`}>
 	<ThemeVars theme={data.theme} />
 	<PreviaBody data={data} />
 </PreviaLayout>

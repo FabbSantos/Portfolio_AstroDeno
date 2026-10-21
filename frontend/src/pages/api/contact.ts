@@ -4,6 +4,7 @@ import { RESEND_API_KEY, CONTACT_TO, TURNSTILE_SECRET_KEY } from 'astro:env/serv
 import { SITE } from '../../data/site';
 import { SERVICES } from '../../data/services';
 import { fullName, templates } from '../../data/templates';
+import { clientIp, json, originAllowed } from './_http';
 
 /**
  * POST /api/contact — receives the JSON payload from home Contact.astro,
@@ -27,8 +28,6 @@ export const prerender = false;
 const FROM = 'Portfolio · fabbahiense.dev <noreply@fabbahiense.dev>';
 
 const MAX_BODY_BYTES = 16 * 1024;
-const ALLOWED_HOSTS = new Set(['www.fabbahiense.dev', 'fabbahiense.dev']);
-const LOCAL_HOSTS = /^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/;
 
 const RATE_WINDOW_MS = 10 * 60 * 1000;
 const RATE_MAX = 5;
@@ -69,12 +68,6 @@ function rateLimited(ip: string, now = Date.now()): number | null {
 /* ----------------------------------------------------------------------------
  * Helpers
  * -------------------------------------------------------------------------- */
-function json(status: number, body: { ok: boolean; code?: string }, extra: Record<string, string> = {}): Response {
-	return new Response(JSON.stringify(body), {
-		status,
-		headers: { 'content-type': 'application/json', 'cache-control': 'no-store', ...extra },
-	});
-}
 
 function escapeHtml(s: string): string {
 	return s
@@ -89,31 +82,6 @@ function escapeHtml(s: string): string {
 const oneLine = (s: string) => s.replace(/[\r\n]+/g, ' ').replace(/\s+/g, ' ').trim();
 
 const str = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
-
-function clientIp(request: Request): string {
-	const xff = request.headers.get('x-forwarded-for') ?? '';
-	const first = xff.split(',')[0]?.trim();
-	return first || request.headers.get('x-real-ip') || 'unknown';
-}
-
-function originAllowed(request: Request): boolean {
-	const site = request.headers.get('sec-fetch-site');
-	if (site === 'same-origin') return true;
-	const origin = request.headers.get('origin');
-	if (!origin) return false;
-	let host: string;
-	try {
-		host = new URL(origin).host;
-	} catch {
-		return false;
-	}
-	if (ALLOWED_HOSTS.has(host)) return true;
-	// Browsers set Origin themselves, so matching the request host is a real
-	// same-origin check (also covers Vercel preview deployments).
-	if (host === new URL(request.url).host) return true;
-	if (import.meta.env.DEV && LOCAL_HOSTS.test(host)) return true;
-	return false;
-}
 
 async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
 	if (!TURNSTILE_SECRET_KEY) return true;

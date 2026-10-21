@@ -9,7 +9,7 @@
  *  - contact / WhatsApp click tracking (scripts/analytics.ts)
  * Language switching is a plain link now (server-side i18n) — nothing to wire.
  */
-import { initCtaTracking } from './analytics';
+import { initCtaTracking, initScrollDepth } from './analytics';
 import { enhanceAccordions } from '../templates/core/accordion';
 
 const reducedMotion = (): boolean => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -187,6 +187,7 @@ function initMobileNav(): void {
 
 export function initSite(): void {
 	initCtaTracking();
+	initScrollDepth();
 	enhanceAccordions();
 	initStickyTopbar();
 	initReveal();
