@@ -6,11 +6,16 @@
  * A thin fixed ribbon credits the preview; the page is pushed down by its height.
  * Open Graph tags give the link a proper card when it is sent on WhatsApp:
  * title, description and, when the preview has photos, the image from og.jpg.ts.
+ * Umami counts the visit and the taps (scripts/previa-analytics.ts), and the
+ * owner gets an e-mail when the preview is opened (api/previa-aberta.ts).
  */
 import '../styles/base.css';
 import PreviaRibbon from './PreviaRibbon.astro';
+import UmamiLoader from '../components/site/UmamiLoader.astro';
 
 interface Props {
+	/** The preview's slug, for analytics. */
+	slug: string;
 	title: string;
 	description: string;
 	themeColor: string;
@@ -23,11 +28,11 @@ interface Props {
 	/** Alt text for the link preview image. */
 	ogImageAlt?: string;
 }
-const { title, description, themeColor, preload = [], url, ogImage, ogImageAlt = title } = Astro.props;
+const { slug, title, description, themeColor, preload = [], url, ogImage, ogImageAlt = title } = Astro.props;
 ---
 
 <!doctype html>
-<html lang='pt-BR' data-theme='light'>
+<html lang='pt-BR' data-theme='light' data-previa={slug}>
 	<head>
 		<meta charset='UTF-8' />
 		<meta name='viewport' content='width=device-width,initial-scale=1' />
@@ -55,12 +60,17 @@ const { title, description, themeColor, preload = [], url, ogImage, ogImageAlt =
 		<meta name='twitter:card' content={ogImage ? 'summary_large_image' : 'summary'} />
 		{preload.map((href) => <link rel='preload' as='font' type='font/woff2' href={href} crossorigin />)}
 		<link rel='icon' type='image/png' sizes='32x32' href='/favicon-32x32.png' />
+		<UmamiLoader />
 	</head>
 	<body>
 		<PreviaRibbon />
 		<main id='main-content'>
 			<slot />
 		</main>
+		<script>
+			import { initPreviaAnalytics } from '../scripts/previa-analytics';
+			initPreviaAnalytics();
+		</script>
 	</body>
 </html>
 

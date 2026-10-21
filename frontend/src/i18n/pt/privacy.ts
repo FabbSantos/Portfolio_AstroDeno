@@ -6,7 +6,7 @@ export const privacy = {
 	updated: 'Atualizado em setembro de 2026',
 	contactLabel: 'Dúvidas ou pedidos:',
 	/** Appended to "Quem processa" only when Umami is configured (PUBLIC_UMAMI_WEBSITE_ID). */
-	umami: 'Umami: contagem agregada de visitas e de cliques nos botões de contato, sem cookies e sem identificar pessoas.',
+	umami: 'Umami: contagem agregada de visitas, de até onde a página foi rolada e de cliques nos botões de contato, sem cookies e sem identificar pessoas.',
 	sections: [
 		{
 			id: 'collect',

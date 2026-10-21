@@ -7,7 +7,7 @@ export const privacy: Shape<typeof ptShape> = {
 	lead: 'This site has a contact form and nothing else. Here is, in plain language, what happens with what you send.',
 	updated: 'Updated September 2026',
 	contactLabel: 'Questions or requests:',
-	umami: 'Umami: aggregated counts of visits and contact button clicks, with no cookies and no personal identification.',
+	umami: 'Umami: aggregated counts of visits, how far pages are scrolled and contact button clicks, with no cookies and no personal identification.',
 	sections: [
 		{
 			id: 'collect',

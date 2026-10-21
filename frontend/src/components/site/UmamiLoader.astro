@@ -1,0 +1,69 @@
+---
+/**
+ * Umami (cookieless analytics + the events in scripts/analytics.ts), shared by
+ * the site layout and the client previews. Only with PUBLIC_UMAMI_WEBSITE_ID;
+ * loaded after `load` so it never competes with the first render, skipped
+ * inside iframes, and limited to the production host.
+ *
+ * ?eu=1 on any page marks this browser as the owner's: Umami ignores it
+ * (its own 'umami.disabled' flag) and previews stop e-mailing about it.
+ * ?eu=0 undoes it. A short note confirms either way and the parameter is
+ * removed from the address bar, so a copied link never carries it.
+ */
+import { SITE } from '../../data/site';
+
+const umamiId = String(import.meta.env.PUBLIC_UMAMI_WEBSITE_ID ?? '');
+const host = new URL(SITE.url).host;
+---
+
+<script is:inline define:vars={{ umamiId, host }}>
+	(function () {
+		try {
+			if (window.self !== window.top) return;
+		} catch {
+			return;
+		}
+		const url = new URL(location.href);
+		const eu = url.searchParams.get('eu');
+		if (eu === '1' || eu === '0') {
+			try {
+				if (eu === '1') {
+					localStorage.setItem('fab-eu', '1');
+					localStorage.setItem('umami.disabled', '1');
+				} else {
+					localStorage.removeItem('fab-eu');
+					localStorage.removeItem('umami.disabled');
+				}
+			} catch {
+				/* private mode: nothing to remember */
+			}
+			url.searchParams.delete('eu');
+			history.replaceState(null, '', url.pathname + url.search + url.hash);
+			addEventListener('DOMContentLoaded', function () {
+				const n = document.createElement('div');
+				n.setAttribute('role', 'status');
+				n.textContent = eu === '1' ? 'Pronto: as visitas deste aparelho não entram mais nas estatísticas.' : 'As visitas deste aparelho voltaram a contar.';
+				n.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:2000;max-width:calc(100vw - 32px);padding:12px 18px;border-radius:12px;background:#1a1a1c;color:#fff;font:600 14px/1.4 system-ui,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.3)';
+				document.body.appendChild(n);
+				setTimeout(function () {
+					n.remove();
+				}, 5000);
+			});
+		}
+		if (!umamiId) return;
+		addEventListener('load', function () {
+			const s = document.createElement('script');
+			s.src = 'https://cloud.umami.is/script.js';
+			s.dataset.websiteId = umamiId;
+			s.dataset.domains = host;
+			s.onload = function () {
+				const q = window.__umq || [];
+				window.__umq = [];
+				q.forEach(function (e) {
+					if (window.umami) window.umami.track(e[0], e[1]);
+				});
+			};
+			document.head.appendChild(s);
+		});
+	})();
+</script>
