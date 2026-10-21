@@ -14,7 +14,7 @@ import PhoneFrame from '../components/templates/PhoneFrame.astro';
 import ScoreGauge from '../components/templates/ScoreGauge.astro';
 import { lighthouse, scoresFor } from '../data/lighthouse';
 import { SITE, whatsappUrl } from '../data/site';
-import { demoPath, examplePath, formatBRL, fullName, templates, type TemplateMeta } from '../data/templates';
+import { demoPath, examplePath, formatBRL, fullName, promoOn, promoPrice, promoUntilLabel, templates, type TemplateMeta } from '../data/templates';
 import { fmt, localeOf, localePath, pick, useT } from '../i18n';
 
 interface Props {
@@ -35,8 +35,12 @@ const meta = fmt(t.templates.detail.meta, {
 	n: index,
 	total: templates.length,
 	cat: pick(tpl.cat, locale),
-	days: tpl.days,
+	days: pick(SITE.promises.templateDays, locale),
 });
+// Price: full, promo (the full one waits for the promo to end, see Layout) or "sob consulta".
+const full = tpl.priceFrom;
+const promo = full !== undefined && promoOn();
+const promoTag = fmt(t.templates.price.until, { date: promoUntilLabel(locale) });
 const sections = pick(tpl.sections, locale);
 const included = t.templates.included.items.map((s) => fmt(s, { months }));
 const steps = t.templates.steps.items.map((s) => ({ title: s.title, desc: fmt(s.desc, { months }) }));
@@ -87,8 +91,28 @@ const relatedCols = others.length % 2 === 0 ? 2 : 3;
 					</ul>
 				</div>
 				<p class='price'>
-					<span class='from'>{t.common.from}</span>
-					<strong>{formatBRL(tpl.priceFrom)}</strong>
+					{full === undefined ? (
+						<strong>{t.templates.price.onRequest}</strong>
+					) : promo ? (
+						<Fragment>
+							<span class='promo-only'>
+								<span class='from'>
+									{t.templates.price.was} <s>{formatBRL(full)}</s> {t.templates.price.now}
+								</span>
+								<strong>{formatBRL(promoPrice(full))}</strong>
+								<span class='sale'>{promoTag}</span>
+							</span>
+							<span class='promo-off-only'>
+								<span class='from'>{t.common.from}</span>
+								<strong>{formatBRL(full)}</strong>
+							</span>
+						</Fragment>
+					) : (
+						<Fragment>
+							<span class='from'>{t.common.from}</span>
+							<strong>{formatBRL(full)}</strong>
+						</Fragment>
+					)}
 				</p>
 				<div class='actions'>
 					<a href={wantHref} class='btn btn-primary shine'>{t.templates.detail.want}</a>
@@ -370,8 +394,9 @@ const relatedCols = others.length % 2 === 0 ? 2 : 3;
 	.price {
 		margin-top: 28px;
 		display: flex;
+		flex-wrap: wrap;
 		align-items: baseline;
-		gap: 10px;
+		gap: 8px 10px;
 	}
 	.price .from {
 		font-family: var(--mono);
@@ -385,6 +410,15 @@ const relatedCols = others.length % 2 === 0 ? 2 : 3;
 		font-size: 28px;
 		font-weight: 800;
 		letter-spacing: -0.03em;
+	}
+	.price .sale {
+		align-self: center;
+		padding: 4px 10px;
+		border-radius: 999px;
+		background: var(--ink);
+		color: var(--bg);
+		font-size: 12px;
+		font-weight: 700;
 	}
 	.detail-hero .actions {
 		display: flex;

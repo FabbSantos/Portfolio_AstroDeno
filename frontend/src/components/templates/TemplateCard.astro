@@ -20,7 +20,7 @@ import type { ImageMetadata } from 'astro';
 import { Image } from 'astro:assets';
 import { scoresFor } from '../../data/lighthouse';
 import { SITE } from '../../data/site';
-import { demoPath, formatBRL, fullName, joinList, type TemplateMeta } from '../../data/templates';
+import { demoPath, formatBRL, fullName, joinList, promoOn, promoPrice, promoUntilLabel, type TemplateMeta } from '../../data/templates';
 import { fmt, localePath, pick, useT, type Locale } from '../../i18n';
 import { hueVars } from './hues';
 import ScoreGauge from './ScoreGauge.astro';
@@ -35,6 +35,10 @@ interface Props {
 }
 const { tpl, locale, heading = 'h3', wide = false, class: cls } = Astro.props;
 const t = useT(locale);
+// Price: full, promo (with the full one ready for when it ends, see Layout) or "sob consulta".
+const full = tpl.priceFrom;
+const promo = full !== undefined && promoOn();
+const promoTag = fmt(t.templates.price.until, { date: promoUntilLabel(locale) });
 const scores = scoresFor(tpl.slug);
 const short = t.templates.card.scoreShort;
 const strip = scores
@@ -122,8 +126,17 @@ const style = `${hueVars(tpl.kind)};--frame-pct:${framePct};--pan-dur:${panDur}`
 					{pick(tpl.cat, locale)}
 				</span>
 				{tpl.isNew && <span class='new'>{t.templates.card.isNew}</span>}
+				{
+					promo && (
+						<span class='promo-only'>
+							<span class='new sale'>{promoTag}</span>
+						</span>
+					)
+				}
 			</span>
-			<span class='days'>{tpl.days} {t.common.businessDays}</span>
+			<span class='days'>
+				{pick(SITE.promises.templateDays, locale)} {t.common.businessDays}
+			</span>
 		</p>
 		{
 			heading === 'h2' ? (
@@ -163,8 +176,30 @@ const style = `${hueVars(tpl.kind)};--frame-pct:${framePct};--pan-dur:${panDur}`
 		}
 		<p class='foot'>
 			<span class='price'>
-				<span class='from'>{t.common.from}</span>
-				{formatBRL(tpl.priceFrom)}
+				{full === undefined ? (
+					t.templates.price.onRequest
+				) : promo ? (
+					<Fragment>
+						<span class='promo-only'>
+							<span class='from'>
+								<s>
+									{t.templates.price.was} {formatBRL(full)}
+								</s>{' '}
+								{t.templates.price.now}
+							</span>
+							{formatBRL(promoPrice(full))}
+						</span>
+						<span class='promo-off-only'>
+							<span class='from'>{t.common.from}</span>
+							{formatBRL(full)}
+						</span>
+					</Fragment>
+				) : (
+					<Fragment>
+						<span class='from'>{t.common.from}</span>
+						{formatBRL(full)}
+					</Fragment>
+				)}
 			</span>
 			<span class='pick'>{t.templates.card.open}</span>
 		</p>
@@ -463,6 +498,12 @@ const style = `${hueVars(tpl.kind)};--frame-pct:${framePct};--pan-dur:${panDur}`
 		background: var(--accent-text);
 		padding: 4px 9px;
 		border-radius: 999px;
+	}
+	/* Promo chip: same pill as "Novo", in plain case. */
+	.new.sale {
+		text-transform: none;
+		letter-spacing: 0.01em;
+		background: var(--ink);
 	}
 	/* Category chip in the template's own hue */
 	.top .cat {

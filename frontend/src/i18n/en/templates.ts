@@ -4,11 +4,20 @@ import type { templates as ptShape } from '../pt/templates';
 export const templates: Shape<typeof ptShape> = {
 	numberWords: ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'],
 
+	price: {
+		onRequest: 'On request',
+		was: 'was',
+		now: 'now',
+		until: 'on sale until {date}',
+		bandPromo: 'On sale: from {price} until {date}.',
+		bandFull: 'From {price}.',
+	},
+
 	band: {
 		eyebrow: 'Templates · sites live in days',
 		head: 'Need something',
 		headAccent: 'live this week?',
-		lead: '{N} templates I wrote myself. You pick one, I swap in your brand, colours and copy and publish it on your domain in {days} business days. From {min} to {max}.',
+		lead: '{N} templates I wrote myself. You pick one, I swap in your brand, colours and copy and publish it on your domain in {days} business days.',
 		viewAll: 'See all templates',
 		scoreLine: 'Lowest Lighthouse mobile score: {min}, measured on each demo',
 		listLabel: 'Available templates',
@@ -26,7 +35,7 @@ export const templates: Shape<typeof ptShape> = {
 
 	card: {
 		open: 'View template',
-		includes: 'Includes domain, SSL, SEO and {months} months of adjustments',
+		includes: 'Includes domain setup, SSL, SEO and {months} months of adjustments',
 		previewAlt: '{name} template preview',
 		hoverHint: 'hover to scroll',
 		demo: 'View demo',

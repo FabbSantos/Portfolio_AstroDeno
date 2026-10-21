@@ -14,7 +14,7 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 import UmamiLoader from '../components/site/UmamiLoader.astro';
 import WhatsAppFab from '../components/site/WhatsAppFab.astro';
 import { SITE } from '../data/site';
-import { fullName, templates } from '../data/templates';
+import { TEMPLATE_PROMO, fullName, promoOn, promoPrice, templates } from '../data/templates';
 import { LOCALES, LANG_TAG, OG_LOCALE, localeOf, localePath, stripLocale, useT } from '../i18n';
 
 interface Props {
@@ -47,14 +47,20 @@ const jsonLd = {
 	address: { '@type': 'PostalAddress', addressLocality: 'Rio de Janeiro', addressRegion: 'RJ', addressCountry: 'BR' },
 	sameAs: [SITE.social.github, SITE.social.linkedin, SITE.social.instagram],
 	knowsAbout: ['TypeScript', 'JavaScript', 'React', 'Vue', 'Next.js', 'Nuxt', 'Astro', 'Node.js', 'C#', 'AWS', 'LLM integration'],
-	makesOffer: templates.map((tpl) => ({
-		'@type': 'Offer',
-		name: fullName(tpl),
-		url: new URL(localePath(locale, `/templates/${tpl.slug}`), site).href,
-		priceCurrency: 'BRL',
-		price: tpl.priceFrom,
-		priceSpecification: { '@type': 'PriceSpecification', minPrice: tpl.priceFrom, priceCurrency: 'BRL' },
-	})),
+	// Premium templates are "sob consulta": offered, with no price.
+	makesOffer: templates.map((tpl) => {
+		const offer = { '@type': 'Offer', name: fullName(tpl), url: new URL(localePath(locale, `/templates/${tpl.slug}`), site).href };
+		if (tpl.priceFrom === undefined) return offer;
+		const promo = promoOn();
+		const price = promo ? promoPrice(tpl.priceFrom) : tpl.priceFrom;
+		return {
+			...offer,
+			priceCurrency: 'BRL',
+			price,
+			...(promo ? { priceValidUntil: TEMPLATE_PROMO.until } : {}),
+			priceSpecification: { '@type': 'PriceSpecification', minPrice: price, priceCurrency: 'BRL' },
+		};
+	}),
 };
 ---
 
@@ -63,6 +69,15 @@ const jsonLd = {
 	<head>
 		<meta charset='UTF-8' />
 		<meta name='viewport' content='width=device-width,initial-scale=1' />
+		<!-- Template promo: the page is built ahead of time, so after its last day (São Paulo)
+		     the browser swaps the promo prices for the full ones (.promo-only / .promo-off-only). -->
+		<script is:inline define:vars={{ promoUntil: TEMPLATE_PROMO.until }}>
+			try {
+				if (new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date()) > promoUntil) document.documentElement.classList.add('promo-over');
+			} catch {
+				/* old browser: keep what was built */
+			}
+		</script>
 
 		<title>{title}</title>
 		<meta name='description' content={description} />

@@ -21,7 +21,7 @@ export const meta: Shape<typeof ptShape> = {
 	templates: {
 		title: 'Templates live in 3 to 5 days · Fabrício Bahiense',
 		description:
-			'Five site structures I wrote myself: booking, lead capture, product with plans, portfolio and storefront. They fit a clinic, a salon, a shop, an office or whatever your business is. You pick one, I customize and publish it on your domain.',
+			'Six site structures I wrote myself: booking, menu, lead capture, product with plans, portfolio and storefront. They fit a clinic, a salon, a shop, an office or whatever your business is. You pick one, I customize and publish it on your domain.',
 	},
 	templateDetail: {
 		title: '{name} · template · Fabrício Bahiense',

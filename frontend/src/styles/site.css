@@ -382,3 +382,17 @@
 		display: none;
 	}
 }
+
+/* Template promo (data/templates.ts TEMPLATE_PROMO). Both versions of a price are
+   in the page; the promo shows until its last day, then Layout adds .promo-over and
+   the full price takes its place. The wrappers lay out as if they were not there. */
+.promo-only {
+	display: contents;
+}
+.promo-off-only,
+.promo-over .promo-only {
+	display: none;
+}
+.promo-over .promo-off-only {
+	display: contents;
+}
