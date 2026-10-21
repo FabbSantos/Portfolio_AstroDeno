@@ -10,11 +10,25 @@ export const templates = {
 	/** Number words, index = number. Used so counts read as prose ("quatro templates"). */
 	numberWords: ['zero', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove', 'dez'],
 
+	/** Prices: cards, template pages, comparison and the home band. */
+	price: {
+		/** Premium templates have no public price. */
+		onRequest: 'Sob consulta',
+		/** Promo: "de R$ 1.000" struck through, then "por R$ 500". */
+		was: 'de',
+		now: 'por',
+		/** {date} = last day, "31/12". */
+		until: 'promoção até {date}',
+		/** Home band, after the lead. */
+		bandPromo: 'Em promoção: a partir de {price} até {date}.',
+		bandFull: 'A partir de {price}.',
+	},
+
 	band: {
 		eyebrow: 'Templates · sites prontos em dias',
 		head: 'Precisa de algo',
 		headAccent: 'no ar essa semana?',
-		lead: '{N} templates que eu mesmo escrevi. Você escolhe, eu troco marca, cores e copy e publico no seu domínio em {days} dias úteis. De {min} a {max}.',
+		lead: '{N} templates que eu mesmo escrevi. Você escolhe, eu troco marca, cores e copy e publico no seu domínio em {days} dias úteis.',
 		viewAll: 'Ver todos os templates',
 		/** Shown only when every template is measured and the lowest mobile score is 90+. {min} = that score. */
 		scoreLine: 'Nota mínima de {min} no Lighthouse no celular, medida em cada demo',
@@ -33,7 +47,7 @@ export const templates = {
 
 	card: {
 		open: 'Ver template',
-		includes: 'Inclui domínio, SSL, SEO e {months} meses de ajustes',
+		includes: 'Inclui configuração do domínio, SSL, SEO e {months} meses de ajustes',
 		previewAlt: 'Prévia do template {name}',
 		/** Mono label over the preview; fades out when the page starts panning. */
 		hoverHint: 'passe o mouse pra rolar',

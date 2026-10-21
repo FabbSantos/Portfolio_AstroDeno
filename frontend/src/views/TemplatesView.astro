@@ -12,7 +12,7 @@ import TemplateCard from '../components/templates/TemplateCard.astro';
 import Testimonials from '../components/home/Testimonials.astro';
 import { hueVars } from '../components/templates/hues';
 import { SITE, whatsappUrl } from '../data/site';
-import { formatBRL, fullName, joinList, templates } from '../data/templates';
+import { formatBRL, fullName, joinList, promoOn, promoPrice, templates } from '../data/templates';
 import { fmt, localeOf, localePath, pick, useT } from '../i18n';
 
 const locale = localeOf(Astro);
@@ -51,8 +51,10 @@ const plans = templates.map((tpl) => ({
 	href: localePath(locale, `/templates/${tpl.slug}`),
 	style: hueVars(tpl.kind),
 	who: joinList(pick(tpl.fits, locale), locale),
-	standard: tpl.priceFrom,
-	express: expressPrice(tpl.priceFrom),
+	/** Full price; undefined = premium, "sob consulta". */
+	full: tpl.priceFrom,
+	/** Promo price while TEMPLATE_PROMO lasts. */
+	promo: tpl.priceFrom !== undefined && promoOn() ? promoPrice(tpl.priceFrom) : undefined,
 	selected: tpl.slug === selected.slug,
 }));
 
@@ -149,14 +151,41 @@ const wa = whatsappUrl(locale, t.templates.cta.whatsappGallery);
 								</span>
 								<span class='plan-who'>{p.who}</span>
 								<span class='plan-price'>
-									<span class='from'>{t.common.from}</span>
-									<span class='amount' data-price data-standard={p.standard} data-express={p.express}>
-										{formatBRL(p.standard)}
-									</span>
+									{p.full === undefined ? (
+										<span class='amount ask'>{t.templates.price.onRequest}</span>
+									) : p.promo !== undefined ? (
+										<Fragment>
+											<span class='promo-only'>
+												<span class='from'>
+													{t.templates.price.was}{' '}
+													<s data-price data-standard={p.full} data-express={expressPrice(p.full)}>
+														{formatBRL(p.full)}
+													</s>{' '}
+													{t.templates.price.now}
+												</span>
+												<span class='amount' data-price data-standard={p.promo} data-express={expressPrice(p.promo)}>
+													{formatBRL(p.promo)}
+												</span>
+											</span>
+											<span class='promo-off-only'>
+												<span class='from'>{t.common.from}</span>
+												<span class='amount' data-price data-standard={p.full} data-express={expressPrice(p.full)}>
+													{formatBRL(p.full)}
+												</span>
+											</span>
+										</Fragment>
+									) : (
+										<Fragment>
+											<span class='from'>{t.common.from}</span>
+											<span class='amount' data-price data-standard={p.full} data-express={expressPrice(p.full)}>
+												{formatBRL(p.full)}
+											</span>
+										</Fragment>
+									)}
 								</span>
 								<span class='plan-chip'>
 									<span class='std'>
-										{p.tpl.days} {t.common.businessDays}
+										{daysRange} {t.common.businessDays}
 									</span>
 									{hasExpress && <span class='exp'>{fmt(cmp.deliveryExpress, { hours: expressHours })}</span>}
 								</span>
@@ -575,6 +604,9 @@ const wa = whatsappUrl(locale, t.templates.cta.whatsappGallery);
 		letter-spacing: 0.1em;
 		text-transform: uppercase;
 		color: var(--ink-3);
+	}
+	.plan-price .amount.ask {
+		font-size: 21px;
 	}
 	.plan-price .amount {
 		display: inline-block;

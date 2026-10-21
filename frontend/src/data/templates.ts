@@ -36,10 +36,12 @@ export interface TemplateMeta {
 	examples: readonly [TemplateExample, ...TemplateExample[]];
 	/** Sections a buyer gets — sales page bullets. */
 	sections: Bi<readonly string[]>;
-	/** Price in BRL, rendered as "a partir de R$ 6.500". */
-	priceFrom: number;
-	/** Business days to deliver a customized copy. */
-	days: number;
+	/**
+	 * Full price in BRL ("a partir de R$ 1.000"), shown with TEMPLATE_PROMO while
+	 * it lasts. Absent = premium, shown as "sob consulta". Delivery time is the
+	 * same for every template: SITE.promises.templateDays.
+	 */
+	priceFrom?: number;
 	/** Locale the demo is written in (demos are single-locale by design). */
 	demoLocale: 'pt' | 'en';
 	/** Gradient for placeholder tiles. */
@@ -73,8 +75,6 @@ export const templates: TemplateMeta[] = [
 			pt: ['Faixa de avisos', 'Hero + contagem regressiva', 'Vitrine (6 produtos)', 'Lookbook', 'História', 'Newsletter', 'Rodapé'],
 			en: ['Announcement ticker', 'Hero + countdown', 'Storefront (6 products)', 'Lookbook', 'Story', 'Newsletter', 'Footer'],
 		},
-		priceFrom: 4800,
-		days: 3,
 		demoLocale: 'en',
 		grad: 'linear-gradient(135deg,#DCFCE7,#B8F5CB)',
 	},
@@ -104,7 +104,6 @@ export const templates: TemplateMeta[] = [
 			en: ['Hero with a featured plate and live hours', 'Priced menu with marks', 'Signature dishes in panels', 'The crew', 'WhatsApp reservation and delivery links', 'Location and hours', 'Footer with company details'],
 		},
 		priceFrom: 1000,
-		days: 3,
 		demoLocale: 'pt',
 		grad: 'linear-gradient(135deg,#FFF1C2,#F2B705)',
 		isNew: true,
@@ -135,7 +134,6 @@ export const templates: TemplateMeta[] = [
 			en: ['Editorial hero with live hours', 'Services with hover photos', 'WhatsApp booking', 'Team', 'Insurance or payment options', 'The space', 'FAQ', 'Directions and hours', 'Footer with company details'],
 		},
 		priceFrom: 1000,
-		days: 3,
 		demoLocale: 'pt',
 		grad: 'linear-gradient(135deg,#E4EDE6,#BCD4C3)',
 		isNew: true,
@@ -163,8 +161,6 @@ export const templates: TemplateMeta[] = [
 			pt: ['Hero com formulário', 'Faixa de números', 'O produto e os diferenciais', 'Opções (plantas, turmas, pacotes)', 'Localização', 'Condições', 'Formulário completo', 'Rodapé com dados legais'],
 			en: ['Hero with lead form', 'Numbers band', 'The offer and its highlights', 'Options (floor plans, cohorts, packages)', 'Location', 'Terms', 'Full lead form', 'Legal footer'],
 		},
-		priceFrom: 6500,
-		days: 3,
 		demoLocale: 'pt',
 		grad: 'linear-gradient(135deg,#F0E6D2,#D9B98E)',
 	},
@@ -191,8 +187,6 @@ export const templates: TemplateMeta[] = [
 			pt: ['Hero + CTA principal', 'Tela do produto em moldura', 'Logos de clientes', 'Recursos em grade', 'Planos em tabela comparativa', 'Perguntas frequentes', 'CTA final', 'Rodapé'],
 			en: ['Hero + main CTA', 'Product shot in a frame', 'Client logos', 'Feature grid', 'Plans as a comparison table', 'FAQ', 'Final CTA', 'Footer'],
 		},
-		priceFrom: 4200,
-		days: 3,
 		demoLocale: 'en',
 		grad: 'linear-gradient(135deg,#FFE8DE,#FFD4C2)',
 	},
@@ -219,8 +213,7 @@ export const templates: TemplateMeta[] = [
 			pt: ['Hero editorial', 'Grid de 6 trabalhos', 'Processo em 4 passos', 'Sobre + números', 'Contato', 'Rodapé'],
 			en: ['Editorial hero', '6-project grid', '4-step process', 'About + stats', 'Contact', 'Footer'],
 		},
-		priceFrom: 3500,
-		days: 2,
+		priceFrom: 1000,
 		demoLocale: 'en',
 		grad: 'linear-gradient(135deg,#E8E4FE,#D4CFFA)',
 	},
@@ -237,6 +230,29 @@ export const examplePath = (tpl: TemplateMeta, key: string) => (key === tpl.exam
 /** "a, b e c" / "a, b and c". */
 export const joinList = (items: readonly string[], locale: 'pt' | 'en') =>
 	new Intl.ListFormat(locale === 'pt' ? 'pt-BR' : 'en-US', { style: 'long', type: 'conjunction' }).format(items);
+
+/**
+ * Launch promo on the simple templates (the ones with a price): `off` of the
+ * full price until `until` (inclusive, São Paulo time). Pages are built
+ * ahead of time, so the layout also hides it in the browser once the date
+ * passes (html.promo-over, see Layout).
+ */
+export const TEMPLATE_PROMO = { off: 0.5, until: '2026-12-31' } as const;
+
+/** Today in São Paulo as YYYY-MM-DD. */
+export const todaySP = (now = new Date()) => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(now);
+
+/** Whether the promo shows on a page built now. */
+export const promoOn = (today = todaySP()) => today <= TEMPLATE_PROMO.until;
+
+/** Last day of the promo for display: "31/12" / "Dec 31". */
+export const promoUntilLabel = (locale: 'pt' | 'en') =>
+	new Intl.DateTimeFormat(locale === 'pt' ? 'pt-BR' : 'en-US', locale === 'pt' ? { day: '2-digit', month: '2-digit', timeZone: 'UTC' } : { month: 'short', day: 'numeric', timeZone: 'UTC' }).format(
+		new Date(`${TEMPLATE_PROMO.until}T12:00:00Z`),
+	);
+
+/** Promo price, rounded to R$ 100 like every other price on the site. */
+export const promoPrice = (full: number) => Math.round((full * (1 - TEMPLATE_PROMO.off)) / 100) * 100;
 
 export function formatBRL(n: number): string {
 	return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(n);

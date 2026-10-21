@@ -67,7 +67,7 @@ export const contact: Shape<typeof ptShape> = {
 			},
 			{
 				q: 'How does payment work?',
-				a: 'Part on acceptance, part on delivery. Bank transfer or invoice, always with a receipt.',
+				a: 'Part on acceptance, part on delivery. Pix or bank slip (boleto), always with an official invoice (nota fiscal).',
 			},
 			{
 				q: 'Who does the work?',

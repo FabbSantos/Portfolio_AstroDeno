@@ -8,7 +8,7 @@
  */
 import { scoresFor } from '../../data/lighthouse';
 import { SITE } from '../../data/site';
-import { formatBRL, templates } from '../../data/templates';
+import { formatBRL, promoOn, promoPrice, promoUntilLabel, templates } from '../../data/templates';
 import { fmt, localeOf, localePath, pick, useT } from '../../i18n';
 import TemplateCard from '../templates/TemplateCard.astro';
 
@@ -18,14 +18,16 @@ const t = useT(locale);
 const n = templates.length;
 const nWord = t.templates.numberWords[n] ?? String(n);
 const NWord = nWord.charAt(0).toUpperCase() + nWord.slice(1);
-const prices = templates.map((tpl) => tpl.priceFrom);
 const lead = fmt(t.templates.band.lead, {
 	N: NWord,
 	n: nWord,
 	days: pick(SITE.promises.templateDays, locale),
-	min: formatBRL(Math.min(...prices)),
-	max: formatBRL(Math.max(...prices)),
 });
+// Lowest public price, with the promo while it lasts (premium templates have none).
+const prices = templates.flatMap((tpl) => (tpl.priceFrom === undefined ? [] : [tpl.priceFrom]));
+const minFull = prices.length ? Math.min(...prices) : 0;
+const priceFull = minFull ? fmt(t.templates.price.bandFull, { price: formatBRL(minFull) }) : '';
+const pricePromo = minFull && promoOn() ? fmt(t.templates.price.bandPromo, { price: formatBRL(promoPrice(minFull)), date: promoUntilLabel(locale) }) : '';
 
 // Proof line: only when every template has a measured score and the lowest is green.
 const mobileScores = templates.map((tpl) => scoresFor(tpl.slug)?.mobile);
@@ -40,7 +42,20 @@ const scoreLine = minScore >= 90 ? fmt(t.templates.band.scoreLine, { min: minSco
 			<h2 id='templates-title'>
 				{t.templates.band.head} <span class='hl'>{t.templates.band.headAccent}</span>
 			</h2>
-			<p>{lead}</p>
+			<p>
+				{lead}
+				{
+					pricePromo ? (
+						<Fragment>
+							{' '}
+							<span class='promo-only'>{pricePromo}</span>
+							<span class='promo-off-only'>{priceFull}</span>
+						</Fragment>
+					) : (
+						priceFull && ` ${priceFull}`
+					)
+				}
+			</p>
 			{
 				scoreLine && (
 					<p class='lh-proof'>

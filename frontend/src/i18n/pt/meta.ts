@@ -19,7 +19,7 @@ export const meta = {
 	templates: {
 		title: 'Templates prontos em 3 a 5 dias · Fabrício Bahiense',
 		description:
-			'Cinco estruturas de site que eu mesmo escrevi: agendamento, captação, produto com planos, portfólio e vitrine. Serve pra clínica, salão, loja, escritório e o que mais o seu negócio for. Você escolhe, eu personalizo e publico no seu domínio.',
+			'Seis estruturas de site que eu mesmo escrevi: agendamento, cardápio, captação, produto com planos, portfólio e vitrine. Serve pra clínica, salão, loja, escritório e o que mais o seu negócio for. Você escolhe, eu personalizo e publico no seu domínio.',
 	},
 	templateDetail: {
 		title: '{name} · template · Fabrício Bahiense',
