@@ -1,13 +1,13 @@
 ---
 /**
- * #servicos — five compact service cards in one row + a preview panel that
+ * #servicos — six compact service cards (two rows of three) + a preview panel that
  * shows the template/product solving the hovered (or tapped / focused) service.
  *
  * - Card copy comes from src/data/services.ts (title, short, chips, hue, icon).
  * - The long `outcome` / `timeline` text only appears in the panel.
  * - Each "Pedir orçamento" link carries ?servico=<id> so the contact form can
  *   preselect the service.
- * - ≥ 1100px: 5 columns · 780–1100px: 3 columns · < 780px: snap scroller with
+ * - ≥ 780px: 3 columns · < 780px: snap scroller with
  *   prev/next buttons (data-scroll / data-for, wired by src/scripts/site.ts).
  * - All five previews are in the DOM (stacked); only the active one is visible,
  *   the others are aria-hidden + inert so the crossfade is instant.
@@ -26,6 +26,7 @@ import { fmt, localeOf, localePath, pick, useT } from '../../i18n';
 import shotPulsar from '../../assets/featured/pulsar_dash.png';
 import shotQuasar from '../../assets/featured/quasar_dash.png';
 import shotNexus from '../../assets/featured/nexus.png';
+import shotPublicar from '../../assets/featured/publicar.png';
 
 const locale = localeOf(Astro);
 const t = useT(locale);
@@ -56,12 +57,14 @@ const SHOTS: Record<PreviewImage, ImageMetadata | undefined> = {
 	pulsar: shotPulsar,
 	quasar: shotQuasar,
 	nexus: shotNexus,
+	publicar: shotPublicar,
 };
 
 /** Lucide-style 24px outlines (stroke 2, round caps) — inner markup only. */
 const ICONS: Record<ServiceIcon, string> = {
 	rocket:
 		'<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>',
+	'upload-cloud': '<path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/>',
 	layout:
 		'<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" x2="21" y1="9" y2="9"/><line x1="9" x2="9" y1="21" y2="9"/>',
 	server:
@@ -145,6 +148,8 @@ const ICONS: Record<ServiceIcon, string> = {
 				const slides = s.previews.map((p, j) => {
 					const label = pick(p.label, locale);
 					const isTemplate = p.href.startsWith('/templates/');
+					// The service's own page: no "Resolve com", link reads "Ver o serviço".
+					const isService = p.href.startsWith('/servicos/');
 					const shot = SHOTS[p.image];
 					const template = isTemplate ? getTemplate(p.image) : undefined;
 					return {
@@ -152,6 +157,7 @@ const ICONS: Record<ServiceIcon, string> = {
 						label,
 						href: p.href,
 						isTemplate,
+						isService,
 						shot,
 						alt: fmt(t.services.previewAlt, { label }),
 						// No screenshot yet → the live demo, scaled down and inert (templates only).
@@ -219,12 +225,14 @@ const ICONS: Record<ServiceIcon, string> = {
 									</div>
 
 									<div class='svc-side'>
-										<p class='svc-solves'>
-											<span class='dot' aria-hidden='true' />
-											<span>
-												{t.services.solvesWith} <b>{sl.label}</b>
-											</span>
-										</p>
+										{!sl.isService && (
+											<p class='svc-solves'>
+												<span class='dot' aria-hidden='true' />
+												<span>
+													{t.services.solvesWith} <b>{sl.label}</b>
+												</span>
+											</p>
+										)}
 										{sl.fits && (
 											<p class='svc-fits'>
 												<span>{t.templates.card.fits}</span> {sl.fits}
@@ -236,7 +244,7 @@ const ICONS: Record<ServiceIcon, string> = {
 											<span>{t.services.timeline}</span> · {pick(s.timeline, locale)}
 										</p>
 										<a class='btn-link svc-more' href={localePath(locale, sl.href)}>
-											{sl.isTemplate ? t.services.viewTemplate : t.services.viewProduct}
+											{sl.isService ? t.services.viewService : sl.isTemplate ? t.services.viewTemplate : t.services.viewProduct}
 										</a>
 									</div>
 								</div>
@@ -273,11 +281,11 @@ const ICONS: Record<ServiceIcon, string> = {
 </section>
 
 <style>
-	/* ---------- Row of cards (desktop: 5 columns) ---------- */
+	/* ---------- Cards (desktop: two rows of three) ---------- */
 	.svc-row {
 		list-style: none;
 		display: grid;
-		grid-template-columns: repeat(5, minmax(0, 1fr));
+		grid-template-columns: repeat(3, minmax(0, 1fr));
 		gap: 16px;
 	}
 	.svc-item {

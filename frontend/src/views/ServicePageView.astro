@@ -1,0 +1,453 @@
+---
+/**
+ * A service page (/servicos/<slug> and /en/servicos/<slug>) from
+ * data/servicePages.ts: who it is for and the price up top, the one point that
+ * sets it apart, what is included beside timing and payment, a testimonial
+ * (only when the data enables it), the FAQ and a WhatsApp close. Every
+ * WhatsApp button, the floating one included, carries the page's message.
+ *
+ * Same look as the template pages, minus what the owner rules out here:
+ * uppercase labels, accent words, numbered steps and scrolling text.
+ *
+ * JSON-LD from the same data: Service (provider = the Person in Layout,
+ * Brazil, the price) and FAQPage with the questions on the page.
+ */
+import Layout from '../layouts/Layout.astro';
+import TopBar from '../components/site/TopBar.astro';
+import SiteFooter from '../components/site/SiteFooter.astro';
+import { PERSON_ID, SITE, whatsappUrl, type Bi } from '../data/site';
+import { formatBRL } from '../data/templates';
+import type { ServicePage } from '../data/servicePages';
+import { localeOf, localePath, pick, useT } from '../i18n';
+
+interface Props {
+	page: ServicePage;
+}
+const { page } = Astro.props;
+const locale = localeOf(Astro);
+const t = useT(locale);
+const tr = <T,>(b: Bi<T>) => pick(b, locale);
+
+const name = tr(page.name);
+const url = new URL(localePath(locale, `/servicos/${page.slug}`), SITE.url).href;
+const message = tr(page.whatsappMessage);
+const wa = whatsappUrl(locale, message);
+const price = formatBRL(page.priceFrom);
+const faq = page.faq.items.map((i) => ({ q: tr(i.q), a: tr(i.a) }));
+
+const structuredData = [
+	{
+		'@context': 'https://schema.org',
+		'@type': 'Service',
+		name,
+		serviceType: name,
+		description: tr(page.seo.description),
+		url,
+		provider: { '@type': 'Person', '@id': PERSON_ID, name: SITE.name, url: SITE.url },
+		areaServed: { '@type': 'Country', name: 'Brasil' },
+		offers: {
+			'@type': 'Offer',
+			url,
+			priceCurrency: 'BRL',
+			price: page.priceFrom,
+			priceSpecification: { '@type': 'PriceSpecification', minPrice: page.priceFrom, priceCurrency: 'BRL' },
+		},
+	},
+	{
+		'@context': 'https://schema.org',
+		'@type': 'FAQPage',
+		mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+	},
+];
+---
+
+<Layout title={tr(page.seo.title)} description={tr(page.seo.description)} structuredData={structuredData} whatsappMessage={message}>
+	<TopBar active='services' />
+
+	<main id='main-content'>
+		<section class='svc-hero'>
+			<a href={localePath(locale, '/#servicos')} class='back'>← {t.nav.services}</a>
+			<h1>{name}</h1>
+			<p class='lead'>{tr(page.forWhom)}</p>
+			<p class='price'>
+				<span class='from'>{t.common.from}</span>
+				<strong>{price}</strong>
+				<span class='note'>{tr(page.priceNote)}</span>
+			</p>
+			<ul class='chips' role='list'>
+				{tr(page.chips).map((c) => <li>{c}</li>)}
+			</ul>
+			{
+				wa && (
+					<div class='actions'>
+						<a href={wa} class='btn btn-whatsapp' target='_blank' rel='noopener'>
+							{t.common.ctaWhatsapp}
+						</a>
+					</div>
+				)
+			}
+		</section>
+
+		<section class='highlight-wrap' aria-labelledby='highlight-title'>
+			<!-- No reveal here: on phones this block is in the first screen and is the LCP. -->
+			<div class='highlight'>
+				<h2 id='highlight-title'>{tr(page.highlight.title)}</h2>
+				<p>{tr(page.highlight.text)}</p>
+			</div>
+		</section>
+
+		<section class='section info' aria-label={`${tr(page.includes.title)} · ${tr(page.facts.title)}`}>
+			<div class='info-grid'>
+				<div class='col reveal'>
+					<h2>{tr(page.includes.title)}</h2>
+					<ul class='included' role='list'>
+						{tr(page.includes.items).map((s) => <li>{s}</li>)}
+					</ul>
+				</div>
+				<div class='col reveal d1'>
+					<h2>{tr(page.facts.title)}</h2>
+					<dl class='facts'>
+						{
+							page.facts.items.map((f) => (
+								<div>
+									<dt>{tr(f.label)}</dt>
+									<dd>{tr(f.value)}</dd>
+								</div>
+							))
+						}
+					</dl>
+				</div>
+			</div>
+		</section>
+
+		{
+			page.testimonial.enabled && (
+				<section class='quote-wrap'>
+					<figure class='quote reveal'>
+						<blockquote>
+							<p>“{tr(page.testimonial.quote)}”</p>
+						</blockquote>
+						<figcaption>{page.testimonial.author}</figcaption>
+					</figure>
+				</section>
+			)
+		}
+
+		<section class='section faq' aria-labelledby='faq-title'>
+			<h2 id='faq-title'>{tr(page.faq.title)}</h2>
+			<div class='faq-list'>
+				{
+					faq.map((f) => (
+						<details class='faq-item'>
+							<summary>{f.q}</summary>
+							<p>{f.a}</p>
+						</details>
+					))
+				}
+			</div>
+		</section>
+
+		<!-- id contato: the floating WhatsApp button hides while this block, which has its own, is on screen. -->
+		<section class='cta-band' id='contato' aria-labelledby='cta-title'>
+			<h2 id='cta-title'>{tr(page.cta.title)}</h2>
+			<p class='sub'>{tr(page.cta.text)}</p>
+			{
+				wa && (
+					<div class='actions'>
+						<a href={wa} class='btn btn-whatsapp' target='_blank' rel='noopener'>
+							{t.common.ctaWhatsapp}
+						</a>
+					</div>
+				)
+			}
+		</section>
+	</main>
+
+	<SiteFooter />
+</Layout>
+
+<style>
+	/* Hero */
+	.svc-hero {
+		max-width: var(--maxw);
+		margin: 0 auto;
+		padding: 48px 32px 56px;
+	}
+	.back {
+		display: inline-flex;
+		align-items: center;
+		min-height: 44px;
+		font-family: var(--mono);
+		font-size: 13px;
+		color: var(--ink-3);
+		transition: color 0.2s;
+	}
+	.back:hover {
+		color: var(--ink);
+	}
+	h1 {
+		margin-top: 20px;
+		font-size: var(--fs-h1);
+		font-weight: 800;
+		letter-spacing: -0.04em;
+		line-height: 0.98;
+		max-width: 16ch;
+		text-wrap: balance;
+	}
+	.lead {
+		margin-top: 24px;
+		max-width: 60ch;
+		font-size: var(--fs-lead);
+		line-height: 1.5;
+		color: var(--ink-2);
+	}
+	.price {
+		margin-top: 28px;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 6px 10px;
+	}
+	.price .from,
+	.price .note {
+		font-size: 15px;
+		color: var(--ink-3);
+	}
+	.price strong {
+		font-size: 32px;
+		font-weight: 800;
+		letter-spacing: -0.03em;
+	}
+	.chips {
+		list-style: none;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-top: 18px;
+	}
+	.chips li {
+		padding: 5px 12px;
+		border: 1px solid var(--rule-2);
+		border-radius: 999px;
+		background: var(--bg-3);
+		font-size: 14px;
+		color: var(--ink-2);
+	}
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+		margin-top: 28px;
+	}
+
+	/* The point that sets the service apart */
+	.highlight-wrap {
+		max-width: var(--maxw);
+		margin: 0 auto;
+		padding: 0 32px;
+	}
+	.highlight {
+		padding: clamp(28px, 4vw, 48px);
+		border-radius: 24px;
+		background: var(--ink);
+		color: var(--bg);
+	}
+	.highlight h2 {
+		font-size: var(--fs-h2);
+		font-weight: 800;
+		letter-spacing: -0.035em;
+		line-height: 1.02;
+		text-wrap: balance;
+	}
+	.highlight p {
+		margin-top: 16px;
+		max-width: 56ch;
+		font-size: 18px;
+		line-height: 1.55;
+		color: color-mix(in srgb, var(--bg) 82%, var(--ink));
+	}
+
+	/* What is included · timing and payment */
+	.info {
+		padding-top: 88px;
+		padding-bottom: 24px;
+	}
+	.info-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 48px;
+	}
+	.col h2,
+	.faq h2 {
+		font-size: 24px;
+		font-weight: 800;
+		letter-spacing: -0.03em;
+		line-height: 1.1;
+		margin-bottom: 24px;
+	}
+	.included {
+		list-style: none;
+	}
+	.included li {
+		position: relative;
+		padding: 12px 0 12px 32px;
+		border-top: 1px solid var(--rule);
+		font-size: 16px;
+		color: var(--ink-2);
+		line-height: 1.5;
+	}
+	.included li::before {
+		content: '✓';
+		position: absolute;
+		left: 0;
+		top: 12px;
+		width: 22px;
+		height: 22px;
+		border-radius: 50%;
+		display: grid;
+		place-items: center;
+		background: var(--accent-soft);
+		color: var(--accent-text);
+		font-family: var(--mono);
+		font-size: 12px;
+		font-weight: 700;
+	}
+	.facts div {
+		display: grid;
+		grid-template-columns: 120px minmax(0, 1fr);
+		gap: 12px;
+		padding: 12px 0;
+		border-top: 1px solid var(--rule);
+	}
+	.facts dt {
+		font-weight: 700;
+		font-size: 15px;
+	}
+	.facts dd {
+		font-size: 16px;
+		line-height: 1.5;
+		color: var(--ink-2);
+	}
+
+	/* Testimonial */
+	.quote-wrap {
+		max-width: var(--maxw);
+		margin: 0 auto;
+		padding: 72px 32px 0;
+	}
+	.quote {
+		max-width: 760px;
+		padding-left: 24px;
+		border-left: 3px solid var(--accent);
+	}
+	.quote blockquote p {
+		font-size: clamp(22px, 2.6vw, 30px);
+		font-weight: 600;
+		letter-spacing: -0.02em;
+		line-height: 1.3;
+		text-wrap: balance;
+	}
+	.quote figcaption {
+		margin-top: 14px;
+		font-size: 15px;
+		color: var(--ink-3);
+	}
+
+	/* FAQ */
+	.faq {
+		padding-top: 88px;
+		padding-bottom: 32px;
+	}
+	.faq-list {
+		max-width: 760px;
+	}
+	.faq-item {
+		border-top: 1px solid var(--rule);
+	}
+	.faq-item:last-child {
+		border-bottom: 1px solid var(--rule);
+	}
+	.faq-item summary {
+		list-style: none;
+		cursor: pointer;
+		min-height: 52px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		padding: 12px 0;
+		font-weight: 600;
+		font-size: 17px;
+	}
+	.faq-item summary::-webkit-details-marker {
+		display: none;
+	}
+	.faq-item summary::after {
+		content: '+';
+		flex: none;
+		font-family: var(--mono);
+		font-size: 20px;
+		color: var(--ink-3);
+		transition: transform 0.25s var(--ease-out-expo);
+	}
+	.faq-item[open] summary::after {
+		transform: rotate(45deg);
+	}
+	.faq-item summary:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 2px;
+		border-radius: 4px;
+	}
+	.faq-item p {
+		margin: 0 0 18px;
+		max-width: 62ch;
+		font-size: 16px;
+		line-height: 1.55;
+		color: var(--ink-2);
+	}
+
+	/* Close */
+	.cta-band {
+		max-width: var(--maxw);
+		margin: 0 auto;
+		padding: 72px 32px 112px;
+	}
+	.cta-band h2 {
+		font-size: var(--fs-h2);
+		font-weight: 800;
+		letter-spacing: -0.035em;
+		line-height: 1.02;
+	}
+	.cta-band .sub {
+		margin-top: 16px;
+		max-width: 56ch;
+		font-size: 18px;
+		line-height: 1.55;
+		color: var(--ink-2);
+	}
+
+	@media (max-width: 780px) {
+		.svc-hero,
+		.highlight-wrap,
+		.quote-wrap,
+		.cta-band {
+			padding-left: 20px;
+			padding-right: 20px;
+		}
+		.info-grid {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		.facts div {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 4px;
+		}
+		.btn {
+			width: 100%;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.faq-item summary::after {
+			transition: none;
+		}
+	}
+</style>

@@ -60,6 +60,9 @@ export const SITE = {
 	},
 } as const;
 
+/** JSON-LD @id of the Person (Layout); service pages use it as their provider. */
+export const PERSON_ID = `${SITE.url}/#fabricio`;
+
 /** wa.me deep link, or null when no number is configured. */
 export function whatsappUrl(locale: 'pt' | 'en', text?: string): string | null {
 	// wa.me wants digits only (no '+', spaces or dashes) — tolerate any formatting in SITE.
