@@ -129,6 +129,16 @@ const sentHref = localePath(locale, '/orcamento-enviado');
 				<input type='hidden' name='locale' value={locale} />
 
 				{turnstileKey && <div class='cf-turnstile' data-sitekey={turnstileKey} data-language={locale === 'pt' ? 'pt-br' : 'en'} data-size='flexible' />}
+				{
+					/* "flexible" is at least 300px wide: on 320px phones the column is narrower, so
+					   switch to the compact widget before Cloudflare's script (loaded later) reads it. */
+					turnstileKey && (
+						<script
+							is:inline
+							set:html={`(function(){var w=document.currentScript.previousElementSibling;if(w&&w.clientWidth<300)w.setAttribute('data-size','compact');})();`}
+						/>
+					)
+				}
 
 				<div class='actions'>
 					<button type='submit' class='btn btn-primary' id='contact-submit'>{t.common.ctaContact}</button>
