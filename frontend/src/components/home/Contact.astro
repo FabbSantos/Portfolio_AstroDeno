@@ -36,8 +36,8 @@ const clientStrings = {
 	email: SITE.email,
 };
 const clientJson = JSON.stringify(clientStrings).replace(/</g, '\\u003c');
-/** "Recebi, {name}!" → text before/after the name slot (filled client-side). */
-const [successBefore = '', successAfter = ''] = c.success.title.split('{name}');
+/** After a successful submit the form sends people here (noindex page, outside the sitemap). */
+const sentHref = localePath(locale, '/orcamento-enviado');
 ---
 
 <section class='contact section' id='contato'>
@@ -52,7 +52,7 @@ const [successBefore = '', successAfter = ''] = c.success.title.split('{name}');
 
 	<div class='grid'>
 		<div class='form-col'>
-			<form class='form' id='contact-form' method='post' action='/api/contact' novalidate>
+			<form class='form' id='contact-form' method='post' action='/api/contact' novalidate data-sent-href={sentHref}>
 				<div class='row'>
 					<label class='field'>
 						<span class='eyebrow'>{c.form.name} <span class='req' aria-hidden='true'>*</span></span>
@@ -154,18 +154,6 @@ const [successBefore = '', successAfter = ''] = c.success.title.split('{name}');
 				</p>
 			</form>
 
-			<div class='sent' id='contact-sent' role='status' aria-live='polite' tabindex='-1' hidden>
-				<h3>{successBefore}<span data-name></span>{successAfter}</h3>
-				<p>{wa ? c.success.body : c.success.bodyNoWhatsapp}</p>
-				<div class='actions'>
-					{wa && (
-						<a class='btn btn-whatsapp' href={wa} target='_blank' rel='noopener'>
-							{t.common.ctaWhatsapp}
-						</a>
-					)}
-					<a class='btn btn-ghost' href={SITE.social.linkedin} target='_blank' rel='noopener'>{c.success.linkedin}</a>
-				</div>
-			</div>
 		</div>
 
 		<aside class='side'>
@@ -426,34 +414,6 @@ const [successBefore = '', successAfter = ''] = c.success.title.split('{name}');
 		text-decoration: underline;
 	}
 
-	/* Success card */
-	.sent {
-		border: 1px solid var(--rule-2);
-		background: var(--bg-3);
-		border-radius: 18px;
-		padding: 32px 28px;
-		text-align: left;
-	}
-	.sent[hidden] {
-		display: none;
-	}
-	.sent:focus {
-		outline: none;
-		box-shadow: 0 0 0 4px var(--accent-soft);
-	}
-	.sent h3 {
-		font-size: var(--fs-h3);
-		font-weight: 800;
-		letter-spacing: -0.03em;
-		line-height: 1.05;
-	}
-	.sent p {
-		margin: 14px 0 22px;
-		font-size: 17px;
-		color: var(--ink-2);
-		max-width: 46ch;
-	}
-
 	/* Aside */
 	.side {
 		display: flex;
@@ -612,9 +572,6 @@ const [successBefore = '', successAfter = ''] = c.success.title.split('{name}');
 		.head {
 			margin-bottom: 40px;
 		}
-		.sent {
-			padding: 24px 20px;
-		}
 	}
 </style>
 
@@ -635,12 +592,11 @@ const [successBefore = '', successAfter = ''] = c.success.title.split('{name}');
 	}
 
 	const form = document.getElementById('contact-form') as HTMLFormElement | null;
-	const sent = document.getElementById('contact-sent');
 	const status = document.getElementById('contact-status');
 	const submit = document.getElementById('contact-submit') as HTMLButtonElement | null;
 	const i18nEl = document.getElementById('contact-i18n');
 
-	if (form && sent && status && submit && i18nEl) {
+	if (form && status && submit && i18nEl) {
 		const strings = JSON.parse(i18nEl.textContent || '{}') as Strings;
 		const field = <T extends Element>(name: string) => form.elements.namedItem(name) as T | null;
 		const need = field<HTMLSelectElement>('need');
@@ -734,14 +690,6 @@ const [successBefore = '', successAfter = ''] = c.success.title.split('{name}');
 			window.turnstile?.reset();
 		};
 
-		const showSuccess = (name: string) => {
-			const nameEl = sent.querySelector<HTMLElement>('[data-name]');
-			if (nameEl) nameEl.textContent = name.split(/\s+/)[0] ?? name;
-			form.hidden = true;
-			sent.hidden = false;
-			sent.focus({ preventScroll: false });
-		};
-
 		/* ---- Submit ---------------------------------------------------------- */
 		form.addEventListener('submit', async (e) => {
 			e.preventDefault();
@@ -780,8 +728,9 @@ const [successBefore = '', successAfter = ''] = c.success.title.split('{name}');
 				});
 				const json = (await res.json().catch(() => ({}))) as { ok?: boolean; code?: string };
 				if (res.ok && json.ok) {
-					showSuccess(payload.name);
 					trackEvent('contact_submit', { need: payload.need, template: payload.template || null, locale: payload.locale });
+					// Confirmation page (also a clean "lead sent" page view in the analytics).
+					window.location.assign(form.dataset.sentHref || '/orcamento-enviado');
 				} else {
 					const code = json.code || (res.status === 429 ? 'RATE_LIMITED' : 'UNKNOWN');
 					showError(code, payload);

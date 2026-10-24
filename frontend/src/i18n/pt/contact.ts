@@ -39,11 +39,14 @@ export const contact = {
 	},
 	or: 'ou escreve direto em',
 
-	success: {
-		title: 'Recebi, {name}!',
-		body: 'Respondo em até 24h úteis. Se for urgente, WhatsApp.',
-		bodyNoWhatsapp: 'Respondo em até 24h úteis.',
-		linkedin: 'Me achar no LinkedIn',
+	/** /orcamento-enviado: where the form sends people after a successful submit (noindex). */
+	sentPage: {
+		title: 'Pedido recebido · Fabrício Bahiense',
+		description: 'Pedido de orçamento recebido.',
+		heading: 'Pedido recebido',
+		/** {time} = SITE.responseTime. */
+		body: 'Recebi seu pedido de orçamento e respondo em até {time}.',
+		home: 'Voltar pra home',
 	},
 
 	errors: {

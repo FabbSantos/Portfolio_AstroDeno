@@ -41,11 +41,12 @@ export const contact: Shape<typeof ptShape> = {
 	},
 	or: 'or write directly to',
 
-	success: {
-		title: 'Got it, {name}!',
-		body: "I reply within 24 business hours. If it's urgent, WhatsApp.",
-		bodyNoWhatsapp: 'I reply within 24 business hours.',
-		linkedin: 'Find me on LinkedIn',
+	sentPage: {
+		title: 'Request received · Fabrício Bahiense',
+		description: 'Quote request received.',
+		heading: 'Request received',
+		body: 'I got your quote request and will reply within {time}.',
+		home: 'Back to home',
 	},
 
 	errors: {

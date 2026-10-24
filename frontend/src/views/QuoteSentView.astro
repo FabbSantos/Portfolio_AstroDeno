@@ -1,0 +1,63 @@
+---
+/**
+ * /orcamento-enviado (and /en/orcamento-enviado): where the "Pedir orçamento"
+ * form sends people after a successful submit. Confirms the request and the
+ * reply time, with a WhatsApp button and a way back home. noindex, and kept
+ * out of the sitemap in astro.config. Its page view doubles as the "lead sent"
+ * goal in the analytics.
+ */
+import Layout from '../layouts/Layout.astro';
+import TopBar from '../components/site/TopBar.astro';
+import SiteFooter from '../components/site/SiteFooter.astro';
+import { SITE, whatsappUrl } from '../data/site';
+import { fmt, localeOf, localePath, pick, useT } from '../i18n';
+
+const locale = localeOf(Astro);
+const t = useT(locale);
+const s = t.contact.sentPage;
+const wa = whatsappUrl(locale);
+---
+
+<Layout title={s.title} description={s.description} noindex>
+	<TopBar />
+
+	<main id='main-content'>
+		<section class='page-hero sent'>
+			<h1>{s.heading}</h1>
+			<p class='lead'>{fmt(s.body, { time: pick(SITE.responseTime, locale) })}</p>
+			<div class='actions'>
+				{
+					wa && (
+						<a href={wa} class='btn btn-whatsapp' target='_blank' rel='noopener'>
+							{t.common.ctaWhatsapp}
+						</a>
+					)
+				}
+				<a href={localePath(locale, '/')} class='btn btn-ghost'>
+					{s.home}
+				</a>
+			</div>
+		</section>
+	</main>
+
+	<SiteFooter />
+</Layout>
+
+<style>
+	.sent {
+		padding-top: clamp(80px, 12vw, 140px);
+		padding-bottom: clamp(96px, 14vw, 160px);
+	}
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 12px;
+		margin-top: 32px;
+	}
+	@media (max-width: 540px) {
+		.actions .btn {
+			width: 100%;
+		}
+	}
+</style>
