@@ -11,6 +11,7 @@ import '@fontsource-variable/jetbrains-mono';
 import '../styles/base.css';
 import '../styles/site.css';
 import SpeedInsights from '@vercel/speed-insights/astro';
+import LangRedirect from '../components/site/LangRedirect.astro';
 import UmamiLoader from '../components/site/UmamiLoader.astro';
 import WhatsAppFab from '../components/site/WhatsAppFab.astro';
 import { PERSON_ID, SITE, whatsappUrl } from '../data/site';
@@ -52,8 +53,8 @@ const jsonLd = {
 	url: site.href,
 	email: `mailto:${SITE.email}`,
 	...(SITE.whatsapp.number ? { telephone: SITE.whatsapp.number } : {}),
-	...(waUrl ? { contactPoint: { '@type': 'ContactPoint', contactType: 'WhatsApp', url: waUrl, availableLanguage: ['pt-BR', 'en'], areaServed: 'BR' } } : {}),
-	jobTitle: locale === 'pt' ? 'Engenheiro de Software Sênior' : 'Senior Software Engineer',
+	...(waUrl ? { contactPoint: { '@type': 'ContactPoint', contactType: 'WhatsApp', url: waUrl, availableLanguage: ['pt-BR', 'en', 'es'], areaServed: 'BR' } } : {}),
+	jobTitle: pick({ pt: 'Engenheiro de Software Sênior', en: 'Senior Software Engineer', es: 'Ingeniero de software sénior' }, locale),
 	address: { '@type': 'PostalAddress', addressLocality: 'Rio de Janeiro', addressRegion: 'RJ', addressCountry: 'BR' },
 	sameAs: [
 		SITE.social.github,
@@ -97,6 +98,7 @@ const ldJson = (data: unknown) => JSON.stringify(data).replace(/</g, '\\u003c');
 	<head>
 		<meta charset='UTF-8' />
 		<meta name='viewport' content='width=device-width,initial-scale=1' />
+		{!noindex && <LangRedirect />}
 		<!-- Template promo: the page is built ahead of time, so after its last day (São Paulo)
 		     the browser swaps the promo prices for the full ones (.promo-only / .promo-off-only). -->
 		<script is:inline define:vars={{ promoUntil: TEMPLATE_PROMO.until }}>
@@ -113,7 +115,7 @@ const ldJson = (data: unknown) => JSON.stringify(data).replace(/</g, '\\u003c');
 		{noindex && <meta name='robots' content='noindex,follow' />}
 		<link rel='canonical' href={canonical} />
 		{alternates.map((a) => <link rel='alternate' hreflang={LANG_TAG[a.locale]} href={a.href} />)}
-		<link rel='alternate' hreflang='x-default' href={new URL(path, site).href} />
+		<link rel='alternate' hreflang='x-default' href={new URL(localePath('pt', path), site).href} />
 
 		<!-- Open Graph / LinkedIn / WhatsApp -->
 		<meta property='og:type' content={ogType} />

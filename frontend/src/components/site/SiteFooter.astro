@@ -4,22 +4,15 @@
  * navigation, contacts. Bottom row: copyright · stack · language switch.
  */
 import { SITE, whatsappUrl } from '../../data/site';
-import { LANG_TAG, altLocale, fmt, localeOf, localePath, stripLocale, switchPath, useT } from '../../i18n';
+import { LANG_TAG, LOCALE_NAME, PRIVACY_PATH, fmt, localeOf, localePath, otherLocales, switchPath, useT } from '../../i18n';
 
 const locale = localeOf(Astro);
 const t = useT(locale);
 const wa = whatsappUrl(locale);
 const year = new Date().getFullYear();
-const alt = altLocale(locale);
-
-const PRIVACY_PATH = { pt: '/privacidade', en: '/privacy' };
 const privacyHref = localePath(locale, PRIVACY_PATH[locale]);
-
-// The privacy page has a different slug per locale, so the generic
-// switchPath() would 404 there.
-const current = stripLocale(Astro.url.pathname);
-const isPrivacy = current === PRIVACY_PATH.pt || current === PRIVACY_PATH.en;
-const switchHref = isPrivacy ? localePath(alt, PRIVACY_PATH[alt]) : switchPath(locale, Astro.url.pathname);
+// localePath() maps the privacy page's per-language slug too.
+const others = otherLocales(locale).map((l) => ({ l, href: switchPath(l, Astro.url.pathname) }));
 
 const nav = [
 	{ href: localePath(locale, '/#servicos'), label: t.nav.services },
@@ -109,9 +102,15 @@ const nav = [
 		<div class='bottom'>
 			<span>{fmt(t.footer.copyright, { year })}</span>
 			<span>{t.footer.madeWith}</span>
-			<a class='lang' href={switchHref} hreflang={LANG_TAG[alt]} lang={LANG_TAG[alt]} rel='alternate'>
-				<span class='link-underline'>{t.common.switchTo}</span>
-			</a>
+			<span class='langs'>
+				{
+					others.map(({ l, href }) => (
+						<a class='lang' href={href} hreflang={LANG_TAG[l]} lang={LANG_TAG[l]} rel='alternate' data-lang-choice={l}>
+							<span class='link-underline'>{LOCALE_NAME[l]}</span>
+						</a>
+					))
+				}
+			</span>
 		</div>
 	</div>
 </footer>
@@ -202,6 +201,11 @@ const nav = [
 		align-items: center;
 		justify-content: space-between;
 		color: var(--ink-3);
+	}
+	.langs {
+		display: inline-flex;
+		flex-wrap: wrap;
+		gap: 0 18px;
 	}
 	.bottom .lang {
 		color: var(--ink-2);

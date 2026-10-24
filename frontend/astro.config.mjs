@@ -16,7 +16,7 @@ export default defineConfig({
 	// (see src/i18n/index.ts) — no client-side text swapping.
 	i18n: {
 		defaultLocale: 'pt',
-		locales: ['pt', 'en'],
+		locales: ['pt', 'en', 'es'],
 		routing: { prefixDefaultLocale: false },
 	},
 
@@ -28,7 +28,7 @@ export default defineConfig({
 
 	integrations: [
 		sitemap({
-			i18n: { defaultLocale: 'pt', locales: { pt: 'pt-BR', en: 'en' } },
+			i18n: { defaultLocale: 'pt', locales: { pt: 'pt-BR', en: 'en', es: 'es' } },
 			// Template demos (and their extra examples, /demo/<example>) are noindex and single-locale — keep them out of the sitemap.
 			// Client previews (/previas/<slug>) are noindex too: a real business that has not approved the page yet.
 			filter: (page) => !/\/templates\/[a-z0-9-]+\/demo(\/[a-z0-9-]+)?\/?$/.test(page) && !/\/previas\//.test(page) && !/\/orcamento-enviado\/?$/.test(page),

@@ -5,7 +5,7 @@ export const common: Shape<typeof ptShape> = {
 	skip: 'Skip to main content',
 	menu: 'Menu',
 	language: 'Language',
-	switchTo: 'Português',
+	switchTo: 'Change language',
 	ctaContact: 'Get a quote',
 	ctaContactShort: 'Get in touch',
 	ctaWhatsapp: 'Message me on WhatsApp',

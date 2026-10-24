@@ -63,8 +63,9 @@ export const WORKS: Work[] = [
 		desc: {
 			pt: 'Observabilidade pra Node: logs, métricas e alertas com um npm que encaixa em pino ou console.log. Versão C# em seguida.',
 			en: 'Observability for Node: logs, metrics and alerts from an npm that plugs into pino or console.log. C# version next.',
+			es: 'Observabilidad para Node: logs, métricas y alertas con un npm que se integra con pino o console.log. Próximamente, versión en C#.',
 		},
-		role: { pt: 'Produto próprio · design, backend e frontend', en: 'Own product · design, backend and frontend' },
+		role: { pt: 'Produto próprio · design, backend e frontend', en: 'Own product · design, backend and frontend', es: 'Producto propio · diseño, backend y frontend' },
 		tags: ['node', 'npm', 'typescript', 'observability'],
 		image: imgPulsar,
 		// TODO(fab): pacote C# (NuGet) quando sair
@@ -83,8 +84,13 @@ export const WORKS: Work[] = [
 		desc: {
 			pt: 'Plataforma de campanhas em massa por WhatsApp: automações por fluxo, agenda e integrações nativas com Calendar e CRMs.',
 			en: 'Mass WhatsApp campaign platform: flow-based automations, scheduling and native Calendar/CRM integrations.',
+			es: 'Plataforma de campañas masivas por WhatsApp: automatizaciones por flujo, agenda e integraciones nativas con Calendar y CRMs.',
 		},
-		role: { pt: 'Produto próprio · sistema completo, do banco à UI', en: 'Own product · full system, database to UI' },
+		role: {
+			pt: 'Produto próprio · sistema completo, do banco à UI',
+			en: 'Own product · full system, database to UI',
+			es: 'Producto propio · sistema completo, de la base de datos a la UI',
+		},
 		tags: ['whatsapp', 'next', 'node', 'typescript'],
 		image: imgQuasar,
 	},
@@ -101,8 +107,9 @@ export const WORKS: Work[] = [
 		desc: {
 			pt: 'Plataforma multicanal de comunicação (SMS, WhatsApp, RCS): painel do cliente, API, filas e infra AWS. Liderada ponta a ponta como Tech Lead.',
 			en: 'Multichannel communication platform (SMS, WhatsApp, RCS): customer dashboard, API, queues and AWS infra. Led end to end as Tech Lead.',
+			es: 'Plataforma multicanal de comunicación (SMS, WhatsApp, RCS): panel del cliente, API, colas e infra en AWS. Liderada de principio a fin como Tech Lead.',
 		},
-		role: { pt: 'Tech Lead · arquitetura, time e entrega', en: 'Tech Lead · architecture, team and delivery' },
+		role: { pt: 'Tech Lead · arquitetura, time e entrega', en: 'Tech Lead · architecture, team and delivery', es: 'Tech Lead · arquitectura, equipo y entrega' },
 		tags: ['next', 'nuxt', 'node', 'typescript', 'aws', 'redis'],
 		image: imgNexus,
 	},
@@ -116,8 +123,9 @@ export const WORKS: Work[] = [
 		desc: {
 			pt: 'Site de lançamento imobiliário em Vila Nova Conceição, SP. Rápido no celular, feito pra gerar visita ao decorado.',
 			en: 'Real-estate launch site in Vila Nova Conceição, São Paulo. Fast on mobile, built to book showroom visits.',
+			es: 'Sitio de lanzamiento inmobiliario en Vila Nova Conceição, São Paulo. Rápido en el celular, hecho para generar visitas al departamento modelo.',
 		},
-		role: { pt: 'Frontend · Astro + Tailwind', en: 'Frontend · Astro + Tailwind' },
+		role: { pt: 'Frontend · Astro + Tailwind', en: 'Frontend · Astro + Tailwind', es: 'Frontend · Astro + Tailwind' },
 		tags: ['astro', 'tailwindcss', 'typescript'],
 		image: imgFiladelfo,
 	},
@@ -131,8 +139,9 @@ export const WORKS: Work[] = [
 		desc: {
 			pt: 'Landing de empreendimento residencial a metros da estação Pinheiros. Galeria, plantas e captação de lead.',
 			en: 'Residential development landing steps from Pinheiros station. Gallery, floor plans and lead capture.',
+			es: 'Landing de un proyecto residencial a metros de la estación Pinheiros. Galería, planos y captación de leads.',
 		},
-		role: { pt: 'Frontend · Astro + Tailwind', en: 'Frontend · Astro + Tailwind' },
+		role: { pt: 'Frontend · Astro + Tailwind', en: 'Frontend · Astro + Tailwind', es: 'Frontend · Astro + Tailwind' },
 		tags: ['astro', 'tailwindcss', 'typescript'],
 		image: imgViewPinheiros,
 	},
@@ -146,8 +155,9 @@ export const WORKS: Work[] = [
 		desc: {
 			pt: 'Site institucional de empreendimento residencial em Vila Olímpia, SP.',
 			en: 'Institutional site for a residential development in Vila Olímpia, São Paulo.',
+			es: 'Sitio institucional de un proyecto residencial en Vila Olímpia, São Paulo.',
 		},
-		role: { pt: 'Frontend · Astro + React', en: 'Frontend · Astro + React' },
+		role: { pt: 'Frontend · Astro + React', en: 'Frontend · Astro + React', es: 'Frontend · Astro + React' },
 		tags: ['astro', 'react', 'tailwindcss', 'typescript'],
 		image: imgVilaOlimpia,
 	},
@@ -160,8 +170,9 @@ export const WORKS: Work[] = [
 		desc: {
 			pt: 'Site institucional de empreendimento a poucos metros do Parque Ibirapuera, SP. Laravel + Sass + Bootstrap.',
 			en: 'Institutional site for a development a few meters from Ibirapuera Park, São Paulo. Laravel + Sass + Bootstrap.',
+			es: 'Sitio institucional de un proyecto a pocos metros del Parque Ibirapuera, São Paulo. Laravel + Sass + Bootstrap.',
 		},
-		role: { pt: 'Full stack · Laravel', en: 'Full stack · Laravel' },
+		role: { pt: 'Full stack · Laravel', en: 'Full stack · Laravel', es: 'Full stack · Laravel' },
 		tags: ['laravel', 'php', 'sass', 'bootstrap'],
 		image: imgMirage,
 	},
@@ -176,6 +187,7 @@ export const WORKS: Work[] = [
 		desc: {
 			pt: 'Pokédex em Vue 3 + Vite. Busca, filtros, scroll infinito, testes e múltiplos idiomas.',
 			en: 'Vue 3 + Vite Pokédex. Search, filters, infinite scroll, tests and multi-language.',
+			es: 'Pokédex en Vue 3 + Vite. Búsqueda, filtros, scroll infinito, tests y varios idiomas.',
 		},
 		tags: ['vue 3', 'typescript', 'vite'],
 		image: imgVuedex,
@@ -189,6 +201,7 @@ export const WORKS: Work[] = [
 		desc: {
 			pt: 'Desafio Frontend Mentor: consumidor da REST Countries API com tema claro/escuro.',
 			en: 'Frontend Mentor challenge: REST Countries API consumer with light/dark theme.',
+			es: 'Desafío de Frontend Mentor: consumidor de la REST Countries API con tema claro/oscuro.',
 		},
 		tags: ['vue 3', 'vuetify', 'vite', 'typescript'],
 		image: imgRestCountries,
@@ -202,6 +215,7 @@ export const WORKS: Work[] = [
 		desc: {
 			pt: 'Desafio técnico pra Leadster. Vídeos do YouTube com filtro por tag. Next + Styled Components.',
 			en: 'Code challenge for Leadster. YouTube videos with tag filtering. Next + Styled Components.',
+			es: 'Desafío técnico para Leadster. Videos de YouTube con filtro por etiqueta. Next + Styled Components.',
 		},
 		tags: ['next', 'styled components', 'typescript'],
 		image: imgLeadster,
@@ -215,6 +229,7 @@ export const WORKS: Work[] = [
 		desc: {
 			pt: 'Frases aleatórias de Modern Family com share no Twitter e áudio. API em C#.',
 			en: 'Random Modern Family quotes with Twitter share and audio playback. API in C#.',
+			es: 'Frases aleatorias de Modern Family para compartir en Twitter y con audio. API en C#.',
 		},
 		tags: ['html', 'css', 'c#'],
 		image: imgPhilosophy,
@@ -228,6 +243,7 @@ export const WORKS: Work[] = [
 		desc: {
 			pt: 'Desafio Frontend Mentor: o jogo clássico com duas jogadas extras. Vue 3.',
 			en: 'Frontend Mentor challenge: the classic game with two extra moves. Vue 3.',
+			es: 'Desafío de Frontend Mentor: el juego clásico con dos jugadas extra. Vue 3.',
 		},
 		tags: ['vue 3', 'typescript', 'css', 'vite'],
 		image: imgRpsls,
@@ -241,6 +257,7 @@ export const WORKS: Work[] = [
 		desc: {
 			pt: 'Ilustração de UI de um chat construída só com HTML e CSS.',
 			en: 'A chat UI illustration built entirely with HTML and CSS.',
+			es: 'Ilustración de la UI de un chat hecha solo con HTML y CSS.',
 		},
 		tags: ['html', 'css'],
 		image: imgChatApp,
@@ -254,6 +271,7 @@ export const WORKS: Work[] = [
 		desc: {
 			pt: 'Landing page pra um festival de música no metaverso. React + Tailwind + Framer Motion.',
 			en: 'Landing page for a metaverse music festival. React + Tailwind + Framer Motion.',
+			es: 'Landing page para un festival de música en el metaverso. React + Tailwind + Framer Motion.',
 		},
 		tags: ['react', 'tailwindcss', 'framer-motion'],
 		image: imgTheXp,

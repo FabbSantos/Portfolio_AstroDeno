@@ -77,6 +77,7 @@ export const GET: APIRoute = () => {
 		`- [Sobre](${abs('/about')})`,
 		`- [Templates](${abs('/templates')})`,
 		`- [English version](${abs('/en')})`,
+		`- [Versión en español](${abs('/es')})`,
 		'',
 	];
 	return new Response(lines.join('\n'), { headers: { 'content-type': 'text/plain; charset=utf-8' } });

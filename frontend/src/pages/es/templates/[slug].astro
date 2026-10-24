@@ -1,0 +1,11 @@
+---
+import TemplateDetailView from '../../../views/TemplateDetailView.astro';
+import { templates } from '../../../data/templates';
+
+export function getStaticPaths() {
+	return templates.map((tpl) => ({ params: { slug: tpl.slug }, props: { tpl } }));
+}
+const { tpl } = Astro.props;
+---
+
+<TemplateDetailView tpl={tpl} />

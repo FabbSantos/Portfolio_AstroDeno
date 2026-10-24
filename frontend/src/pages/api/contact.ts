@@ -36,7 +36,7 @@ const RATE_MAP_CAP = 5000;
 const TEMPLATE_SLUGS = templates.map((t) => t.slug);
 const NEEDS = new Set<string>([...SERVICES.map((s) => s.id), ...TEMPLATE_SLUGS, 'template', 'acesso-pulsar', 'acesso-quasar', 'other']);
 const DEADLINES = new Set(['week', 'month', 'quarter', 'flexible']);
-const LOCALES = new Set(['pt', 'en']);
+const LOCALES = new Set(['pt', 'en', 'es']);
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const WHATSAPP_RE = /^[0-9+\- ()]*$/;

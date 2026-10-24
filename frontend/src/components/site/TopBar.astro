@@ -5,14 +5,14 @@
  * - All links go through localePath(); the language switch is a plain link to
  *   the same page in the other locale (no client-side swapping).
  * - The contact button always stays in the bar. On desktop the language pill sits
- *   next to it; on mobile (≤ 780px) the bar is brand + contact + toggle and the
+ *   next to it; on narrow screens (≤ 900px, room for three language codes) the bar is brand + contact + toggle and the
  *   language link moves into the menu (site.ts toggles `inert` on #nav-mini).
  * - Mobile menu: opacity + transform + visibility (transition-safe) — no body
  *   scroll lock, the page stays scrollable behind the dropdown.
  */
 import ThemeToggle from './ThemeToggle.astro';
 import { SITE } from '../../data/site';
-import { LANG_TAG, altLocale, localeOf, localePath, switchPath, useT } from '../../i18n';
+import { LANG_TAG, LOCALES, LOCALE_CODE, LOCALE_NAME, localeOf, localePath, otherLocales, switchPath, useT } from '../../i18n';
 
 interface Props {
 	active?: 'home' | 'services' | 'work' | 'templates' | 'about';
@@ -20,7 +20,6 @@ interface Props {
 
 const { active } = Astro.props;
 const locale = localeOf(Astro);
-const alt = altLocale(locale);
 const t = useT(locale);
 
 const links = [
@@ -32,8 +31,8 @@ const links = [
 // Contact is the always-visible button in .tools, not a nav link, so it survives the collapsed mobile menu.
 const contactHref = localePath(locale, '/#contato');
 
-const switchHref = switchPath(locale, Astro.url.pathname);
-const CODE: Record<typeof locale, string> = { pt: 'PT', en: 'EN' };
+// data-lang-choice: the head script (LangRedirect) remembers a language picked by hand.
+const others = otherLocales(locale).map((l) => ({ l, href: switchPath(l, Astro.url.pathname) }));
 ---
 
 <header class='topbar' id='topbar'>
@@ -50,10 +49,14 @@ const CODE: Record<typeof locale, string> = { pt: 'PT', en: 'EN' };
 					</a>
 				))
 			}
-			<a class='nav-lang' href={switchHref} hreflang={LANG_TAG[alt]} lang={LANG_TAG[alt]}>
-				<span class='nav-lang-code' aria-hidden='true'>{CODE[alt]}</span>
-				{t.common.switchTo}
-			</a>
+			{
+				others.map(({ l, href }) => (
+					<a class='nav-lang' href={href} hreflang={LANG_TAG[l]} lang={LANG_TAG[l]} data-lang-choice={l}>
+						<span class='nav-lang-code' aria-hidden='true'>{LOCALE_CODE[l]}</span>
+						{LOCALE_NAME[l]}
+					</a>
+				))
+			}
 		</nav>
 
 		<div class='tools'>
@@ -64,21 +67,22 @@ const CODE: Record<typeof locale, string> = { pt: 'PT', en: 'EN' };
 			</a>
 			<div class='lang' role='group' aria-label={t.common.language}>
 				{
-					(['pt', 'en'] as const).map((l) =>
+					LOCALES.map((l) =>
 						l === locale ? (
-							<span class='lang-option is-current' aria-current='true' lang={LANG_TAG[l]}>
-								{CODE[l]}
+							<span class='lang-option is-current' aria-current='true' lang={LANG_TAG[l]} title={LOCALE_NAME[l]}>
+								{LOCALE_CODE[l]}
 							</span>
 						) : (
 							<a
 								class='lang-option'
-								href={switchHref}
-								hreflang={LANG_TAG[alt]}
-								lang={LANG_TAG[alt]}
-								aria-label={t.common.switchTo}
-								title={t.common.switchTo}
+								href={switchPath(l, Astro.url.pathname)}
+								hreflang={LANG_TAG[l]}
+								lang={LANG_TAG[l]}
+								aria-label={LOCALE_NAME[l]}
+								title={LOCALE_NAME[l]}
+								data-lang-choice={l}
 							>
-								{CODE[l]}
+								{LOCALE_CODE[l]}
 							</a>
 						)
 					)
@@ -178,6 +182,7 @@ const CODE: Record<typeof locale, string> = { pt: 'PT', en: 'EN' };
 		display: inline-flex;
 		align-items: center;
 		padding: 6px 0;
+		white-space: nowrap;
 		transition: color 0.2s;
 	}
 	.nav-mini a::after {
@@ -331,7 +336,7 @@ const CODE: Record<typeof locale, string> = { pt: 'PT', en: 'EN' };
 		transform: translateY(-3.5px) rotate(-45deg);
 	}
 
-	@media (max-width: 780px) {
+	@media (max-width: 900px) {
 		.topbar {
 			padding: 12px 20px;
 		}

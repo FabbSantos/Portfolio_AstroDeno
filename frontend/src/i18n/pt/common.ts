@@ -2,7 +2,7 @@ export const common = {
 	skip: 'Pular para o conteúdo principal',
 	menu: 'Menu',
 	language: 'Idioma',
-	switchTo: 'English',
+	switchTo: 'Mudar idioma',
 	ctaContact: 'Pedir orçamento',
 	ctaContactShort: 'Falar comigo',
 	ctaWhatsapp: 'Chamar no WhatsApp',

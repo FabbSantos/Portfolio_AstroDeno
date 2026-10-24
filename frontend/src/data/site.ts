@@ -1,11 +1,11 @@
 /**
  * Single place for everything "about the business" that shows up in the UI.
- * Bilingual values are `{ pt, en }` objects — pick with `pick(value, locale)`.
+ * Translated values are `{ pt, en, es }` objects (pick with `pick(value, locale)`).
  *
  * Fields marked TODO(fab) are decisions only you can make; the UI degrades
  * gracefully while they are empty (e.g. no WhatsApp number = no WhatsApp button).
  */
-export type Bi<T = string> = { pt: T; en: T };
+export type Bi<T = string> = { pt: T; en: T; es: T };
 
 export const SITE = {
 	name: 'Fabrício Bahiense',
@@ -23,19 +23,21 @@ export const SITE = {
 		message: {
 			pt: 'Oi Fabrício! Vi seu site e quero conversar sobre um projeto.',
 			en: "Hi Fabrício! I saw your site and I'd like to talk about a project.",
+			es: '¡Hola, Fabrício! Vi tu sitio y quiero hablar sobre un proyecto.',
 		} as Bi,
 	},
 
-	location: { pt: 'Rio de Janeiro, BR', en: 'Rio de Janeiro, BR' } as Bi,
-	role: { pt: 'Engenheiro de software sênior', en: 'Senior software engineer' } as Bi,
+	location: { pt: 'Rio de Janeiro, BR', en: 'Rio de Janeiro, BR', es: 'Río de Janeiro, BR' } as Bi,
+	role: { pt: 'Engenheiro de software sênior', en: 'Senior software engineer', es: 'Ingeniero de software sénior' } as Bi,
 	since: 2018,
-	responseTime: { pt: '24h úteis', en: '24 business hours' } as Bi,
+	responseTime: { pt: '24h úteis', en: '24 business hours', es: '24 horas hábiles' } as Bi,
 
 	/** TODO(fab): uma frase honesta de capacidade (formato/horas). Substitui
 	 *  "Aberto a projetos selecionados" e "aceito quantos clientes vierem". */
 	availability: {
 		pt: 'Pode me chamar que a gente resolve!',
 		en: "Send a message, I'll solve your problem!",
+		es: '¡Escríbeme y lo resolvemos!',
 	} as Bi,
 
 	stats: {
@@ -52,7 +54,7 @@ export const SITE = {
 
 	/** Delivery promises shared by templates + custom work. Keep them true. */
 	promises: {
-		templateDays: { pt: '3 a 5', en: '3 to 5' } as Bi,
+		templateDays: { pt: '3 a 5', en: '3 to 5', es: '3 a 5' } as Bi,
 		adjustmentsMonths: 3,
 		/** Express delivery for templates: price × multiplier, rounded to the nearest R$ 100.
 		 *  TODO(fab): confirmar acréscimo do express (0 esconde o toggle) */
@@ -64,7 +66,7 @@ export const SITE = {
 export const PERSON_ID = `${SITE.url}/#fabricio`;
 
 /** wa.me deep link, or null when no number is configured. */
-export function whatsappUrl(locale: 'pt' | 'en', text?: string): string | null {
+export function whatsappUrl(locale: keyof Bi, text?: string): string | null {
 	// wa.me wants digits only (no '+', spaces or dashes) — tolerate any formatting in SITE.
 	const digits = SITE.whatsapp.number.replace(/\D/g, '');
 	if (!digits) return null;
