@@ -1,9 +1,14 @@
 name: IndexNow
 
-# After each successful production deploy on Vercel, tell Bing (and the other
-# IndexNow engines) which pages changed. See frontend/scripts/indexnow.mjs.
+# After each push to main, wait for Vercel's production deploy of that commit,
+# then tell Bing (and the other IndexNow engines) which pages changed.
+# See frontend/scripts/indexnow.mjs.
+# (Triggered by push, not deployment_status: the cache that remembers the page
+# hashes only works on events tied to a branch.)
 on:
-  deployment_status:
+  push:
+    branches: [main]
+  workflow_dispatch:
 
 concurrency:
   group: indexnow
@@ -12,8 +17,10 @@ concurrency:
 jobs:
   submit:
     name: submit changed pages
-    if: github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'Production'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      statuses: read
     defaults:
       run:
         working-directory: frontend
@@ -32,8 +39,20 @@ jobs:
           key: indexnow-${{ github.run_id }}
           restore-keys: indexnow-
 
-      - name: Wait for the new deploy to be served
-        run: sleep 30
+      - name: Wait for the production deploy of this commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          state=pending
+          for i in $(seq 1 40); do
+            state=$(gh api "repos/${{ github.repository }}/commits/${{ github.sha }}/status" --jq '[.statuses[] | select(.context == "Vercel")][0].state // "pending"')
+            echo "Vercel: $state"
+            if [ "$state" = "success" ]; then break; fi
+            if [ "$state" = "failure" ] || [ "$state" = "error" ]; then exit 1; fi
+            sleep 15
+          done
+          if [ "$state" != "success" ]; then echo "Deploy not ready after 10 min"; exit 1; fi
+          sleep 20
 
       - name: Submit
         run: node scripts/indexnow.mjs
