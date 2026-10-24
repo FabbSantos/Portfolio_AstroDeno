@@ -21,3 +21,6 @@ pnpm-debug.log*
 
 # macOS-specific files
 .DS_Store
+
+# IndexNow page hashes (kept by the workflow cache)
+.indexnow-state.json
