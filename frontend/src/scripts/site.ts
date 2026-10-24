@@ -169,7 +169,7 @@ function initMobileNav(): void {
 	const nav = document.getElementById('nav-mini');
 	if (!tb || !toggle || !nav) return;
 
-	const mq = window.matchMedia('(max-width: 780px)');
+	const mq = window.matchMedia('(max-width: 900px)');
 	const setOpen = (open: boolean) => {
 		tb.classList.toggle('nav-open', open);
 		toggle.setAttribute('aria-expanded', String(open));

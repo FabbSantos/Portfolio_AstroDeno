@@ -1,0 +1,48 @@
+---
+/**
+ * Picks the language on a visitor's first page, before anything paints.
+ *
+ * - Runs only when the visitor arrives from outside the site (no same-site
+ *   referrer), so it never fights a click inside the site.
+ * - A language picked by hand (any link with data-lang-choice) is saved and
+ *   wins from then on. Without one, the browser's language list decides
+ *   (pt/es/en; anything else gets English).
+ * - Never runs for crawlers or audit tools (Googlebot, Bingbot, AI crawlers,
+ *   Lighthouse, headless browsers): they always get the URL they asked for,
+ *   so each language version is indexed on its own (hreflang does the rest).
+ *
+ * The browser language beats IP location: a Brazilian abroad or on a VPN
+ * still reads Portuguese.
+ */
+import { LOCALES, localeOf, switchPath } from '../../i18n';
+
+const current = localeOf(Astro);
+const urls = Object.fromEntries(LOCALES.map((l) => [l, switchPath(l, Astro.url.pathname)]));
+---
+
+<script is:inline define:vars={{ current, urls }}>
+	try {
+		const KEY = 'lang';
+		document.addEventListener(
+			'click',
+			(e) => {
+				const a = e.target instanceof Element ? e.target.closest('[data-lang-choice]') : null;
+				if (a) localStorage.setItem(KEY, a.getAttribute('data-lang-choice'));
+			},
+			true
+		);
+		const ref = document.referrer;
+		const landing = !ref || new URL(ref).origin !== location.origin;
+		const bot = /bot|crawl|spider|slurp|lighthouse|headless|preview|inspect|facebookexternalhit|embedly|whatsapp|telegram/i.test(navigator.userAgent);
+		if (landing && !bot && !/[?&]lang=/.test(location.search)) {
+			let target = localStorage.getItem(KEY);
+			if (!urls[target]) {
+				const langs = navigator.languages?.length ? navigator.languages : [navigator.language || ''];
+				target = langs.map((l) => String(l).slice(0, 2).toLowerCase()).find((code) => urls[code]) ?? 'en';
+			}
+			if (target !== current) location.replace(urls[target] + location.search + location.hash);
+		}
+	} catch {
+		/* storage blocked or old browser: stay on this page */
+	}
+</script>

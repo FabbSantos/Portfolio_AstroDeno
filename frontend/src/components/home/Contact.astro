@@ -10,13 +10,13 @@
 import { SITE, whatsappUrl } from '../../data/site';
 import { SERVICES } from '../../data/services';
 import { fullName, templates } from '../../data/templates';
-import { fmt, localeOf, localePath, pick, useT } from '../../i18n';
+import { PRIVACY_PATH, fmt, localeOf, localePath, pick, useT } from '../../i18n';
 
 const locale = localeOf(Astro);
 const t = useT(locale);
 const c = t.contact;
 const wa = whatsappUrl(locale);
-const privacyHref = localePath(locale, locale === 'pt' ? '/privacidade' : '/privacy');
+const privacyHref = localePath(locale, PRIVACY_PATH[locale]);
 // Optional Cloudflare Turnstile — widget + script only render when the public key is set.
 const turnstileKey = String(import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '');
 
@@ -128,7 +128,7 @@ const sentHref = localePath(locale, '/orcamento-enviado');
 				<input type='hidden' name='utm_campaign' value='' />
 				<input type='hidden' name='locale' value={locale} />
 
-				{turnstileKey && <div class='cf-turnstile' data-sitekey={turnstileKey} data-language={locale === 'pt' ? 'pt-br' : 'en'} data-size='flexible' />}
+				{turnstileKey && <div class='cf-turnstile' data-sitekey={turnstileKey} data-language={{ pt: 'pt-br', en: 'en', es: 'es' }[locale]} data-size='flexible' />}
 				{
 					/* "flexible" is at least 300px wide: on 320px phones the column is narrower, so
 					   switch to the compact widget before Cloudflare's script (loaded later) reads it. */

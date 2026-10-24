@@ -15,7 +15,7 @@ import ScoreGauge from '../components/templates/ScoreGauge.astro';
 import { lighthouse, scoresFor } from '../data/lighthouse';
 import { SITE, whatsappUrl } from '../data/site';
 import { demoPath, examplePath, formatBRL, fullName, promoOn, promoPrice, promoUntilLabel, templates, type TemplateMeta } from '../data/templates';
-import { fmt, localeOf, localePath, pick, useT } from '../i18n';
+import { LANG_TAG, fmt, localeOf, localePath, pick, useT } from '../i18n';
 
 interface Props {
 	tpl: TemplateMeta;
@@ -66,7 +66,7 @@ const gauges = scores
 			{ label: sc.bestPractices, score: scores.bestPractices },
 		]
 	: [];
-const measuredOn = new Intl.DateTimeFormat(locale === 'pt' ? 'pt-BR' : 'en-US', { dateStyle: 'medium', timeZone: 'UTC' }).format(
+const measuredOn = new Intl.DateTimeFormat(LANG_TAG[locale], { dateStyle: 'medium', timeZone: 'UTC' }).format(
 	new Date(`${scores?.measuredAt ?? lighthouse.measuredAt}T12:00:00Z`)
 );
 const scoresNote = fmt(sc.note, { version: lighthouse.lighthouse, runs: lighthouse.runs, date: measuredOn });
