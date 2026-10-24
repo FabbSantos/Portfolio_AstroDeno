@@ -1,9 +1,8 @@
 /**
  * Brava — limited-drop e-commerce landing.
  * Extends the core site schema with one slice per section, in page order:
- * ticker → topbar → hero (+ drop countdown) → shop → lookbook → story →
- * newsletter → footer. Strings marked (md) accept `**underline**` and
- * `==accent==` (see sections/_md.ts).
+ * topbar → hero (+ drop countdown) → shop → lookbook → story → newsletter →
+ * footer. Titles are plain text in one style.
  */
 import { z } from 'astro/zod';
 import { baseSiteSchema, defineSite, hex, image } from '../core/schema';
@@ -17,11 +16,6 @@ const tile = z.object({
 });
 
 export const bravaSchema = baseSiteSchema.extend({
-	/** Announcement strip on top. Messages are joined with ' ★ ' and loop. */
-	ticker: z.object({
-		messages: z.array(z.string().min(1)).min(1),
-	}),
-
 	/** Desktop topbar: `nav` (core) on the left, brand centred, these on the right. */
 	topbar: z
 		.object({
@@ -56,25 +50,22 @@ export const bravaSchema = baseSiteSchema.extend({
 	}),
 
 	hero: z.object({
-		eyebrow: z.string().min(1),
-		/** One entry per line of the h1 (md). */
-		lines: z.array(z.string().min(1)).min(1).max(4),
+		/** The h1, one line. */
+		title: z.string().min(1),
 		sub: z.string().min(1),
+		/** Small plain line under `sub`, e.g. the drop name and the piece count. */
+		note: z.string().optional(),
 		cta: link,
 		/** Exactly 3 portrait photos (1200×1500): the first is the big one (the LCP), the other two stack beside it. */
 		tiles: z.array(z.object({ image, alt: z.string().min(1), tint: hex.optional() })).length(3),
 	}),
 
 	shop: z.object({
-		eyebrow: z.string().min(1),
-		/** (md) */
 		title: z.string().min(1),
-		soldLabel: z.string().default('ESGOTADO'),
+		soldLabel: z.string().default('Esgotado'),
 		products: z
 			.array(
 				z.object({
-					/** Short index shown next to the name, e.g. '001'. */
-					n: z.string().min(1),
 					name: z.string().min(1),
 					/** Already formatted: 'R$ 189'. */
 					price: z.string().min(1),
@@ -94,22 +85,18 @@ export const bravaSchema = baseSiteSchema.extend({
 	lookbook: z.object({
 		/** Section heading, shown big beside the panel. */
 		title: z.string().min(1),
-		eyebrow: z.string().min(1),
 		caption: z.string().min(1),
 		/** Exactly 4 portrait photos (1200×1500), shown one at a time in the panel; `caption` labels the slide. */
 		tiles: z.array(tile).length(4),
 	}),
 
 	story: z.object({
-		eyebrow: z.string().min(1),
-		/** (md) */
 		title: z.string().min(1),
 		paragraphs: z.array(z.string().min(1)).min(1),
 		link: link.optional(),
 	}),
 
 	newsletter: z.object({
-		/** (md) */
 		title: z.string().min(1),
 		sub: z.string().min(1),
 		email: z.object({

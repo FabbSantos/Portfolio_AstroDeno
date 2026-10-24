@@ -1,12 +1,12 @@
 ---
 /**
- * Closing section, centred: eyebrow, serif title, the e-mail set huge as the
- * main link (mailto from `contact.email`), the optional LeadForm
- * (`contact.inquiry`, wired to `contact.form.provider`), then the socials.
+ * Closing section, centred: serif title, the e-mail set large as the main
+ * link (mailto from `contact.email`, upright, in the ink), the optional
+ * LeadForm (`contact.inquiry`, wired to `contact.form.provider`), then the
+ * socials.
  */
 import LeadForm from '../../core/LeadForm.astro';
 import type { AtelierConfig } from '../schema';
-import { md } from './_md';
 
 interface Props {
 	config: AtelierConfig;
@@ -17,8 +17,7 @@ const { contact } = config;
 
 <section class='contact sec' id='contact' aria-labelledby='contact-title'>
 	<div class='wrap contact-in'>
-		<p class='eyebrow'>{contact.eyebrow}</p>
-		<h2 id='contact-title' class='display' set:html={md(contact.title)} />
+		<h2 id='contact-title' class='display'>{contact.title}</h2>
 		{contact.sub && <p class='c-sub'>{contact.sub}</p>}
 		<a href={`mailto:${contact.email}`} class='c-mail display'>{contact.email}</a>
 		{
@@ -53,9 +52,6 @@ const { contact } = config;
 		text-align: center;
 		gap: 22px;
 	}
-	.contact .eyebrow::before {
-		display: none;
-	}
 	.contact h2 {
 		font-size: clamp(44px, 6vw, 92px);
 		max-width: 16ch;
@@ -69,10 +65,9 @@ const { contact } = config;
 	.c-mail {
 		margin-top: 18px;
 		font-size: clamp(28px, 4.6vw, 64px);
-		font-style: italic;
 		font-weight: 400;
 		letter-spacing: -0.01em;
-		color: var(--accent-text);
+		color: var(--ink);
 		text-decoration: underline;
 		text-decoration-thickness: 0.04em;
 		text-underline-offset: 0.16em;
@@ -81,7 +76,7 @@ const { contact } = config;
 		transition: text-decoration-color 0.25s;
 	}
 	.c-mail:hover {
-		text-decoration-color: var(--accent-text);
+		text-decoration-color: var(--ink);
 	}
 	.c-form {
 		width: min(100%, 640px);

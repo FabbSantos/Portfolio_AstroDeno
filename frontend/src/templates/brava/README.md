@@ -1,8 +1,8 @@
 # Brava — landing de drop / e-commerce limitado
 
-Landing de coleção limitada: ticker de avisos, topbar com carrinho, hero com contagem regressiva até o fim do drop, vitrine de produtos, lookbook em painel, história da marca, newsletter e rodapé. Demo em `/templates/brava/demo` (`demo.config.ts`, em inglês).
+Landing de coleção limitada: topbar com carrinho, hero com contagem regressiva até o fim do drop, vitrine de produtos, lookbook em painel, história da marca, newsletter e rodapé. Demo em `/templates/brava/demo` (`demo.config.ts`, em inglês).
 
-Visual: editorial de moda num fundo escuro. **Bodoni Moda** na marca, nos títulos e nos números da contagem (o `**assim**` de um título vira itálico; `==assim==` vira itálico sublinhado na cor de destaque), **Manrope** no texto, preços, rótulos e botões. Filetes, cantos retos, fotos em retrato, nenhum card. A demo roda escura (`bg` quase preto, `ink` papel), mas todas as cores vêm dos tokens: com `bg` claro e `ink` escuro o template fica claro sem mexer em nada.
+Visual: editorial de moda num fundo escuro. **Bodoni Moda** (só a versão reta, sem itálico) na marca, nos títulos e nos números da contagem, **Manrope** no texto, preços, rótulos e botões. Cada título é texto puro num estilo só, sem palavra em destaque; caixa alta só na marca. Filetes, cantos retos, fotos em retrato, nenhum card. A demo roda escura (`bg` quase preto, `ink` papel), mas todas as cores vêm dos tokens: com `bg` claro e `ink` escuro o template fica claro sem mexer em nada.
 
 ```
 brava/
@@ -10,28 +10,27 @@ brava/
   demo.config.ts     config do demo
   BravaBody.astro    <div class='tpl tpl-brava' id='top'> com as seções em ordem; importa as fontes
   BravaPage.astro    core Page + BravaBody — página do cliente
-  fonts.ts           arquivos da Bodoni Moda (normal e itálico) para <link rel=preload>
-  styles.css         regras compartilhadas (wrapper, display, eyebrow, sec-head, botões, skin do LeadForm, MobileNav)
-  sections/          Ticker · Topbar · Hero · Shop · Lookbook · Story · Newsletter · Footer · _md.ts
+  fonts.ts           arquivo da Bodoni Moda (reta) para <link rel=preload>
+  styles.css         regras compartilhadas (wrapper, display, sec-head, botões, skin do LeadForm, MobileNav)
+  sections/          Topbar · Hero · Shop · Lookbook · Story · Newsletter · Footer
   assets/demo/       fotos do demo (não copiar para o cliente)
 ```
 
-Fontes: `@fontsource-variable/bodoni-moda` (só o eixo de peso) e `@fontsource-variable/manrope` (o scaffold adiciona as duas ao `package.json` do cliente). Na demo: `accent #d8232a`, `accent2 #f1a3a6`, `bg #121212`, `bg2 #1c1c1c`, `ink #f3f1ea`, `radius 0`.
+Fontes: `@fontsource-variable/bodoni-moda` (só o eixo de peso, sem o arquivo itálico) e `@fontsource-variable/manrope` (o scaffold adiciona as duas ao `package.json` do cliente). Na demo: `accent #d8232a`, `accent2 #f1a3a6`, `bg #121212`, `bg2 #1c1c1c`, `ink #f3f1ea`, `radius 0`.
 
 ## Config
 
-Base (core): `brand`, `theme` (`accent2` = tom claro do accent), `seo`, `contact`, `analytics`, `legal`, `nav`. Strings **md** aceitam `**texto**` (itálico) e `==texto==` (itálico sublinhado na cor de destaque).
+Base (core): `brand`, `theme` (`accent2` = tom claro do accent), `seo`, `contact`, `analytics`, `legal`, `nav`. Todo `title` é texto puro (sem marcação).
 
 | Seção | Campos |
 | --- | --- |
-| `ticker` | `messages: string[]` (mín. 1) — em itálico, unidas com ` · `, em loop; o loop acelera com a rolagem e volta ao normal |
 | `topbar` | `brandHref` (padrão `'/'`), `links: [{ label, href }]`, `cart: { show, label, href, count? }` (padrões `false`, `'Carrinho'`, `'/cart'`) |
 | `drop` | `endsAt` (ISO 8601 com fuso, ex. `'2026-09-30T23:59:59-03:00'`), `countdownLabel`, `units: { days, hours, minutes, seconds }`, `ended` (texto quando o prazo passou) — todos com padrão em pt-BR |
-| `hero` | `eyebrow`, `lines: string[]` (1–4 linhas do h1, md), `sub`, `cta: { label, href }`, `tiles: [{ image, alt, tint? }]` × **3** (retratos; o primeiro é o grande e o LCP, os outros dois ficam empilhados ao lado) |
-| `shop` | `eyebrow`, `title` (md), `soldLabel` (padrão `'ESGOTADO'`), `products: [{ n, name, price, tag?, sold?, href?, image?, alt?, tint? }]` — grade de 3 sem card; `tag` vira um chip de papel, `sold` apaga a foto e risca o nome |
-| `lookbook` | `title` (título grande ao lado do painel), `eyebrow`, `caption`, `tiles: [{ image, alt, caption? }]` × **4** — um retrato por vez no painel, com zoom lento, barra de progresso por foto, anterior/próxima e setas do teclado; a lista de `caption` à esquerda também troca a foto. Avança sozinho a cada 7 s e para com o mouse ou foco em cima |
-| `story` | `eyebrow`, `title` (md), `paragraphs: string[]` (o primeiro sai maior, em serifa), `link?: { label, href }` |
-| `newsletter` | `title` (md), `sub`, `email: { label, placeholder? }`, `name?: { label, placeholder? }` (campo extra — obrigatório para `resend`/`webhook`), `cta`, `foot?` |
+| `hero` | `title` (o h1, uma linha), `sub`, `note?` (linha pequena logo abaixo do `sub`, ex. nome do drop e quantidade de peças), `cta: { label, href }`, `tiles: [{ image, alt, tint? }]` × **3** (retratos; o primeiro é o grande e o LCP, os outros dois ficam empilhados ao lado) |
+| `shop` | `title`, `soldLabel` (padrão `'Esgotado'`), `products: [{ name, price, tag?, sold?, href?, image?, alt?, tint? }]` — grade de 3 sem card; `tag` vira um chip de papel, `sold` apaga a foto e risca o nome |
+| `lookbook` | `title` (título grande ao lado do painel), `caption`, `tiles: [{ image, alt, caption? }]` × **4** — um retrato por vez no painel, com zoom lento, barra de progresso por foto, anterior/próxima e setas do teclado; a lista de `caption` à esquerda também troca a foto. Avança sozinho a cada 7 s e para com o mouse ou foco em cima |
+| `story` | `title`, `paragraphs: string[]` (o primeiro sai maior, em serifa), `link?: { label, href }` |
+| `newsletter` | `title`, `sub`, `email: { label, placeholder? }`, `name?: { label, placeholder? }` (campo extra — obrigatório para `resend`/`webhook`), `cta`, `foot?` |
 | `footer` | `columns: [{ h, links }]`, `socials: [{ label, href }]`, `privacyLabel` (padrão `'Privacidade'`); `legal.lines` são impressas na base |
 
 ## Imagens do cliente

@@ -5,7 +5,6 @@
  * with the note beside it.
  */
 import type { SalviaConfig } from '../schema';
-import { md } from './_md';
 
 interface Props {
 	insurance: NonNullable<SalviaConfig['insurance']>;
@@ -20,7 +19,7 @@ const sentence = plans.length > 1 ? `${plans.slice(0, -1).join(', ')}${and}${pla
 <section class='sec insurance' id={insurance.anchor} aria-labelledby='salvia-insurance-title'>
 	<div class='wrap'>
 		<header class='sec-head'>
-			<h2 id='salvia-insurance-title' set:html={md(insurance.title)} />
+			<h2 id='salvia-insurance-title'>{insurance.title}</h2>
 			{insurance.lead && <p class='lead'>{insurance.lead}</p>}
 		</header>
 		<div class='body'>

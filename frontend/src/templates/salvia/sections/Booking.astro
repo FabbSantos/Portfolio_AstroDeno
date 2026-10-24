@@ -9,7 +9,6 @@
  * shows a note instead of opening WhatsApp.
  */
 import type { SalviaConfig } from '../schema';
-import { md } from './_md';
 
 interface Props {
 	config: SalviaConfig;
@@ -32,7 +31,7 @@ const via = en ? 'via WhatsApp' : 'pelo WhatsApp';
 <section class='sec booking' id='agendar' aria-labelledby='salvia-booking-title'>
 	<div class='wrap grid'>
 		<div class='left'>
-			<h2 id='salvia-booking-title' class='serif' set:html={md(booking.title)} />
+			<h2 id='salvia-booking-title' class='serif'>{booking.title}</h2>
 			<p class='lead'>{booking.lead}</p>
 
 			<form

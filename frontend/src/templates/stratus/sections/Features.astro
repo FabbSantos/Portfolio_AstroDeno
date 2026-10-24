@@ -2,8 +2,7 @@
 /**
  * Features on a hairline grid (3 across, 2 across under 1100px, 1 on phones),
  * crosshair marks where the lines meet, and a soft spotlight that follows the
- * pointer across the grid. Each cell carries its index in mono; `icon` is
- * optional and shows next to it.
+ * pointer across the grid. `icon` is optional and shows above the card title.
  */
 import type { StratusConfig } from '../schema';
 import { md } from './_md';
@@ -12,26 +11,25 @@ interface Props {
 	config: StratusConfig;
 }
 const { features } = Astro.props.config;
-const num = (i: number) => String(i + 1).padStart(2, '0');
 ---
 
 <section class='features sec' id='features' aria-labelledby='features-title'>
 	<div class='wrap'>
 		<div class='sec-head'>
-			{features.eyebrow && <p class='eyebrow'>{features.eyebrow}</p>}
-			<h2 id='features-title' class='display' set:html={md(features.title)} />
+			<h2 id='features-title' class='display'>{features.title}</h2>
 			{features.lead && <p class='sec-l' set:html={md(features.lead)} />}
 		</div>
 		<div class='frame'>
 			<span class='mark' aria-hidden='true'></span>
 			<ul class='feat-grid' data-spotlight style={`--n:${features.items.length}`}>
 				{
-					features.items.map((f, i) => (
+					features.items.map((f) => (
 						<li class='feat'>
-							<span class='feat-n'>
-								{num(i)}
-								{f.icon && <span class='feat-ic'>{f.icon}</span>}
-							</span>
+							{f.icon && (
+								<span class='feat-ic' aria-hidden='true'>
+									{f.icon}
+								</span>
+							)}
 							<h3>{f.title}</h3>
 							<p set:html={md(f.desc)} />
 							<span class='cross' aria-hidden='true' />
@@ -131,15 +129,6 @@ const num = (i: number) => String(i + 1).padStart(2, '0');
 	.feat:nth-last-child(-n + 3) .cross {
 		display: none;
 	}
-	.feat-n {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		font-family: var(--mono);
-		font-size: 12px;
-		letter-spacing: 0.08em;
-		color: var(--accent-text);
-	}
 	.feat-ic {
 		font-size: 14px;
 		color: var(--ink);
@@ -149,6 +138,8 @@ const num = (i: number) => String(i + 1).padStart(2, '0');
 		font-weight: 600;
 		letter-spacing: -0.015em;
 		line-height: 1.2;
+	}
+	.feat-ic + h3 {
 		margin-top: 18px;
 	}
 	.feat p {

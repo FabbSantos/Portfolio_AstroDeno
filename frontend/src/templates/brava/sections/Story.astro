@@ -1,7 +1,6 @@
 ---
 /** Story: a narrow column between two hairlines; the first paragraph set larger. */
 import type { BravaConfig } from '../schema';
-import { md } from './_md';
 
 interface Props {
 	config: BravaConfig;
@@ -12,8 +11,7 @@ const { story } = config;
 
 <section class='story' id='story' aria-labelledby='story-title'>
 	<div class='wrap story-in'>
-		<p class='eyebrow'>{story.eyebrow}</p>
-		<h2 id='story-title' class='display' set:html={md(story.title)} />
+		<h2 id='story-title' class='display'>{story.title}</h2>
 		<div class='story-text'>{story.paragraphs.map((p) => <p>{p}</p>)}</div>
 		{
 			story.link && (
@@ -36,9 +34,6 @@ const { story } = config;
 		grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
 		gap: clamp(32px, 5vw, 80px);
 		align-items: start;
-	}
-	.story .eyebrow {
-		grid-column: 1 / -1;
 	}
 	.story h2 {
 		font-size: clamp(44px, 5.6vw, 88px);

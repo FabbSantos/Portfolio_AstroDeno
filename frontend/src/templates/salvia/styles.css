@@ -39,17 +39,6 @@
 	font-optical-sizing: auto;
 }
 
-/* md(): **text** / ==text== */
-.tpl-salvia .hl {
-	color: var(--accent-text);
-	font-weight: inherit;
-	font-style: italic;
-}
-.tpl-salvia .em {
-	font-weight: inherit;
-	background: linear-gradient(transparent 62%, var(--accent-soft) 62%);
-}
-
 /* Section head: title on the left, lead bottom-aligned on the right (12-col grid). */
 .tpl-salvia .sec-head {
 	display: grid;

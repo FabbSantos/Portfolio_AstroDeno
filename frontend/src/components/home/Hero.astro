@@ -63,7 +63,7 @@ const proof = fmt(t.hero.proof, {
 		</p>
 		<h1 class='hero-title' id='hero-title'>
 			{t.hero.headline}{' '}
-			<span class='hl hl-anim'>{t.hero.headlineAccent}</span>
+			{t.hero.headlineAccent}
 		</h1>
 		<p class='hero-sub'>{t.hero.sub}</p>
 		<p class='hero-cred'>{credential}</p>
@@ -182,16 +182,6 @@ const proof = fmt(t.hero.proof, {
 		   headline and the sub are visible from the first paint and only rise. */
 		animation: rise 1s var(--ease-out-expo) both;
 	}
-	/* inline-block so the phrase stays together, can transform, and the
-	   gradient (.hl-anim) spans the phrase — it enters last in the stagger. */
-	.hero-title .hl {
-		display: inline-block;
-		opacity: 0;
-		transform: translateY(14px);
-		animation:
-			enter 0.9s var(--ease-out-expo) 0.45s both,
-			hlShift 6s ease-in-out 1.4s infinite;
-	}
 	.hero-sub {
 		margin-top: 24px;
 		max-width: 46ch;
@@ -287,13 +277,6 @@ const proof = fmt(t.hero.proof, {
 			transform: translateY(-12px) rotate(2deg);
 		}
 	}
-	/* Same keyframes as .hl-anim in site.css, redeclared here so the hero's
-	   own `animation` shorthand (enter + shift) doesn't depend on load order. */
-	@keyframes hlShift {
-		50% {
-			background-position: 100% 50%;
-		}
-	}
 
 	@media (min-width: 1025px) {
 		.hero-title {
@@ -352,7 +335,6 @@ const proof = fmt(t.hero.proof, {
 	@media (prefers-reduced-motion: reduce) {
 		.hero-eyebrow,
 		.hero-title,
-		.hero-title .hl,
 		.hero-sub,
 		.hero-cred,
 		.hero-actions,

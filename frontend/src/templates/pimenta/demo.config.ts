@@ -42,7 +42,6 @@ export default definePimenta({
 
 	hero: {
 		tagline: 'Boteco de bairro em Santa Teresa. Petisco pra dividir, prato do dia saindo do fogo e caipirinha da fruta da estação.',
-		title: 'Fogo\nbaixo,\nprato\ncheio.',
 		photo: pratoHero,
 		photoAlt: 'Prato branco com frango assado, batatas e legumes, visto de cima',
 		cta: 'Reservar mesa',
@@ -115,7 +114,6 @@ export default definePimenta({
 		times: ['12:00', '13:00', '14:00', '19:00', '20:00', '21:00', '22:00'],
 		foot: 'Mesas pra até 12 pessoas. Grupo maior, chama no WhatsApp.',
 		delivery: {
-			title: 'Prefere em casa?',
 			links: [
 				{ label: 'iFood', href: 'https://www.ifood.com.br/' },
 				{ label: 'Rappi', href: 'https://www.rappi.com.br/' },
@@ -137,6 +135,5 @@ export default definePimenta({
 
 	footer: {
 		line: '© 2026 Pimenta Bar e Cozinha',
-		wordmark: 'Pimenta',
 	},
 });

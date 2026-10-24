@@ -1,8 +1,9 @@
 ---
 /**
- * Location (#onde): the address set in giant condensed capitals with the
- * directions and the map link under it; on the right the live status and the
- * week, today's row filled with the accent (marked by the PimentaBody script).
+ * Location (#onde): two titled columns. On the left the title and the address
+ * set in giant condensed capitals, with the directions and the map link under
+ * it; on the right the hours title, the live status and the week, today's row
+ * filled with the accent (marked by the PimentaBody script).
  */
 import { hoursTable, OPEN_STRINGS } from '../../core/hours';
 import type { PimentaConfig } from '../schema';
@@ -22,7 +23,7 @@ const status = JSON.stringify({ hours: location.hours, tz: location.timezone, lo
 <section class='sec where' id='onde' aria-labelledby='pimenta-where-title'>
 	<div class='wrap grid'>
 		<div class='addr'>
-			<h2 id='pimenta-where-title' class='kicker'>{location.title}</h2>
+			<h2 id='pimenta-where-title' class='w-title display'>{location.title}</h2>
 			<address class='street display'>
 				<span>{a.street}</span>
 				<span>{[a.district, a.city].filter(Boolean).join(', ')} · {a.state}</span>
@@ -47,11 +48,11 @@ const status = JSON.stringify({ hours: location.hours, tz: location.timezone, lo
 		</div>
 
 		<div class='hours'>
+			<h3 class='h-title display'>{location.hoursTitle}</h3>
 			<p class='status' data-open-status={status}>
 				<span class='status-dot' aria-hidden='true'></span>
 				<span data-open-text>{location.hoursTitle}</span>
 			</p>
-			<h3 class='h-title display'>{location.hoursTitle}</h3>
 			<ul class='week' role='list' data-hours-tz={location.timezone}>
 				{
 					rows.map((row) => (
@@ -74,9 +75,10 @@ const status = JSON.stringify({ hours: location.hours, tz: location.timezone, lo
 		gap: clamp(48px, 7vw, 120px);
 		align-items: start;
 	}
-	.kicker {
-		font-size: 15px;
-		font-weight: 700;
+	/* the two column titles (Endereço, Horário) share one size */
+	.w-title,
+	.h-title {
+		font-size: clamp(40px, 4vw, 56px);
 	}
 	.street {
 		display: grid;
@@ -108,10 +110,6 @@ const status = JSON.stringify({ hours: location.hours, tz: location.timezone, lo
 	.hours {
 		display: grid;
 		gap: 18px;
-		padding-top: 8px;
-	}
-	.h-title {
-		font-size: clamp(40px, 4vw, 56px);
 	}
 	.week {
 		list-style: none;

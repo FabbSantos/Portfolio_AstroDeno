@@ -1,5 +1,5 @@
 ---
-/** Footer: the line and legal notes on a hairline, then the studio name set giant across the bottom. */
+/** Footer: the brand on the left, the line and legal notes on the right, on a hairline. */
 import type { AtelierConfig } from '../schema';
 
 interface Props {
@@ -27,14 +27,12 @@ const privacyLabel = brand.locale === 'en' ? 'Privacy' : 'Privacidade';
 			}
 		</div>
 	</div>
-	<p class='ft-word display' aria-hidden='true'>{brand.name}</p>
 </footer>
 
 <style>
 	.ft {
 		border-top: 1px solid var(--line);
-		padding-top: 40px;
-		overflow: hidden;
+		padding-block: 40px;
 	}
 	.ft-top {
 		display: flex;
@@ -68,17 +66,6 @@ const privacyLabel = brand.locale === 'en' ? 'Privacy' : 'Privacidade';
 	}
 	.ft-lines a:hover {
 		color: var(--ink);
-	}
-	.ft-word {
-		margin: 24px 0 -0.16em;
-		padding-inline: var(--pad-x);
-		font-size: clamp(88px, 18vw, 280px);
-		font-weight: 500;
-		line-height: 0.9;
-		letter-spacing: -0.04em;
-		white-space: nowrap;
-		color: var(--ink);
-		user-select: none;
 	}
 	@media (max-width: 640px) {
 		.ft-lines {

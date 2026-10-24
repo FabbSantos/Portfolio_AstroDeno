@@ -58,10 +58,6 @@ export default defineBrava({
 		{ label: 'Story', href: '#story' },
 	],
 
-	ticker: {
-		messages: ['Drop 03 / Verão · live until September 30', 'Free shipping over R$ 300', 'Pre-orders ship in 7 days', 'Only 250 pieces per drop'],
-	},
-
 	topbar: {
 		brandHref: '#top',
 		links: [
@@ -79,9 +75,9 @@ export default defineBrava({
 	},
 
 	hero: {
-		eyebrow: 'Drop 03 / Verão · 250 pieces · live now',
-		lines: ['The summer', '**that ends**', '==too fast.=='],
+		title: 'Brava',
 		sub: "Six pieces, made in Brazil, shipped worldwide. When they're gone, they're gone. We don't restock.",
+		note: 'Drop 03 / Verão · 250 pieces · live now',
 		cta: { label: 'Shop the drop', href: '#shop' },
 		tiles: [
 			{ image: hero1, alt: 'Model in a black shirt and wide-brim hat, lit from the side' },
@@ -91,34 +87,31 @@ export default defineBrava({
 	},
 
 	shop: {
-		eyebrow: 'The drop · six pieces',
-		title: 'Take **your pick.**',
+		title: 'Shop',
 		soldLabel: 'Sold out',
 		products: [
-			{ n: '001', name: 'Vento Tee', price: 'R$ 189', tag: 'OG', image: product1, alt: 'Folded tees in charcoal, grey and sand', href: '#shop' },
-			{ n: '002', name: 'Maré Jacket', price: 'R$ 459', tag: 'New', image: product2, alt: 'Tan work jacket laid flat with black jeans and sneakers', href: '#shop' },
-			{ n: '003', name: 'Costa Cap', price: 'R$ 149', image: product3, alt: 'Pink cap on a black tee next to a white sweatshirt', href: '#shop' },
-			{ n: '004', name: 'Duna Pants', price: 'R$ 329', tag: 'Last', image: product4, alt: 'Khaki pants, grey tee and sneakers laid flat on a dark floor', href: '#shop' },
-			{ n: '005', name: 'Brisa Overshirt', price: 'R$ 389', sold: true, image: product5, alt: 'Brown overshirt with black jeans and canvas sneakers', href: '#shop' },
-			{ n: '006', name: 'Sol Parka', price: 'R$ 689', image: product6, alt: 'Orange parka crumpled on a dark surface', href: '#shop' },
+			{ name: 'Vento Tee', price: 'R$ 189', tag: 'Original', image: product1, alt: 'Folded tees in charcoal, grey and sand', href: '#shop' },
+			{ name: 'Maré Jacket', price: 'R$ 459', tag: 'New', image: product2, alt: 'Tan work jacket laid flat with black jeans and sneakers', href: '#shop' },
+			{ name: 'Costa Cap', price: 'R$ 149', image: product3, alt: 'Pink cap on a black tee next to a white sweatshirt', href: '#shop' },
+			{ name: 'Duna Pants', price: 'R$ 329', tag: 'Last', image: product4, alt: 'Khaki pants, grey tee and sneakers laid flat on a dark floor', href: '#shop' },
+			{ name: 'Brisa Overshirt', price: 'R$ 389', sold: true, image: product5, alt: 'Brown overshirt with black jeans and canvas sneakers', href: '#shop' },
+			{ name: 'Sol Parka', price: 'R$ 689', image: product6, alt: 'Orange parka crumpled on a dark surface', href: '#shop' },
 		],
 	},
 
 	lookbook: {
 		title: 'Lookbook',
-		eyebrow: 'Drop 03 · lookbook',
 		caption: 'Shot in Rio, March 2026. Photography by Maré Studio.',
 		tiles: [
-			{ image: lookbook1, alt: 'Model in a black satin coat holding the hem, in a dark room', caption: 'Look 01 · Maré coat, night' },
-			{ image: lookbook2, alt: 'Model with locs in a colour-block jacket and cap against a stone wall', caption: 'Look 02 · Sol jacket, Costa cap' },
-			{ image: lookbook3, alt: 'Model in a black dress and patterned tights, studio light', caption: 'Look 03 · Vento dress' },
-			{ image: lookbook4, alt: 'Two people walking with a skateboard, orange and white pants', caption: 'Look 04 · Duna pants, on the street' },
+			{ image: lookbook1, alt: 'Model in a black satin coat holding the hem, in a dark room', caption: 'Maré coat, night' },
+			{ image: lookbook2, alt: 'Model with locs in a colour-block jacket and cap against a stone wall', caption: 'Sol jacket, Costa cap' },
+			{ image: lookbook3, alt: 'Model in a black dress and patterned tights, studio light', caption: 'Vento dress' },
+			{ image: lookbook4, alt: 'Two people walking with a skateboard, orange and white pants', caption: 'Duna pants, on the street' },
 		],
 	},
 
 	story: {
-		eyebrow: 'The story',
-		title: 'Small batches. ==Made on purpose.==',
+		title: 'Story',
 		paragraphs: [
 			'Brava is a Brazilian label run by two friends. We design, sample and stitch each piece in Rio, then ship from a single warehouse in São Paulo.',
 			"We release four drops a year, 200 to 300 pieces each. No restocks, no seasons, no Black Friday. When a piece sells out it's gone, and we move on to the next thing.",
@@ -127,7 +120,7 @@ export default defineBrava({
 	},
 
 	newsletter: {
-		title: 'Be first **next drop.**',
+		title: 'Newsletter',
 		sub: 'One email per drop. Never marketing, just the link, the date, and a thank you.',
 		email: { label: 'Your email', placeholder: 'you@email.com' },
 		cta: 'Notify me',

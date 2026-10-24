@@ -3,11 +3,10 @@
  * Location, on an ink block: the map (client image · Google Maps embed · CSS
  * wireframe with a grid, the brand marker and numbered pins) and the list of
  * points of interest with distances aligned right. POIs are numbered 01… in
- * config order.
+ * config order, small and plain, so the list matches the pins on the map.
  */
 import { Image } from 'astro:assets';
 import type { MiranteConfig } from '../schema';
-import { md } from './_md';
 
 interface Props {
 	config: MiranteConfig;
@@ -32,8 +31,7 @@ const widths = (w: number) => [...[640, 960, 1300].filter((x) => x < w), w];
 <section class='local sec' id='local' aria-labelledby='local-title'>
 	<div class='wrap'>
 		<div class='sec-head'>
-			{location.eyebrow && <p class='eyebrow'>{location.eyebrow}</p>}
-			<h2 id='local-title' class='display' set:html={md(location.title)} />
+			<h2 id='local-title' class='display'>{location.title}</h2>
 		</div>
 		<div class='local-grid'>
 			{
@@ -61,7 +59,7 @@ const widths = (w: number) => [...[640, 960, 1300].filter((x) => x < w), w];
 				{
 					poi.map((p, i) => (
 						<li>
-							<span class='p-n display'>{num(i)}</span>
+							<span class='p-n'>{num(i)}</span>
 							<span class='p-name'>{p.name}</span>
 							<span class='p-d'>{p.d}</span>
 						</li>
@@ -76,9 +74,6 @@ const widths = (w: number) => [...[640, 960, 1300].filter((x) => x < w), w];
 	.local {
 		background: var(--ink);
 		color: var(--bg);
-	}
-	.local .eyebrow {
-		color: color-mix(in srgb, var(--bg) 62%, transparent);
 	}
 	.local-grid {
 		display: grid;
@@ -166,16 +161,18 @@ const widths = (w: number) => [...[640, 960, 1300].filter((x) => x < w), w];
 	}
 	.poi li {
 		display: grid;
-		grid-template-columns: 52px minmax(0, 1fr) auto;
+		grid-template-columns: 24px minmax(0, 1fr) auto;
 		align-items: baseline;
 		gap: 16px;
 		padding: 18px 0;
 		border-bottom: 1px solid var(--line-on-dark);
 	}
+	/* Plain small number, the same as the pin on the map */
 	.p-n {
-		font-size: 28px;
-		color: var(--accent-on-dark);
-		line-height: 1;
+		font-family: var(--mono);
+		font-size: 13px;
+		color: color-mix(in srgb, var(--bg) 62%, transparent);
+		font-variant-numeric: tabular-nums;
 	}
 	.p-name {
 		font-size: 18px;

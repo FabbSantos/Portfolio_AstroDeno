@@ -1,7 +1,7 @@
 ---
 /**
  * Hero, after 21st.dev "Editorial Hero" (felipemenezes098/hero-05): tagline and
- * live hours bottom-left, serif title + sub + actions on the right half of a
+ * live hours bottom-left, the business name as the serif title + sub + actions on the right half of a
  * 12-column grid, then a full-bleed landscape photo whose top edge fades in.
  * The section is a column that fills the first screen: the copy takes what it
  * needs and the photo takes the rest, so it is always visible before scrolling.
@@ -12,7 +12,6 @@
 import { Image } from 'astro:assets';
 import type { SalviaConfig } from '../schema';
 import { hoursSummary, OPEN_STRINGS } from '../hours';
-import { md } from './_md';
 
 interface Props {
 	config: SalviaConfig;
@@ -37,7 +36,7 @@ const widths = (w: number) => [...[640, 960, 1280, 1600].filter((x) => x < w), w
 		</div>
 
 		<div class='copy'>
-			<h1 id='salvia-hero-title' class='serif' style='--d: 60ms' set:html={md(hero.title)} />
+			<h1 id='salvia-hero-title' class='serif' style='--d: 60ms'>{hero.title ?? brand.name}</h1>
 			<p class='sub' style='--d: 140ms'>{hero.sub}</p>
 			<div class='actions' style='--d: 200ms'>
 				<a class='btn' href='#agendar'>{hero.cta} <span class='arr' aria-hidden='true'>→</span></a>

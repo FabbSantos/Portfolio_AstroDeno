@@ -9,9 +9,9 @@ O template é a estrutura; o conteúdo é de exemplo. São duas demos, em portug
 | Clínica | `/templates/salvia/demo` | `demo.config.ts` (`MedicalClinic`, equipe com registro, convênios, responsável técnico) |
 | Salão | `/templates/salvia/demo/salao` | `demo.salao.config.ts` (`BeautySalon`, equipe sem registro, formas de pagamento) |
 
-Referências do 21st.dev usadas no desenho: Editorial Hero (felipemenezes098), Services with Animated Hover Modal (cnippet-dev), Interactive Accordion (jatin-yadav05) e Large Name Footer. Tudo reescrito em Astro e CSS, sem React, GSAP ou Framer Motion.
+Referências do 21st.dev usadas no desenho: Editorial Hero (felipemenezes098), Services with Animated Hover Modal (cnippet-dev) e Interactive Accordion (jatin-yadav05). Tudo reescrito em Astro e CSS, sem React, GSAP ou Framer Motion.
 
-Feito pro modelo de entrega rápida: **só hero, serviços, agendamento e localização são obrigatórios**. Equipe, convênios (ou formas de pagamento), espaço e perguntas frequentes aparecem apenas quando o bloco existe no config. Os títulos das seções já têm texto padrão neutro, então o config do cliente é quase só dado.
+Feito pro modelo de entrega rápida: **só hero, serviços, agendamento e localização são obrigatórios**. Equipe, convênios (ou formas de pagamento), espaço e perguntas frequentes aparecem apenas quando o bloco existe no config. O título do hero é o nome do negócio e o de cada seção é o nome dela, com padrão já preenchido, então o config do cliente é quase só dado.
 
 ```
 salvia/
@@ -22,7 +22,7 @@ salvia/
   SalviaBody.astro       fontes + seções + script do status de horário
   SalviaPage.astro       core Page + SalviaBody; falha o build sem contact.whatsapp
   styles.css             regras compartilhadas (grade, cabeçalho de seção, botão, link, status, topbar)
-  sections/              Topbar · Hero · Services · Booking · Team · Insurance · Space · Faq · Location · Footer · _md.ts
+  sections/              Topbar · Hero · Services · Booking · Team · Insurance · Space · Faq · Location · Footer
 ```
 
 ## Fontes
@@ -33,21 +33,21 @@ A página fecha escura: localização e rodapé sentam no `ink` (classe `.on-ink
 
 ## Config
 
-Base (core): `brand`, `theme`, `seo`, `contact`, `analytics`, `legal`, `nav`. Strings **md** aceitam `**texto**` (itálico na cor de destaque), `==texto==` (marca-texto) e `\n`. Todo bloco com `title` aceita `lead?` e tem título padrão.
+Base (core): `brand`, `theme`, `seo`, `contact`, `analytics`, `legal`, `nav`. Títulos são texto simples, num estilo só: o `h1` do hero é `brand.name` e cada seção tem o próprio nome como título. Todo bloco com `title` aceita `lead?` e tem título padrão.
 
 | Seção | Campos |
 | --- | --- |
 | `businessType` | tipo do schema.org pro Google (padrão `'LocalBusiness'`): `MedicalClinic`, `Dentist`, `BeautySalon`, `HairSalon`, `NailSalon`, `LegalService`, `VeterinaryCare`… |
 | `topbar` | `cta` (padrão `'Agendar'`, leva a `#agendar`) |
-| `hero` | `tagline`, `title` (md), `sub`, `photo?` (paisagem 2000×900), `photoAlt`, `highlights: string[]` (até 4, numa linha), `cta`, `secondaryCta` (padrão `'Ver serviços'`) |
+| `hero` | `tagline`, `title?` (o `h1` é o nome do negócio: padrão `brand.name`; preencha só pra encurtar o nome, nunca com slogan), `sub` (linha logo abaixo do nome), `photo?` (paisagem 2000×900), `photoAlt`, `highlights: string[]` (até 4, numa linha), `cta`, `secondaryCta` (padrão `'Ver serviços'`) |
 | `services` | `title` (padrão `'Serviços'`; clínica usa `'Especialidades'`), `items: [{ name, desc, photo? }]` (1 a 12; foto em retrato 800×1000 que segue o cursor; sem foto aparece um cartão com o nome), `bookLabel`. Âncora `#servicos` |
-| `booking` | tudo com padrão: `periods` (`['Manhã','Tarde']`), `serviceLabel` (`'Serviço'`), `message` (`{servico}` `{periodo}`), `nameSentence` (`{nome}`), rótulos, `cta`, `foot?` |
-| `team?` | `people: [{ name, role, registry?, photo?, bio? }]` (1 a 8; `registry` só quando houver: CRM, CRO, OAB…) |
-| `insurance?` | `title` (padrão `'Convênios'`), `anchor` (padrão `'convenios'`), `plans: string[]` (viram uma frase: "A, B e C."), `note?`. Serve pra convênios, formas de pagamento, marcas atendidas |
-| `space?` | `photos: [{ image, alt, caption? }]` (1 a 3, em composição assimétrica) |
-| `faq?` | `items: [{ q, a }]` |
-| `location` | `address: { street, district?, city, state (UF), zip? }`, `mapsUrl?`, `directions: string[]`, `hoursTitle`, `hours: [{ days: ['mon'…'sun'], opens: '08:00', closes: '19:00' }]`, `timezone` (padrão `America/Sao_Paulo`), `hoursNote?` |
-| `footer` | `line`, `wordmark?` (nome gigante; padrão `brand.name`, palavra curta fica melhor), `technicalLead?` (responsável técnico, pra saúde), `technicalLeadLabel?`; sem responsável técnico a coluna se chama "Empresa". `legal.company`, `legal.cnpj`, `legal.lines` e o link de privacidade vão nas colunas |
+| `booking` | tudo com padrão: `title` (`'Agendamento'`), `periods` (`['Manhã','Tarde']`), `serviceLabel` (`'Serviço'`), `message` (`{servico}` `{periodo}`), `nameSentence` (`{nome}`), rótulos, `cta`, `foot?` |
+| `team?` | `title` (padrão `'Equipe'`), `people: [{ name, role, registry?, photo?, bio? }]` (1 a 8; `registry` só quando houver: CRM, CRO, OAB…) |
+| `insurance?` | `title` (padrão `'Convênios'`; salão usa `'Formas de pagamento'`), `anchor` (padrão `'convenios'`), `plans: string[]` (viram uma frase: "A, B e C."), `note?`. Serve pra convênios, formas de pagamento, marcas atendidas |
+| `space?` | `title` (padrão `'Espaço'`), `photos: [{ image, alt, caption? }]` (1 a 3, em composição assimétrica; a legenda sai como está, sem numeração) |
+| `faq?` | `title` (padrão `'Perguntas frequentes'`), `items: [{ q, a }]` |
+| `location` | `title` (padrão `'Como chegar'`), `address: { street, district?, city, state (UF), zip? }`, `mapsUrl?`, `directions: string[]`, `hoursTitle`, `hours: [{ days: ['mon'…'sun'], opens: '08:00', closes: '19:00' }]`, `timezone` (padrão `America/Sao_Paulo`), `hoursNote?` |
+| `footer` | `line`, `technicalLead?` (responsável técnico, pra saúde), `technicalLeadLabel?`; sem responsável técnico a coluna se chama "Empresa". `legal.company`, `legal.cnpj`, `legal.lines` e o link de privacidade vão nas colunas |
 
 `contact.whatsapp` é **obrigatório no site do cliente**: o agendamento abre o WhatsApp. As demos do portfólio rodam sem número (mostram um aviso no lugar).
 

@@ -24,10 +24,8 @@ const locale = localeOf(Astro);
 const t = useT(locale);
 
 const items = featured.slice(0, 6);
-const pad = (n: number) => String(n).padStart(2, '0');
 /** Column A takes the even items, column B the odd ones. */
 const cols = [items.filter((_, i) => i % 2 === 0), items.filter((_, i) => i % 2 === 1)];
-const indexOf = (id: string) => items.findIndex((x) => x.id === id);
 ---
 
 <div class='flow' id='showcase' role='region' aria-label={t.hero.showcase.label}>
@@ -39,7 +37,6 @@ const indexOf = (id: string) => items.findIndex((x) => x.id === id);
 						<div class='flow-track' data-flow-track>
 							{[0, 1].map((copy) =>
 								col.map((p, k) => {
-									const i = indexOf(p.id);
 									const eager = copy === 0 && k === 0;
 									const external = !!p.href && /^https?:\/\//.test(p.href);
 									const href = p.href ? (external ? p.href : localePath(locale, p.href)) : undefined;
@@ -67,7 +64,6 @@ const indexOf = (id: string) => items.findIndex((x) => x.id === id);
 												/>
 											</span>
 											<span class='fcard-meta'>
-												<span class='fcard-i'>{pad(i + 1)}</span>
 												<span class='fcard-name'>{p.title}</span>
 												<span class='fcard-badge'>{pick(p.badge, locale)}</span>
 												{href && copy === 0 && (
@@ -227,16 +223,10 @@ const indexOf = (id: string) => items.findIndex((x) => x.id === id);
 	}
 	.fcard-meta {
 		display: grid;
-		grid-template-columns: auto minmax(0, 1fr) auto;
+		grid-template-columns: minmax(0, 1fr) auto;
 		column-gap: 8px;
 		align-items: baseline;
 		padding: 0 4px;
-	}
-	.fcard-i {
-		font-family: var(--mono);
-		font-size: 10.5px;
-		letter-spacing: 0.06em;
-		color: var(--accent-text);
 	}
 	.fcard-name {
 		font-size: 14px;
@@ -248,16 +238,15 @@ const indexOf = (id: string) => items.findIndex((x) => x.id === id);
 		text-overflow: ellipsis;
 	}
 	.fcard-badge {
-		grid-column: 2;
-		font-family: var(--mono);
-		font-size: 10px;
-		letter-spacing: 0.04em;
+		grid-column: 1;
+		font-size: 12px;
 		color: var(--ink-3);
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
 	.fcard-arr {
+		grid-column: 2;
 		grid-row: 1 / span 2;
 		align-self: center;
 		font-size: 14px;

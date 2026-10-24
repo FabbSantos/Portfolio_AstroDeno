@@ -2,15 +2,23 @@
 /**
  * Brava — portfolio demo. All copy/images live in
  * src/templates/brava/demo.config.ts; the page itself is just layout + body.
+ *
+ * The countdown is the point of this template, so the demo's drop never ends:
+ * each build moves it to the last day of next month (São Paulo time). The
+ * config keeps a fixed date because new clients start from it.
  */
 import DemoLayout from '../../../layouts/DemoLayout.astro';
 import ThemeVars from '../../../templates/core/ThemeVars.astro';
 import BravaBody from '../../../templates/brava/BravaBody.astro';
 import { BRAVA_PRELOAD } from '../../../templates/brava/fonts';
 import demo from '../../../templates/brava/demo.config';
+
+const now = new Date();
+const lastDayOfNextMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 2, 0));
+const config = { ...demo, drop: { ...demo.drop, endsAt: `${lastDayOfNextMonth.toISOString().slice(0, 10)}T23:59:59-03:00` } };
 ---
 
-<DemoLayout slug='brava' title={demo.seo.title} description={demo.seo.description} locale='en' themeColor={demo.theme.bg} preloadFonts={false} preload={BRAVA_PRELOAD}>
-	<ThemeVars theme={demo.theme} />
-	<BravaBody config={demo} />
+<DemoLayout slug='brava' title={config.seo.title} description={config.seo.description} locale='en' themeColor={config.theme.bg} preloadFonts={false} preload={BRAVA_PRELOAD}>
+	<ThemeVars theme={config.theme} />
+	<BravaBody config={config} />
 </DemoLayout>

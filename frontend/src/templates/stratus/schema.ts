@@ -3,13 +3,16 @@
  * object per section. Every user-facing string lives here; the sections
  * render only what this config says.
  *
- * "rich" strings accept `**bold**` (→ wider and heavier inside headings,
- * <strong> in body text) and `\n` (→ line break). See sections/_md.ts.
+ * "rich" strings are body text only (leads, descriptions, answers): they
+ * accept `**bold**` (→ plain <strong>) and `\n` (→ line break). See
+ * sections/_md.ts. Titles are plain text in one style: the section's name.
  */
 import { z } from 'astro/zod';
 import { baseSiteSchema, defineSite, hex, image } from '../core/schema';
 
 const rich = z.string().min(1);
+/** Heading text, rendered as-is (no `**`, no `\n`): the section's name, e.g. 'Pricing'. */
+const title = z.string().min(1);
 const link = z.object({ label: z.string().min(1), href: z.string().min(1) });
 
 /** Mirrors core `LeadField` so a config can describe the final-CTA form. */
@@ -34,6 +37,7 @@ export const stratusSchema = baseSiteSchema.extend({
 	}),
 
 	hero: z.object({
+		/** Release line in mono, shown under the calls to action. */
 		pill: z
 			.object({
 				tag: z.string().optional(),
@@ -41,7 +45,8 @@ export const stratusSchema = baseSiteSchema.extend({
 				href: z.string().optional(),
 			})
 			.optional(),
-		title: rich,
+		/** The h1: the product's name. */
+		title,
 		lead: rich,
 		primary: link,
 		secondary: link.optional(),
@@ -71,19 +76,19 @@ export const stratusSchema = baseSiteSchema.extend({
 	/** Logo band; hidden when `items` is empty. Items without `image` render the name as a wordmark. */
 	logos: z
 		.object({
+			/** Small mono label at the start of the strip, e.g. 'Trusted by'. */
 			title: z.string().optional(),
 			items: z.array(z.object({ name: z.string().min(1), image: image.nullable().default(null) })).default([]),
 		})
 		.prefault({}),
 
 	features: z.object({
-		eyebrow: z.string().optional(),
-		title: rich,
+		title,
 		lead: rich.optional(),
 		items: z
 			.array(
 				z.object({
-					/** Optional glyph (1–2 characters) shown next to the index. */
+					/** Optional glyph (1–2 characters) shown above the card title. */
 					icon: z.string().min(1).max(4).optional(),
 					title: z.string().min(1),
 					desc: rich,
@@ -97,8 +102,7 @@ export const stratusSchema = baseSiteSchema.extend({
 	/** Omit to drop the pricing section entirely. */
 	pricing: z
 		.object({
-			eyebrow: z.string().optional(),
-			title: rich,
+			title,
 			lead: rich.optional(),
 			/** Monthly/annual switch; needs `priceAnnual` on the plans. */
 			toggle: z
@@ -144,14 +148,14 @@ export const stratusSchema = baseSiteSchema.extend({
 	/** Omit to drop the FAQ. */
 	faq: z
 		.object({
-			eyebrow: z.string().optional(),
-			title: rich,
+			title,
 			items: z.array(z.object({ q: z.string().min(1), a: rich })).min(1),
 		})
 		.optional(),
 
 	finalCta: z.object({
-		title: rich,
+		/** The section's name (e.g. 'Get started'), not a restatement of the hero. */
+		title,
 		sub: rich.optional(),
 		ctas: z.array(link).default([]),
 		/** Optional lead-capture form (core LeadForm, `contact.form.provider`). Rendered below the buttons. */

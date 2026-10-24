@@ -44,10 +44,9 @@ export default defineMirante({
 	},
 
 	hero: {
-		eyebrow: 'Lançamento · Pinheiros, SP · Pré-vendas abertas',
-		title: 'Pinheiros,',
-		titleAccent: 'em outro nível.',
+		title: 'Mirante Pinheiros',
 		sub: 'Lançamento residencial com **76 unidades**, 2 a 3 dormitórios e 84 a 132m². A **320m da estação Faria Lima**.',
+		status: 'Lançamento · Pinheiros, SP · Pré-vendas abertas',
 		gallery: [
 			{ image: fachada, label: 'Fachada', alt: 'Fachada do edifício com varandas e uma árvore na frente' },
 			{ image: vista, label: 'Vista', alt: 'Prédios de Pinheiros ao pôr do sol, vistos da cobertura' },
@@ -71,8 +70,7 @@ export default defineMirante({
 	],
 
 	project: {
-		eyebrow: 'O empreendimento',
-		title: 'Pensado para **Pinheiros**,\npor quem mora aqui.',
+		title: 'Projeto',
 		paragraphs: [
 			'O Mirante é um lançamento residencial assinado pela Helios + Coastal, na esquina da Cardeal Arcoverde com a Sumidouro. Coração de Pinheiros, com toda a movimentação do bairro a pé.',
 			'Apartamentos de 84m² a 132m², com 2 ou 3 dormitórios (1 ou 2 suítes), vaga coberta na garagem e área privativa pensada para receber em casa. Lazer completo no térreo e na cobertura.',
@@ -94,8 +92,7 @@ export default defineMirante({
 	},
 
 	plans: {
-		eyebrow: 'Plantas',
-		title: 'Três tipologias.\n**Escolha a sua.**',
+		title: 'Plantas',
 		items: [
 			{ tag: 'Tipologia A', m2: '84m²', desc: '2 dorms · 1 suíte · 1 vaga', image: plantaA },
 			{ tag: 'Tipologia B', m2: '102m²', desc: '3 dorms · 1 suíte · 1 vaga', image: plantaB, featured: true, badge: 'Mais procurado' },
@@ -104,8 +101,7 @@ export default defineMirante({
 	},
 
 	location: {
-		eyebrow: 'Localização · Pinheiros, São Paulo',
-		title: 'Tudo a **menos de 1km.**',
+		title: 'Localização',
 		map: { kind: 'image', image: mapa, alt: 'Mapa da região com os pontos de interesse numerados' },
 		poi: [
 			{ name: 'Metrô Faria Lima', d: '320m' },
@@ -118,18 +114,17 @@ export default defineMirante({
 	},
 
 	conditions: {
-		eyebrow: 'Condições · pré-venda',
-		title: 'Três formas **de fechar.**',
+		title: 'Condições',
 		items: [
 			{
 				tag: 'À vista',
-				headline: 'Desconto de até **12%**',
+				headline: 'Desconto de até 12%',
 				desc: 'Pagamento integral em até 30 dias com escritura imediata.',
 				bullets: ['Sem juros, sem correção', 'Negociação direta', 'Escritura em até 60 dias'],
 			},
 			{
 				tag: 'Financiamento direto',
-				headline: 'Entrada de **10%** + 60×',
+				headline: 'Entrada de 10% + 60×',
 				desc: 'Financiamento direto com a construtora, sem juros até as chaves.',
 				bullets: ['Sem análise bancária', 'Aprovação em 48h', 'Reajuste pelo INCC'],
 				featured: true,
@@ -137,7 +132,7 @@ export default defineMirante({
 			},
 			{
 				tag: 'Financiamento bancário',
-				headline: 'Entrada de **20%**',
+				headline: 'Entrada de 20%',
 				desc: 'Saldo financiado em até 35 anos com bancos parceiros.',
 				bullets: ['Itaú, Bradesco e Santander', 'Pré-aprovação no plantão', 'Usa FGTS'],
 			},
@@ -146,8 +141,7 @@ export default defineMirante({
 	},
 
 	lead: {
-		eyebrow: 'Quero conhecer',
-		title: 'Vamos marcar **sua visita?**',
+		title: 'Visita',
 		sub: 'Preencha aqui e um consultor entra em contato em até 24h úteis. Sem compromisso. Visita ao decorado dura cerca de 45 minutos.',
 		bullets: ['Tour completo pelo decorado', 'Tabela de unidades disponíveis', 'Simulação de financiamento', 'Sem cobrança · sem compromisso'],
 		times: ['Manhã', 'Tarde', 'Noite', 'Sábado'],

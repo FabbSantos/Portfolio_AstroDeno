@@ -1,10 +1,9 @@
 /**
  * Atelier — studio / agency portfolio.
- * Editorial, lots of whitespace, case grid + numbered process.
+ * Editorial, lots of whitespace, case grid, the studio block and an e-mail-first contact.
  *
- * Extends the core site schema with one slice per section. Strings marked
- * "md" accept the mini-markdown of `sections/_md.ts`:
- *   **text** → italic · ==text== → italic underlined in the second colour · newline → <br>
+ * Extends the core site schema with one slice per section. Titles are plain
+ * text set in one upright style: the section's name, no accent words.
  */
 import { z } from 'astro/zod';
 import { baseSiteSchema, defineSite, hex, image } from '../core/schema';
@@ -23,8 +22,6 @@ const leadField = z.object({
 });
 
 const caseItem = z.object({
-	/** Index shown next to the title ("01"). */
-	n: z.string().min(1),
 	client: z.string().min(1),
 	tag: z.string().min(1),
 	year: z.string().min(1),
@@ -50,31 +47,23 @@ export const atelierSchema = baseSiteSchema.extend({
 		cta: link,
 	}),
 	hero: z.object({
-		eyebrow: z.string().min(1),
-		/** md */
+		/** The h1: the studio's name. */
 		title: z.string().min(1),
+		/** Plain line under the title ("Independent design studio, est. 2019"). */
+		sub: z.string().min(1).optional(),
 		/** Wide photo (2400×1200) that opens the page above the title; the LCP. Omit for a text-only hero. */
 		image: image.optional(),
 		imageAlt: z.string().optional(),
 		meta: z.array(z.object({ label: z.string().min(1), value: z.string().min(1) })).default([]),
 	}),
 	work: z.object({
-		eyebrow: z.string().min(1),
-		/** md */
+		/** Section name ("Work"). */
 		title: z.string().min(1),
 		cases: z.array(caseItem).min(1),
 		archive: link.optional(),
 	}),
-	process: z.object({
-		eyebrow: z.string().min(1),
-		/** md */
-		title: z.string().min(1),
-		lead: z.string().optional(),
-		steps: z.array(z.object({ n: z.string().min(1), t: z.string().min(1), d: z.string().min(1) })).min(1),
-	}),
 	studio: z.object({
-		eyebrow: z.string().min(1),
-		/** md */
+		/** Section name ("Studio"). */
 		title: z.string().min(1),
 		paragraphs: z.array(z.string().min(1)).min(1),
 		link: link.optional(),
@@ -83,8 +72,7 @@ export const atelierSchema = baseSiteSchema.extend({
 	/** Core `contact` (whatsapp / phone / form) + the closing section's copy. E-mail is required: the template is e-mail first. */
 	contact: baseSiteSchema.shape.contact.extend({
 		email: z.email(),
-		eyebrow: z.string().min(1),
-		/** md */
+		/** Section name ("Contact"). */
 		title: z.string().min(1),
 		sub: z.string().optional(),
 		/** Text before the social links ("or follow along"). */

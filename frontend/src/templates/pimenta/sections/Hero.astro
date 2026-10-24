@@ -2,17 +2,18 @@
 /**
  * Hero, after 21st.dev "Minimalist Hero" (ravikatiyar162): short text and the
  * actions on the left, a flat accent disc with the signature plate in black
- * and white in the middle, the giant condensed title on the right, overlapping
- * the disc. Address, hours and Instagram run along the bottom.
+ * and white in the middle, the business name set giant in condensed capitals
+ * on the right, overlapping the disc. Address, hours and Instagram run along
+ * the bottom.
  *
- * Each title line is nowrap, so the block keeps its height when the display
+ * The name goes one word per line (a short word like "e" stays with the word
+ * before). Each line is nowrap, so the block keeps its height when the display
  * font swaps in (no layout shift). The entrance moves transforms only: the
  * title is the LCP and must paint on the first frame.
  */
 import { Image } from 'astro:assets';
 import { hoursSummary, OPEN_STRINGS } from '../../core/hours';
 import type { PimentaConfig } from '../schema';
-import { md } from './_md';
 
 interface Props {
 	config: PimentaConfig;
@@ -21,15 +22,22 @@ const { config } = Astro.props;
 const { hero, location, brand } = config;
 const locale = brand.locale;
 const en = locale === 'en';
-const lines = hero.title.split('\n').map((l) => l.trim()).filter(Boolean).map(md);
+const words = brand.name.trim().split(/\s+/);
+const lines = words.reduce<string[]>((acc, w, i) => {
+	if (acc.length > 0 && [...w].length <= 2 && i < words.length - 1) acc[acc.length - 1] += ` ${w}`;
+	else acc.push(w);
+	return acc;
+}, []);
+/** Letters in the longest line: caps the font size so a long name never runs off the page. */
+const chars = Math.max(...lines.map((l) => [...l].length));
 const status = JSON.stringify({ hours: location.hours, tz: location.timezone, locale, strings: OPEN_STRINGS[locale] });
 const a = location.address;
 ---
 
 <section class='hero' aria-labelledby='pimenta-hero-title'>
 	<div class='wrap stage'>
-		<h1 id='pimenta-hero-title' class='title display'>
-			{lines.map((l) => <span class='line' set:html={l} />)}
+		<h1 id='pimenta-hero-title' class='title display' style={`--chars:${chars}`}>
+			{lines.map((l) => <span class='line'>{l}{' '}</span>)}
 		</h1>
 
 		<div class='media'>
@@ -90,13 +98,16 @@ const a = location.address;
 		min-height: min(78vh, 720px);
 	}
 
-	/* Title: overlaps the disc from the right */
+	/* Title: overlaps the disc from the right. The size is capped so the longest
+	   line (--chars letters, about 0.45em each in this face) fits the title
+	   column plus the space outside the wrap; it only kicks in for long words. */
 	.title {
+		--room: calc(1.06 * (min(100vw, var(--wrap)) - 2 * var(--pad-x) - 48px) / 3 + (100vw - min(100vw, var(--wrap))) / 2);
 		grid-area: title;
 		position: relative;
 		z-index: 2;
 		margin-left: -6%;
-		font-size: clamp(64px, 9.4vw, 168px);
+		font-size: min(clamp(64px, 9.4vw, 168px), var(--room) / (var(--chars, 6) * 0.45));
 	}
 	.line {
 		display: block;
@@ -221,7 +232,7 @@ const a = location.address;
 		}
 		.title {
 			margin-left: 0;
-			font-size: clamp(56px, 17vw, 120px);
+			font-size: min(clamp(56px, 17vw, 120px), (100vw - 2 * var(--pad-x)) / (var(--chars, 6) * 0.45));
 		}
 		.media {
 			width: 84%;

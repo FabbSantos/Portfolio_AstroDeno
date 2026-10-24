@@ -37,40 +37,15 @@
 	top: 0;
 }
 
-/* Mono eyebrow / section label */
+/* Section label: a quiet sentence-case line in the body font (no caps, no coloured kicker). */
 .eyebrow {
-	font-family: var(--mono);
-	font-size: 12px;
-	font-weight: 600;
-	letter-spacing: 0.14em;
-	text-transform: uppercase;
+	font-size: 15px;
+	font-weight: 500;
+	line-height: 1.4;
 	color: var(--ink-3);
 }
-.eyebrow.accent {
-	color: var(--accent-text);
-}
 
-/* Emphasis word in display headings (≥ 24px bold — the bright accent passes AA-large) */
-.hl {
-	color: var(--accent);
-	font-weight: 800;
-}
-/* Animated coral→violet text. Opt-in (hero only) — gradient text is loud. */
-.hl-anim {
-	background: linear-gradient(100deg, var(--accent) 0%, var(--accent-2) 45%, var(--accent) 100%);
-	background-size: 220% 100%;
-	background-position: 0% 50%;
-	-webkit-background-clip: text;
-	background-clip: text;
-	color: transparent;
-	-webkit-text-fill-color: transparent;
-	animation: hlShift 6s ease-in-out infinite;
-}
-@keyframes hlShift {
-	50% {
-		background-position: 100% 50%;
-	}
-}
+/* Headings are one colour and one style: no accent word (the owner's rule). */
 
 /* ==========================================================================
    Buttons — hover = lift (transform) + tinted shadow; primary gets a shine
@@ -321,11 +296,8 @@
 /* Status pills */
 .pill {
 	display: inline-block;
-	font-family: var(--mono);
-	font-size: 11px;
+	font-size: 13px;
 	font-weight: 600;
-	letter-spacing: 0.06em;
-	text-transform: uppercase;
 	padding: 3px 9px;
 	border-radius: 999px;
 	background: var(--bg-2);

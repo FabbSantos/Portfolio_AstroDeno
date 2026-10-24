@@ -36,7 +36,7 @@ export default defineStratus({
 
 	hero: {
 		pill: { tag: 'v3.0', text: 'Anomaly detection now ships out of the box', href: '#' },
-		title: 'Analytics,\n**without the friction.**',
+		title: 'Stratus',
 		lead: 'The first analytics platform that configures itself. Plug your stack in 60 seconds. 14-day trial, no credit card, no sales call.',
 		primary: { label: 'Start free for 14 days', href: '#cta' },
 		secondary: { label: 'Watch the 90s demo', href: '#' },
@@ -60,8 +60,7 @@ export default defineStratus({
 	},
 
 	features: {
-		eyebrow: 'Features',
-		title: "Everything you need.\n**Nothing you don't.**",
+		title: 'Features',
 		lead: 'Six things the platform does on day one, without a workshop, a consultant or a 40-page setup guide.',
 		items: [
 			{ title: 'Setup in 60 seconds', desc: 'Drop in a single snippet. Auto-detects pages, events and conversions on first load.' },
@@ -74,8 +73,7 @@ export default defineStratus({
 	},
 
 	pricing: {
-		eyebrow: 'Pricing',
-		title: 'Simple, **honest pricing.**',
+		title: 'Pricing',
 		lead: '14-day free trial on every plan. Annual saves 20%. No setup fees, ever.',
 		toggle: { label: 'Billing period', monthly: 'Monthly', annual: 'Annual', note: '-20%' },
 		plans: [
@@ -123,8 +121,7 @@ export default defineStratus({
 	},
 
 	faq: {
-		eyebrow: 'Questions',
-		title: 'The honest **FAQ.**',
+		title: 'FAQ',
 		items: [
 			{
 				q: 'Do I need a credit card to start the trial?',
@@ -146,7 +143,7 @@ export default defineStratus({
 	},
 
 	finalCta: {
-		title: 'Stop guessing. **Start knowing.**',
+		title: 'Get started',
 		sub: 'Set up takes a minute. Insight starts the same day.',
 		ctas: [
 			{ label: 'Start free trial', href: '#' },

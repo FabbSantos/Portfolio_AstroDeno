@@ -1,8 +1,9 @@
 ---
 /**
- * "O empreendimento": the photo stays pinned on the left and swaps as each
- * paragraph scrolls into the middle of the screen (gallery photos 2… cycle);
- * copy on the right, then the amenities as a two-column hairline list.
+ * Project: the photo stays pinned on the left and swaps as each paragraph
+ * scrolls into the middle of the screen (gallery photos 2… cycle); title and
+ * copy on the right, then the amenities as a two-column hairline list under
+ * a small plain heading.
  */
 import { Image } from 'astro:assets';
 import type { MiranteConfig } from '../schema';
@@ -34,13 +35,12 @@ const widths = (w: number) => [...[480, 640, 960, 1280].filter((x) => x < w), w]
 			}
 		</div>
 		<div class='pj-copy'>
-			{project.eyebrow && <p class='eyebrow'>{project.eyebrow}</p>}
-			<h2 id='projeto-title' class='display' set:html={md(project.title)} />
+			<h2 id='projeto-title' class='display'>{project.title}</h2>
 			<div class='pj-text'>
 				{project.paragraphs.map((p, i) => <p class:list={['pj-p', { 'is-on': i === 0 }]} data-pj-p={i % photos.length} set:html={md(p)} />)}
 			</div>
 			<div class='pj-amen'>
-				{project.amenitiesTitle && <p class='eyebrow'>{project.amenitiesTitle}</p>}
+				{project.amenitiesTitle && <h3 class='amen-h'>{project.amenitiesTitle}</h3>}
 				<ul class='amen'>
 					{project.amenities.map((a) => <li>{a}</li>)}
 				</ul>
@@ -116,16 +116,11 @@ const widths = (w: number) => [...[480, 640, 960, 1280].filter((x) => x < w), w]
 		left: 18px;
 		bottom: 16px;
 		font-family: var(--mono);
-		font-size: 11px;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
+		font-size: 13px;
 		color: #fff;
 		text-shadow: 0 1px 12px color-mix(in srgb, #000 55%, transparent);
 	}
 
-	.pj-copy .eyebrow {
-		margin-bottom: 18px;
-	}
 	.pj-copy h2 {
 		font-size: clamp(44px, 5.4vw, 84px);
 		max-width: 13ch;
@@ -151,8 +146,14 @@ const widths = (w: number) => [...[480, 640, 960, 1280].filter((x) => x < w), w]
 	.pj-amen {
 		margin-top: 56px;
 	}
-	.pj-amen .eyebrow {
+	/* Small plain heading over the amenities list */
+	.amen-h {
 		margin-bottom: 8px;
+		font-family: var(--text);
+		font-size: 15px;
+		font-weight: 600;
+		line-height: 1.4;
+		color: var(--ink);
 	}
 	.amen {
 		list-style: none;

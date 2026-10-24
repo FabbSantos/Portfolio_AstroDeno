@@ -40,7 +40,6 @@ export default defineSalvia({
 
 	hero: {
 		tagline: 'Clínica integrada em Botafogo, Rio de Janeiro. Seis especialidades no mesmo endereço.',
-		title: 'Cuidado de perto, sem pressa.',
 		sub: 'Você marca pelo WhatsApp em dois toques e é atendido por quem conhece o seu histórico, do check-up ao tratamento.',
 		photo: recepcaoLarga,
 		photoAlt: 'Recepção da clínica com arcos brancos e mesas de madeira',
@@ -113,7 +112,6 @@ export default defineSalvia({
 
 	footer: {
 		line: '© 2026 Clínica Sálvia',
-		wordmark: 'Sálvia',
 		technicalLead: 'Dr. Rafael Menezes, CRM-RJ 52.000.001',
 	},
 });

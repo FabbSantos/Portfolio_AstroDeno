@@ -1,5 +1,5 @@
 ---
-/** FAQ as a numbered accordion on hairlines: index in mono, the question, a "+" that turns into "×". */
+/** FAQ as an accordion on hairlines: the question, a "+" that turns into "×". */
 import type { StratusConfig } from '../schema';
 import { md } from './_md';
 
@@ -7,7 +7,6 @@ interface Props {
 	config: StratusConfig;
 }
 const { faq } = Astro.props.config;
-const num = (i: number) => String(i + 1).padStart(2, '0');
 ---
 
 {
@@ -15,14 +14,14 @@ const num = (i: number) => String(i + 1).padStart(2, '0');
 		<section class='faq sec' id='faq' aria-labelledby='faq-title'>
 			<div class='wrap faq-grid'>
 				<div class='faq-head'>
-					{faq.eyebrow && <p class='eyebrow'>{faq.eyebrow}</p>}
-					<h2 id='faq-title' class='display' set:html={md(faq.title)} />
+					<h2 id='faq-title' class='display'>
+						{faq.title}
+					</h2>
 				</div>
 				<div class='faq-list'>
-					{faq.items.map((item, i) => (
+					{faq.items.map((item) => (
 						<details data-accordion>
 							<summary>
-								<span class='q-n'>{num(i)}</span>
 								<span class='q-t'>{item.q}</span>
 								<span class='q-x' aria-hidden='true' />
 							</summary>
@@ -66,7 +65,7 @@ const num = (i: number) => String(i + 1).padStart(2, '0');
 		cursor: pointer;
 		list-style: none;
 		display: grid;
-		grid-template-columns: 44px minmax(0, 1fr) 28px;
+		grid-template-columns: minmax(0, 1fr) 28px;
 		align-items: baseline;
 		gap: 14px;
 		padding: 22px 0;
@@ -81,12 +80,6 @@ const num = (i: number) => String(i + 1).padStart(2, '0');
 	.faq summary:focus-visible {
 		outline: 2px solid var(--ink);
 		outline-offset: 4px;
-	}
-	.q-n {
-		font-family: var(--mono);
-		font-size: 12px;
-		font-weight: 500;
-		color: var(--ink-3);
 	}
 	.q-x {
 		position: relative;
@@ -117,11 +110,8 @@ const num = (i: number) => String(i + 1).padStart(2, '0');
 	.faq details[open]:not(.is-closing) .q-x {
 		transform: rotate(45deg);
 	}
-	.faq details[open]:not(.is-closing) .q-n {
-		color: var(--accent-text);
-	}
 	.faq p {
-		padding: 0 0 24px 58px;
+		padding: 0 0 24px;
 		font-size: 16px;
 		line-height: 1.6;
 		color: var(--ink-2);
@@ -135,11 +125,8 @@ const num = (i: number) => String(i + 1).padStart(2, '0');
 			position: static;
 		}
 		.faq summary {
-			grid-template-columns: 34px minmax(0, 1fr) 24px;
+			grid-template-columns: minmax(0, 1fr) 24px;
 			font-size: 17px;
-		}
-		.faq p {
-			padding-left: 48px;
 		}
 	}
 </style>

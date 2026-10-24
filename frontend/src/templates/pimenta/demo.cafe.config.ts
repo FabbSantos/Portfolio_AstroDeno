@@ -42,7 +42,6 @@ export default definePimenta({
 
 	hero: {
 		tagline: 'Padaria de fermentação natural e café de torra própria no Batel, em Curitiba. Pão saindo do forno às 7h e às 16h.',
-		title: 'Pão\nquente,\ncafé\nforte.',
 		photo: cafeHero,
 		photoAlt: 'Cappuccino com desenho de folha na espuma, visto de cima sobre uma mesa de madeira',
 		cta: 'Reservar mesa',
@@ -103,7 +102,6 @@ export default definePimenta({
 	},
 
 	crew: {
-		title: 'No balcão',
 		lead: 'Quem acorda às quatro pra fornada das sete.',
 		people: [
 			{ name: 'Rafa Moreira', role: 'Padeira e fundadora', photo: balcaoMaquina, alt: 'Mão compactando café no porta-filtro da máquina' },
@@ -113,13 +111,11 @@ export default definePimenta({
 	},
 
 	reservation: {
-		title: 'Reserve pro brunch',
 		lead: 'No fim de semana as mesas acabam cedo. Escolha o dia, o horário e quantas pessoas.',
 		times: ['08:00', '09:00', '10:00', '11:00', '15:00', '16:00'],
 		maxPeople: 8,
 		foot: 'Mesas pra até 8 pessoas. Encomenda de bolo, chama no WhatsApp.',
 		delivery: {
-			title: 'Pão em casa',
 			links: [
 				{ label: 'iFood', href: 'https://www.ifood.com.br/' },
 				{ label: 'Rappi', href: 'https://www.rappi.com.br/' },
@@ -140,6 +136,5 @@ export default definePimenta({
 
 	footer: {
 		line: '© 2026 Miga Café e Padaria',
-		wordmark: 'Miga',
 	},
 });

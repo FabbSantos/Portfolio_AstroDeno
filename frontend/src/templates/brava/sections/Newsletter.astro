@@ -6,7 +6,6 @@
 import LeadForm from '../../core/LeadForm.astro';
 import type { LeadField } from '../../core/schema';
 import type { BravaConfig } from '../schema';
-import { md } from './_md';
 
 interface Props {
 	config: BravaConfig;
@@ -23,7 +22,7 @@ const fields: LeadField[] = [
 <section class='news sec' aria-labelledby='news-title'>
 	<div class='wrap news-in'>
 		<div class='news-copy'>
-			<h2 id='news-title' class='display' set:html={md(newsletter.title)} />
+			<h2 id='news-title' class='display'>{newsletter.title}</h2>
 			<p>{newsletter.sub}</p>
 		</div>
 		<div class='news-form'>

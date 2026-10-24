@@ -43,10 +43,8 @@ const sentHref = localePath(locale, '/orcamento-enviado');
 <section class='contact section' id='contato'>
 	<div class='head'>
 		<span class='eyebrow accent reveal'>{c.eyebrow}</span>
-		<h2>
-			<span class='reveal'>{c.head1}</span>
-			<span class='hl reveal d1'>{c.head2}</span>
-		</h2>
+		<h2 class='reveal'>{c.head1}</h2>
+		<p class='sub-lead reveal d1'>{c.head2}</p>
 		<p class='sub reveal d2'>{c.sub}</p>
 	</div>
 
@@ -223,12 +221,15 @@ const sentHref = localePath(locale, '/orcamento-enviado');
 	.contact h2 span {
 		display: block;
 	}
-	/* Second line stays ≥ 28px bold, so the bright accent passes AA-large. */
-	.contact h2 .hl {
-		font-size: var(--fs-h3);
-		letter-spacing: -0.025em;
-		line-height: 1.12;
-		margin-top: 14px;
+	/* The promise under the title: plain text, one colour (no accent line in the heading). */
+	.contact .sub-lead {
+		max-width: 34ch;
+		margin: 16px auto 0;
+		font-size: 22px;
+		font-weight: 600;
+		letter-spacing: -0.015em;
+		line-height: 1.3;
+		color: var(--ink);
 	}
 	.contact .sub {
 		margin: 22px auto 0;

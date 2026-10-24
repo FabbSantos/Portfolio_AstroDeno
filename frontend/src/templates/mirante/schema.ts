@@ -6,14 +6,17 @@
  * what this config says. Legal lines (CRECI, RI, disclaimer) come from the
  * core `legal.lines`; the CNPJ from `legal.cnpj`.
  *
- * "rich" strings accept `**bold**` (→ italic inside headings, bold ink in body
- * text, the giant figure in a condition headline) and `\n` (→ line break).
- * See sections/_md.ts.
+ * Titles are plain text in one style: the section's name ('Plantas',
+ * 'Localização'), no accent word, no eyebrow above them. "rich" strings
+ * (body copy only) accept `**bold**` (→ plain bold in ink) and `\n`
+ * (→ line break). See sections/_md.ts.
  */
 import { z } from 'astro/zod';
 import { baseSiteSchema, defineSite, image } from '../core/schema';
 
 const rich = z.string().min(1);
+/** Plain text, rendered as is (no `**`, no `\n`). */
+const plain = z.string().min(1);
 const link = z.object({ label: z.string().min(1), href: z.string().min(1) });
 
 export const miranteSchema = baseSiteSchema.extend({
@@ -26,13 +29,12 @@ export const miranteSchema = baseSiteSchema.extend({
 		.prefault({}),
 
 	hero: z.object({
-		/** Shown after the pulsing "live" dot, e.g. 'Lançamento · Pinheiros, SP · Pré-vendas abertas'. */
-		eyebrow: z.string().min(1),
-		title: z.string().min(1),
-		/** Second half of the h1, set in italic. */
-		titleAccent: z.string().min(1),
+		/** The h1: the name of the launch ('Mirante Pinheiros'). */
+		title: plain,
 		/** rich */
 		sub: rich,
+		/** Small status line under the sub, after the pulsing "live" dot ('Lançamento · Pinheiros, SP · Pré-vendas abertas'). */
+		status: z.string().optional(),
 		/**
 		 * 2 to 6 landscape photos (2400×1500). #1 opens the page full-screen (the LCP);
 		 * all of them make the hero filmstrip, and #2… take turns beside the project
@@ -59,19 +61,18 @@ export const miranteSchema = baseSiteSchema.extend({
 	stats: z.array(z.object({ v: z.string().min(1), l: z.string().min(1) })).min(1),
 
 	project: z.object({
-		eyebrow: z.string().optional(),
-		/** rich */
-		title: rich,
+		/** Section name ('Projeto'). */
+		title: plain,
 		/** rich */
 		paragraphs: z.array(rich).min(1),
+		/** Small heading above the amenities list ('Lazer e serviços'). */
 		amenitiesTitle: z.string().optional(),
 		amenities: z.array(z.string().min(1)).min(1),
 	}),
 
 	plans: z.object({
-		eyebrow: z.string().optional(),
-		/** rich */
-		title: rich,
+		/** Section name ('Plantas'). */
+		title: plain,
 		items: z
 			.array(
 				z.object({
@@ -94,9 +95,8 @@ export const miranteSchema = baseSiteSchema.extend({
 	}),
 
 	location: z.object({
-		eyebrow: z.string().optional(),
-		/** rich */
-		title: rich,
+		/** Section name ('Localização'). */
+		title: plain,
 		map: z.discriminatedUnion('kind', [
 			/** Client's own map (1300×1000, 13:10) — draw the pins on it. */
 			z.object({ kind: z.literal('image'), image, alt: z.string().optional() }),
@@ -105,20 +105,19 @@ export const miranteSchema = baseSiteSchema.extend({
 			/** CSS placeholder with the brand marker and numbered pins for the first 6 POIs. */
 			z.object({ kind: z.literal('wireframe') }),
 		]),
-		/** Points of interest, numbered 01… in this order. `d` is the distance ('320m'). */
+		/** Points of interest, numbered 01… in this order (the numbers match the pins on the map). `d` is the distance ('320m'). */
 		poi: z.array(z.object({ name: z.string().min(1), d: z.string().min(1) })).min(1),
 	}),
 
 	conditions: z.object({
-		eyebrow: z.string().optional(),
-		/** rich */
-		title: rich,
+		/** Section name ('Condições'). */
+		title: plain,
 		items: z
 			.array(
 				z.object({
 					tag: z.string().min(1),
-					/** rich — e.g. 'Desconto de até **12%**' */
-					headline: rich,
+					/** Plain text, one style, e.g. 'Desconto de até 12%'. */
+					headline: plain,
 					desc: z.string().min(1),
 					bullets: z.array(z.string().min(1)).default([]),
 					featured: z.boolean().default(false),
@@ -131,9 +130,8 @@ export const miranteSchema = baseSiteSchema.extend({
 	}),
 
 	lead: z.object({
-		eyebrow: z.string().optional(),
-		/** rich */
-		title: rich,
+		/** Section name ('Visita'). */
+		title: plain,
 		sub: z.string().min(1),
 		bullets: z.array(z.string().min(1)).default([]),
 		/** Options of the "melhor horário" select. */

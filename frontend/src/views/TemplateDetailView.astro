@@ -82,7 +82,7 @@ const relatedCols = others.length % 2 === 0 ? 2 : 3;
 			<div class='hero-main'>
 				<a href={localePath(locale, '/templates')} class='back'>← {t.templates.detail.back}</a>
 				<p class='eyebrow accent'>{meta}</p>
-				<h1>{tpl.name}{tpl.accent && <Fragment>{' '}<span class='hl'>{tpl.accent}</span></Fragment>}</h1>
+				<h1>{tpl.name}{tpl.accent && <Fragment>{' '}{tpl.accent}</Fragment>}</h1>
 				<p class='lead'>{description}</p>
 				<div class='fits'>
 					<span class='fits-k' id='fits-title'>{t.templates.detail.fitsTitle}</span>
@@ -212,13 +212,10 @@ const relatedCols = others.length % 2 === 0 ? 2 : 3;
 					<h2>{t.templates.steps.title}</h2>
 					<ol class='steps'>
 						{
-							steps.map((s, i) => (
+							steps.map((s) => (
 								<li>
-									<span class='num' aria-hidden='true'>{String(i + 1).padStart(2, '0')}</span>
-									<div>
-										<h3>{s.title}</h3>
-										<p>{s.desc}</p>
-									</div>
+									<h3>{s.title}</h3>
+									<p>{s.desc}</p>
 								</li>
 							))
 						}
@@ -243,7 +240,7 @@ const relatedCols = others.length % 2 === 0 ? 2 : 3;
 		</section>
 
 		<section class='cta-band'>
-			<h2>{t.templates.cta.head} <span class='hl'>{t.templates.cta.headAccent}</span></h2>
+			<h2>{t.templates.cta.head} {t.templates.cta.headAccent}</h2>
 			<p class='sub'>{t.templates.cta.sub}</p>
 			<div class='actions'>
 				<a href={wantHref} class='btn btn-primary'>{t.templates.detail.want}</a>
@@ -367,11 +364,8 @@ const relatedCols = others.length % 2 === 0 ? 2 : 3;
 		gap: 8px 12px;
 	}
 	.fits-k {
-		font-family: var(--mono);
-		font-size: 12px;
+		font-size: 13px;
 		font-weight: 600;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
 		color: var(--ink-3);
 	}
 	.fits ul {
@@ -399,11 +393,8 @@ const relatedCols = others.length % 2 === 0 ? 2 : 3;
 		gap: 8px 10px;
 	}
 	.price .from {
-		font-family: var(--mono);
-		font-size: 12px;
+		font-size: 13px;
 		font-weight: 600;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
 		color: var(--ink-3);
 	}
 	.price strong {
@@ -443,11 +434,8 @@ const relatedCols = others.length % 2 === 0 ? 2 : 3;
 		background: var(--bg-3);
 	}
 	.scores-title {
-		font-family: var(--mono);
-		font-size: 11px;
+		font-size: 13px;
 		font-weight: 600;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
 		color: var(--ink-3);
 	}
 	.gauges {
@@ -601,11 +589,8 @@ const relatedCols = others.length % 2 === 0 ? 2 : 3;
 		gap: 10px;
 	}
 	.seg-k {
-		font-family: var(--mono);
-		font-size: 12px;
+		font-size: 13px;
 		font-weight: 600;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
 		color: var(--ink-3);
 	}
 	.seg.seg-ex {
@@ -730,22 +715,10 @@ const relatedCols = others.length % 2 === 0 ? 2 : 3;
 		list-style: none;
 	}
 	.sections li {
-		display: flex;
-		gap: 12px;
 		padding: 12px 0;
 		border-top: 1px solid var(--rule);
 		font-size: 15px;
 		color: var(--ink-2);
-		counter-increment: sec;
-	}
-	.sections li::before {
-		content: counter(sec, decimal-leading-zero);
-		font-family: var(--mono);
-		font-size: 12px;
-		font-weight: 600;
-		color: var(--accent-text);
-		padding-top: 3px;
-		min-width: 24px;
 	}
 	.included li {
 		position: relative;
@@ -772,18 +745,8 @@ const relatedCols = others.length % 2 === 0 ? 2 : 3;
 		font-weight: 700;
 	}
 	.steps li {
-		display: grid;
-		grid-template-columns: 32px 1fr;
-		gap: 12px;
 		padding: 14px 0;
 		border-top: 1px solid var(--rule);
-	}
-	.steps .num {
-		font-family: var(--mono);
-		font-size: 12px;
-		font-weight: 600;
-		color: var(--accent-text);
-		padding-top: 4px;
 	}
 	.steps h3 {
 		font-size: 17px;

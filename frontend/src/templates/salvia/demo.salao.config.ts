@@ -40,7 +40,6 @@ export default defineSalvia({
 
 	hero: {
 		tagline: 'Salão de bairro na Vila Madalena, São Paulo. Cabelo, unhas e barba no mesmo lugar.',
-		title: 'Hora marcada, sem fila.',
 		sub: 'Você escolhe o serviço e o período pelo WhatsApp e chega na hora certa. Tem café passado enquanto a cor pega.',
 		photo: salaoLarga,
 		photoAlt: 'Bancada do salão com cadeiras, espelhos e secadores perto das janelas',
@@ -113,6 +112,5 @@ export default defineSalvia({
 
 	footer: {
 		line: '© 2026 Alecrim Salão',
-		wordmark: 'Alecrim',
 	},
 });

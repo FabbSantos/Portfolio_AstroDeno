@@ -1,8 +1,10 @@
 /**
- * Tiny inline markup for config strings, used with `set:html`:
- *   **text** → <strong>text</strong>   (accent-coloured inside h1/h2/h3, bold elsewhere)
+ * Tiny inline markup for body copy, used with `set:html`:
+ *   **text** → <strong>text</strong>   (plain bold in ink)
  *   \n       → <br />
  * Everything else is HTML-escaped, so config copy can never inject markup.
+ * Never used on titles: h1/h2/h3 render their config string as plain text,
+ * in one style.
  */
 const ESC: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 

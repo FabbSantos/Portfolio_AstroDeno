@@ -72,8 +72,8 @@ export const templates: TemplateMeta[] = [
 		},
 		examples: [{ key: 'moda', label: { pt: 'drop de moda', en: 'fashion drop' } }],
 		sections: {
-			pt: ['Faixa de avisos', 'Hero + contagem regressiva', 'Vitrine (6 produtos)', 'Lookbook', 'História', 'Newsletter', 'Rodapé'],
-			en: ['Announcement ticker', 'Hero + countdown', 'Storefront (6 products)', 'Lookbook', 'Story', 'Newsletter', 'Footer'],
+			pt: ['Hero + contagem regressiva', 'Vitrine (6 produtos)', 'Lookbook', 'História', 'Newsletter', 'Rodapé'],
+			en: ['Hero + countdown', 'Storefront (6 products)', 'Lookbook', 'Story', 'Newsletter', 'Footer'],
 		},
 		demoLocale: 'en',
 		grad: 'linear-gradient(135deg,#DCFCE7,#B8F5CB)',
@@ -100,8 +100,8 @@ export const templates: TemplateMeta[] = [
 			{ key: 'cafe', label: { pt: 'café', en: 'café' } },
 		],
 		sections: {
-			pt: ['Hero com prato em destaque e horário ao vivo', 'Cardápio com preços e selos', 'Pratos da casa em painéis', 'Quem faz', 'Reserva pelo WhatsApp e links de delivery', 'Onde estamos e horários', 'Rodapé com dados da empresa'],
-			en: ['Hero with a featured plate and live hours', 'Priced menu with marks', 'Signature dishes in panels', 'The crew', 'WhatsApp reservation and delivery links', 'Location and hours', 'Footer with company details'],
+			pt: ['Hero com prato em destaque e horário ao vivo', 'Cardápio com preços e selos', 'Pratos da casa em painéis', 'Equipe', 'Reserva pelo WhatsApp e links de delivery', 'Onde estamos e horários', 'Rodapé com dados da empresa'],
+			en: ['Hero with a featured plate and live hours', 'Priced menu with marks', 'Signature dishes in panels', 'Team', 'WhatsApp reservation and delivery links', 'Location and hours', 'Footer with company details'],
 		},
 		priceFrom: 1000,
 		demoLocale: 'pt',
@@ -130,7 +130,7 @@ export const templates: TemplateMeta[] = [
 			{ key: 'salao', label: { pt: 'salão', en: 'salon' } },
 		],
 		sections: {
-			pt: ['Hero editorial com horário ao vivo', 'Serviços com foto no hover', 'Agendamento pelo WhatsApp', 'Equipe', 'Convênios ou formas de pagamento', 'O espaço', 'Perguntas frequentes', 'Como chegar e horários', 'Rodapé com dados da empresa'],
+			pt: ['Hero editorial com horário ao vivo', 'Serviços com foto no hover', 'Agendamento pelo WhatsApp', 'Equipe', 'Convênios ou formas de pagamento', 'Espaço', 'Perguntas frequentes', 'Como chegar e horários', 'Rodapé com dados da empresa'],
 			en: ['Editorial hero with live hours', 'Services with hover photos', 'WhatsApp booking', 'Team', 'Insurance or payment options', 'The space', 'FAQ', 'Directions and hours', 'Footer with company details'],
 		},
 		priceFrom: 1000,
@@ -197,12 +197,12 @@ export const templates: TemplateMeta[] = [
 		kind: 'portfolio',
 		cat: { pt: 'Portfólio · Trabalhos', en: 'Portfolio · Work' },
 		desc: {
-			pt: 'Portfólio editorial: grid de trabalhos, processo numerado e muito respiro.',
-			en: 'Editorial portfolio: work grid, numbered process and lots of whitespace.',
+			pt: 'Portfólio editorial: grid de trabalhos, números do estúdio e muito respiro.',
+			en: 'Editorial portfolio: work grid, studio stats and lots of whitespace.',
 		},
 		lead: {
-			pt: 'Portfólio editorial pra quem vende pelo que já fez: grid de trabalhos, processo em passos, números e contato. Na demo é um estúdio de design, mas serve pra fotógrafo, arquiteto, produtora ou freelancer.',
-			en: 'Editorial portfolio for people who sell through past work: project grid, step-by-step process, numbers and contact. The demo is a design studio, but it fits a photographer, an architect, a production company or a freelancer.',
+			pt: 'Portfólio editorial pra quem vende pelo que já fez: grid de trabalhos, o estúdio em números e contato. Na demo é um estúdio de design, mas serve pra fotógrafo, arquiteto, produtora ou freelancer.',
+			en: 'Editorial portfolio for people who sell through past work: project grid, the studio in numbers, and contact. The demo is a design studio, but it fits a photographer, an architect, a production company or a freelancer.',
 		},
 		fits: {
 			pt: ['agência ou estúdio', 'fotógrafo', 'arquitetura', 'freelancer'],
@@ -210,8 +210,8 @@ export const templates: TemplateMeta[] = [
 		},
 		examples: [{ key: 'estudio', label: { pt: 'estúdio de design', en: 'design studio' } }],
 		sections: {
-			pt: ['Hero editorial', 'Grid de 6 trabalhos', 'Processo em 4 passos', 'Sobre + números', 'Contato', 'Rodapé'],
-			en: ['Editorial hero', '6-project grid', '4-step process', 'About + stats', 'Contact', 'Footer'],
+			pt: ['Hero editorial', 'Grid de 6 trabalhos', 'Sobre + números', 'Contato', 'Rodapé'],
+			en: ['Editorial hero', '6-project grid', 'About + stats', 'Contact', 'Footer'],
 		},
 		priceFrom: 1000,
 		demoLocale: 'en',

@@ -1,11 +1,10 @@
 ---
 /**
  * Space (#espaco), optional: up to three photos laid out asymmetrically on the
- * 12-column grid, each with a numbered caption.
+ * 12-column grid, each with an optional caption.
  */
 import { Image } from 'astro:assets';
 import type { SalviaConfig } from '../schema';
-import { md } from './_md';
 
 interface Props {
 	space: NonNullable<SalviaConfig['space']>;
@@ -17,12 +16,12 @@ const widths = (w: number) => [...[480, 720, 960, 1280].filter((x) => x < w), w]
 <section class='sec' id='espaco' aria-labelledby='salvia-space-title'>
 	<div class='wrap'>
 		<header class='sec-head'>
-			<h2 id='salvia-space-title' set:html={md(space.title)} />
+			<h2 id='salvia-space-title'>{space.title}</h2>
 			{space.lead && <p class='lead'>{space.lead}</p>}
 		</header>
 		<div class:list={['photos', `n${space.photos.length}`]}>
 			{
-				space.photos.map((ph, i) => (
+				space.photos.map((ph) => (
 					<figure>
 						<div class='img'>
 							<Image
@@ -36,11 +35,7 @@ const widths = (w: number) => [...[480, 720, 960, 1280].filter((x) => x < w), w]
 								decoding='async'
 							/>
 						</div>
-						{ph.caption && (
-							<figcaption>
-								<span class='cn'>({i + 1})</span> {ph.caption}
-							</figcaption>
-						)}
+						{ph.caption && <figcaption>{ph.caption}</figcaption>}
 					</figure>
 				))
 			}
@@ -73,10 +68,6 @@ const widths = (w: number) => [...[480, 720, 960, 1280].filter((x) => x < w), w]
 		margin-top: 12px;
 		font-size: 14px;
 		color: var(--ink-2);
-	}
-	.cn {
-		font-variant-numeric: tabular-nums;
-		color: var(--ink);
 	}
 
 	.n1 figure {

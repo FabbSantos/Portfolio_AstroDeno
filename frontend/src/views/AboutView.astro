@@ -36,7 +36,7 @@ const wa = whatsappUrl(locale);
 				<span class='dot' aria-hidden='true'></span>
 				{a.hero.eyebrow}
 			</p>
-			<h1>{a.hero.head1} <span class='hl'>{a.hero.head2}</span></h1>
+			<h1>{a.hero.head1} {a.hero.head2}</h1>
 			<p class='role'>
 				{pick(SITE.role, locale)}
 				<span class='pipe' aria-hidden='true'>·</span>
@@ -73,7 +73,7 @@ const wa = whatsappUrl(locale);
 		<section class='section career'>
 			<div class='sec-head reveal'>
 				<span class='eyebrow accent'>{a.career.eyebrow}</span>
-				<h2>{a.career.head1} <span class='hl'>{a.career.head2}</span></h2>
+				<h2>{a.career.head1} {a.career.head2}</h2>
 				<p>{a.career.lead}</p>
 			</div>
 			<ol class='career-rows'>
@@ -105,7 +105,7 @@ const wa = whatsappUrl(locale);
 			<div class='how-inner'>
 				<div class='sec-head reveal'>
 					<span class='eyebrow accent'>{a.how.eyebrow}</span>
-					<h2>{a.how.head1} <span class='hl'>{a.how.head2}</span></h2>
+					<h2>{a.how.head1} {a.how.head2}</h2>
 					<p>{a.how.lead}</p>
 				</div>
 
@@ -113,7 +113,6 @@ const wa = whatsappUrl(locale);
 					{
 						a.how.principles.map((p, i) => (
 							<article class:list={['principle', 'reveal', `d${Math.min(i + 1, 3)}`]}>
-								<span class='num' aria-hidden='true'>{String(i + 1).padStart(2, '0')}</span>
 								<h3>{p.title}</h3>
 								<p>{p.desc}</p>
 							</article>
@@ -141,7 +140,7 @@ const wa = whatsappUrl(locale);
 
 		<!-- CTA -->
 		<section class='cta-band'>
-			<h2>{a.cta.head1} <span class='hl'>{a.cta.head2}</span></h2>
+			<h2>{a.cta.head1} {a.cta.head2}</h2>
 			<p class='sub'>{a.cta.sub}</p>
 			<div class='actions'>
 				<a href={contactHref} class='btn btn-primary'>{t.common.ctaContact}</a>
@@ -299,10 +298,8 @@ const wa = whatsappUrl(locale);
 		font-weight: 600;
 	}
 	.now-tag {
-		font-size: 10px;
+		font-size: 13px;
 		font-weight: 700;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
 		padding: 2px 8px;
 		border-radius: 999px;
 		background: var(--accent-soft);
@@ -355,20 +352,6 @@ const wa = whatsappUrl(locale);
 	.principle:hover {
 		transform: translateY(-4px);
 		box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.12);
-	}
-	.principle .num {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 40px;
-		height: 40px;
-		border-radius: 12px;
-		background: var(--accent-soft);
-		color: var(--accent-text);
-		font-family: var(--mono);
-		font-weight: 700;
-		font-size: 13px;
-		margin-bottom: 18px;
 	}
 	.principle h3 {
 		font-size: 19px;
@@ -425,9 +408,7 @@ const wa = whatsappUrl(locale);
 	}
 	.stack-label {
 		font-weight: 600;
-		font-size: 11px;
-		letter-spacing: 0.14em;
-		text-transform: uppercase;
+		font-size: 13px;
 		color: var(--ink-3);
 	}
 	.stack-items {
