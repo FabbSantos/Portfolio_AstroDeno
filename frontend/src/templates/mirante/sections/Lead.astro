@@ -9,7 +9,6 @@ import { Image } from 'astro:assets';
 import LeadForm from '../../core/LeadForm.astro';
 import type { LeadField } from '../../core/schema';
 import type { MiranteConfig } from '../schema';
-import { md } from './_md';
 
 interface Props {
 	config: MiranteConfig;
@@ -39,8 +38,7 @@ const widths = (w: number) => [...[960, 1600, 2400].filter((x) => x < w), w];
 	</div>
 	<div class='wrap lead-inner'>
 		<div class='lead-l'>
-			{lead.eyebrow && <p class='eyebrow'>{lead.eyebrow}</p>}
-			<h2 id='lead-title' class='display' set:html={md(lead.title)} />
+			<h2 id='lead-title' class='display'>{lead.title}</h2>
 			<p class='lead-sub'>{lead.sub}</p>
 			{
 				lead.bullets.length > 0 && (
@@ -104,10 +102,6 @@ const widths = (w: number) => [...[960, 1600, 2400].filter((x) => x < w), w];
 		grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
 		gap: clamp(40px, 6vw, 96px);
 		align-items: center;
-	}
-	.lead-l .eyebrow {
-		color: color-mix(in srgb, #fff 70%, transparent);
-		margin-bottom: 18px;
 	}
 	.lead-l h2 {
 		font-size: clamp(48px, 5.8vw, 92px);

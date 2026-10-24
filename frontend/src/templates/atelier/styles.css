@@ -36,70 +36,13 @@
 	padding-block: clamp(80px, 10vw, 140px);
 }
 
-/* Serif display */
+/* Serif display: every title, one upright style (no accent words) */
 .tpl-atelier .display {
 	font-family: var(--display);
 	font-weight: 500;
 	letter-spacing: -0.02em;
 	line-height: 1;
 	text-wrap: balance;
-}
-/* md(): **text** → italic; ==text== → italic with an underline in the second colour */
-.tpl-atelier .hl {
-	font-style: italic;
-	font-weight: 400;
-	color: inherit;
-}
-.tpl-atelier .em {
-	font-style: italic;
-	font-weight: 400;
-	color: inherit;
-	text-decoration: underline;
-	text-decoration-thickness: 0.06em;
-	text-underline-offset: 0.12em;
-	text-decoration-color: var(--accent-2);
-}
-
-/* Small caps label (tracked grotesk, no mono) */
-.tpl-atelier .eyebrow {
-	display: inline-flex;
-	align-items: center;
-	gap: 10px;
-	font-family: var(--text);
-	font-size: 12px;
-	font-weight: 600;
-	letter-spacing: 0.14em;
-	text-transform: uppercase;
-	color: var(--ink-3);
-}
-.tpl-atelier .eyebrow::before {
-	content: '';
-	width: 22px;
-	height: 1px;
-	background: var(--accent-text);
-}
-
-/* Section head: eyebrow, then serif title with an optional lead beside it */
-.tpl-atelier .sec-head {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) minmax(0, 32ch);
-	column-gap: 48px;
-	row-gap: 20px;
-	align-items: end;
-	margin-bottom: clamp(40px, 5vw, 64px);
-}
-.tpl-atelier .sec-head .eyebrow {
-	grid-column: 1 / -1;
-}
-.tpl-atelier .sec-head h2 {
-	font-size: clamp(44px, 6vw, 92px);
-	max-width: 14ch;
-}
-.tpl-atelier .sec-head .sec-l {
-	font-size: 17px;
-	line-height: 1.55;
-	color: var(--ink-2);
-	padding-bottom: 0.4em;
 }
 
 /* Links: underlined grotesk; buttons: ink block */
@@ -148,10 +91,8 @@
 }
 .tpl-atelier .lead-form.lead-form .lf-field label {
 	font-family: var(--text);
-	font-size: 12px;
+	font-size: 13px;
 	font-weight: 600;
-	letter-spacing: 0.12em;
-	text-transform: uppercase;
 	color: var(--ink-3);
 }
 .tpl-atelier .lead-form.lead-form .lf-req {
@@ -273,11 +214,6 @@
 	border-radius: 0;
 }
 
-@media (max-width: 900px) {
-	.tpl-atelier .sec-head {
-		grid-template-columns: minmax(0, 1fr);
-	}
-}
 @media (prefers-reduced-motion: reduce) {
 	.tpl-atelier *,
 	.tpl-atelier *::before,

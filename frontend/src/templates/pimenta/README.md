@@ -1,6 +1,6 @@
 # Pimenta: cardápio e reserva com cara de cartaz
 
-Página pra qualquer lugar que serve comida ou bebida: restaurante, bar e boteco, café e padaria, hamburgueria. Títulos gigantes em condensada, blocos de cor chapada no lugar de cards, cantos retos e um círculo como forma recorrente. O centro é o cardápio com preços e a reserva que monta a mensagem no WhatsApp. Horário ao vivo ("Aberto agora · fecha às 23h") e SEO local (`Restaurant` ou o subtipo do lugar, com cardápio e reservas).
+Página pra qualquer lugar que serve comida ou bebida: restaurante, bar e boteco, café e padaria, hamburgueria. Títulos gigantes em condensada maiúscula (só os títulos; botões e rótulos ficam em caixa normal), blocos de cor chapada no lugar de cards, cantos retos e um círculo como forma recorrente. O centro é o cardápio com preços e a reserva que monta a mensagem no WhatsApp. Horário ao vivo ("Aberto agora · fecha às 23h") e SEO local (`Restaurant` ou o subtipo do lugar, com cardápio e reservas).
 
 O template é a estrutura; o conteúdo é de exemplo. São duas demos, em português:
 
@@ -11,7 +11,7 @@ O template é a estrutura; o conteúdo é de exemplo. São duas demos, em portug
 
 Referências do 21st.dev usadas no desenho (direção B, "Retrato com personalidade"): Minimalist Hero (ravikatiyar162), Restaurant Menu Block (7ovr), Hover Expand Gallery (kedhareswer) e Team Showcase (makviesainte). Tudo reescrito em Astro e CSS, sem React nem Framer Motion.
 
-Feito pro modelo de entrega rápida: **só hero, cardápio, reserva e localização são obrigatórios**. Pratos da casa e quem faz aparecem apenas quando o bloco existe no config. Os títulos das seções já têm texto padrão, então o config do cliente é quase só dado.
+Feito pro modelo de entrega rápida: **só hero, cardápio, reserva e localização são obrigatórios**. Pratos da casa e equipe aparecem apenas quando o bloco existe no config. Os títulos das seções são o nome da seção, sem frase de efeito, e já têm texto padrão (Cardápio, Da casa, Equipe, Reserva, Endereço, Horário), então o config do cliente é quase só dado. O título do hero é o nome do lugar (`brand.name`).
 
 ```
 pimenta/
@@ -23,7 +23,7 @@ pimenta/
   PimentaBody.astro     fontes + seções + script do status de horário
   PimentaPage.astro     core Page + PimentaBody; falha o build sem contact.whatsapp
   styles.css            regras compartilhadas (tipos, cabeçalho de seção, botão, link, status, topbar)
-  sections/             Topbar · Hero · Menu · Signature · Crew · Reservation · Location · Footer · _md.ts
+  sections/             Topbar · Hero · Menu · Signature · Crew · Reservation · Location · Footer
 ```
 
 O horário ("aberto agora", tabela da semana, JSON-LD) vem de `core/hours.ts`, compartilhado com a Sálvia.
@@ -34,20 +34,20 @@ Big Shoulders Display (títulos) e Schibsted Grotesk (texto), via `@fontsource-v
 
 ## Config
 
-Base (core): `brand`, `theme`, `seo`, `contact`, `analytics`, `legal`, `nav`. Strings **md** aceitam `**texto**` (marca-texto na cor de destaque) e `==texto==` (bloco de cor).
+Base (core): `brand`, `theme`, `seo`, `contact`, `analytics`, `legal`, `nav`. Todo texto é simples: sem marcação de destaque nos títulos.
 
 | Seção | Campos |
 | --- | --- |
 | `businessType` | tipo do schema.org (padrão `'Restaurant'`): `BarOrPub`, `CafeOrCoffeeShop`, `Bakery`, `FastFoodRestaurant`… |
 | `cuisine`, `priceRange?` | `['Brasileira']`, `'$$'` (vão pro JSON-LD) |
 | `topbar` | `cta` (padrão `'Reservar'`, leva a `#reservas`) |
-| `hero` | `tagline`, `title` (cada linha fica numa linha só: quebre com `\n` e use palavras curtas), `photo` (quadrada 1200×1200, prato ou xícara vista de cima; vira círculo), `photoAlt`, `cta`, `secondaryCta`, `instagram?` |
+| `hero` | `tagline`, `photo` (quadrada 1200×1200, prato ou xícara vista de cima; vira círculo), `photoAlt`, `cta`, `secondaryCta`, `instagram?`. O título é o `brand.name`, uma palavra por linha (palavra curta como "e" fica junto da anterior); nome com palavra muito longa diminui o tamanho pra caber |
 | `menu` | `title` (padrão `'Cardápio'`), `lead?`, `categories: [{ name, items: [{ name, desc?, price, tags? }] }]` (1 a 8 categorias; `price` em reais, 0 mostra "consulte"; `tags` até 3, tipo `'vegano'`, `'sem glúten'`, `'picante'`), `note?`, `full?: { label, href }` |
 | `signature?` | `title` (padrão `'Da casa'`), `lead?`, `items: [{ name, desc?, price?, photo, alt }]` (3 a 6; retrato 900×1200) |
-| `crew?` | `title` (padrão `'Quem faz'`), `lead?`, `people: [{ name, role, photo, alt }]` (2 a 4; retrato 800×1000, mãos ou costas funcionam tão bem quanto rosto) |
-| `reservation` | tudo com padrão: `times` (`['12:00', …]`), `maxPeople` (12), `message` (`{pessoas}` `{data}` `{horario}`), `nameSentence` (`{nome}`), rótulos, `cta`, `foot?`, `delivery?: { title, links: [{ label, href }] }` |
-| `location` | `address: { street, district?, city, state (UF), zip? }`, `mapsUrl?`, `directions: string[]`, `hoursTitle`, `hours: [{ days, opens, closes }]` (`closes: '00:00'` é meia-noite; horário que vira o dia não é suportado), `timezone`, `hoursNote?` |
-| `footer` | `line`, `wordmark?` (nome gigante; padrão `brand.name`, uma palavra curta fica melhor) |
+| `crew?` | `title` (padrão `'Equipe'`), `lead?`, `people: [{ name, role, photo, alt }]` (2 a 4; retrato 800×1000, mãos ou costas funcionam tão bem quanto rosto) |
+| `reservation` | tudo com padrão: `title` (`'Reserva'`), `lead`, `times` (`['12:00', …]`), `maxPeople` (12), `message` (`{pessoas}` `{data}` `{horario}`), `nameSentence` (`{nome}`), rótulos, `cta`, `foot?`, `delivery?: { title (padrão 'Delivery'), links: [{ label, href }] }` |
+| `location` | `title` (padrão `'Endereço'`), `address: { street, district?, city, state (UF), zip? }`, `mapsUrl?`, `directions: string[]`, `hoursTitle` (padrão `'Horário'`), `hours: [{ days, opens, closes }]` (`closes: '00:00'` é meia-noite; horário que vira o dia não é suportado), `timezone`, `hoursNote?` |
+| `footer` | `line` (linha de copyright no fim da página) |
 
 `contact.whatsapp` é **obrigatório no site do cliente**: a reserva abre o WhatsApp. As demos do portfólio rodam sem número (mostram um aviso no lugar).
 

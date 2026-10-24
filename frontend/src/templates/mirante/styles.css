@@ -4,8 +4,9 @@
 
    Direction: a shop window. The photo carries the page: full-bleed hero,
    sticky media, plans that open large. Around it, stone-coloured paper,
-   hairlines instead of cards, a serif with an italic where a coloured word
-   would be, and tracked small caps for labels. Square corners.
+   hairlines instead of cards, serif titles in one style (the section's
+   name, no accent word, no eyebrow) and small sentence-case labels in the
+   text face. Square corners.
    ========================================================================== */
 .tpl-mirante {
 	--display: 'Cormorant Variable', 'Cormorant', 'Cormorant Garamond', Garamond, 'Times New Roman', serif;
@@ -19,7 +20,7 @@
 	--tb-h: 84px;
 	/* Core pieces inside the template (LeadForm, MobileNav) follow the text face too, so Inter never loads. */
 	--sans: var(--text);
-	/* Labels and figures use the text face too (tracked small caps), so the template ships two files, not three. */
+	/* Labels and figures use the text face too, so the template ships two files, not three. */
 	--mono: var(--text);
 	background: var(--bg);
 	color: var(--ink);
@@ -38,7 +39,7 @@
 	padding-block: clamp(80px, 10vw, 140px);
 }
 
-/* Serif display: titles, big numbers, the footer wordmark */
+/* Serif display: titles and big numbers, always in one style */
 .tpl-mirante .display {
 	font-family: var(--display);
 	font-weight: 500;
@@ -46,33 +47,13 @@
 	line-height: 0.96;
 	text-wrap: balance;
 }
-/* `**text**` inside titles and the h1 accent: italic, same colour */
-.tpl-mirante .hl,
-.tpl-mirante :is(h1, h2, h3) strong,
-.tpl-mirante :is(h1, h2, h3) em {
-	font-style: italic;
-	font-weight: 400;
-	color: inherit;
-}
 /* `**text**` in body copy: plain bold in ink */
 .tpl-mirante p strong {
 	font-weight: 600;
 	color: var(--ink);
 }
 
-.tpl-mirante .eyebrow {
-	display: inline-flex;
-	align-items: center;
-	gap: 10px;
-	font-family: var(--mono);
-	font-size: 12px;
-	font-weight: 500;
-	letter-spacing: 0.1em;
-	text-transform: uppercase;
-	color: var(--ink-3);
-}
-
-/* Section head: eyebrow, then a wide serif title */
+/* Section head: a wide serif title, the section's name */
 .tpl-mirante .sec-head {
 	display: grid;
 	gap: 18px;
@@ -141,10 +122,9 @@
 }
 .tpl-mirante .lead-form.lead-form .lf-field label {
 	font-family: var(--mono);
-	font-size: 11px;
+	font-size: 13px;
 	font-weight: 500;
-	letter-spacing: 0.1em;
-	text-transform: uppercase;
+	letter-spacing: 0;
 	color: var(--ink-3);
 }
 .tpl-mirante .lead-form.lead-form .lf-req {

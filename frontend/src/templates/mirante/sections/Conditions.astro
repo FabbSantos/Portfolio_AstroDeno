@@ -1,11 +1,10 @@
 ---
 /**
- * Payment conditions: three columns separated by hairlines, no cards. The
- * `**bold**` part of each headline becomes the giant serif figure ('12%',
- * '10%'); the featured option sits on a block of the accent colour.
+ * Payment conditions: three columns separated by hairlines, no cards. Each
+ * headline is a serif h3 in one style ('Desconto de até 12%'); the featured
+ * option sits on a block of the accent colour.
  */
 import type { MiranteConfig } from '../schema';
-import { md } from './_md';
 
 interface Props {
 	config: MiranteConfig;
@@ -16,8 +15,7 @@ const { conditions } = Astro.props.config;
 <section class='valores sec' id='valores' aria-labelledby='valores-title'>
 	<div class='wrap'>
 		<div class='sec-head'>
-			{conditions.eyebrow && <p class='eyebrow'>{conditions.eyebrow}</p>}
-			<h2 id='valores-title' class='display' set:html={md(conditions.title)} />
+			<h2 id='valores-title' class='display'>{conditions.title}</h2>
 		</div>
 		<div class='val-grid' style={`--cols:${conditions.items.length}`}>
 			{
@@ -27,7 +25,7 @@ const { conditions } = Astro.props.config;
 							<span>{c.tag}</span>
 							{c.badge && <span class='v-badge'>{c.badge}</span>}
 						</p>
-						<h3 class='v-h' set:html={md(c.headline)} />
+						<h3 class='v-h'>{c.headline}</h3>
 						<p class='v-d'>{c.desc}</p>
 						{c.bullets.length > 0 && (
 							<ul class='v-list'>
@@ -81,9 +79,7 @@ const { conditions } = Astro.props.config;
 		justify-content: space-between;
 		gap: 12px;
 		font-family: var(--mono);
-		font-size: 11px;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
+		font-size: 13px;
 		color: var(--ink-3);
 	}
 	.is-featured .v-tag {
@@ -93,33 +89,19 @@ const { conditions } = Astro.props.config;
 		padding: 4px 8px;
 		background: var(--ink);
 		color: var(--bg);
-		letter-spacing: 0.08em;
 	}
 	.is-featured .v-badge {
 		background: #fff;
 		color: var(--accent-text);
 	}
+	/* One style: the serif display at a heading size, no figure set apart */
 	.v-h {
-		font-family: var(--text);
-		font-size: 17px;
-		font-weight: 500;
-		line-height: 1.4;
-		display: flex;
-		flex-wrap: wrap;
-		align-items: baseline;
-		gap: 0 0.35em;
-	}
-	.v-h :global(strong) {
-		display: block;
-		width: 100%;
 		font-family: var(--display);
-		font-style: normal;
+		font-size: clamp(30px, 2.8vw, 40px);
 		font-weight: 500;
-		font-size: clamp(64px, 6.4vw, 104px);
-		line-height: 0.95;
-		letter-spacing: -0.02em;
-		margin: 4px 0 6px;
-		font-variant-numeric: tabular-nums;
+		line-height: 1.05;
+		letter-spacing: -0.01em;
+		text-wrap: balance;
 	}
 	.v-d {
 		font-size: 15px;
@@ -171,9 +153,6 @@ const { conditions } = Astro.props.config;
 		}
 		.val.is-featured + .val {
 			border-top-color: transparent;
-		}
-		.v-h :global(strong) {
-			font-size: clamp(56px, 16vw, 88px);
 		}
 	}
 </style>

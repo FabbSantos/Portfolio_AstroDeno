@@ -1,7 +1,7 @@
 ---
 /**
- * Final call on an ink block: wide title, sub, the buttons, and the optional
- * core LeadForm (mini) in a single row.
+ * Final call on an ink block: the section's name as a wide title, sub, the
+ * buttons, and the optional core LeadForm (mini) in a single row.
  */
 import LeadForm from '../../core/LeadForm.astro';
 import type { StratusConfig } from '../schema';
@@ -17,7 +17,7 @@ const { finalCta } = config;
 <section class='cta' id='cta' aria-labelledby='cta-title'>
 	<div class='wrap cta-in'>
 		<div class='cta-copy'>
-			<h2 id='cta-title' class='display' set:html={md(finalCta.title)} />
+			<h2 id='cta-title' class='display'>{finalCta.title}</h2>
 			{finalCta.sub && <p class='cta-sub' set:html={md(finalCta.sub)} />}
 		</div>
 		<div class='cta-side'>

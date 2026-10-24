@@ -7,7 +7,6 @@
  */
 import { Image } from 'astro:assets';
 import type { AtelierConfig } from '../schema';
-import { md } from './_md';
 
 interface Props {
 	config: AtelierConfig;
@@ -20,10 +19,7 @@ const wide = (i: number) => (Math.floor(i / 2) % 2 === 0 ? i % 2 === 0 : i % 2 =
 
 <section class='work sec' id='work' aria-labelledby='work-title'>
 	<div class='wrap'>
-		<div class='sec-head'>
-			<p class='eyebrow'>{work.eyebrow}</p>
-			<h2 id='work-title' class='display' set:html={md(work.title)} />
-		</div>
+		<h2 id='work-title' class='display work-title'>{work.title}</h2>
 		<ul class='cases'>
 			{
 				work.cases.map((c, i) => (
@@ -37,7 +33,6 @@ const wide = (i: number) => (Math.floor(i / 2) % 2 === 0 ? i % 2 === 0 : i % 2 =
 								)}
 							</div>
 							<div class='case-cap'>
-								<span class='c-n'>{c.n}</span>
 								<h3 class='c-client'>
 									{c.href ? (
 										<a class='c-link' href={c.href}>
@@ -74,6 +69,11 @@ const wide = (i: number) => (Math.floor(i / 2) % 2 === 0 ? i % 2 === 0 : i % 2 =
 </section>
 
 <style>
+	.work-title {
+		font-size: clamp(44px, 6vw, 92px);
+		max-width: 14ch;
+		margin-bottom: clamp(40px, 5vw, 64px);
+	}
 	.cases {
 		list-style: none;
 		display: grid;
@@ -117,18 +117,9 @@ const wide = (i: number) => (Math.floor(i / 2) % 2 === 0 ? i % 2 === 0 : i % 2 =
 		bottom: 14px;
 		max-width: calc(100% - 28px);
 		display: grid;
-		grid-template-columns: auto minmax(0, 1fr);
-		column-gap: 12px;
-		align-items: baseline;
-		padding: 12px 16px 12px 14px;
+		padding: 12px 16px;
 		background: var(--bg);
 		color: var(--ink);
-	}
-	.c-n {
-		font-family: var(--display);
-		font-size: 15px;
-		font-weight: 500;
-		color: var(--accent-text);
 	}
 	.c-client {
 		font-family: var(--display);
@@ -138,7 +129,6 @@ const wide = (i: number) => (Math.floor(i / 2) % 2 === 0 ? i % 2 === 0 : i % 2 =
 		line-height: 1.1;
 	}
 	.c-meta {
-		grid-column: 2;
 		margin-top: 4px;
 		font-size: 13px;
 		color: var(--ink-3);

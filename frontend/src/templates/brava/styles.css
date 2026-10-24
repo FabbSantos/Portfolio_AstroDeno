@@ -38,47 +38,13 @@
 	padding-block: clamp(72px, 9vw, 128px);
 }
 
-/* Didone display */
+/* Didone display: one style per title, no accent words */
 .tpl-brava .display {
 	font-family: var(--display);
 	font-weight: 500;
 	letter-spacing: -0.01em;
 	line-height: 0.98;
 	text-wrap: balance;
-}
-/* md(): **text** → italic; ==text== → italic underlined in the accent */
-.tpl-brava .hl {
-	font-style: italic;
-	font-weight: 400;
-	color: inherit;
-}
-.tpl-brava .em {
-	font-style: italic;
-	font-weight: 400;
-	color: inherit;
-	text-decoration: underline;
-	text-decoration-thickness: 0.05em;
-	text-underline-offset: 0.12em;
-	text-decoration-color: var(--accent);
-}
-
-/* Tracked small caps (no mono) */
-.tpl-brava .eyebrow {
-	display: inline-flex;
-	align-items: center;
-	gap: 10px;
-	font-family: var(--text);
-	font-size: 12px;
-	font-weight: 600;
-	letter-spacing: 0.16em;
-	text-transform: uppercase;
-	color: var(--ink-3);
-}
-.tpl-brava .eyebrow::before {
-	content: '';
-	width: 22px;
-	height: 1px;
-	background: var(--acc);
 }
 
 /* Section head */
@@ -94,10 +60,6 @@
 	font-size: clamp(44px, 6vw, 96px);
 	max-width: 14ch;
 }
-.tpl-brava .sec-head .eyebrow {
-	width: 100%;
-	margin-bottom: 18px;
-}
 
 /* Buttons: paper block with dark text (ink and bg swap on a dark theme); outline; underlined link */
 .tpl-brava .btn {
@@ -110,10 +72,8 @@
 	background: var(--ink);
 	color: var(--bg);
 	font-family: var(--text);
-	font-size: 13px;
-	font-weight: 700;
-	letter-spacing: 0.14em;
-	text-transform: uppercase;
+	font-size: 15px;
+	font-weight: 600;
 	white-space: nowrap;
 	border: 1px solid var(--ink);
 	transition:
@@ -141,10 +101,8 @@
 	align-items: center;
 	gap: 8px;
 	min-height: 44px;
-	font-size: 13px;
-	font-weight: 700;
-	letter-spacing: 0.14em;
-	text-transform: uppercase;
+	font-size: 15px;
+	font-weight: 600;
 	color: var(--ink);
 	text-decoration: underline;
 	text-decoration-thickness: 1px;
@@ -183,10 +141,9 @@
 }
 .tpl-brava .lead-form.lead-form .lf-field label {
 	font-family: var(--text);
-	font-size: 11px;
+	font-size: 13px;
 	font-weight: 600;
-	letter-spacing: 0.16em;
-	text-transform: uppercase;
+	letter-spacing: 0;
 	color: var(--ink-3);
 }
 .tpl-brava .lead-form.lead-form .lf-req {
@@ -225,10 +182,9 @@
 	background: var(--ink);
 	color: var(--bg);
 	font-family: var(--text);
-	font-size: 13px;
-	font-weight: 700;
-	letter-spacing: 0.14em;
-	text-transform: uppercase;
+	font-size: 15px;
+	font-weight: 600;
+	letter-spacing: 0;
 	transition:
 		background 0.25s,
 		color 0.25s,
@@ -273,7 +229,6 @@
 .tpl-brava .mnav .mnav-panel a {
 	border-radius: 0;
 	font-weight: 600;
-	letter-spacing: 0.06em;
 }
 .tpl-brava .mnav .mnav-panel a:hover {
 	background: var(--bg-2);

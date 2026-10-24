@@ -25,7 +25,6 @@ export default defineAtelier({
 	legal: { lines: [] },
 	nav: [
 		{ label: 'Work', href: '#work' },
-		{ label: 'Process', href: '#process' },
 		{ label: 'Studio', href: '#studio' },
 		{ label: 'Contact', href: '#contact' },
 	],
@@ -37,46 +36,32 @@ export default defineAtelier({
 	},
 
 	hero: {
-		eyebrow: 'Independent design studio · est. 2019',
-		title: 'We make **quiet brands**\nthat get ==louder== over time.',
+		title: 'Atelier',
+		sub: 'Independent design studio, est. 2019',
 		image: estudio,
 		imageAlt: 'Sunlit studio with a wooden trestle table and a stool',
 		meta: [
-			{ label: 'Available', value: 'Q2 / 2026 · 1 spot' },
+			{ label: 'Available', value: 'Q1 / 2027 · 1 spot' },
 			{ label: 'Based', value: 'Rio de Janeiro / remote' },
 			{ label: 'For', value: 'Founders, agencies, in-house teams' },
 		],
 	},
 
 	work: {
-		eyebrow: 'Selected work · 2024 to 2026',
-		title: 'Six projects, **one principle:** design that ships.',
+		title: 'Work',
 		cases: [
-			{ n: '01', client: 'Forma Health', tag: 'Brand + packaging', year: '2026', image: case1, alt: 'Pastel green and pink boxes with a cut-out flower pattern', href: '#work' },
-			{ n: '02', client: 'Helios Studio', tag: 'Identity', year: '2025', image: case2, alt: 'Framed poster of the Helvetica alphabet on a white wall', href: '#work' },
-			{ n: '03', client: 'Ribeira Café', tag: 'Packaging + e-commerce', year: '2025', image: case3, alt: 'Coffee bags and a paper cup on a pink background', href: '#work' },
-			{ n: '04', client: 'Maré', tag: 'App + design system', year: '2024', image: case4, alt: 'Hand holding an orange material sample over swatches and a notebook', href: '#work' },
-			{ n: '05', client: 'Northbound', tag: 'Editorial + site', year: '2024', image: case5, alt: 'Person leafing through a yellow magazine on a desk', href: '#work' },
-			{ n: '06', client: 'Vector One', tag: 'Brand refresh', year: '2024', image: case6, alt: 'Wall of colourful printed cans', href: '#work' },
+			{ client: 'Forma Health', tag: 'Brand + packaging', year: '2026', image: case1, alt: 'Pastel green and pink boxes with a cut-out flower pattern', href: '#work' },
+			{ client: 'Helios Studio', tag: 'Identity', year: '2025', image: case2, alt: 'Framed poster of the Helvetica alphabet on a white wall', href: '#work' },
+			{ client: 'Ribeira Café', tag: 'Packaging + e-commerce', year: '2025', image: case3, alt: 'Coffee bags and a paper cup on a pink background', href: '#work' },
+			{ client: 'Maré', tag: 'App + design system', year: '2024', image: case4, alt: 'Hand holding an orange material sample over swatches and a notebook', href: '#work' },
+			{ client: 'Northbound', tag: 'Editorial + site', year: '2024', image: case5, alt: 'Person leafing through a yellow magazine on a desk', href: '#work' },
+			{ client: 'Vector One', tag: 'Brand refresh', year: '2024', image: case6, alt: 'Wall of colourful printed cans', href: '#work' },
 		],
 		archive: { label: 'View the full archive', href: '#work' },
 	},
 
-	process: {
-		eyebrow: 'How we work',
-		title: 'A simple **four-step** process.',
-		lead: 'No agency theater. No 80-page decks. Just enough structure to keep momentum and protect quality.',
-		steps: [
-			{ n: '01', t: 'Discovery', d: 'Two weeks of conversation, audit and listening. We end with one page of strategy. Not fifty.' },
-			{ n: '02', t: 'Design', d: 'Direction first, then refinement. You see three real options, never six abstract concepts.' },
-			{ n: '03', t: 'Build', d: 'Production-grade engineering from week one. No "handoff" gap, no design that breaks at scale.' },
-			{ n: '04', t: 'Ship & Hold', d: 'Launch is the start, not the end. Three months of free iterations included on every project.' },
-		],
-	},
-
 	studio: {
-		eyebrow: 'The studio',
-		title: 'Small **on purpose.**',
+		title: 'Studio',
 		paragraphs: [
 			"We're a two-person studio by design. Every project gets senior attention from the first sketch to the last commit. No account managers, no telephone game, no \"let me check with the team.\"",
 			'We take on six to eight projects a year. Each one starts with a conversation, never a form.',
@@ -93,8 +78,7 @@ export default defineAtelier({
 	contact: {
 		email: 'hello@atelier.studio',
 		form: { provider: 'none' },
-		eyebrow: "Let's begin",
-		title: 'Have something **worth making?**\nTell us about it.',
+		title: 'Contact',
 		sub: 'We answer every email within two business days, usually with a calendar link or a polite no.',
 		socialsLead: 'or follow along',
 		socials: [

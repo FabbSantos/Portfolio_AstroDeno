@@ -6,7 +6,6 @@
  */
 import { Image } from 'astro:assets';
 import type { SalviaConfig } from '../schema';
-import { md } from './_md';
 
 interface Props {
 	team: NonNullable<SalviaConfig['team']>;
@@ -18,7 +17,7 @@ const withPhotos = team.people.some((p) => p.photo);
 <section class='sec' id='equipe' aria-labelledby='salvia-team-title'>
 	<div class='wrap'>
 		<header class='sec-head'>
-			<h2 id='salvia-team-title' set:html={md(team.title)} />
+			<h2 id='salvia-team-title'>{team.title}</h2>
 			{team.lead && <p class='lead'>{team.lead}</p>}
 		</header>
 

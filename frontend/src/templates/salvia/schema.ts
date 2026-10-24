@@ -4,11 +4,8 @@
  *
  * Lean on purpose: hero, services, booking and location are required; team,
  * insurance (or payment options), space and faq render only when present.
- * Section titles have neutral pt-BR defaults, so a client config can be mostly
- * data (services, hours, address).
- *
- * Strings marked "md" accept the mini-markdown of `sections/_md.ts`:
- *   **text** → accent colour · ==text== → highlighter · newline → <br>
+ * Section titles are plain section names with pt-BR defaults, so a client
+ * config can be mostly data (services, hours, address).
  */
 import { z } from 'astro/zod';
 import { baseSiteSchema, defineSite, image } from '../core/schema';
@@ -16,9 +13,8 @@ import { businessJsonLd, DAYS } from './hours';
 
 const hhmm = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'expected 24h time like 08:00');
 
-/** Section title (md) + optional lead, with a default title so the client can omit both. */
+/** Section title (the section's name, plain text) + optional lead, with a default title so the client can omit both. */
 const head = (title: string) => ({
-	/** md */
 	title: z.string().min(1).default(title),
 	lead: z.string().optional(),
 });
@@ -42,8 +38,8 @@ export const salviaSchema = baseSiteSchema.extend({
 	hero: z.object({
 		/** Short line on the left: kind of business + neighbourhood. */
 		tagline: z.string().min(1),
-		/** md */
-		title: z.string().min(1),
+		/** The h1 is the business name: `brand.name` unless this is set (a shorter form of the name, never a slogan). */
+		title: z.string().min(1).optional(),
 		sub: z.string().min(1),
 		/** Wide photo under the copy (2000×900). `null` → no media band. */
 		photo: image.nullable().default(null),
@@ -73,7 +69,7 @@ export const salviaSchema = baseSiteSchema.extend({
 
 	booking: z
 		.object({
-			...head('Agende em dois toques.'),
+			...head('Agendamento'),
 			lead: z.string().default('Escolha o serviço e o melhor período. A mensagem sai pronta no WhatsApp.'),
 			serviceLabel: z.string().default('Serviço'),
 			periodLabel: z.string().default('Período'),
@@ -90,7 +86,7 @@ export const salviaSchema = baseSiteSchema.extend({
 
 	team: z
 		.object({
-			...head('Quem atende'),
+			...head('Equipe'),
 			people: z
 				.array(
 					z.object({
@@ -121,7 +117,7 @@ export const salviaSchema = baseSiteSchema.extend({
 
 	space: z
 		.object({
-			...head('O espaço'),
+			...head('Espaço'),
 			photos: z.array(z.object({ image, alt: z.string().min(1), caption: z.string().optional() })).min(1).max(3),
 		})
 		.optional(),
@@ -164,8 +160,6 @@ export const salviaSchema = baseSiteSchema.extend({
 
 	footer: z.object({
 		line: z.string().min(1),
-		/** Giant name at the very bottom. Defaults to brand.name; a short word reads best. */
-		wordmark: z.string().optional(),
 		/** Responsável técnico with registry. Health councils (CFM, CRO) require it in clinic advertising. */
 		technicalLead: z.string().optional(),
 		/** Heading over technicalLead. Defaults to "Responsável técnico" / "Medical director". */

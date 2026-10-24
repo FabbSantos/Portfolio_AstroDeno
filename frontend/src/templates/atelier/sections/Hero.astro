@@ -1,12 +1,11 @@
 ---
 /**
  * Editorial hero: the wide photo opens the page (eager, the LCP), then the
- * eyebrow and the meta list on the left and the serif title on the right.
- * Without `hero.image` the section starts with the text.
+ * meta list on the left and the serif title on the right, with the optional
+ * plain line under it. Without `hero.image` the section starts with the text.
  */
 import { Image } from 'astro:assets';
 import type { AtelierConfig } from '../schema';
-import { md } from './_md';
 
 interface Props {
 	config: AtelierConfig;
@@ -24,22 +23,22 @@ const widths = (w: number) => [...[768, 1280, 1920, 2400].filter((x) => x < w), 
 		)
 	}
 	<div class='wrap hero-grid'>
-		<div class='hero-side'>
-			<p class='eyebrow'>{hero.eyebrow}</p>
-			{
-				hero.meta.length > 0 && (
-					<dl class='hero-meta'>
-						{hero.meta.map((m) => (
-							<div>
-								<dt>{m.label}</dt>
-								<dd>{m.value}</dd>
-							</div>
-						))}
-					</dl>
-				)
-			}
+		{
+			hero.meta.length > 0 && (
+				<dl class='hero-meta'>
+					{hero.meta.map((m) => (
+						<div>
+							<dt>{m.label}</dt>
+							<dd>{m.value}</dd>
+						</div>
+					))}
+				</dl>
+			)
+		}
+		<div class='hero-head'>
+			<h1 id='hero-title' class='display'>{hero.title}</h1>
+			{hero.sub && <p class='hero-sub'>{hero.sub}</p>}
 		</div>
-		<h1 id='hero-title' class='display' set:html={md(hero.title)} />
 	</div>
 </section>
 
@@ -65,28 +64,33 @@ const widths = (w: number) => [...[768, 1280, 1920, 2400].filter((x) => x < w), 
 		align-items: start;
 		padding-block: clamp(40px, 5vw, 72px) clamp(56px, 7vw, 96px);
 	}
+	/* The title always takes the wide column, with or without the meta list. */
+	.hero-head {
+		grid-column: 2;
+	}
 	.hero h1 {
 		font-size: clamp(48px, 6.6vw, 104px);
 		max-width: 14ch;
 	}
-	.hero-side {
-		display: grid;
-		gap: 28px;
-		padding-top: 0.6em;
+	.hero-sub {
+		margin-top: 20px;
+		font-size: 18px;
+		line-height: 1.55;
+		color: var(--ink-2);
+		max-width: 48ch;
 	}
 	.hero-meta {
 		display: grid;
 		gap: 14px;
+		padding-top: 0.6em;
 	}
 	.hero-meta div {
 		padding-top: 12px;
 		border-top: 1px solid var(--line);
 	}
 	.hero-meta dt {
-		font-size: 12px;
+		font-size: 13px;
 		font-weight: 600;
-		letter-spacing: 0.12em;
-		text-transform: uppercase;
 		color: var(--ink-3);
 	}
 	.hero-meta dd {
@@ -103,14 +107,19 @@ const widths = (w: number) => [...[768, 1280, 1920, 2400].filter((x) => x < w), 
 			grid-template-columns: minmax(0, 1fr);
 			gap: 32px;
 		}
-		.hero h1 {
+		.hero-head {
+			grid-column: auto;
 			order: -1;
+		}
+		.hero h1 {
 			font-size: clamp(44px, 11vw, 72px);
 		}
-		.hero-side {
-			padding-top: 0;
+		.hero-sub {
+			margin-top: 16px;
+			font-size: 17px;
 		}
 		.hero-meta {
+			padding-top: 0;
 			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 		}
 	}

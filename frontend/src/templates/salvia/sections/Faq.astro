@@ -1,23 +1,21 @@
 ---
 /**
  * FAQ (#duvidas), optional, after 21st.dev "Interactive Accordion"
- * (jatin-yadav05): numbered rows on hairlines, a plus that turns into ×.
+ * (jatin-yadav05): rows on hairlines, a plus that turns into ×.
  * Native <details>, first item open, animated by core/accordion.
  */
 import type { SalviaConfig } from '../schema';
-import { md } from './_md';
 
 interface Props {
 	faq: NonNullable<SalviaConfig['faq']>;
 }
 const { faq } = Astro.props;
-const pad = (n: number) => String(n).padStart(2, '0');
 ---
 
 <section class='sec faq' id='duvidas' aria-labelledby='salvia-faq-title'>
 	<div class='wrap grid'>
 		<header class='head'>
-			<h2 id='salvia-faq-title' class='serif' set:html={md(faq.title)} />
+			<h2 id='salvia-faq-title' class='serif'>{faq.title}</h2>
 			{faq.lead && <p class='lead'>{faq.lead}</p>}
 		</header>
 		<div class='list'>
@@ -25,7 +23,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
 				faq.items.map((item, i) => (
 					<details open={i === 0} data-accordion>
 						<summary>
-							<span class='n'>{pad(i + 1)}</span>
 							<span class='q'>{item.q}</span>
 							<span class='x' aria-hidden='true' />
 						</summary>
@@ -78,7 +75,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 	}
 	summary {
 		display: grid;
-		grid-template-columns: 44px minmax(0, 1fr) 28px;
+		grid-template-columns: minmax(0, 1fr) 28px;
 		align-items: center;
 		gap: 12px;
 		min-height: 72px;
@@ -88,11 +85,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
 	}
 	summary::-webkit-details-marker {
 		display: none;
-	}
-	.n {
-		font-size: 14px;
-		font-variant-numeric: tabular-nums;
-		color: var(--ink-2);
 	}
 	.q {
 		font-size: clamp(18px, 1.6vw, 21px);
@@ -131,7 +123,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
 	}
 	details p {
 		max-width: 58ch;
-		padding: 0 40px 26px 56px;
+		padding: 0 40px 26px 0;
 		font-size: 16px;
 		line-height: 1.65;
 		color: var(--ink-2);
@@ -146,14 +138,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
 		}
 		details p {
 			padding-right: 0;
-		}
-	}
-	@media (max-width: 480px) {
-		summary {
-			grid-template-columns: 32px minmax(0, 1fr) 28px;
-		}
-		details p {
-			padding-left: 44px;
 		}
 	}
 </style>

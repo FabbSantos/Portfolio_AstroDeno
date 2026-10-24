@@ -53,7 +53,7 @@ describe('definePimenta', () => {
 		seo: { title: 'Bar Teste', description: 'Teste', canonical: 'https://bar.example' },
 		contact: { phone: '(21) 3000-0000' },
 		cuisine: ['Brasileira'],
-		hero: { tagline: 'Boteco', title: 'Fogo\nbaixo', photo, photoAlt: 'Prato' },
+		hero: { tagline: 'Boteco', photo, photoAlt: 'Prato' },
 		menu: { categories: [{ name: 'Petiscos', items: [{ name: 'Pastel', price: 12 }] }] },
 		location: { address: { street: 'Rua A, 1', city: 'Rio de Janeiro', state: 'RJ' }, hours: [{ days: ['fri', 'sat'], opens: '18:00', closes: '00:00' }] },
 		footer: { line: '© 2026' },

@@ -21,14 +21,14 @@ const accessHref = (id: string) => `${home}?assunto=${encodeURIComponent(`acesso
 		<span class='eyebrow accent'>{t.works.eyebrow}</span>
 		<h2>
 			{t.works.head1}{' '}
-			<span class='hl'>{t.works.head2}</span>
+			{t.works.head2}
 		</h2>
 		<p>{t.works.lead}</p>
 	</div>
 
 	<ol class='works-list reveal d1' aria-label={t.works.listLabel}>
 		{
-			rows.map((w, i) => {
+			rows.map((w) => {
 				const external = !!w.href;
 				return (
 					<li>
@@ -38,9 +38,6 @@ const accessHref = (id: string) => `${home}?assunto=${encodeURIComponent(`acesso
 							target={external ? '_blank' : undefined}
 							rel={external ? 'noopener' : undefined}
 						>
-							<span class='work-num' aria-hidden='true'>
-								{String(i + 1).padStart(2, '0')}
-							</span>
 							<span class='work-thumb'>
 								{w.image ? (
 									<Image class='work-thumb-img' src={w.image} alt='' width={144} height={96} format='webp' quality='high' loading='lazy' />
@@ -87,11 +84,11 @@ const accessHref = (id: string) => `${home}?assunto=${encodeURIComponent(`acesso
 		position: relative;
 		isolation: isolate;
 		display: grid;
-		grid-template-columns: 40px 72px minmax(0, 1fr) auto auto;
+		grid-template-columns: 72px minmax(0, 1fr) auto auto;
 		grid-template-areas:
-			'num thumb title status action'
-			'num thumb desc status action'
-			'num thumb role status action';
+			'thumb title status action'
+			'thumb desc status action'
+			'thumb role status action';
 		column-gap: 24px;
 		row-gap: 6px;
 		align-items: center;
@@ -117,16 +114,6 @@ const accessHref = (id: string) => `${home}?assunto=${encodeURIComponent(`acesso
 	.work-row:focus-visible::before {
 		opacity: 1;
 		transform: none;
-	}
-	.work-num {
-		grid-area: num;
-		font-family: var(--mono);
-		font-size: 13px;
-		color: var(--ink-3);
-		transition: color 0.25s;
-	}
-	.work-row:hover .work-num {
-		color: var(--accent-text);
 	}
 	.work-thumb {
 		grid-area: thumb;
@@ -259,12 +246,12 @@ const accessHref = (id: string) => `${home}?assunto=${encodeURIComponent(`acesso
 	/* Stacked rows: description stays visible under the title — never hidden. */
 	@media (max-width: 900px) {
 		.work-row {
-			grid-template-columns: 28px 72px minmax(0, 1fr);
+			grid-template-columns: 72px minmax(0, 1fr);
 			grid-template-areas:
-				'num thumb title'
-				'desc desc desc'
-				'role role role'
-				'status status action';
+				'thumb title'
+				'desc desc'
+				'role role'
+				'status action';
 			column-gap: 14px;
 			row-gap: 10px;
 			padding: 22px 0;

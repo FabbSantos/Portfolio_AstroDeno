@@ -32,8 +32,9 @@ const noLabel = en ? 'Not included' : 'Não incluído';
 		<section class='pricing sec' id='pricing' aria-labelledby='pricing-title'>
 			<div class='wrap'>
 				<div class='sec-head'>
-					{pricing.eyebrow && <p class='eyebrow'>{pricing.eyebrow}</p>}
-					<h2 id='pricing-title' class='display' set:html={md(pricing.title)} />
+					<h2 id='pricing-title' class='display'>
+						{pricing.title}
+					</h2>
 					{pricing.lead && <p class='sec-l' set:html={md(pricing.lead)} />}
 				</div>
 
@@ -188,8 +189,7 @@ const noLabel = en ? 'Not included' : 'Não incluído';
 	.tg-note {
 		font-family: var(--mono);
 		font-size: 10px;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
+		letter-spacing: 0.02em;
 		padding: 2px 6px;
 		border: 1px solid currentColor;
 		opacity: 0.8;
@@ -250,16 +250,15 @@ const noLabel = en ? 'Not included' : 'Não incluído';
 		gap: 10px;
 		font-family: var(--mono);
 		font-size: 12px;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
+		letter-spacing: 0;
 		color: var(--ink-3);
 	}
 	.cmp-badge {
 		padding: 3px 7px;
 		background: var(--accent-text);
 		color: #fff;
-		font-size: 10px;
-		letter-spacing: 0.08em;
+		font-size: 11px;
+		letter-spacing: 0.02em;
 	}
 	.cmp-price {
 		margin-top: 16px;

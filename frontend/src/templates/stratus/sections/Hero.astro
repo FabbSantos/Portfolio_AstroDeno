@@ -1,8 +1,8 @@
 ---
 /**
- * Hero, left-aligned: a release line in mono (the "pill"), the title in wide
- * Archivo, the lead, two calls to action and the proof line. The product frame
- * follows right under it (sections/Product.astro).
+ * Hero, left-aligned: the title in wide Archivo, the lead, two calls to
+ * action, the release line in mono (the "pill") and the proof line. The
+ * product frame follows right under it (sections/Product.astro).
  */
 import type { StratusConfig } from '../schema';
 import { md } from './_md';
@@ -21,25 +21,8 @@ const rating = stars ? `${(stars.match(/★/g) ?? []).length}/${stars.length}` :
 
 <section class='hero' aria-labelledby='hero-title'>
 	<div class='wrap'>
-		{
-			hero.pill &&
-				(hero.pill.href ? (
-					<a href={hero.pill.href} class='release'>
-						{hero.pill.tag && <span class='release-tag'>{hero.pill.tag}</span>}
-						<span class='release-text'>{hero.pill.text}</span>
-						<span class='release-arr' aria-hidden='true'>
-							→
-						</span>
-					</a>
-				) : (
-					<p class='release'>
-						{hero.pill.tag && <span class='release-tag'>{hero.pill.tag}</span>}
-						<span class='release-text'>{hero.pill.text}</span>
-					</p>
-				))
-		}
 		<div class='hero-grid'>
-			<h1 id='hero-title' class='display' set:html={md(hero.title)} />
+			<h1 id='hero-title' class='display'>{hero.title}</h1>
 			<div class='hero-side'>
 				<p class='lead' set:html={md(hero.lead)} />
 				<div class='cta-row'>
@@ -52,6 +35,26 @@ const rating = stars ? `${(stars.match(/★/g) ?? []).length}/${stars.length}` :
 						)
 					}
 				</div>
+				{
+					hero.pill && (
+						<div class='release-row'>
+							{hero.pill.href ? (
+								<a href={hero.pill.href} class='release'>
+									{hero.pill.tag && <span class='release-tag'>{hero.pill.tag}</span>}
+									<span class='release-text'>{hero.pill.text}</span>
+									<span class='release-arr' aria-hidden='true'>
+										→
+									</span>
+								</a>
+							) : (
+								<p class='release'>
+									{hero.pill.tag && <span class='release-tag'>{hero.pill.tag}</span>}
+									<span class='release-text'>{hero.pill.text}</span>
+								</p>
+							)}
+						</div>
+					)
+				}
 				{
 					hero.socialProof && (
 						<p class='proof'>
@@ -70,11 +73,13 @@ const rating = stars ? `${(stars.match(/★/g) ?? []).length}/${stars.length}` :
 		padding-top: clamp(40px, 6vw, 72px);
 		padding-bottom: clamp(32px, 4vw, 48px);
 	}
+	.release-row {
+		margin-top: 24px;
+	}
 	.release {
 		display: inline-flex;
 		align-items: center;
 		gap: 14px;
-		margin-bottom: clamp(28px, 4vw, 44px);
 		padding: 8px 12px 8px 8px;
 		border: 1px solid var(--line);
 		font-family: var(--mono);
@@ -90,7 +95,7 @@ const rating = stars ? `${(stars.match(/★/g) ?? []).length}/${stars.length}` :
 		background: var(--accent-text);
 		color: #fff;
 		font-size: 10px;
-		letter-spacing: 0.1em;
+		letter-spacing: 0.02em;
 	}
 	.release-arr {
 		color: var(--ink-3);

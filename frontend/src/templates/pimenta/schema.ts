@@ -4,10 +4,8 @@
  *
  * Lean on purpose: hero, menu, reservation and location are required; the
  * signature dishes row and the crew section render only when present. Section
- * titles have pt-BR defaults, so a client config is mostly data (menu, hours).
- *
- * Strings marked "md" accept the mini-markdown of `sections/_md.ts`:
- *   **text** → accent colour · ==text== → highlighter · newline → <br>
+ * titles are plain names with pt-BR defaults (Cardápio, Equipe, Reserva…), so a
+ * client config is mostly data (menu, hours). The hero title is brand.name.
  */
 import { z } from 'astro/zod';
 import { baseSiteSchema, defineSite, image } from '../core/schema';
@@ -41,11 +39,10 @@ export const pimentaSchema = baseSiteSchema.extend({
 		})
 		.prefault({}),
 
+	/** The big title is brand.name, one word per line (short words like "e" stay with the word before). */
 	hero: z.object({
 		/** One short paragraph on the left. */
 		tagline: z.string().min(1),
-		/** Big condensed title. Each line stays on one line (use \n to break), so keep lines short. */
-		title: z.string().min(1),
 		/** Square photo of a plate or cup shot from above; it is cut to a circle. */
 		photo: image,
 		photoAlt: z.string().min(1),
@@ -105,7 +102,7 @@ export const pimentaSchema = baseSiteSchema.extend({
 
 	crew: z
 		.object({
-			...head('Quem faz'),
+			...head('Equipe'),
 			people: z
 				.array(
 					z.object({
@@ -123,7 +120,7 @@ export const pimentaSchema = baseSiteSchema.extend({
 
 	reservation: z
 		.object({
-			...head('Reserve sua mesa'),
+			...head('Reserva'),
 			lead: z.string().default('Escolha o dia, o horário e quantas pessoas. A mensagem sai pronta no WhatsApp.'),
 			dateLabel: z.string().default('Dia'),
 			timeLabel: z.string().default('Horário'),
@@ -139,7 +136,7 @@ export const pimentaSchema = baseSiteSchema.extend({
 			/** Delivery and ordering links shown beside the form. */
 			delivery: z
 				.object({
-					title: z.string().default('Prefere em casa?'),
+					title: z.string().default('Delivery'),
 					links: z.array(link).min(1).max(4),
 				})
 				.optional(),
@@ -147,7 +144,7 @@ export const pimentaSchema = baseSiteSchema.extend({
 		.prefault({}),
 
 	location: z.object({
-		...head('Onde estamos'),
+		...head('Endereço'),
 		address: z.object({
 			street: z.string().min(1),
 			district: z.string().optional(),
@@ -175,8 +172,6 @@ export const pimentaSchema = baseSiteSchema.extend({
 
 	footer: z.object({
 		line: z.string().min(1),
-		/** Giant name at the bottom. Defaults to brand.name; one short word reads best. */
-		wordmark: z.string().optional(),
 	}),
 });
 

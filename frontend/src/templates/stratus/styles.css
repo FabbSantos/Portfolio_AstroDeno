@@ -33,7 +33,7 @@
 	padding-block: clamp(72px, 9vw, 120px);
 }
 
-/* Wide grotesk for titles; `**text**` inside them gets wider and heavier, not a colour */
+/* Wide grotesk for titles, one style for the whole title (titles are plain text) */
 .tpl-stratus .display {
 	font-family: var(--text);
 	font-variation-settings: 'wdth' 112;
@@ -42,44 +42,21 @@
 	line-height: 0.98;
 	text-wrap: balance;
 }
-.tpl-stratus :is(h1, h2, h3) strong {
-	font-variation-settings: 'wdth' 125;
-	font-weight: 800;
-	color: inherit;
-}
 .tpl-stratus p strong {
 	font-weight: 600;
 	color: var(--ink);
 }
 
-/* Mono labels */
+/* Mono labels (normal case) */
 .tpl-stratus .label {
-	font-family: var(--mono);
-	font-size: 11px;
-	font-weight: 500;
-	letter-spacing: 0.1em;
-	text-transform: uppercase;
-	color: var(--ink-3);
-}
-.tpl-stratus .eyebrow {
-	display: inline-flex;
-	align-items: center;
-	gap: 10px;
 	font-family: var(--mono);
 	font-size: 12px;
 	font-weight: 500;
-	letter-spacing: 0.1em;
-	text-transform: uppercase;
-	color: var(--accent-text);
-}
-.tpl-stratus .eyebrow::before {
-	content: '';
-	width: 18px;
-	height: 1px;
-	background: var(--accent-text);
+	letter-spacing: 0;
+	color: var(--ink-3);
 }
 
-/* Section head: eyebrow, wide title, optional lead */
+/* Section head: wide title, optional lead */
 .tpl-stratus .sec-head {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) minmax(0, 34ch);
@@ -87,9 +64,6 @@
 	row-gap: 16px;
 	align-items: end;
 	margin-bottom: clamp(36px, 5vw, 56px);
-}
-.tpl-stratus .sec-head .eyebrow {
-	grid-column: 1 / -1;
 }
 .tpl-stratus .sec-head h2 {
 	font-size: clamp(38px, 5vw, 72px);
@@ -237,10 +211,9 @@
 /* Core LeadForm (final CTA), skinned: hairline fields, ink button */
 .tpl-stratus .lead-form.lead-form .lf-field label {
 	font-family: var(--mono);
-	font-size: 11px;
+	font-size: 12px;
 	font-weight: 500;
-	letter-spacing: 0.1em;
-	text-transform: uppercase;
+	letter-spacing: 0;
 	color: var(--ink-3);
 }
 .tpl-stratus .lead-form.lead-form .lf-field input,

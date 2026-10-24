@@ -7,7 +7,6 @@
  */
 import type { SalviaConfig } from '../schema';
 import { hoursTable, OPEN_STRINGS } from '../hours';
-import { md } from './_md';
 
 interface Props {
 	config: SalviaConfig;
@@ -26,7 +25,7 @@ const en = locale === 'en';
 <section class='sec location on-ink' id='onde' aria-labelledby='salvia-location-title'>
 	<div class='wrap'>
 		<header class='sec-head'>
-			<h2 id='salvia-location-title' set:html={md(location.title)} />
+			<h2 id='salvia-location-title'>{location.title}</h2>
 			{location.lead && <p class='lead'>{location.lead}</p>}
 		</header>
 

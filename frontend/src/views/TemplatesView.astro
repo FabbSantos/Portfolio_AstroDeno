@@ -93,7 +93,7 @@ const wa = whatsappUrl(locale, t.templates.cta.whatsappGallery);
 	<main id='main-content'>
 		<section class='page-hero'>
 			<p class='eyebrow accent'><span class='dot'></span>{t.templates.gallery.eyebrow}</p>
-			<h1>{t.templates.gallery.head} <span class='hl'>{t.templates.gallery.headAccent}</span></h1>
+			<h1>{t.templates.gallery.head} {t.templates.gallery.headAccent}</h1>
 			<p class='lead'>{lead}</p>
 		</section>
 
@@ -145,7 +145,7 @@ const wa = whatsappUrl(locale, t.templates.cta.whatsappGallery);
 								<span class='plan-top'>
 									<i class='dot' aria-hidden='true' />
 									<span class='plan-name'>
-										{p.tpl.name}{p.tpl.accent && <Fragment>{' '}<span class='hl'>{p.tpl.accent}</span></Fragment>}
+										{p.tpl.name}{p.tpl.accent && <Fragment>{' '}{p.tpl.accent}</Fragment>}
 									</span>
 									<span class='plan-sel'>{cmp.selectedLabel}</span>
 								</span>
@@ -210,7 +210,7 @@ const wa = whatsappUrl(locale, t.templates.cta.whatsappGallery);
 								plans.map((p) => (
 									<th scope='col' class:list={[p.selected && 'is-sel']} style={p.style} data-col={p.tpl.slug}>
 										<i class='dot' aria-hidden='true' />
-										{p.tpl.name}{p.tpl.accent && <Fragment>{' '}<span class='hl'>{p.tpl.accent}</span></Fragment>}
+										{p.tpl.name}{p.tpl.accent && <Fragment>{' '}{p.tpl.accent}</Fragment>}
 									</th>
 								))
 							}
@@ -277,13 +277,10 @@ const wa = whatsappUrl(locale, t.templates.cta.whatsappGallery);
 					<h2>{t.templates.steps.title}</h2>
 					<ol class='steps'>
 						{
-							steps.map((s, i) => (
+							steps.map((s) => (
 								<li>
-									<span class='num' aria-hidden='true'>{String(i + 1).padStart(2, '0')}</span>
-									<div>
-										<h3>{s.title}</h3>
-										<p>{s.desc}</p>
-									</div>
+									<h3>{s.title}</h3>
+									<p>{s.desc}</p>
 								</li>
 							))
 						}
@@ -301,7 +298,7 @@ const wa = whatsappUrl(locale, t.templates.cta.whatsappGallery);
 		<Testimonials />
 
 		<section class='cta-band'>
-			<h2>{t.templates.cta.head} <span class='hl'>{t.templates.cta.headAccent}</span></h2>
+			<h2>{t.templates.cta.head} {t.templates.cta.headAccent}</h2>
 			<p class='sub'>{t.templates.cta.sub}</p>
 			<div class='actions'>
 				<a href={wantHref} class='btn btn-primary'>{t.templates.cta.button}</a>
@@ -560,16 +557,10 @@ const wa = whatsappUrl(locale, t.templates.cta.whatsappGallery);
 		letter-spacing: -0.02em;
 		line-height: 1.2;
 	}
-	.plan-name .hl {
-		color: var(--hue-text);
-	}
 	.plan-sel {
 		margin-left: auto;
-		font-family: var(--mono);
-		font-size: 10px;
+		font-size: 13px;
 		font-weight: 600;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
 		color: var(--hue-text);
 		background: var(--hue-soft);
 		padding: 3px 8px;
@@ -598,11 +589,8 @@ const wa = whatsappUrl(locale, t.templates.cta.whatsappGallery);
 		padding-top: 6px;
 	}
 	.plan-price .from {
-		font-family: var(--mono);
-		font-size: 11px;
+		font-size: 13px;
 		font-weight: 600;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
 		color: var(--ink-3);
 	}
 	.plan-price .amount.ask {
@@ -712,9 +700,6 @@ const wa = whatsappUrl(locale, t.templates.cta.whatsappGallery);
 	}
 	.matrix thead th:last-child {
 		border-top-right-radius: 16px;
-	}
-	.matrix thead th .hl {
-		color: var(--hue-text);
 	}
 	.matrix thead th .dot {
 		display: inline-block;
@@ -869,18 +854,8 @@ const wa = whatsappUrl(locale, t.templates.cta.whatsappGallery);
 		list-style: none;
 	}
 	.steps li {
-		display: grid;
-		grid-template-columns: 40px 1fr;
-		gap: 16px;
 		padding: 20px 0;
 		border-top: 1px solid var(--rule);
-	}
-	.steps .num {
-		font-family: var(--mono);
-		font-size: 13px;
-		font-weight: 600;
-		color: var(--accent-text);
-		padding-top: 4px;
 	}
 	.steps h3 {
 		font-size: 19px;

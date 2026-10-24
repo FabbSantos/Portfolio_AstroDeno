@@ -1,5 +1,5 @@
 ---
-/** Numbers row under the hero: serif numerals between hairlines, mono labels. 3 / 2 columns on small screens. */
+/** Numbers row under the hero: serif numerals between hairlines, small sentence-case labels. 3 / 2 columns on small screens. */
 import type { MiranteConfig } from '../schema';
 
 interface Props {
@@ -54,9 +54,7 @@ const { stats } = Astro.props.config;
 	}
 	.n .l {
 		font-family: var(--mono);
-		font-size: 11px;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
+		font-size: 14px;
 		color: var(--ink-3);
 	}
 	@media (max-width: 900px) {

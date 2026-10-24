@@ -1,8 +1,8 @@
 # Stratus — landing de produto com planos (SaaS / B2B)
 
-Landing de produto orientada a trial: hero à esquerda com a tela do produto numa moldura de linha, faixa de logos, recursos numa grade de filetes, preços em tabela comparativa (com opção mensal/anual), perguntas numeradas, chamada final em bloco escuro (com formulário opcional) e rodapé em colunas. Demo em `/templates/stratus/demo` (`demo.config.ts`, em inglês).
+Landing de produto orientada a trial: hero à esquerda com a tela do produto numa moldura de linha, faixa de logos, recursos numa grade de filetes, preços em tabela comparativa (com opção mensal/anual), perguntas em accordion, chamada final em bloco escuro (com formulário opcional) e rodapé em colunas. Demo em `/templates/stratus/demo` (`demo.config.ts`, em inglês).
 
-Visual: ficha técnica. Uma fonte só, **Archivo** com eixo de largura (larga nos títulos, normal no texto; o trecho `**assim**` num título fica mais largo e mais pesado, não colorido), **JetBrains Mono** do core em números e rótulos, filetes e marcas de canto no lugar de cards e sombras, uma cor de destaque usada em pouquíssimos pontos. Cantos retos.
+Visual: ficha técnica. Uma fonte só, **Archivo** com eixo de largura (larga nos títulos, normal no texto; cada título é o nome da seção, num estilo só, sem palavra destacada), **JetBrains Mono** do core em números e rótulos (em caixa normal, sem caixa alta), filetes e marcas de canto no lugar de cards e sombras, uma cor de destaque usada em pouquíssimos pontos. Cantos retos.
 
 ```
 stratus/
@@ -11,7 +11,7 @@ stratus/
   StratusBody.astro   <div class='tpl tpl-stratus'> com as seções em ordem; importa a Archivo
   StratusPage.astro   core Page + StratusBody — página do cliente
   fonts.ts            arquivos da Archivo e da JetBrains Mono para <link rel=preload>
-  styles.css          regras compartilhadas (wrapper, display, eyebrow, moldura com marcas, botões, skin do LeadForm, MobileNav)
+  styles.css          regras compartilhadas (wrapper, display, rótulo mono, moldura com marcas, botões, skin do LeadForm, MobileNav)
   sections/           Topbar · Hero · Product · Logos · Features · Pricing · Faq · FinalCta · Footer · _md.ts
 ```
 
@@ -19,18 +19,18 @@ Fonte: `@fontsource-variable/archivo` (o scaffold adiciona ao `package.json` do 
 
 ## Config
 
-Base (core): `brand`, `theme`, `seo`, `contact`, `analytics`, `legal`, `nav` (links do topbar). Strings **rich** aceitam `**negrito**` (mais largo e pesado em títulos, negrito no texto) e `\n`.
+Base (core): `brand`, `theme`, `seo`, `contact`, `analytics`, `legal`, `nav` (links do topbar). Strings **rich** (só texto corrido: leads, descrições, respostas) aceitam `**negrito**` (negrito simples) e `\n`. Os `title` são texto puro, sem `**` nem `\n`: o nome da seção, num estilo só.
 
 | Seção | Campos |
 | --- | --- |
 | `header` | `brandHref` (padrão `'/'`), `brandDot` (ponto na cor de destaque após a marca, padrão `true`), `signIn?: { label, href }`, `cta: { label, href }` |
-| `hero` | `pill?: { tag?, text, href? }` (vira a linha de release em mono, com a `tag` num selo), `title` (rich), `lead` (rich), `primary: { label, href }`, `secondary?` (link sublinhado), `socialProof?` (`'★★★★★ **4.9** on G2 · …'`: a sequência de ★ vira a nota `5/5` em mono) |
+| `hero` | `pill?: { tag?, text, href? }` (vira a linha de release em mono, abaixo dos botões, com a `tag` num selo), `title` (o h1: o nome do produto, ex.: `'Stratus'`), `lead` (rich), `primary: { label, href }`, `secondary?` (link sublinhado), `socialProof?` (`'★★★★★ **4.9** on G2 · …'`: a sequência de ★ vira a nota `5/5` em mono) |
 | `product?` | `image` (screenshot dentro da moldura; `null` → dashboard CSS desenhado em filetes), `alt` (obrigatório com `image`), `meta?` (linha mono na barra da moldura, ex.: `'app.stratus.io · overview'`; padrão: nome da marca), `kpis: [{ value, label? }]` (máx. 4, usados no mock). Omitir esconde a seção |
-| `logos` | `title?` (rótulo mono à esquerda), `items: [{ name, image? }]` — sem `image` o nome vira wordmark em caixa alta; lista vazia esconde a faixa |
-| `features` | `eyebrow?`, `title` (rich), `lead?` (rich), `items: [{ icon?, title, desc (rich), tint? }]` — grade de filetes 3×N com índice `01…` em mono; `icon` (1–2 caracteres) aparece ao lado do índice; um foco de luz segue o mouse |
-| `pricing?` | `eyebrow?`, `title` (rich), `lead?`, `toggle?: { label, monthly, annual, note? }` (seletor mensal/anual; precisa de `priceAnnual` nos planos), `plans: [{ name, price, priceAnnual?, period?, desc, cta, bullets, featured?, badge? }]`, `compare?: { rows: [{ label, values: (string \| boolean)[] }] }` (uma linha por recurso, um valor por plano; `true`/`false` vira marcação), `foot?`. Sem `compare`, cada `bullet` vira uma linha marcada nos planos que o listam. Abaixo de 900px cada plano vira um bloco com a própria lista. Omitir remove a seção |
-| `faq?` | `eyebrow?`, `title` (rich), `items: [{ q, a (rich) }]` — accordion numerado; o título fica fixo à esquerda no desktop. Omitir remove a seção |
-| `finalCta` | `title` (rich), `sub?`, `ctas: [{ label, href }]` (o primeiro em papel, os outros em contorno), `form?: { fields: LeadField[], cta, foot? }` (LeadForm `mini`, padrão: um campo de e-mail) |
+| `logos` | `title?` (rótulo mono à esquerda, ex.: `'Trusted by'`), `items: [{ name, image? }]`. Sem `image` o nome vira wordmark em caixa alta (é logo); lista vazia esconde a faixa |
+| `features` | `title` (ex.: `'Features'`), `lead?` (rich), `items: [{ icon?, title, desc (rich), tint? }]`: grade de filetes 3×N, sem numeração; `icon` (1–2 caracteres) aparece acima do título do card; um foco de luz segue o mouse |
+| `pricing?` | `title` (ex.: `'Pricing'`), `lead?`, `toggle?: { label, monthly, annual, note? }` (seletor mensal/anual; precisa de `priceAnnual` nos planos), `plans: [{ name, price, priceAnnual?, period?, desc, cta, bullets, featured?, badge? }]`, `compare?: { rows: [{ label, values: (string \| boolean)[] }] }` (uma linha por recurso, um valor por plano; `true`/`false` vira marcação), `foot?`. Sem `compare`, cada `bullet` vira uma linha marcada nos planos que o listam. Abaixo de 900px cada plano vira um bloco com a própria lista. Omitir remove a seção |
+| `faq?` | `title` (ex.: `'FAQ'`), `items: [{ q, a (rich) }]`: accordion sem numeração; o título fica fixo à esquerda no desktop. Omitir remove a seção |
+| `finalCta` | `title` (o nome da seção, ex.: `'Get started'`; não repete o hero), `sub?`, `ctas: [{ label, href }]` (o primeiro em papel, os outros em contorno), `form?: { fields: LeadField[], cta, foot? }` (LeadForm `mini`, padrão: um campo de e-mail) |
 | `footer` | `columns: [{ h, links: [{ label, href }] }]`, `legalLinks: [{ label, href }]`, `copyright?` (padrão `'© <ano> <legal.company ?? brand.name>'`) |
 
 ## Imagens do cliente

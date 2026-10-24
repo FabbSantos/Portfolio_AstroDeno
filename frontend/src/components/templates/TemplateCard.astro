@@ -141,11 +141,11 @@ const style = `${hueVars(tpl.kind)};--frame-pct:${framePct};--pan-dur:${panDur}`
 		{
 			heading === 'h2' ? (
 				<h2 class='name'>
-					{tpl.name}{tpl.accent && <Fragment>{' '}<span class='hl'>{tpl.accent}</span></Fragment>}
+					{tpl.name}{tpl.accent && <Fragment>{' '}{tpl.accent}</Fragment>}
 				</h2>
 			) : (
 				<h3 class='name'>
-					{tpl.name}{tpl.accent && <Fragment>{' '}<span class='hl'>{tpl.accent}</span></Fragment>}
+					{tpl.name}{tpl.accent && <Fragment>{' '}{tpl.accent}</Fragment>}
 				</h3>
 			)
 		}
@@ -490,10 +490,8 @@ const style = `${hueVars(tpl.kind)};--frame-pct:${framePct};--pan-dur:${panDur}`
 		gap: 6px;
 	}
 	.new {
-		font-size: 11px;
+		font-size: 13px;
 		font-weight: 700;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
 		color: #fff;
 		background: var(--accent-text);
 		padding: 4px 9px;
@@ -539,21 +537,14 @@ const style = `${hueVars(tpl.kind)};--frame-pct:${framePct};--pan-dur:${panDur}`
 		letter-spacing: -0.02em;
 		line-height: 1.15;
 	}
-	/* Heading is < 24px: use the AA-safe accent. */
-	.tpl-link :global(.name .hl) {
-		color: var(--accent-text);
-	}
 	.solves {
 		font-size: 14px;
 		color: var(--ink);
 		line-height: 1.45;
 	}
 	.solves .k {
-		font-family: var(--mono);
-		font-size: 11px;
+		font-size: 13px;
 		font-weight: 600;
-		letter-spacing: 0.06em;
-		text-transform: uppercase;
 		color: var(--hue-text);
 		margin-right: 4px;
 	}
@@ -647,11 +638,8 @@ const style = `${hueVars(tpl.kind)};--frame-pct:${framePct};--pan-dur:${panDur}`
 			margin-top: 10px;
 		}
 		.strip-k {
-			font-family: var(--mono);
-			font-size: 11px;
+			font-size: 13px;
 			font-weight: 600;
-			letter-spacing: 0.1em;
-			text-transform: uppercase;
 			color: var(--ink-3);
 		}
 		.strip-row {

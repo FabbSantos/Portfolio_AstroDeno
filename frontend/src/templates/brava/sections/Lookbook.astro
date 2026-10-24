@@ -1,11 +1,11 @@
 ---
 /**
- * Lookbook as a split panel: copy, the slide index and the list of captions
- * on the left; on the right one portrait at a time with a slow zoom, a
- * progress bar per slide and previous/next. A CSS animation is the timer:
- * `animationend` advances; the strip holds while the pointer or focus is
- * inside, the tab is hidden or the panel is offscreen, and never advances
- * under reduced motion. Keyboard: arrows on the panel.
+ * Lookbook as a split panel: copy and the list of captions on the left; on
+ * the right one portrait at a time with a slow zoom, a progress bar per
+ * slide and previous/next. A CSS animation is the timer: `animationend`
+ * advances; the strip holds while the pointer or focus is inside, the tab is
+ * hidden or the panel is offscreen, and never advances under reduced motion.
+ * Keyboard: arrows on the panel.
  */
 import { Image } from 'astro:assets';
 import type { BravaConfig } from '../schema';
@@ -16,7 +16,6 @@ interface Props {
 const { config } = Astro.props;
 const { lookbook, brand } = config;
 const en = brand.locale === 'en';
-const pad = (n: number) => String(n).padStart(2, '0');
 const prevLabel = en ? 'Previous photo' : 'Foto anterior';
 const nextLabel = en ? 'Next photo' : 'Próxima foto';
 const goLabel = en ? 'Show photo' : 'Mostrar foto';
@@ -25,16 +24,12 @@ const goLabel = en ? 'Show photo' : 'Mostrar foto';
 <section class='lookbook sec' id='lookbook' aria-labelledby='lookbook-title' data-lookbook>
 	<div class='wrap lb-grid'>
 		<div class='lb-text'>
-			<p class='eyebrow'>{lookbook.eyebrow}</p>
 			<h2 id='lookbook-title' class='display'>{lookbook.title}</h2>
-			<p class='lb-index' aria-live='polite'>
-				<span data-lb-cur>01</span> / {pad(lookbook.tiles.length)}
-			</p>
 			<ol class='lb-caps'>
 				{
 					lookbook.tiles.map((t, i) => (
 						<li class:list={['lb-cap', { 'is-on': i === 0 }]} data-lb-cap={i}>
-							<button type='button' data-lb-go={i} aria-label={`${goLabel} ${pad(i + 1)}`}>
+							<button type='button' data-lb-go={i} aria-label={`${goLabel} ${i + 1}`} aria-current={i === 0 ? 'true' : undefined}>
 								{t.caption ?? t.alt}
 							</button>
 						</li>
@@ -77,7 +72,6 @@ const goLabel = en ? 'Show photo' : 'Mostrar foto';
 		const slides = [...root.querySelectorAll<HTMLElement>('[data-lb-slide]')];
 		const caps = [...root.querySelectorAll<HTMLElement>('[data-lb-cap]')];
 		const fills = [...root.querySelectorAll<HTMLElement>('[data-lb-fill]')];
-		const cur = root.querySelector<HTMLElement>('[data-lb-cur]');
 		const stage = root.querySelector<HTMLElement>('[data-lb-stage]');
 		if (slides.length < 2 || !stage) return;
 		const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -93,8 +87,12 @@ const goLabel = en ? 'Show photo' : 'Mostrar foto';
 		const show = (n: number) => {
 			i = (n + slides.length) % slides.length;
 			slides.forEach((s, k) => s.classList.toggle('is-on', k === i));
-			caps.forEach((c, k) => c.classList.toggle('is-on', k === i));
-			if (cur) cur.textContent = String(i + 1).padStart(2, '0');
+			caps.forEach((c, k) => {
+				c.classList.toggle('is-on', k === i);
+				const b = c.querySelector('button');
+				if (k === i) b?.setAttribute('aria-current', 'true');
+				else b?.removeAttribute('aria-current');
+			});
 			fills.forEach((f, k) => {
 				f.classList.remove('is-running', 'is-done');
 				if (k < i) f.classList.add('is-done');
@@ -144,12 +142,6 @@ const goLabel = en ? 'Show photo' : 'Mostrar foto';
 	}
 	.lb-text h2 {
 		font-size: clamp(48px, 6vw, 96px);
-	}
-	.lb-index {
-		font-family: var(--display);
-		font-style: italic;
-		font-size: 22px;
-		color: var(--ink-3);
 	}
 	.lb-caps {
 		list-style: none;

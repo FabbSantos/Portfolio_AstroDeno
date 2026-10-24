@@ -43,7 +43,7 @@ const groups = [
 				<span class='dot' aria-hidden='true'></span>
 				{eyebrow}
 			</p>
-			<h1>{w.hero.head1} <span class='hl'>{w.hero.head2}</span></h1>
+			<h1>{w.hero.head1} {w.hero.head2}</h1>
 			<p class='lead'>{w.hero.lead}</p>
 		</section>
 
@@ -54,7 +54,7 @@ const groups = [
 					<div class='sec-head reveal'>
 						<span class='eyebrow accent'>{g.copy.eyebrow}</span>
 						<h2>
-							{g.copy.head1} <span class='hl'>{g.copy.head2}</span>
+							{g.copy.head1} {g.copy.head2}
 						</h2>
 						<p>{g.copy.lead}</p>
 					</div>
@@ -143,7 +143,7 @@ const groups = [
 		<section class='section lab' id='lab'>
 			<div class='sec-head reveal'>
 				<span class='eyebrow accent'>{w.lab.eyebrow}</span>
-				<h2>{w.lab.head1} <span class='hl'>{w.lab.head2}</span></h2>
+				<h2>{w.lab.head1} {w.lab.head2}</h2>
 				<p>{w.lab.lead}</p>
 			</div>
 
@@ -184,7 +184,7 @@ const groups = [
 
 		<!-- CTA -->
 		<section class='cta-band'>
-			<h2>{w.cta.head1} <span class='hl'>{w.cta.head2}</span></h2>
+			<h2>{w.cta.head1} {w.cta.head2}</h2>
 			<p class='sub'>{w.cta.sub}</p>
 			<div class='actions'>
 				<a href={contactHref} class='btn btn-primary'>{t.common.ctaContact}</a>
@@ -405,11 +405,8 @@ const groups = [
 		content: none;
 	}
 	.offline {
-		font-family: var(--mono);
-		font-size: 12px;
+		font-size: 13px;
 		color: var(--ink-3);
-		text-transform: uppercase;
-		letter-spacing: 0.06em;
 	}
 
 	/* Lab */

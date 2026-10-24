@@ -1,7 +1,8 @@
 ---
 /**
- * Hero: the photo fills the screen. Title (serif, italic accent) and rich sub
- * bottom-left, the mini lead form (core LeadForm: nome + telefone) in a dark
+ * Hero: the photo fills the screen. Title (serif, one style), rich sub and the
+ * optional status line with the pulsing "live" dot bottom-left, the mini lead
+ * form (core LeadForm: nome + telefone) in a dark
  * translucent panel bottom-right, and a filmstrip of the gallery photos that
  * swaps the backdrop. The first photo is the LCP (eager, high priority); the
  * rest load lazily. The strip advances on a CSS-animation timer, paused while
@@ -64,14 +65,16 @@ const showLabel = en ? 'Show' : 'Mostrar';
 
 	<div class='hero-inner wrap'>
 		<div class='hero-copy'>
-			<p class='eyebrow'>
-				<span class='live-dot' aria-hidden='true'></span>
-				{hero.eyebrow}
-			</p>
-			<h1 id='hero-title' class='display'>
-				{hero.title} <em class='hl'>{hero.titleAccent}</em>
-			</h1>
+			<h1 id='hero-title' class='display'>{hero.title}</h1>
 			<p class='sub' set:html={md(hero.sub)} />
+			{
+				hero.status && (
+					<p class='hero-status'>
+						<span class='live-dot' aria-hidden='true' />
+						{hero.status}
+					</p>
+				)
+			}
 		</div>
 
 		<div class='hero-film' role='group' aria-label={stripLabel} data-hero-film>
@@ -257,12 +260,20 @@ const showLabel = en ? 'Show' : 'Mostrar';
 			0 1px 2px color-mix(in srgb, #000 45%, transparent),
 			0 2px 28px color-mix(in srgb, #000 40%, transparent);
 	}
-	.hero-copy .eyebrow {
+	/* Status line under the sub: plain text after the live dot */
+	.hero-status {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		margin-top: 22px;
+		font-size: 14px;
+		line-height: 1.4;
 		color: color-mix(in srgb, #fff 82%, transparent);
 	}
 	/* The pulse animates only transform and opacity on a ring (a box-shadow animation repainted the hero every frame). */
 	.live-dot {
 		position: relative;
+		flex: none;
 		width: 8px;
 		height: 8px;
 		border-radius: 50%;
@@ -287,7 +298,6 @@ const showLabel = en ? 'Show' : 'Mostrar';
 		}
 	}
 	.hero h1 {
-		margin-top: 22px;
 		font-size: clamp(56px, 8.4vw, 132px);
 		line-height: 0.94;
 		max-width: 12ch;
@@ -346,9 +356,7 @@ const showLabel = en ? 'Show' : 'Mostrar';
 	}
 	.film-l {
 		font-family: var(--mono);
-		font-size: 11px;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
+		font-size: 13px;
 	}
 	.film-bar {
 		display: block;
@@ -438,7 +446,7 @@ const showLabel = en ? 'Show' : 'Mostrar';
 			min-width: 64px;
 		}
 		.film-l {
-			font-size: 10px;
+			font-size: 12px;
 		}
 		.hero-shade {
 			background:

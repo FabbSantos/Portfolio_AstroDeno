@@ -1,7 +1,6 @@
 ---
 /** The studio, on a block of the deep colour: copy on the left, the numbers in a hairline grid on the right. */
 import type { AtelierConfig } from '../schema';
-import { md } from './_md';
 
 interface Props {
 	config: AtelierConfig;
@@ -12,8 +11,7 @@ const { studio } = Astro.props.config;
 <section class='studio sec' id='studio' aria-labelledby='studio-title'>
 	<div class='wrap studio-grid'>
 		<div class='studio-copy'>
-			<p class='eyebrow'>{studio.eyebrow}</p>
-			<h2 id='studio-title' class='display' set:html={md(studio.title)} />
+			<h2 id='studio-title' class='display'>{studio.title}</h2>
 			<div class='studio-text'>{studio.paragraphs.map((p) => <p>{p}</p>)}</div>
 			{
 				studio.link && (
@@ -42,12 +40,6 @@ const { studio } = Astro.props.config;
 	.studio {
 		background: var(--accent-text);
 		color: #fff;
-	}
-	.studio .eyebrow {
-		color: color-mix(in srgb, #fff 72%, transparent);
-	}
-	.studio .eyebrow::before {
-		background: color-mix(in srgb, #fff 72%, transparent);
 	}
 	.studio-grid {
 		display: grid;
@@ -102,10 +94,8 @@ const { studio } = Astro.props.config;
 		font-variant-numeric: tabular-nums;
 	}
 	.studio-stats dt {
-		font-size: 13px;
+		font-size: 14px;
 		font-weight: 600;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
 		color: color-mix(in srgb, #fff 72%, transparent);
 	}
 	@media (max-width: 900px) {

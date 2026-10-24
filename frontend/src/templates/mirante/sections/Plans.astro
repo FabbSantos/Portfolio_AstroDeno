@@ -1,6 +1,6 @@
 ---
 /**
- * Floor plans as a list: one row per option (index, tag, m², description);
+ * Floor plans as a list: one row per option (tag, m², description);
  * hovering, focusing or clicking a row shows its plan large on the stage at
  * the right, which stays pinned while the list scrolls. Below 900px the stage
  * goes away and each row opens as an accordion with the plan inside.
@@ -8,7 +8,6 @@
  */
 import { Image } from 'astro:assets';
 import type { MiranteConfig } from '../schema';
-import { md } from './_md';
 
 interface Props {
 	config: MiranteConfig;
@@ -17,7 +16,6 @@ const { plans, brand } = Astro.props.config;
 
 const layouts = ['pl-A', 'pl-B', 'pl-C'];
 const roomClasses = ['r-sala', 'r-var', 'r-dorm', 'r-suite', 'r-cozi', 'r-wc'];
-const num = (i: number) => String(i + 1).padStart(2, '0');
 const widths = (w: number) => [...[640, 960].filter((x) => x < w), w];
 const en = brand.locale === 'en';
 ---
@@ -25,8 +23,7 @@ const en = brand.locale === 'en';
 <section class='plantas sec' id='plantas' aria-labelledby='plantas-title'>
 	<div class='wrap'>
 		<div class='sec-head'>
-			{plans.eyebrow && <p class='eyebrow'>{plans.eyebrow}</p>}
-			<h2 id='plantas-title' class='display' set:html={md(plans.title)} />
+			<h2 id='plantas-title' class='display'>{plans.title}</h2>
 		</div>
 
 		<div class='pl-grid' data-plans>
@@ -35,7 +32,6 @@ const en = brand.locale === 'en';
 					plans.items.map((t, i) => (
 						<li class:list={['pl-row', { 'is-on': i === 0 }]} data-pl-row={i}>
 							<button type='button' class='pl-btn' data-pl-btn={i} aria-expanded={i === 0 ? 'true' : 'false'} aria-controls={`pl-panel-${i}`}>
-								<span class='pl-n'>{num(i)}</span>
 								<span class='pl-main'>
 									<span class='pl-tag'>
 										{t.tag}
@@ -141,7 +137,7 @@ const en = brand.locale === 'en';
 	.pl-btn {
 		width: 100%;
 		display: grid;
-		grid-template-columns: 44px minmax(0, 1fr) 40px;
+		grid-template-columns: minmax(0, 1fr) 40px;
 		align-items: center;
 		gap: 16px;
 		padding: 26px 0;
@@ -153,13 +149,6 @@ const en = brand.locale === 'en';
 		outline: 2px solid var(--ink);
 		outline-offset: 4px;
 	}
-	.pl-n {
-		font-family: var(--mono);
-		font-size: 12px;
-		color: var(--ink-3);
-		padding-top: 6px;
-		align-self: start;
-	}
 	.pl-main {
 		display: grid;
 		gap: 6px;
@@ -169,16 +158,13 @@ const en = brand.locale === 'en';
 		align-items: center;
 		gap: 12px;
 		font-family: var(--mono);
-		font-size: 11px;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
+		font-size: 13px;
 		color: var(--ink-3);
 	}
 	.pl-badge {
 		padding: 3px 8px;
 		background: var(--accent-text);
 		color: #fff;
-		letter-spacing: 0.08em;
 	}
 	.pl-m2 {
 		font-size: clamp(40px, 4.4vw, 64px);
@@ -260,9 +246,7 @@ const en = brand.locale === 'en';
 		gap: 16px;
 		padding-top: 14px;
 		font-family: var(--mono);
-		font-size: 11px;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
+		font-size: 13px;
 		color: var(--ink-3);
 	}
 	.pl-stage-link {
@@ -283,9 +267,7 @@ const en = brand.locale === 'en';
 		align-items: end;
 		padding: 8px;
 		font-family: var(--mono);
-		font-size: 10px;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
+		font-size: 12px;
 		color: var(--ink-3);
 	}
 	.pl-A { grid-template-columns: 1.4fr 1fr 1fr; grid-template-rows: 1.2fr 1fr 0.55fr; }
@@ -318,7 +300,7 @@ const en = brand.locale === 'en';
 			display: none;
 		}
 		.pl-btn {
-			grid-template-columns: 36px minmax(0, 1fr) 28px;
+			grid-template-columns: minmax(0, 1fr) 28px;
 			padding: 22px 0;
 		}
 		.pl-arrow {

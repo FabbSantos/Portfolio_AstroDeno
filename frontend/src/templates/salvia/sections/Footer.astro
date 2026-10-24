@@ -1,7 +1,7 @@
 ---
 /**
- * Footer, after 21st.dev "Large Name Footer": four short columns (address,
- * hours, contact, legal) and the business name set huge at the bottom edge.
+ * Footer: four short columns (address, hours, contact, legal) over a hairline
+ * with the footer line.
  */
 import type { SalviaConfig } from '../schema';
 import { hoursSummary } from '../hours';
@@ -13,7 +13,6 @@ const { config } = Astro.props;
 const { brand, footer, legal, location, contact } = config;
 const en = brand.locale === 'en';
 const a = location.address;
-const word = footer.wordmark ?? brand.name;
 const legalLine = [legal.company, legal.cnpj ? `CNPJ ${legal.cnpj}` : null].filter(Boolean).join(' · ');
 const phoneHref = contact.phone ? `tel:${contact.phone.replace(/[^\d+]/g, '')}` : null;
 const waHref = contact.whatsapp ? `https://wa.me/${contact.whatsapp.number}?text=${encodeURIComponent(contact.whatsapp.message)}` : null;
@@ -59,8 +58,6 @@ const legalTitle = footer.technicalLeadLabel ?? (footer.technicalLead ? (en ? 'M
 		</div>
 	</div>
 
-	<p class='wordmark serif' aria-hidden='true' style={`--chars: ${[...word].length}`}>{word}</p>
-
 	<div class='wrap bottom'>
 		<span>{footer.line}</span>
 	</div>
@@ -68,7 +65,6 @@ const legalTitle = footer.technicalLeadLabel ?? (footer.technicalLead ? (en ? 'M
 
 <style>
 	.foot {
-		overflow: hidden;
 		padding-top: clamp(56px, 7vw, 88px);
 		border-top: 1px solid var(--line);
 	}
@@ -101,25 +97,12 @@ const legalTitle = footer.technicalLeadLabel ?? (footer.technicalLead ? (en ? 'M
 		text-decoration-thickness: 1px;
 		text-underline-offset: 4px;
 	}
-	/* One line that spans the page: size follows the number of characters
-	   (Newsreader averages ~0.42em per glyph; the cap keeps a 3-letter name sane). */
-	.wordmark {
-		margin: clamp(40px, 6vw, 72px) 0 0;
-		padding-inline: var(--pad-x);
-		font-size: min(calc((100vw - 2 * var(--pad-x)) / (var(--chars) * 0.42)), 46vw);
-		line-height: 0.8;
-		letter-spacing: -0.04em;
-		white-space: nowrap;
-		color: var(--ink);
-		transform: translateY(0.12em);
-	}
 	.bottom {
-		position: relative;
 		display: flex;
 		justify-content: space-between;
+		margin-top: clamp(40px, 6vw, 72px);
 		padding-block: 18px 22px;
 		border-top: 1px solid var(--line);
-		background: var(--bg);
 		font-size: 13px;
 		color: var(--ink-2);
 	}
