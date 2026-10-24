@@ -13,9 +13,10 @@ import '../styles/site.css';
 import SpeedInsights from '@vercel/speed-insights/astro';
 import UmamiLoader from '../components/site/UmamiLoader.astro';
 import WhatsAppFab from '../components/site/WhatsAppFab.astro';
-import { SITE } from '../data/site';
+import { PERSON_ID, SITE, whatsappUrl } from '../data/site';
+import { servicePages } from '../data/servicePages';
 import { TEMPLATE_PROMO, fullName, promoOn, promoPrice, templates } from '../data/templates';
-import { LOCALES, LANG_TAG, OG_LOCALE, localeOf, localePath, stripLocale, useT } from '../i18n';
+import { LOCALES, LANG_TAG, OG_LOCALE, localeOf, localePath, pick, stripLocale, useT } from '../i18n';
 
 interface Props {
 	title: string;
@@ -26,9 +27,13 @@ interface Props {
 	ogImage?: string;
 	/** JSON-LD type override. Default: Person. */
 	ogType?: 'website' | 'article';
+	/** Extra JSON-LD blocks for this page (e.g. Service + FAQPage on a service page). */
+	structuredData?: readonly Record<string, unknown>[];
+	/** Pre-filled message for the floating WhatsApp button on this page. */
+	whatsappMessage?: string;
 }
 
-const { title, description, noindex = false, ogImage = '/og.png', ogType = 'website' } = Astro.props;
+const { title, description, noindex = false, ogImage = '/og.png', ogType = 'website', structuredData = [], whatsappMessage } = Astro.props;
 const locale = localeOf(Astro);
 const t = useT(locale);
 const path = stripLocale(Astro.url.pathname);
@@ -37,15 +42,25 @@ const canonical = new URL(localePath(locale, path), site).href;
 const alternates = LOCALES.map((l) => ({ locale: l, href: new URL(localePath(l, path), site).href }));
 const ogImageAbs = new URL(ogImage, site).href;
 
+const waUrl = whatsappUrl(locale);
 const jsonLd = {
 	'@context': 'https://schema.org',
 	'@type': 'Person',
+	// Stable id: service pages point their provider here.
+	'@id': PERSON_ID,
 	name: SITE.name,
 	url: site.href,
 	email: `mailto:${SITE.email}`,
+	...(SITE.whatsapp.number ? { telephone: SITE.whatsapp.number } : {}),
+	...(waUrl ? { contactPoint: { '@type': 'ContactPoint', contactType: 'WhatsApp', url: waUrl, availableLanguage: ['pt-BR', 'en'], areaServed: 'BR' } } : {}),
 	jobTitle: locale === 'pt' ? 'Engenheiro de Software Sênior' : 'Senior Software Engineer',
 	address: { '@type': 'PostalAddress', addressLocality: 'Rio de Janeiro', addressRegion: 'RJ', addressCountry: 'BR' },
-	sameAs: [SITE.social.github, SITE.social.linkedin, SITE.social.instagram],
+	sameAs: [
+		SITE.social.github,
+		SITE.social.linkedin,
+		SITE.social.instagram,
+		// TODO(fab): link do Perfil da Empresa no Google, quando existir. Ex.: 'https://maps.app.goo.gl/...'
+	],
 	knowsAbout: ['TypeScript', 'JavaScript', 'React', 'Vue', 'Next.js', 'Nuxt', 'Astro', 'Node.js', 'C#', 'AWS', 'LLM integration'],
 	// Premium templates are "sob consulta": offered, with no price.
 	makesOffer: templates.map((tpl) => {
@@ -62,6 +77,19 @@ const jsonLd = {
 		};
 	}),
 };
+// Service pages are offers too.
+(jsonLd.makesOffer as Record<string, unknown>[]).push(
+	...servicePages.map((sp) => ({
+		'@type': 'Offer',
+		name: pick(sp.name, locale),
+		url: new URL(localePath(locale, `/servicos/${sp.slug}`), site).href,
+		priceCurrency: 'BRL',
+		price: sp.priceFrom,
+		priceSpecification: { '@type': 'PriceSpecification', minPrice: sp.priceFrom, priceCurrency: 'BRL' },
+	})),
+);
+// `<` escaped so no string can ever close the script tag.
+const ldJson = (data: unknown) => JSON.stringify(data).replace(/</g, '\\u003c');
 ---
 
 <!doctype html>
@@ -140,13 +168,14 @@ const jsonLd = {
 
 		<UmamiLoader />
 
-		<script type='application/ld+json' is:inline set:html={JSON.stringify(jsonLd)} />
+		<script type='application/ld+json' is:inline set:html={ldJson(jsonLd)} />
+		{structuredData.map((block) => <script type='application/ld+json' is:inline set:html={ldJson(block)} />)}
 	</head>
 
 	<body>
 		<a href='#main-content' class='skip-link'>{t.common.skip}</a>
 		<slot />
-		<WhatsAppFab />
+		<WhatsAppFab message={whatsappMessage} />
 		<SpeedInsights />
 		<script>
 			import { initSite } from '../scripts/site';

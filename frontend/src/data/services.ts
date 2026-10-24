@@ -13,16 +13,16 @@
 import type { Bi } from './site';
 
 /** Inline icon ids — drawn by Services.astro (lucide-style outlines, no icon library). */
-export type ServiceIcon = 'rocket' | 'layout' | 'server' | 'sparkles' | 'shield-check';
+export type ServiceIcon = 'rocket' | 'upload-cloud' | 'layout' | 'server' | 'sparkles' | 'shield-check';
 
-/** Screenshot ids: templates come from src/assets/templates, products from src/assets/featured. */
-export type PreviewImage = 'salvia' | 'mirante' | 'stratus' | 'atelier' | 'brava' | 'pulsar' | 'quasar' | 'nexus';
+/** Screenshot ids: templates come from src/assets/templates, products and service pages from src/assets/featured. */
+export type PreviewImage = 'salvia' | 'mirante' | 'stratus' | 'atelier' | 'brava' | 'pulsar' | 'quasar' | 'nexus' | 'publicar';
 
 export interface ServicePreview {
 	image: PreviewImage;
 	/** Rendered as "Resolve com: <label>". */
 	label: Bi;
-	/** Site path ('/templates/<slug>' or '/work'); the component runs it through localePath. */
+	/** Site path ('/templates/<slug>', '/work' or a service page '/servicos/<slug>'); the component runs it through localePath. */
 	href: string;
 }
 
@@ -73,6 +73,30 @@ export const SERVICES: Service[] = [
 			{ image: 'stratus', label: { pt: 'Stratus Planos', en: 'Stratus Planos' }, href: '/templates/stratus' },
 			{ image: 'brava', label: { pt: 'Brava Vitrine', en: 'Brava Vitrine' }, href: '/templates/brava' },
 		],
+	},
+	{
+		// Has its own page (/servicos/publicar-site-ia, data/servicePages.ts); the panel shows it.
+		id: 'publicar',
+		name: { pt: 'Publicar site feito com IA', en: 'Publish a website built with AI' },
+		title: { pt: 'Publicar site', en: 'Publish a site' },
+		short: { pt: 'Site do Lovable, v0 ou Bolt no seu domínio, sem mensalidade.', en: 'Your Lovable, v0 or Bolt site on your domain, no monthly fee.' },
+		forWhom: {
+			pt: 'Quem fez o site ou a landing page no Lovable, v0, Bolt, ChatGPT ou similar e não sabe colocar no ar.',
+			en: 'Anyone who built a website or landing page in Lovable, v0, Bolt, ChatGPT or similar and does not know how to put it online.',
+		},
+		outcome: {
+			pt: 'Publicação no seu domínio, SSL, redirecionamento do www, hospedagem sem mensalidade e teste do WhatsApp e dos formulários.',
+			en: 'Publishing on your domain, SSL, www redirect, hosting with no monthly fee and testing of WhatsApp and forms.',
+		},
+		priceFrom: 350,
+		timeline: {
+			pt: 'até 1 dia depois que o domínio e o acesso ao código estiverem liberados',
+			en: 'up to 1 day after the domain and access to the code are available',
+		},
+		timelineShort: { pt: 'até 1 dia', en: 'up to 1 day' },
+		hue: '#0d9488',
+		icon: 'upload-cloud',
+		previews: [{ image: 'publicar', label: { pt: 'Publicar site feito com IA', en: 'Publish a website built with AI' }, href: '/servicos/publicar-site-ia' }],
 	},
 	{
 		id: 'site',

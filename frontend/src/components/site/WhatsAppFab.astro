@@ -9,9 +9,14 @@
 import { whatsappUrl } from '../../data/site';
 import { localeOf, useT } from '../../i18n';
 
+interface Props {
+	/** Pre-filled message; defaults to SITE.whatsapp.message. */
+	message?: string;
+}
+
 const locale = localeOf(Astro);
 const t = useT(locale);
-const href = whatsappUrl(locale);
+const href = whatsappUrl(locale, Astro.props.message);
 ---
 
 {

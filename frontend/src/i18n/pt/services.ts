@@ -20,6 +20,8 @@ export const services = {
 	solvesWith: 'Resolve com:',
 	viewTemplate: 'Ver template',
 	viewProduct: 'Ver produto',
+	/** Panel link when the preview is the service's own page. */
+	viewService: 'Ver o serviço',
 	previewAlt: 'Prévia de {label}',
 	/** Carousel when a service has several previews. {n}/{total} = position, {label} = preview label. */
 	examples: 'Exemplos',

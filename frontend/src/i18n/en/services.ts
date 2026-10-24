@@ -18,6 +18,7 @@ export const services: Shape<typeof ptShape> = {
 	solvesWith: 'Solved with:',
 	viewTemplate: 'View template',
 	viewProduct: 'View product',
+	viewService: 'View the service',
 	previewAlt: 'Preview of {label}',
 	examples: 'Examples',
 	example: 'example',
