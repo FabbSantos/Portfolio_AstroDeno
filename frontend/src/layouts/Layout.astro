@@ -11,6 +11,7 @@ import '@fontsource-variable/jetbrains-mono';
 import '../styles/base.css';
 import '../styles/site.css';
 import SpeedInsights from '@vercel/speed-insights/astro';
+import GoogleAdsTag from '../components/site/GoogleAdsTag.astro';
 import LangRedirect from '../components/site/LangRedirect.astro';
 import UmamiLoader from '../components/site/UmamiLoader.astro';
 import WhatsAppFab from '../components/site/WhatsAppFab.astro';
@@ -169,6 +170,7 @@ const ldJson = (data: unknown) => JSON.stringify(data).replace(/</g, '\\u003c');
 		</script>
 
 		<UmamiLoader />
+		<GoogleAdsTag />
 
 		<script type='application/ld+json' is:inline set:html={ldJson(jsonLd)} />
 		{structuredData.map((block) => <script type='application/ld+json' is:inline set:html={ldJson(block)} />)}
