@@ -741,6 +741,12 @@ const sentHref = localePath(locale, '/orcamento-enviado');
 				if (res.ok && json.ok) {
 					trackEvent('contact_submit', { need: payload.need, template: payload.template || null, locale: payload.locale });
 					// Confirmation page (also a clean "lead sent" page view in the analytics).
+					// The flag lets that page fire the Google Ads conversion once, only after a real send.
+					try {
+						sessionStorage.setItem('fab-lead-sent', '1');
+					} catch {
+						/* storage blocked: no conversion, the lead still goes through */
+					}
 					window.location.assign(form.dataset.sentHref || '/orcamento-enviado');
 				} else {
 					const code = json.code || (res.status === 429 ? 'RATE_LIMITED' : 'UNKNOWN');

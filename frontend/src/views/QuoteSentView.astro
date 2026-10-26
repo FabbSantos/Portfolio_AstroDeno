@@ -19,6 +19,18 @@ const wa = whatsappUrl(locale);
 ---
 
 <Layout title={s.title} description={s.description} noindex>
+	<!-- Google Ads conversion "Pedido de orçamento": only after a real send (flag set by the
+	     contact form), once (the flag is cleared, so a reload doesn't count again). -->
+	<script is:inline>
+		try {
+			if (sessionStorage.getItem('fab-lead-sent') === '1') {
+				sessionStorage.removeItem('fab-lead-sent');
+				if (typeof window.gtag === 'function') window.gtag('event', 'conversion', { send_to: 'AW-18535408880/leZJCJjztKodEPDJr4ZF' });
+			}
+		} catch {
+			/* storage blocked: nothing to do */
+		}
+	</script>
 	<TopBar />
 
 	<main id='main-content'>
