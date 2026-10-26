@@ -31,6 +31,7 @@ export const privacy = {
 				'Resend: envio do e-mail de notificação (servidores nos EUA).',
 				'Google: caixa de entrada onde a mensagem chega.',
 				'Vercel: hospedagem do site e analytics agregados, sem cookies e sem identificar pessoas.',
+				'Google Ads: mede as visitas que chegam pelos anúncios, com cookies do Google.',
 			],
 		},
 		{
@@ -53,7 +54,7 @@ export const privacy = {
 			id: 'cookies',
 			h: 'Cookies',
 			p: [
-				'O site não usa cookies de rastreamento nem pixels de anúncio.',
+				'O site usa a tag do Google Ads, que grava cookies do Google pra medir os anúncios. Você pode bloquear isso nas configurações do navegador ou em adssettings.google.com.',
 				'O Vercel Web Analytics é agregado e não usa cookies. O único dado que fica no seu navegador é a origem da visita (UTM) durante a sessão, pra preencher o formulário, e some quando você fecha a aba.',
 			],
 		},

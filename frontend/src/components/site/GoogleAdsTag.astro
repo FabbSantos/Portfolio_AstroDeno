@@ -1,0 +1,37 @@
+---
+/**
+ * Google Ads tag (gtag.js), the snippet from the Google Ads account.
+ * Same rules as UmamiLoader: loaded after `load` so it never competes with the
+ * first render (Lighthouse scores stay put), only on the production host, not
+ * inside iframes, and not for the owner's own browser (?eu=1, see UmamiLoader).
+ * A conversion can be set up in Google Ads on the /orcamento-enviado page view.
+ */
+import { SITE } from '../../data/site';
+
+const adsId = SITE.googleAdsId;
+const host = new URL(SITE.url).host;
+---
+
+<script is:inline define:vars={{ adsId, host }}>
+	(function () {
+		try {
+			if (window.self !== window.top || location.host !== host || localStorage.getItem('fab-eu') === '1') return;
+		} catch {
+			/* storage blocked: still count the visit */
+		}
+		window.dataLayer = window.dataLayer || [];
+		window.gtag = function () {
+			// gtag.js needs the real arguments object; an array is ignored.
+			// eslint-disable-next-line prefer-rest-params
+			window.dataLayer.push(arguments);
+		};
+		window.gtag('js', new Date());
+		window.gtag('config', adsId);
+		addEventListener('load', function () {
+			const s = document.createElement('script');
+			s.async = true;
+			s.src = 'https://www.googletagmanager.com/gtag/js?id=' + adsId;
+			document.head.appendChild(s);
+		});
+	})();
+</script>

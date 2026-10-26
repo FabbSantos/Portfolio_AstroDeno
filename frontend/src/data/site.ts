@@ -15,6 +15,8 @@ export const SITE = {
 	email: 'contato@fabbahiense.dev',
 	/** Where contact-form leads are delivered (server-side; overridable by CONTACT_TO env). */
 	leadInbox: 'fabriciobs2000@gmail.com',
+	/** Google Ads tag (gtag.js): measures the ad campaigns. Loaded by components/site/GoogleAdsTag. */
+	googleAdsId: 'AW-18535408880',
 
 	/** TODO(fab): número no formato internacional, só dígitos (ex.: '5521999998888').
 	 *  Vazio = todos os botões de WhatsApp ficam escondidos automaticamente. */

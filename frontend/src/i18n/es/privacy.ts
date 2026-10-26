@@ -32,6 +32,7 @@ export const privacy: Shape<typeof ptShape> = {
 				'Resend: envío del correo de notificación (servidores en EE. UU.).',
 				'Google: bandeja de entrada donde llega el mensaje.',
 				'Vercel: alojamiento del sitio y analítica agregada, sin cookies y sin identificar personas.',
+				'Google Ads: mide las visitas que llegan por los anuncios, con cookies de Google.',
 			],
 		},
 		{
@@ -54,7 +55,7 @@ export const privacy: Shape<typeof ptShape> = {
 			id: 'cookies',
 			h: 'Cookies',
 			p: [
-				'El sitio no usa cookies de rastreo ni píxeles de anuncios.',
+				'El sitio usa la etiqueta de Google Ads, que guarda cookies de Google para medir los anuncios. Puedes bloquearlo en la configuración del navegador o en adssettings.google.com.',
 				'Vercel Web Analytics es agregado y no usa cookies. El único dato que queda en tu navegador es el origen de la visita (UTM) durante la sesión, para completar el formulario, y desaparece cuando cierras la pestaña.',
 			],
 		},
