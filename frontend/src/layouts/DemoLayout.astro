@@ -3,9 +3,12 @@
  * Layout for template DEMO pages (/templates/<slug>/demo).
  *
  * Deliberately minimal: tokens + fonts only. No Person JSON-LD, no portfolio
- * OG image, no analytics/vitals beacons, no site script. `noindex` always —
- * demos carry fictional business data (fake CRECI, fake ratings) and must not
- * be indexed as Fabrício's content.
+ * OG image, no analytics/vitals beacons, no site script.
+ *
+ * Crawlable, but the canonical points to the template's sales page: demos
+ * carry fictional business data (fake CRECI, fake ratings), so Google folds
+ * them into /templates/<slug> instead of listing a made-up business. (A
+ * noindex here cost every demo 34 points of Lighthouse SEO.)
  */
 import '@fontsource-variable/inter';
 import '@fontsource-variable/jetbrains-mono';
@@ -14,6 +17,7 @@ import DemoRibbon from '../components/templates/DemoRibbon.astro';
 import type { Locale } from '../i18n';
 import { LANG_TAG } from '../i18n';
 import { PRELOAD_FONTS } from '../templates/core/fonts';
+import { SITE } from '../data/site';
 
 interface Props {
 	slug: string;
@@ -40,7 +44,7 @@ const { slug, title, description, locale, themeColor = '#ffffff', preloadFonts =
 		<meta name='viewport' content='width=device-width,initial-scale=1' />
 		<title>{title}</title>
 		<meta name='description' content={description} />
-		<meta name='robots' content='noindex,nofollow' />
+		<link rel='canonical' href={new URL(`/templates/${slug}`, SITE.url).href} />
 		<meta name='theme-color' content={themeColor} />
 		{[...(preloadFonts ? PRELOAD_FONTS : []), ...preload].map((href) => <link rel='preload' as='font' type='font/woff2' href={href} crossorigin />)}
 		<link rel='icon' type='image/png' sizes='32x32' href='/favicon-32x32.png' />

@@ -19,13 +19,18 @@ const wa = whatsappUrl(locale);
 ---
 
 <Layout title={s.title} description={s.description} noindex>
-	<!-- Google Ads conversion "Pedido de orçamento": only after a real send (flag set by the
+	<!-- Google Ads conversion "Pedido de orçamento" + Umami "orcamento_enviado": only after a real send (flag set by the
 	     contact form), once (the flag is cleared, so a reload doesn't count again). -->
 	<script is:inline>
 		try {
 			if (sessionStorage.getItem('fab-lead-sent') === '1') {
 				sessionStorage.removeItem('fab-lead-sent');
 				if (typeof window.gtag === 'function') window.gtag('event', 'conversion', { send_to: 'AW-18535408880/leZJCJjztKodEPDJr4ZF' });
+				// Same moment in Umami, to check the Ads count and see leads from organic and AI search.
+				// Queued until Umami loads (components/site/UmamiLoader flushes window.__umq).
+				const ev = ['orcamento_enviado', { locale: document.documentElement.lang }];
+				if (window.umami) window.umami.track(ev[0], ev[1]);
+				else (window.__umq = window.__umq || []).push(ev);
 			}
 		} catch {
 			/* storage blocked: nothing to do */
