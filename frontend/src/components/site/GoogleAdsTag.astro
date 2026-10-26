@@ -27,6 +27,29 @@ const host = new URL(SITE.url).host;
 		};
 		window.gtag('js', new Date());
 		window.gtag('config', adsId);
+		// Conversion "Clique no WhatsApp": one delegated listener catches every WhatsApp link,
+		// including ones added later. No preventDefault: the link opens as usual and the beacon
+		// goes out on its own. This tag isn't on /previas (their links belong to the salons).
+		document.addEventListener(
+			'click',
+			function (e) {
+				const a = e.target instanceof Element ? e.target.closest('a[href]') : null;
+				if (!a || location.pathname.startsWith('/previas/')) return;
+				let h = '';
+				try {
+					h = new URL(a.href).hostname;
+				} catch {
+					return;
+				}
+				if (h !== 'wa.me' && h !== 'api.whatsapp.com' && h !== 'web.whatsapp.com') return;
+				try {
+					window.gtag('event', 'conversion', { send_to: 'AW-18535408880/OFhwCJvztKodEPDJr4ZF', transport_type: 'beacon' });
+				} catch {
+					/* never block the WhatsApp link */
+				}
+			},
+			true
+		);
 		addEventListener('load', function () {
 			const s = document.createElement('script');
 			s.async = true;
