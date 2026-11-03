@@ -24,6 +24,8 @@ export interface ServicePreview {
 	label: Bi;
 	/** Site path ('/templates/<slug>', '/work' or a service page '/servicos/<slug>'); the component runs it through localePath. */
 	href: string;
+	/** Link text in the panel, when the default ("Ver o serviço"…) doesn't fit. */
+	cta?: Bi;
 }
 
 export interface Service {
@@ -145,8 +147,8 @@ export const SERVICES: Service[] = [
 	},
 	{
 		id: 'system',
-		name: { pt: 'Sistema web ou MVP', en: 'Web system or MVP', es: 'Sistema web o MVP' },
-		title: { pt: 'Sistema ou MVP', en: 'System or MVP', es: 'Sistema o MVP' },
+		name: { pt: 'Sistema sob medida', en: 'Custom software', es: 'Sistema a medida' },
+		title: { pt: 'Sistema sob medida', en: 'Custom software', es: 'Sistema a medida' },
 		short: {
 			pt: 'Dashboard, ferramenta interna ou SaaS sem contratar time.',
 			en: 'Dashboard, internal tool or SaaS without hiring a team.',
@@ -162,12 +164,25 @@ export const SERVICES: Service[] = [
 			en: 'Phase 1 live: auth, database, core screens, AWS deploy (or wherever you are), docs and your own repo. Fixed scope per phase, weekly previews. Same approach as Nexus’ multichannel platform.',
 			es: 'Fase 1 en línea: login, base de datos, pantallas principales, deploy en AWS (o donde ya estés), documentación y un repositorio tuyo. Alcance cerrado por fase, vista previa semanal. El mismo enfoque que la plataforma multicanal de Nexus.',
 		},
-		priceFrom: 25000,
-		timeline: { pt: 'primeira fase em 4 a 8 semanas', en: 'first phase in 4 to 8 weeks', es: 'primera fase en 4 a 8 semanas' },
-		timelineShort: { pt: 'fase 1 em 4 a 8 semanas', en: 'phase 1 in 4 to 8 weeks', es: 'fase 1 en 4 a 8 semanas' },
+		// Price on request (owner, 2026-11-03); the page has the details.
+		priceFrom: 0,
+		timeline: {
+			pt: 'projetos menores em 2 a 4 semanas, plataformas maiores em entregas mensais',
+			en: 'smaller projects in 2 to 4 weeks, larger platforms in monthly stages',
+			es: 'proyectos más pequeños en 2 a 4 semanas, plataformas más grandes en entregas mensuales',
+		},
+		timelineShort: { pt: 'entregas por etapa', en: 'delivery in stages', es: 'entregas por etapa' },
 		hue: '#0ea5e9',
 		icon: 'server',
-		previews: [{ image: 'nexus', label: { pt: 'Nexus Comunicação', en: 'Nexus Comunicação', es: 'Nexus Comunicação' }, href: '/work' }],
+		// Has its own page (/servicos/sistemas-sob-medida); the panel links to it.
+		previews: [
+			{
+				image: 'quasar',
+				label: { pt: 'Quasar', en: 'Quasar', es: 'Quasar' },
+				href: '/servicos/sistemas-sob-medida',
+				cta: { pt: 'Ver projetos', en: 'See projects', es: 'Ver proyectos' },
+			},
+		],
 	},
 	{
 		id: 'ai',

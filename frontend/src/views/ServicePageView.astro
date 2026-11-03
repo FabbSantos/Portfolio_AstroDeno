@@ -9,16 +9,29 @@
  * Same look as the template pages, minus what the owner rules out here:
  * uppercase labels, accent words, numbered steps and scrolling text.
  *
+ * Optional blocks, shown only when the data has them: price and chips,
+ * highlight, timing facts, project cards (real screenshots), the steps (in
+ * order, never numbered) and "who builds it" in the dark block. With
+ * `contact: 'form'` every button goes to the quote form on the home page with
+ * the service already selected, instead of WhatsApp.
+ *
  * JSON-LD from the same data: Service (provider = the Person in Layout,
- * Brazil, the price) and FAQPage with the questions on the page.
+ * Brazil, the price when there is one) and FAQPage with the questions on the page.
  */
+import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import TopBar from '../components/site/TopBar.astro';
 import SiteFooter from '../components/site/SiteFooter.astro';
 import { PERSON_ID, SITE, whatsappUrl, type Bi } from '../data/site';
 import { formatBRL } from '../data/templates';
-import type { ServicePage } from '../data/servicePages';
+import type { ProjectImage, ServicePage } from '../data/servicePages';
 import { localeOf, localePath, pick, useT } from '../i18n';
+import shotQuasar from '../assets/featured/quasar_dash.png';
+import shotPulsar from '../assets/featured/pulsar_dash.png';
+
+const PROJECT_SHOTS: Record<ProjectImage, ImageMetadata> = { quasar: shotQuasar, pulsar: shotPulsar };
+const TECH_LABEL: Bi = { pt: 'Tecnologias', en: 'Technologies', es: 'Tecnologías' };
+const SCREENSHOT_ALT: Bi = { pt: 'Tela do {name}', en: '{name} screen', es: 'Pantalla de {name}' };
 
 interface Props {
 	page: ServicePage;
@@ -30,28 +43,38 @@ const tr = <T,>(b: Bi<T>) => pick(b, locale);
 
 const name = tr(page.name);
 const url = new URL(localePath(locale, `/servicos/${page.slug}`), SITE.url).href;
-const message = tr(page.whatsappMessage);
-const wa = whatsappUrl(locale, message);
-const price = formatBRL(page.priceFrom);
+const message = page.whatsappMessage ? tr(page.whatsappMessage) : undefined;
+const wa = page.contact === 'whatsapp' ? whatsappUrl(locale, message) : undefined;
+// The quote form on the home page, with this service selected (Contact.astro reads ?servico=).
+const formHref = page.contact === 'form' ? localePath(locale, `/?servico=${encodeURIComponent(page.serviceId)}#contato`) : undefined;
+const formLabel = page.cta.button ? tr(page.cta.button) : t.common.ctaContact;
+const price = page.priceFrom !== undefined ? formatBRL(page.priceFrom) : undefined;
 const faq = page.faq.items.map((i) => ({ q: tr(i.q), a: tr(i.a) }));
+// "Label: text" items show the label in bold.
+const includes = tr(page.includes.items).map((s) => {
+	const i = s.indexOf(': ');
+	return i > 0 ? { label: s.slice(0, i), text: s.slice(i + 2) } : { label: '', text: s };
+});
 
 const structuredData = [
 	{
 		'@context': 'https://schema.org',
 		'@type': 'Service',
 		name,
-		serviceType: name,
+		serviceType: page.serviceType ? tr(page.serviceType) : name,
 		description: tr(page.seo.description),
 		url,
 		provider: { '@type': 'Person', '@id': PERSON_ID, name: SITE.name, url: SITE.url },
 		areaServed: { '@type': 'Country', name: 'Brasil' },
-		offers: {
-			'@type': 'Offer',
-			url,
-			priceCurrency: 'BRL',
-			price: page.priceFrom,
-			priceSpecification: { '@type': 'PriceSpecification', minPrice: page.priceFrom, priceCurrency: 'BRL' },
-		},
+		...(page.priceFrom !== undefined && {
+			offers: {
+				'@type': 'Offer',
+				url,
+				priceCurrency: 'BRL',
+				price: page.priceFrom,
+				priceSpecification: { '@type': 'PriceSpecification', minPrice: page.priceFrom, priceCurrency: 'BRL' },
+			},
+		}),
 	},
 	{
 		'@context': 'https://schema.org',
@@ -69,59 +92,161 @@ const structuredData = [
 			<a href={localePath(locale, '/#servicos')} class='back'>← {t.nav.services}</a>
 			<h1>{name}</h1>
 			<p class='lead'>{tr(page.forWhom)}</p>
-			<p class='price'>
-				<span class='from'>{t.common.from}</span>
-				<strong>{price}</strong>
-				<span class='note'>{tr(page.priceNote)}</span>
-			</p>
-			<ul class='chips' role='list'>
-				{tr(page.chips).map((c) => <li>{c}</li>)}
-			</ul>
 			{
-				wa && (
+				price && (
+					<p class='price'>
+						<span class='from'>{t.common.from}</span>
+						<strong>{price}</strong>
+						{page.priceNote && <span class='note'>{tr(page.priceNote)}</span>}
+					</p>
+				)
+			}
+			{
+				page.chips && (
+					<ul class='chips' role='list'>
+						{tr(page.chips).map((c) => (
+							<li>{c}</li>
+						))}
+					</ul>
+				)
+			}
+			{
+				(wa || formHref) && (
 					<div class='actions'>
-						<a href={wa} class='btn btn-whatsapp' target='_blank' rel='noopener'>
-							{t.common.ctaWhatsapp}
-						</a>
+						{wa && (
+							<a href={wa} class='btn btn-whatsapp' target='_blank' rel='noopener'>
+								{t.common.ctaWhatsapp}
+							</a>
+						)}
+						{formHref && (
+							<a href={formHref} class='btn btn-primary'>
+								{formLabel}
+							</a>
+						)}
 					</div>
 				)
 			}
 		</section>
 
-		<section class='highlight-wrap' aria-labelledby='highlight-title'>
-			<!-- No reveal here: on phones this block is in the first screen and is the LCP. -->
-			<div class='highlight'>
-				<h2 id='highlight-title'>{tr(page.highlight.title)}</h2>
-				<p>{tr(page.highlight.text)}</p>
-			</div>
-		</section>
+		{
+			page.highlight && (
+				<section class='highlight-wrap' aria-labelledby='highlight-title'>
+					{/* No reveal here: on phones this block is in the first screen and is the LCP. */}
+					<div class='highlight'>
+						<h2 id='highlight-title'>{tr(page.highlight.title)}</h2>
+						<p>{tr(page.highlight.text)}</p>
+					</div>
+				</section>
+			)
+		}
 
-		<section class='section info' aria-label={`${tr(page.includes.title)} · ${tr(page.facts.title)}`}>
-			<div class='info-grid'>
+		<section
+			class:list={['section', 'info', { 'no-highlight': !page.highlight }]}
+			aria-label={page.facts ? `${tr(page.includes.title)} · ${tr(page.facts.title)}` : tr(page.includes.title)}
+		>
+			<div class:list={['info-grid', { single: !page.facts }]}>
 				<div class='col reveal'>
 					<h2>{tr(page.includes.title)}</h2>
 					<ul class='included' role='list'>
-						{tr(page.includes.items).map((s) => <li>{s}</li>)}
-					</ul>
-				</div>
-				<div class='col reveal d1'>
-					<h2>{tr(page.facts.title)}</h2>
-					<dl class='facts'>
 						{
-							page.facts.items.map((f) => (
-								<div>
-									<dt>{tr(f.label)}</dt>
-									<dd>{tr(f.value)}</dd>
-								</div>
+							includes.map((s) => (
+								<li>
+									{s.label && <b>{s.label}:</b>} {s.text}
+								</li>
 							))
 						}
-					</dl>
+					</ul>
 				</div>
+				{
+					page.facts && (
+						<div class='col reveal d1'>
+							<h2>{tr(page.facts.title)}</h2>
+							<dl class='facts'>
+								{page.facts.items.map((f) => (
+									<div>
+										<dt>{tr(f.label)}</dt>
+										<dd>{tr(f.value)}</dd>
+									</div>
+								))}
+							</dl>
+						</div>
+					)
+				}
 			</div>
 		</section>
 
 		{
-			page.testimonial.enabled && (
+			page.projects && (
+				<section class='section projects' aria-labelledby='projects-title'>
+					<h2 id='projects-title'>{tr(page.projects.title)}</h2>
+					<div class='project-grid'>
+						{page.projects.items.map((p, i) => (
+							<article class:list={['project', 'reveal', { d1: i % 2 === 1 }]}>
+								{p.image && (
+									<div class='project-shot'>
+										<Image
+											src={PROJECT_SHOTS[p.image]}
+											widths={[640, 1100]}
+											sizes='(max-width: 780px) 100vw, 560px'
+											format='webp'
+											quality='high'
+											alt={tr(SCREENSHOT_ALT).replace('{name}', p.name)}
+											loading='lazy'
+											decoding='async'
+										/>
+									</div>
+								)}
+								<div class='project-body'>
+									<h3>{p.name}</h3>
+									<p class='project-kind'>{tr(p.kind)}</p>
+									<p class='project-text'>{tr(p.text)}</p>
+									{p.tech && (
+										<p class='project-tech'>
+											<b>{tr(TECH_LABEL)}:</b> {tr(p.tech).join(', ')}
+										</p>
+									)}
+									{p.link && (
+										<a class='btn-link project-link' href={p.link.href} target='_blank' rel='noopener'>
+											{tr(p.link.label)}
+										</a>
+									)}
+								</div>
+							</article>
+						))}
+					</div>
+				</section>
+			)
+		}
+
+		{
+			page.steps && (
+				<section class='section steps' aria-labelledby='steps-title'>
+					<h2 id='steps-title'>{tr(page.steps.title)}</h2>
+					<ol class='step-list' role='list'>
+						{page.steps.items.map((s) => (
+							<li class='reveal'>
+								<h3>{tr(s.title)}</h3>
+								<p>{tr(s.text)}</p>
+							</li>
+						))}
+					</ol>
+				</section>
+			)
+		}
+
+		{
+			page.about && (
+				<section class='highlight-wrap about' aria-labelledby='about-title'>
+					<div class='highlight reveal'>
+						<h2 id='about-title'>{tr(page.about.title)}</h2>
+						<p>{tr(page.about.text)}</p>
+					</div>
+				</section>
+			)
+		}
+
+		{
+			page.testimonial?.enabled && (
 				<section class='quote-wrap'>
 					<figure class='quote reveal'>
 						<blockquote>
@@ -148,15 +273,22 @@ const structuredData = [
 		</section>
 
 		<!-- id contato: the floating WhatsApp button hides while this block, which has its own, is on screen. -->
-		<section class='cta-band' id='contato' aria-labelledby='cta-title'>
+		<section class='cta-band' id={wa ? 'contato' : undefined} aria-labelledby='cta-title'>
 			<h2 id='cta-title'>{tr(page.cta.title)}</h2>
-			<p class='sub'>{tr(page.cta.text)}</p>
+			{page.cta.text && <p class='sub'>{tr(page.cta.text)}</p>}
 			{
-				wa && (
+				(wa || formHref) && (
 					<div class='actions'>
-						<a href={wa} class='btn btn-whatsapp' target='_blank' rel='noopener'>
-							{t.common.ctaWhatsapp}
-						</a>
+						{wa && (
+							<a href={wa} class='btn btn-whatsapp' target='_blank' rel='noopener'>
+								{t.common.ctaWhatsapp}
+							</a>
+						)}
+						{formHref && (
+							<a href={formHref} class='btn btn-primary'>
+								{formLabel}
+							</a>
+						)}
 					</div>
 				)
 			}
@@ -426,7 +558,134 @@ const structuredData = [
 		color: var(--ink-2);
 	}
 
+	/* Without the dark block, the list sits right under the hero. */
+	.info.no-highlight {
+		padding-top: 24px;
+	}
+	.info-grid.single {
+		grid-template-columns: minmax(0, 760px);
+	}
+	.included b {
+		color: var(--ink);
+		font-weight: 700;
+	}
+
+	/* Project cards: real screenshot on top, text below */
+	.projects,
+	.steps {
+		padding-top: 88px;
+		padding-bottom: 24px;
+	}
+	.projects h2,
+	.steps h2 {
+		font-size: 24px;
+		font-weight: 800;
+		letter-spacing: -0.03em;
+		line-height: 1.1;
+		margin-bottom: 24px;
+	}
+	.project-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 24px;
+	}
+	.project {
+		display: flex;
+		flex-direction: column;
+		border: 1px solid var(--rule-2);
+		border-radius: 20px;
+		background: var(--bg-2);
+		overflow: hidden;
+	}
+	.project-shot {
+		aspect-ratio: 16 / 9;
+		border-bottom: 1px solid var(--rule);
+		background: var(--bg-3);
+		overflow: hidden;
+	}
+	.project-shot :global(img) {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: top left;
+	}
+	.project-body {
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+		padding: 24px 24px 28px;
+	}
+	.project h3 {
+		font-size: 22px;
+		font-weight: 800;
+		letter-spacing: -0.025em;
+		line-height: 1.15;
+	}
+	.project-kind {
+		margin-top: 4px;
+		font-size: 16px;
+		color: var(--ink-3);
+	}
+	.project-text {
+		margin-top: 16px;
+		font-size: 16px;
+		line-height: 1.6;
+		color: var(--ink-2);
+	}
+	.project-tech {
+		margin-top: 16px;
+		font-size: 15px;
+		line-height: 1.55;
+		color: var(--ink-2);
+	}
+	.project-tech b {
+		color: var(--ink);
+	}
+	.project-link {
+		align-self: flex-start;
+		margin-top: auto;
+		padding-top: 20px;
+	}
+
+	/* Steps: in order, never numbered */
+	.step-list {
+		list-style: none;
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 24px;
+	}
+	.step-list li {
+		padding-top: 16px;
+		border-top: 2px solid var(--ink);
+	}
+	.step-list h3 {
+		font-size: 18px;
+		font-weight: 700;
+		letter-spacing: -0.015em;
+	}
+	.step-list p {
+		margin-top: 8px;
+		font-size: 16px;
+		line-height: 1.55;
+		color: var(--ink-2);
+	}
+
+	/* "Who builds it" reuses the dark block */
+	.about {
+		padding-top: 88px;
+	}
+
+	@media (max-width: 1000px) {
+		.step-list {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
 	@media (max-width: 780px) {
+		.project-grid,
+		.step-list {
+			grid-template-columns: minmax(0, 1fr);
+		}
 		.svc-hero,
 		.highlight-wrap,
 		.quote-wrap,
