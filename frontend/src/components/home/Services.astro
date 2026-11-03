@@ -156,6 +156,7 @@ const ICONS: Record<ServiceIcon, string> = {
 						key: `${p.image}-${j}`,
 						label,
 						href: p.href,
+						cta: p.cta ? pick(p.cta, locale) : undefined,
 						isTemplate,
 						isService,
 						shot,
@@ -244,7 +245,7 @@ const ICONS: Record<ServiceIcon, string> = {
 											<span>{t.services.timeline}</span> · {pick(s.timeline, locale)}
 										</p>
 										<a class='btn-link svc-more' href={localePath(locale, sl.href)}>
-											{sl.isService ? t.services.viewService : sl.isTemplate ? t.services.viewTemplate : t.services.viewProduct}
+											{sl.cta ?? (sl.isService ? t.services.viewService : sl.isTemplate ? t.services.viewTemplate : t.services.viewProduct)}
 										</a>
 									</div>
 								</div>

@@ -85,9 +85,12 @@ const jsonLd = {
 		'@type': 'Offer',
 		name: pick(sp.name, locale),
 		url: new URL(localePath(locale, `/servicos/${sp.slug}`), site).href,
-		priceCurrency: 'BRL',
-		price: sp.priceFrom,
-		priceSpecification: { '@type': 'PriceSpecification', minPrice: sp.priceFrom, priceCurrency: 'BRL' },
+		// Price on request: the offer is listed without a price.
+		...(sp.priceFrom !== undefined && {
+			priceCurrency: 'BRL',
+			price: sp.priceFrom,
+			priceSpecification: { '@type': 'PriceSpecification', minPrice: sp.priceFrom, priceCurrency: 'BRL' },
+		}),
 	})),
 );
 // `<` escaped so no string can ever close the script tag.

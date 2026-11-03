@@ -19,7 +19,7 @@ function servicesBlock(): string[] {
 	return SERVICES.map((s) => {
 		const page = servicePages.find((p) => p.serviceId === s.id);
 		const link = page ? abs(`/servicos/${page.slug}`) : abs(`/#servico-${s.id}`);
-		const price = s.priceFrom > 0 ? `a partir de ${formatBRL(s.priceFrom)}${page ? `, ${page.priceNote.pt}` : ''}` : 'valor sob consulta';
+		const price = s.priceFrom > 0 ? `a partir de ${formatBRL(s.priceFrom)}${page?.priceNote ? `, ${page.priceNote.pt}` : ''}` : 'valor sob consulta';
 		return `- [${s.name.pt}](${link}): ${price}. ${s.forWhom.pt} Inclui: ${s.outcome.pt} Prazo: ${s.timeline.pt}.`;
 	});
 }
