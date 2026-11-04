@@ -28,8 +28,9 @@ import type { ProjectImage, ServicePage } from '../data/servicePages';
 import { localeOf, localePath, pick, useT } from '../i18n';
 import shotQuasar from '../assets/featured/quasar_dash.png';
 import shotPulsar from '../assets/featured/pulsar_dash.png';
+import shotNexus from '../assets/featured/nexus.png';
 
-const PROJECT_SHOTS: Record<ProjectImage, ImageMetadata> = { quasar: shotQuasar, pulsar: shotPulsar };
+const PROJECT_SHOTS: Record<ProjectImage, ImageMetadata> = { nexus: shotNexus, quasar: shotQuasar, pulsar: shotPulsar };
 const TECH_LABEL: Bi = { pt: 'Tecnologias', en: 'Technologies', es: 'Tecnologías' };
 const SCREENSHOT_ALT: Bi = { pt: 'Tela do {name}', en: '{name} screen', es: 'Pantalla de {name}' };
 
@@ -181,7 +182,7 @@ const structuredData = [
 					<h2 id='projects-title'>{tr(page.projects.title)}</h2>
 					<div class='project-grid'>
 						{page.projects.items.map((p, i) => (
-							<article class:list={['project', 'reveal', { d1: i % 2 === 1 }]}>
+							<article class:list={['project', 'reveal', { wide: i === 0 && page.projects!.items.length % 2 === 1 }]}>
 								{p.image && (
 									<div class='project-shot'>
 										<Image
@@ -597,6 +598,18 @@ const structuredData = [
 		background: var(--bg-2);
 		overflow: hidden;
 	}
+	/* Odd count: the first card spans the row, screenshot beside the text. */
+	.project.wide {
+		grid-column: 1 / -1;
+		display: grid;
+		grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+	}
+	.project.wide .project-shot {
+		aspect-ratio: auto;
+		min-height: 100%;
+		border-bottom: 0;
+		border-right: 1px solid var(--rule);
+	}
 	.project-shot {
 		aspect-ratio: 16 / 9;
 		border-bottom: 1px solid var(--rule);
@@ -685,6 +698,15 @@ const structuredData = [
 		.project-grid,
 		.step-list {
 			grid-template-columns: minmax(0, 1fr);
+		}
+		.project.wide {
+			display: flex;
+		}
+		.project.wide .project-shot {
+			aspect-ratio: 16 / 9;
+			min-height: 0;
+			border-right: 0;
+			border-bottom: 1px solid var(--rule);
 		}
 		.svc-hero,
 		.highlight-wrap,
