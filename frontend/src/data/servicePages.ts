@@ -9,7 +9,7 @@
 import type { Bi } from './site';
 
 /** Screenshots in src/assets/featured, picked by ServicePageView. */
-export type ProjectImage = 'quasar' | 'pulsar';
+export type ProjectImage = 'nexus' | 'quasar' | 'pulsar';
 
 export interface ServicePage {
 	/** URL segment: /servicos/<slug>. */
@@ -257,6 +257,23 @@ export const sistemasSobMedida: ServicePage = {
 	projects: {
 		title: { pt: 'Projetos', en: 'Projects', es: 'Proyectos' },
 		items: [
+			// Client case, same copy as on /work (data/works.ts).
+			{
+				name: 'Nexus Comunicação',
+				kind: { pt: 'Tech Lead · arquitetura, time e entrega', en: 'Tech Lead · architecture, team and delivery', es: 'Tech Lead · arquitectura, equipo y entrega' },
+				text: {
+					pt: 'Plataforma multicanal de comunicação (SMS, WhatsApp, RCS): painel do cliente, API, filas e infra AWS. Liderada ponta a ponta como Tech Lead.',
+					en: 'Multichannel communication platform (SMS, WhatsApp, RCS): customer dashboard, API, queues and AWS infra. Led end to end as Tech Lead.',
+					es: 'Plataforma multicanal de comunicación (SMS, WhatsApp, RCS): panel del cliente, API, colas e infra en AWS. Liderada de principio a fin como Tech Lead.',
+				},
+				tech: {
+					pt: ['Next.js', 'Nuxt', 'Node.js', 'TypeScript', 'AWS', 'Redis'],
+					en: ['Next.js', 'Nuxt', 'Node.js', 'TypeScript', 'AWS', 'Redis'],
+					es: ['Next.js', 'Nuxt', 'Node.js', 'TypeScript', 'AWS', 'Redis'],
+				},
+				image: 'nexus',
+				link: { label: { pt: 'Ver a plataforma', en: 'See the platform', es: 'Ver la plataforma' }, href: 'https://app.nexuscomunicacao.com.br' },
+			},
 			{
 				name: 'Quasar',
 				kind: { pt: 'Plataforma de comunicação multi-empresa', en: 'Multi-company messaging platform', es: 'Plataforma de comunicación multiempresa' },
